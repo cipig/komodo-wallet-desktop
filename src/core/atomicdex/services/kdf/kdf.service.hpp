@@ -289,7 +289,7 @@ namespace atomic_dex
        bool                      set_current_ticker(const std::string& ticker);
 
        //! Pagination
-       void set_orders_and_swaps_pagination_infos(std::size_t current_page = 1, std::size_t limit = 50, t_filtering_infos infos = {});
+       void set_orders_and_swaps_pagination_infos(std::size_t current_page = 1, std::size_t limit = 25, t_filtering_infos infos = {});
 
       signals:
         void zhtlcStatusChanged();
