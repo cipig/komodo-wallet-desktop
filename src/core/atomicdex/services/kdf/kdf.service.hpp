@@ -93,6 +93,7 @@ namespace atomic_dex
        t_kdf_time_point m_orderbook_clock;
        t_kdf_time_point m_info_clock;
        t_kdf_time_point m_activation_clock;
+       t_kdf_time_point m_orders_clock;
 
        //! Atomicity / Threads
        std::atomic_bool m_kdf_running{false};
