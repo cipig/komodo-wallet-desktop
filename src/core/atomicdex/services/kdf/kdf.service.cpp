@@ -287,12 +287,18 @@ namespace atomic_dex
         const auto s_orderbook  = std::chrono::duration_cast<std::chrono::seconds>(now - m_orderbook_clock);
         const auto s_info       = std::chrono::duration_cast<std::chrono::seconds>(now - m_info_clock);
         const auto s_activation = std::chrono::duration_cast<std::chrono::seconds>(now - m_activation_clock);
+        const auto s_orders     = std::chrono::duration_cast<std::chrono::seconds>(now - m_orders_clock);
 
         if (s_orderbook >= 5s)
         {
             fetch_current_orderbook_thread(false); // process_orderbook (not a reset) if on trading page
-            batch_fetch_orders_and_swap(); // gets 'my_orders', 'my_recent_swaps' & 'active_swaps'
             m_orderbook_clock = std::chrono::high_resolution_clock::now();
+        }
+
+        if (s_orders >= 13s)
+        {
+            batch_fetch_orders_and_swap(); // gets 'my_orders', 'my_recent_swaps' & 'active_swaps'
+            m_orders_clock = std::chrono::high_resolution_clock::now();
         }
 
         if (s_activation >= 7s)
