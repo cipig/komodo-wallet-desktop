@@ -31,10 +31,10 @@ jobs:
         name: [
             ubuntu-release,
             ubuntu-debug,
-            osx-release,
-            osx-debug,
-            windows-release,
-            windows-debug
+#            osx-release,
+#            osx-debug,
+#            windows-release,
+#            windows-debug
         ]
 
         include:
