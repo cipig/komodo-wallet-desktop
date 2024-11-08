@@ -40,7 +40,7 @@ namespace atomic_dex::kdf
         std::optional<std::vector<std::string>>      bchd_urls;
         std::optional<bool>                          allow_slp_unsafe_conf;
         int                                          min_connected{1};
-        int                                          max_connected{3};
+        int                                          max_connected{2};
     };
 
     struct electrum_answer

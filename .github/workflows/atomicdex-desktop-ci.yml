@@ -1,14 +1,9 @@
 name: komodo-wallet-desktop CI
 
 on:
-  pull_request:
-    types: [ opened, synchronize, reopened ]
   push:
     branches:
-      - master
-  schedule:
-    - cron: '0 0 * * 1'
-  workflow_dispatch:
+      - nogeo
 
 env:
   DEX_API: "kdf_kwd"
@@ -55,29 +50,29 @@ jobs:
             type: 'Debug'
             host: 'linux'
 
-          - name: osx-release
-            os: macos-12
-            qt: '5.15.2'
-            type: 'Release'
-            host: 'mac'
+#          - name: osx-release
+#            os: macos-12
+#            qt: '5.15.2'
+#            type: 'Release'
+#            host: 'mac'
 
-          - name: osx-debug
-            os: macos-12
-            qt: '5.15.2'
-            type: 'Debug'
-            host: 'mac'
+#          - name: osx-debug
+#            os: macos-12
+#            qt: '5.15.2'
+#            type: 'Debug'
+#            host: 'mac'
 
-          - name: windows-release
-            os: windows-2019
-            qt: '5.15.2'
-            type: 'Release'
-            host: 'windows'
+#          - name: windows-release
+#            os: windows-2019
+#            qt: '5.15.2'
+#            type: 'Release'
+#            host: 'windows'
 
-          - name: windows-debug
-            os: windows-2019
-            qt: '5.15.2'
-            type: 'Debug'
-            host: 'windows'
+#          - name: windows-debug
+#            os: windows-2019
+#            qt: '5.15.2'
+#            type: 'Debug'
+#            host: 'windows'
 
     steps:
       - uses: actions/checkout@v3

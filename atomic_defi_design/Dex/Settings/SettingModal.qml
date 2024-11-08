@@ -279,7 +279,7 @@ Qaterial.Dialog
                                     width: 140
                                     height: 45
                                     dropDownMaxHeight: 600
-                                    model: [10, 20, 50, 75, 100, 150, 200]
+                                    model: [10, 20, 50, 75, 100, 150, 500]
                                     currentIndex: model.indexOf(parseInt(atomic_settings2.value("MaximumNbCoinsEnabled")))
                                     onCurrentIndexChanged: atomic_settings2.setValue("MaximumNbCoinsEnabled", model[currentIndex])
                                     Component.onCompleted:
