@@ -296,13 +296,13 @@ namespace atomic_dex
             m_orderbook_clock = std::chrono::high_resolution_clock::now();
         }
 
-        if (s_orders >= 17s)
+        if (s_orders >= 19s)
         {
             batch_fetch_orders_and_swap(); // gets 'my_orders', 'my_recent_swaps' & 'active_swaps'
             m_orders_clock = std::chrono::high_resolution_clock::now();
         }
 
-        if (s_activation >= 2s)
+        if (s_activation >= 3s)
         {
             auto                     coins = this->get_enabled_coins();
             std::vector<std::string> tickers;
@@ -339,7 +339,7 @@ namespace atomic_dex
             }
         }
 
-        if (s_info >= 43s)
+        if (s_info >= 59s)
         {
             fetch_infos_thread(); // leads to batch_balance_and_tx
             m_info_clock = std::chrono::high_resolution_clock::now();
