@@ -846,7 +846,7 @@ namespace atomic_dex
                 .is_testnet      = coin_config.is_testnet.value_or(false),
                 .with_tx_history = true,
                 .min_connected   = 1,
-                .max_connected   = 2
+                .max_connected   = 1
             };
             if (coin_config.merge_utxos.value_or(false))
             {

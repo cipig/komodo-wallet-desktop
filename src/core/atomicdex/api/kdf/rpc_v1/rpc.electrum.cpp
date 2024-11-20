@@ -30,7 +30,7 @@ namespace atomic_dex::kdf
         j["coin"]       = cfg.coin_name;
         j["tx_history"] = cfg.with_tx_history;
         j["min_connected"] = 1;
-        j["max_connected"] = 2;
+        j["max_connected"] = 1;
 
         if (!cfg.servers.empty())
         {
