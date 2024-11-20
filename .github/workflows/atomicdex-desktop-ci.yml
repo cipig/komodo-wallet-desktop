@@ -33,8 +33,8 @@ jobs:
             ubuntu-debug,
 #            osx-release,
 #            osx-debug,
-#            windows-release,
-#            windows-debug
+            windows-release,
+            windows-debug
         ]
 
         include:
@@ -62,17 +62,17 @@ jobs:
 #            type: 'Debug'
 #            host: 'mac'
 
-#          - name: windows-release
-#            os: windows-2019
-#            qt: '5.15.2'
-#            type: 'Release'
-#            host: 'windows'
+          - name: windows-release
+            os: windows-2019
+            qt: '5.15.2'
+            type: 'Release'
+            host: 'windows'
 
-#          - name: windows-debug
-#            os: windows-2019
-#            qt: '5.15.2'
-#            type: 'Debug'
-#            host: 'windows'
+          - name: windows-debug
+            os: windows-2019
+            qt: '5.15.2'
+            type: 'Debug'
+            host: 'windows'
 
     steps:
       - uses: actions/checkout@v3
