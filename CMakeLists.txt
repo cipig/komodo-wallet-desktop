@@ -63,7 +63,7 @@ if (APPLE)
             URL https://github.com/KomodoPlatform/komodo-defi-framework/releases/download/v2.2.0-beta/mm2-bb749a993-Darwin-Release.zip)
 elseif (UNIX AND NOT APPLE)
     FetchContent_Declare(kdf
-            URL https://github.com/KomodoPlatform/komodo-defi-framework/releases/download/v2.2.0-beta/mm2-bb749a993-Linux-Release.zip)
+            URL https://sdk.devbuilds.komodo.earth/fix-check-payment-before-timeout/mm2_cedebad-linux-x86-64.zip)
 else ()
     FetchContent_Declare(kdf
             URL https://github.com/KomodoPlatform/komodo-defi-framework/releases/download/v2.2.0-beta/mm2-bb749a993-Win64.zip)
