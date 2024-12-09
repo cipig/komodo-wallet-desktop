@@ -31,8 +31,8 @@ jobs:
         name: [
             ubuntu-release,
             ubuntu-debug,
-#            osx-release,
-#            osx-debug,
+            osx-release,
+            osx-debug,
             windows-release,
             windows-debug
         ]
@@ -50,17 +50,17 @@ jobs:
             type: 'Debug'
             host: 'linux'
 
-#          - name: osx-release
-#            os: macos-12
-#            qt: '5.15.2'
-#            type: 'Release'
-#            host: 'mac'
+          - name: osx-release
+            os: macos-13
+            qt: '5.15.2'
+            type: 'Release'
+            host: 'mac'
 
-#          - name: osx-debug
-#            os: macos-12
-#            qt: '5.15.2'
-#            type: 'Debug'
-#            host: 'mac'
+          - name: osx-debug
+            os: macos-13
+            qt: '5.15.2'
+            type: 'Debug'
+            host: 'mac'
 
           - name: windows-release
             os: windows-2019
