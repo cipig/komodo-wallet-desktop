@@ -1,4 +1,4 @@
-import QtQuick 2.12
+import QtQuick 2.15
 
 import Dex.Components 1.0 as Dex
 import "../Constants" as Dex

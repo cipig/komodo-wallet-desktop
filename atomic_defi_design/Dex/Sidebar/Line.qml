@@ -1,5 +1,5 @@
 //! Qt Imports.
-import QtQuick 2.12
+import QtQuick 2.15
 
 //! Project Imports.
 import "../Components"

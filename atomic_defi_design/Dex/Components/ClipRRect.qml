@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import QtQuick 2.12 as QQ
+import QtQuick 2.15 as QQ
 import QtGraphicalEffects 1.12 as QGE
 
 QQ.Item
