@@ -5,7 +5,7 @@ import QtGraphicalEffects 1.12
 import Qt.labs.settings 1.0
 
 
-import QtQuick.Window 2.12
+import QtQuick.Window 2.15
 
 import Qaterial 1.0 as Qaterial
 
