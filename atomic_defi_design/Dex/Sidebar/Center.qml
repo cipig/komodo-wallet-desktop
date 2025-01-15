@@ -106,10 +106,11 @@ MouseArea
 
             Layout.fillWidth: true
             type: Main.LineType.DEX
-            label.color: timesyncInfo ? Dex.CurrentTheme.textDisabledColor : Dex.CurrentTheme.textDisabledColor
+            label.color: timesyncInfo ? Dex.CurrentTheme.foregroundColor : Dex.CurrentTheme.textDisabledColor
             label.text: qsTr("DEX")
             icon.source: General.image_path + "menu-exchange-white.svg"
-            disabled_tt_text: qsTr("DEX is temporarily disabled.")
+            onClicked: timesyncInfo ? lineSelected(type) : null
+            disabled_tt_text: timesyncInfo ? "" : qsTr("DEX is disabled due to system clock synchronization issues. Please check your device time settings.")
         }
 
         FigurativeLine
