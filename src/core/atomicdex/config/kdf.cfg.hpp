@@ -34,8 +34,7 @@ namespace atomic_dex
         std::string              gui{std::string(DEX_NAME) + " "s + atomic_dex::get_version()};
         int64_t                  netid{8762};
         int64_t                  rpcport{atomic_dex::g_dex_rpcport};
-        //std::vector<std::string> seednodes{};
-        std::vector<std::string> seednodes{"46.4.78.11", "46.4.87.18", "38.91.100.29", "38.91.102.89", "162.55.5.83", "195.85.216.230"};
+        std::vector<std::string> seednodes{"46.4.78.11", "46.4.87.18", "38.91.100.29", "38.91.102.89", "162.55.5.83", "195.85.216.230", "188.241.240.110", "66.42.60.49"};
 #ifdef _WIN32
         std::string userhome{utils::u8string(std::filesystem::path(_wgetenv(L"HOMEPATH")))};
 #else
@@ -44,6 +43,7 @@ namespace atomic_dex
         std::string passphrase;
         std::string dbdir{utils::u8string((utils::get_atomic_dex_data_folder() / "kdf" / "DB"))};
         std::string rpc_password{"atomic_dex_kdf_passphrase"};
+        int64_t                  metrics_interval{43200};
     };
 
     void from_json(const json& j, kdf_config& cfg);
@@ -60,6 +60,7 @@ namespace atomic_dex
         cfg.passphrase   = j.at("passphrase").get<std::string>();
         cfg.rpc_password = j.at("rpc_password").get<std::string>();
         cfg.dbdir        = j.at("dbdir").get<std::string>();
+        cfg.metrics_interval = j.at("metrics_interval").get<int64_t>();
     }
 
     inline void
@@ -73,6 +74,7 @@ namespace atomic_dex
         j["passphrase"]   = cfg.passphrase;
         j["rpc_password"] = cfg.rpc_password;
         j["dbdir"]        = cfg.dbdir;
+        j["metrics_interval"] = cfg.metrics_interval;
         if (not cfg.seednodes.empty())
         {
             j["seednodes"] = cfg.seednodes;
