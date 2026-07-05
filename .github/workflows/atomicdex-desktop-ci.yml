@@ -105,6 +105,8 @@ jobs:
       - name: Install MSVC
         if: runner.os == 'Windows'
         uses: TheMrMilchmann/setup-msvc-dev@v4
+        with:
+          arch: x64
 
       - name: Build libwally (Windows)
         if: runner.os == 'Windows'
