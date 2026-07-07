@@ -522,12 +522,11 @@ namespace atomic_dex
         const auto&        ticker     = kdf_system.get_current_ticker();
         auto               coin_info  = kdf_system.get_coin_info(ticker);
 
-        //if (coin_info.is_sia_family)
-        //{
-        //    SPDLOG_ERROR("SIA Withdraws are not implemented yet...");
-        //}
-        //else if (coin_info.is_zhtlc_family)
-        if (coin_info.is_zhtlc_family || coin_info.is_sia_family)
+        if (coin_info.is_sia_family)
+        {
+            SPDLOG_ERROR("SIA Withdraws are not implemented yet...");
+        }
+        else if (coin_info.is_zhtlc_family)
         {
             t_withdraw_init_request withdraw_init_req{.coin = ticker, .to = address.toStdString(), .amount = max ? "0" : amount.toStdString(), .memo = memo.toStdString(), .max = max};
 
