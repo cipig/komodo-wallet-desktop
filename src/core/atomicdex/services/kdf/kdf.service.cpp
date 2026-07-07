@@ -1645,7 +1645,7 @@ namespace atomic_dex
         for (auto&& coin: coins)
         {
             auto&& [request, coins_to_enable] = request_functor(coin);
-            SPDLOG_INFO("{} {}", request.dump(4), coins_to_enable[0]);
+            //SPDLOG_INFO("{} {}", request.dump(4), coins_to_enable[0]);
             answer_functor(coin, request, coins_to_enable);
         }
     }

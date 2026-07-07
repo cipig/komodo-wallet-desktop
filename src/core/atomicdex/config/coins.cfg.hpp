@@ -39,7 +39,6 @@ namespace atomic_dex
         using url_list                                  = std::vector<std::string>;
         using eth_family_url_list                       = std::vector<std::string>;
         using sia_family_url_list                       = std::vector<std::string>;
-        using bchd_url_list                             = std::vector<std::string>;
         using light_wallet_d_servers                    = std::vector<std::string>; ///< For ZHTLC
         std::string                                       ticker;
         std::string                                       name;       ///< nice name
@@ -94,7 +93,6 @@ namespace atomic_dex
         std::optional<light_wallet_d_servers>             z_urls;
         std::optional<eth_family_url_list>                eth_family_urls;
         std::optional<sia_family_url_list>                sia_family_urls;
-        std::optional<bchd_url_list>                      bchd_urls;
     };
 
     void from_json(const nlohmann::json& j, coin_config_t& cfg);

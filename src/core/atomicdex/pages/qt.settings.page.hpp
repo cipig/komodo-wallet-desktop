@@ -51,7 +51,7 @@ namespace atomic_dex
         Q_PROPERTY(bool     fetching_priv_keys_busy         READ is_fetching_priv_key_busy          WRITE set_fetching_priv_key_busy            NOTIFY privKeyStatusChanged)
         Q_PROPERTY(bool     fetchingPublicKey               READ is_fetching_public_key                                                         NOTIFY fetchingPublicKeyChanged)
         Q_PROPERTY(QString  publicKey                       READ get_public_key                                                                 NOTIFY publicKeyChanged)
-        Q_PROPERTY(bool     zhtlcStatus                     READ get_task_activation_status                   WRITE set_zhtlc_status                      NOTIFY onZhtlcStatusChanged)
+        Q_PROPERTY(bool     zhtlcStatus                     READ get_task_activation_status         WRITE set_zhtlc_status                      NOTIFY onZhtlcStatusChanged)
 
         ag::ecs::system_manager&                    m_system_manager;
         std::shared_ptr<QApplication>               m_app;
