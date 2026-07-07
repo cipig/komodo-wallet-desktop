@@ -1394,7 +1394,7 @@ namespace atomic_dex
                 nlohmann::json j = kdf::template_request("task::enable_z_coin::init", true);
                 kdf::to_json(j, request);
                 batch.push_back(j);
-                SPDLOG_INFO("Enable task request: {}", batch.dump(4));
+                //SPDLOG_INFO("Enable task request: {}", batch.dump(4));
                 return {batch, {coin_info.ticker}};
             }
 
@@ -1403,12 +1403,12 @@ namespace atomic_dex
                 t_enable_sia_coin_request request{
                     .coin_name            = coin_info.ticker,
                     .server_url           = coin_info.sia_family_urls.value().at(0),
-                    .with_tx_history      = true};
+                    .with_tx_history      = false}; // NotSupportedFor
 
                 nlohmann::json j = kdf::template_request("task::enable_sia::init", true);
                 kdf::to_json(j, request);
                 batch.push_back(j);
-                SPDLOG_INFO("Enable task request: {}", batch.dump(4));
+                //SPDLOG_INFO("Enable task request: {}", batch.dump(4));
                 return {batch, {coin_info.ticker}};
             }
         };
