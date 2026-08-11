@@ -199,13 +199,31 @@ jobs:
             gnu-sed
             llvm
 
+      # The runner image ships a stale apt index, so apt resolves versions the
+      # archive has already superseded and the download 404s. cache-apt-pkgs-action
+      # swallows that and still reports success, leaving the job with nothing
+      # installed until vcpkg fails opaquely much later.
+      - name: Refresh apt index (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update
+
       - name: Install apt deps (Linux)
         if: runner.os == 'Linux'
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          version: '${{ matrix.type }}-1.1'
+          version: '${{ matrix.type }}-1.2'
           execute_install_scripts: true
           packages: autoconf autoconf-archive automake bison build-essential curl gperf libcap-dev libpulse-dev libtool libssl-dev libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb1-dev libxcb-keysyms1-dev libxcb-render-util0-dev libxcb-xinerama0 libfuse2 libxcursor-dev libxcomposite-dev libxdamage-dev libxrandr-dev libxtst-dev libxss-dev libdbus-1-dev libevent-dev libfontconfig1-dev libgl1-mesa-dev libudev-dev libpci-dev libnss3-dev libegl1-mesa-dev linux-libc-dev lsb-release ninja-build nodejs software-properties-common unzip wget zstd qtbase5-dev qtdeclarative5-dev qtquickcontrols2-5-dev qttools5-dev qtwebengine5-dev libqt5svg5-dev libqt5charts5-dev libqt5waylandclient5-dev qml-module-qtquick-controls qml-module-qtquick-controls2 qml-module-qtquick-dialogs qml-module-qtquick-extras qml-module-qtquick-layouts qml-module-qtquick-shapes qml-module-qtcharts qml-module-qtgraphicaleffects qml-module-qtwebengine qml-module-qt-labs-platform qml-module-qt-labs-settings
+
+      - name: Verify autotools prerequisites (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          for tool in autoreconf aclocal libtoolize; do
+            command -v "$tool" || { echo "::error::$tool is missing"; exit 1; }
+          done
+          ac_dir="$(aclocal --print-ac-dir)"
+          test -f "$ac_dir/ax_check_compile_flag.m4" \
+            || { echo "::error::autoconf-archive macros are missing from $ac_dir"; exit 1; }
 
       - name: Install deps (Linux)
         if: runner.os == 'Linux'
