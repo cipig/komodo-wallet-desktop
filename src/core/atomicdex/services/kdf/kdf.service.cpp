@@ -28,6 +28,7 @@
 #include <range/v3/algorithm/any_of.hpp>
 #include <QException>
 #include <QFile>
+#include <QSaveFile>
 #include <QProcess>
 #include <QSettings>
 
@@ -139,30 +140,81 @@ namespace
         SPDLOG_INFO("Update coins status to: {} - field_name: {} - tickers: {}", status, field_name, fmt::join(tickers, ", "));
         std::filesystem::path  cfg_path                = atomic_dex::utils::get_atomic_dex_config_folder();
         std::string            filename                = std::string(atomic_dex::get_raw_version()) + "-coins." + wallet_name + ".json";
+        std::filesystem::path  filepath                = cfg_path / filename;
 
-        nlohmann::json config_json_data = atomic_dex::utils::read_json_file(cfg_path / filename);
+        //! Exclusive for the whole read-modify-write. Several coins finish
+        //! activation on different threads at once, and each call rewrites the
+        //! entire file; a shared lock let them interleave, so one writer's
+        //! output could land on top of another's and leave a file that no
+        //! longer parses. The registry mutation below needs exclusivity anyway.
+        std::unique_lock lock(registry_mtx);
 
+        nlohmann::json config_json_data = atomic_dex::utils::read_json_file(filepath);
+
+        //! `read_json_file` yields a default-constructed (null) json when the
+        //! file is missing or does not parse. Indexing that throws, and this
+        //! runs inside a Qt event handler where an exception aborts the
+        //! process, so refuse the update instead.
+        //!
+        //! Deliberately not rebuilt from scratch: overwriting an unreadable
+        //! config would discard every other coin's saved settings. The
+        //! in-memory registry is still updated, so the session behaves
+        //! correctly; only persistence is skipped, and loudly.
+        if (!config_json_data.is_object())
         {
-            std::shared_lock lock(registry_mtx);
+            SPDLOG_ERROR(
+                "Coins config is missing or unreadable, skipping persistence of {}={} for [{}]. Path: {}", field_name, status,
+                fmt::join(tickers, ", "), filepath.string());
             for (auto&& ticker: tickers)
             {
-                SPDLOG_DEBUG("Setting ticker: {} field {} to {}", ticker, field_name, status);
-                config_json_data.at(ticker)[field_name] = status;
-
                 if (field_name == "active")
                 {
-                    SPDLOG_DEBUG("ticker: {} status active: {}", ticker, status);
                     registry[ticker].active = status;
                 }
             }
+            return;
         }
 
-        //! Write contents
-        QFile ofs;
-        ofs.setFileName(atomic_dex::std_path_to_qstring((cfg_path / filename)));
-        ofs.open(QIODevice::Text | QIODevice::WriteOnly);
-        ofs.write(QString::fromStdString(config_json_data.dump()).toUtf8());
-        ofs.close();
+        for (auto&& ticker: tickers)
+        {
+            SPDLOG_DEBUG("Setting ticker: {} field {} to {}", ticker, field_name, status);
+            //! `at` throws for a ticker the config does not carry; skipping is
+            //! the safe reaction, for the same event-handler reason as above.
+            if (config_json_data.contains(ticker))
+            {
+                config_json_data[ticker][field_name] = status;
+            }
+            else
+            {
+                SPDLOG_WARN("Ticker {} is absent from the coins config, not persisting {}={}", ticker, field_name, status);
+            }
+
+            if (field_name == "active")
+            {
+                SPDLOG_DEBUG("ticker: {} status active: {}", ticker, status);
+                registry[ticker].active = status;
+            }
+        }
+
+        //! Write contents.
+        //!
+        //! QSaveFile writes to a temporary file and renames it into place on
+        //! commit, so a reader never observes a half-written config and an
+        //! interrupted write leaves the previous file intact. A plain QFile
+        //! truncates in place, which is how the corruption above arose.
+        QSaveFile ofs;
+        ofs.setFileName(atomic_dex::std_path_to_qstring(filepath));
+        if (!ofs.open(QIODevice::Text | QIODevice::WriteOnly))
+        {
+            SPDLOG_ERROR("Could not open coins config for writing: {} ({})", filepath.string(), ofs.errorString().toStdString());
+            return;
+        }
+        const std::string serialized = config_json_data.dump();
+        if (ofs.write(QString::fromStdString(serialized).toUtf8()) == -1 || !ofs.commit())
+        {
+            SPDLOG_ERROR("Could not write coins config: {} ({})", filepath.string(), ofs.errorString().toStdString());
+            return;
+        }
 
         SPDLOG_DEBUG("Coins file updated to set {}: {} | tickers: [{}]", field_name, status,  fmt::join(tickers, ", "));
     }
