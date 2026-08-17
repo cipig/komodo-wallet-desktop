@@ -38,6 +38,7 @@ namespace
             {"type", QString::fromStdString(coin.type)},
             {"livecoinwatch_id", QString::fromStdString(coin.livecoinwatch_id)},
             {"coinpaprika_id", QString::fromStdString(coin.coinpaprika_id)},
+            {"coingecko_id", QString::fromStdString(coin.coingecko_id)},
             {"explorer_url", QString::fromStdString(coin.explorer_url)},
             {"tx_uri", QString::fromStdString(coin.tx_uri)},
             {"block_uri", QString::fromStdString(coin.block_uri)},
