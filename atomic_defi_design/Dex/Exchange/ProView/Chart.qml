@@ -29,11 +29,6 @@ Item
         let rel_ticker = ""
         let base_ticker = ""
 
-        if (activeChartTicker === rel_ticker)
-        {
-            return
-        }
-
         if (source == "coingecko")
         {
             rel_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(right_ticker).coingecko_id
@@ -41,7 +36,6 @@ Item
             if (rel_ticker != "")
             {
                 pair_supported = true
-                activeChartTicker = rel_ticker
                 chart_url = "https://widgets.coingecko.com"
                 chart_html = `
                 <script defer src="https://widgets.coingecko.com/gecko-coin-price-chart-widget.js"></script>
@@ -63,15 +57,14 @@ Item
             if (rel_ticker != "")
             {
                 pair_supported = true
-                activeChartTicker = rel_ticker
                 let night_mode = dark_theme ? "cp-widget__night-mode" : ""
                 chart_url = `https://coinpaprika.com/coin/${rel_ticker}/`
                 chart_html = `
                 <div class="coinpaprika-currency-widget ${night_mode}" data-primary-currency="${API.app.settings_pg.current_currency}" data-currency="${rel_ticker}" data-range="7d" data-modules='["chart"]' data-update-active="false"></div>
                 <script
-                    src="qrc:/coinpaprika/widget.min.js"
+                    src="qrc:/coinpaprika/dist/widget.js"
                     data-cp-currency-widget='{
-                        "origin-src": "https://unpkg.com/@coinpaprika/widget-currency@2.0.13"
+                        "origin-src": "qrc:/coinpaprika"
                     }'>
                 </script>
                 `
@@ -90,7 +83,6 @@ Item
             if (rel_ticker != "" && base_ticker != "")
             {
                 pair_supported = true
-                activeChartTicker = rel_ticker
                 let widget_x = 390
                 let widget_y = 200
                 let scale_x = root.implicitWidth / widget_x
@@ -116,10 +108,17 @@ Item
             }
         }
 
+        if (activeChartTicker === rel_ticker)
+        {
+            console.log("Skipping duplicate chart load:", rel_ticker)
+            return
+        }
+
         console.log(chart_html)
         dashboard.webEngineView.visible = false
         webEngineViewPlaceHolder.visible = false
         dashboard.webEngineView.loadHtml(chart_html, chart_url)
+        activeChartTicker = rel_ticker
     }
 
     Item {
@@ -173,7 +172,11 @@ Item
                 {
                     webEngineViewPlaceHolder.visible = true
                 }
-                else webEngineViewPlaceHolder.visible = false
+                else
+                {
+                    webEngineViewPlaceHolder.visible = false
+                    activeChartTicker = ""
+                }
             }
         }
     }

@@ -2,6 +2,17 @@
     <qresource>
         <file>bignumberjs/qmldir</file>
         <file>bignumberjs/bignumber.js/bignumber.js</file>
-        <file>coinpaprika/widget.min.js</file>
+
+        <file>coinpaprika/dist/widget.min.js</file>
+        <file>coinpaprika/dist/widget.js</file>
+        <file>coinpaprika/dist/widget.min.css</file>
+        <file>coinpaprika/dist/widget.min.css.map</file>
+
+        <file>coinpaprika/dist/data/currencies.json</file>
+
+        <file>coinpaprika/dist/img/logo.png</file>
+        <file>coinpaprika/dist/img/logo_widget.svg</file>
+
+        <file>coinpaprika/dist/lang/en.json</file>
     </qresource>
 </RCC>
