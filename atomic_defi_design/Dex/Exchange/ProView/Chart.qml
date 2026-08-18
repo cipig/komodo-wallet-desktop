@@ -63,6 +63,7 @@ Item
             }
         }
 
+        // https://npm.io/package/%40coinpaprika/widget-currency
         if (source == "coinpaprika")
         {
             rel_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(right_ticker).coinpaprika_id
@@ -71,10 +72,11 @@ Item
             {
                 pair_supported = true
                 let night_mode = dark_theme ? "cp-widget__night-mode" : ""
-                chart_url = "https://coinpaprika.com"
+                //chart_url = "https://coinpaprika.com"
+                chart_url = `https://coinpaprika.com/coin/${rel_ticker}/`
                 chart_html = `
-                <script defer src="https://unpkg.com/@coinpaprika/widget-currency@2.0.13/dist/widget.min.js"></script>
-                <div class="coinpaprika-currency-widget ${night_mode}" data-primary-currency="usd" data-currency="${rel_ticker}" data-range="7d" data-modules='["chart"]' data-update-active="false"></div>
+                <div class="coinpaprika-currency-widget ${night_mode}" data-primary-currency="${API.app.settings_pg.current_currency}" data-currency="${rel_ticker}" data-range="7d" data-modules='["chart"]' data-update-active="false"></div>
+                <script src="https://unpkg.com/@coinpaprika/widget-currency@2.0.13/dist/widget.min.js"></script>
                 `
             }
             else
@@ -117,6 +119,9 @@ Item
         }
 
         console.log(chart_html)
+        dashboard.webEngineView.stop()
+        dashboard.webEngineView.visible = false
+        webEngineViewPlaceHolder.visible = false
         dashboard.webEngineView.loadHtml(chart_html, chart_url)
     }
 
