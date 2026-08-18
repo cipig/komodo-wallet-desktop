@@ -40,6 +40,8 @@ Item
         let chart_html = ""
         let symbol = ""
         selected_testcoin = ""
+        let rel_ticker = ""
+        let base_ticker = ""
 
         if (General.is_testcoin(left_ticker))
         {
@@ -59,28 +61,34 @@ Item
 
         if (source == "livecoinwatch")
         {
-            let rel_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(right_ticker).livecoinwatch_id
-            let base_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(left_ticker).livecoinwatch_id
+            rel_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(right_ticker).livecoinwatch_id
+            base_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(left_ticker).livecoinwatch_id
+            if (rel_ticker != "" && base_ticker != "")
+            {
+                pair_supported = true
+            }
         }
         else if (source == "coinpaprika")
         {
-            let rel_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(right_ticker).coinpaprika_id
-            let base_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(left_ticker).coinpaprika_id
+            rel_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(right_ticker).coinpaprika_id
+            base_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(left_ticker).coinpaprika_id
+            if (rel_ticker != "")
+            {
+                pair_supported = true
+            }
         }
         else if (source == "coingecko")
         {
-            let rel_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(right_ticker).coingecko_id
-            let base_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(left_ticker).coingecko_id
+            rel_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(right_ticker).coingecko_id
+            base_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(left_ticker).coingecko_id
+            if (rel_ticker != "")
+            {
+                pair_supported = true
+            }
         }
 
-        if (rel_ticker != "" && source != "livecoinwatch")
-        {
-            pair_supported = true
-        }
-        else if (rel_ticker != "" && base_ticker != "")
-        {
-            pair_supported = true
-        }
+        console.log("rel_ticker: ", rel_ticker)
+        console.log("base_ticker: ", base_ticker)
 
         if (pair_supported)
         {
@@ -110,7 +118,7 @@ Item
                 a { pointer-events: none; }
             </style>
             <script defer src="https://www.livecoinwatch.com/static/lcw-widget.js"></script>
-            <div class="livecoinwatch-widget-1" lcw-coin="${rel_ticker}" lcw-base="${API.app.settings_pg.current_currency}" lcw-secondary="${base_ticker}" lcw-period="m" lcw-color-tx="${Dex.CurrentTheme.foregroundColor}" lcw-color-pr="#58c7c5" lcw-color-bg="${Dex.CurrentTheme.comboBoxBackgroundColor}" lcw-border-w="0" lcw-digits="9" ></div>
+            <div class="livecoinwatch-widget-1" lcw-coin="${API.app.portfolio_pg.global_cfg_mdl.get_coin_info(right_ticker).livecoinwatch_id}" lcw-base="${API.app.settings_pg.current_currency}" lcw-secondary="${API.app.portfolio_pg.global_cfg_mdl.get_coin_info(left_ticker).livecoinwatch_id}" lcw-period="m" lcw-color-tx="${Dex.CurrentTheme.foregroundColor}" lcw-color-pr="#58c7c5" lcw-color-bg="${Dex.CurrentTheme.comboBoxBackgroundColor}" lcw-border-w="0" lcw-digits="9" ></div>
             `
         }
 
