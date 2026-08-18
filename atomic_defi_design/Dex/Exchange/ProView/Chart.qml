@@ -103,8 +103,8 @@ Item
 
         console.log("source: ", source)
         console.log("pair_supported: ", pair_supported)
-        console.log("rel_ticker: , rel_ticker)
-        console.log("base_ticker: , base_ticker)
+        console.log("rel_ticker: ", rel_ticker)
+        console.log("base_ticker: ", base_ticker)
 
         if (source == "livecoinwatch" && pair_supported)
         {
