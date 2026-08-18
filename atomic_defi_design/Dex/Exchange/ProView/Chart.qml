@@ -62,12 +62,10 @@ Item
                 chart_html = `
                 <div class="coinpaprika-currency-widget ${night_mode}" data-primary-currency="${API.app.settings_pg.current_currency}" data-currency="${rel_ticker}" data-range="7d" data-modules='["chart"]' data-update-active="false"></div>
                 <script
-                    src="qrc:/coinpaprika/dist/widget.min.js"
+                    src="qrc:/coinpaprika/dist/widget.js"
                     data-cp-currency-widget='{
                         "origin-src": "https://unpkg.com/@coinpaprika/widget-currency@2.0.13",
-                        "style-src": "qrc:/coinpaprika/dist/widget.min.css",
-                        "lang-src": "https://unpkg.com/@coinpaprika/widget-currency@2.0.13/dist/lang/en.json",
-                        "data-src": "https://unpkg.com/@coinpaprika/widget-currency@2.0.13/dist/data/currencies.json"
+                        "style-src": "qrc:/coinpaprika/dist/widget.min.css"
                     }'>
                 </script>
                 `

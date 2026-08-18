@@ -3,7 +3,7 @@
         <file>bignumberjs/qmldir</file>
         <file>bignumberjs/bignumber.js/bignumber.js</file>
 
-        <file>coinpaprika/dist/widget.min.js</file>
+        <file>coinpaprika/dist/widget.js</file>
         <file>coinpaprika/dist/widget.min.css</file>
     </qresource>
 </RCC>
