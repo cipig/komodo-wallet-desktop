@@ -51,14 +51,6 @@ QtObject {
         }
     }
 
-    function getChartID(ticker)
-    {
-        let coin_info = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(ticker)
-        //return coin_info.coingecko_id
-        //return coin_info.livecoinwatch_id
-        return coin_info.coinpaprika_id
-    }
-
     function coinWithoutSuffix(ticker)
     {
         if (ticker.search("-") > -1)

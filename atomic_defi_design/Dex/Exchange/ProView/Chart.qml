@@ -13,7 +13,7 @@ Item
     implicitWidth: 530
     implicitHeight: 300
 
-    readonly property string theme: Dex.CurrentTheme.getColorMode() === Dex.CurrentTheme.ColorMode.Dark ? "dark" : "light"
+    readonly property bool dark_theme: Dex.CurrentTheme.getColorMode() === Dex.CurrentTheme.ColorMode.Dark
     property string loaded_symbol
     property bool pair_supported: false
     property string selected_testcoin
@@ -40,8 +40,6 @@ Item
         let chart_html = ""
         let symbol = ""
         selected_testcoin = ""
-        let rel_ticker = General.getChartID(right_ticker)
-        let base_ticker = General.getChartID(left_ticker)
 
         if (General.is_testcoin(left_ticker))
         {
@@ -50,6 +48,7 @@ Item
             console.log("no chart, testcoin", selected_testcoin)
             return
         }
+
         if (General.is_testcoin(right_ticker))
         {
             pair_supported = false
@@ -57,11 +56,38 @@ Item
             console.log("no chart, testcoin", selected_testcoin)
             return
         }
-        if (rel_ticker != "" && base_ticker != "")
+
+        let coin_info_right = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(right_ticker)
+        let coin_info_left = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(left_ticker)
+
+        if (source == "livecoinwatch")
+        {
+            let rel_ticker = coin_info_right.livecoinwatch_id
+            let base_ticker = coin_info_left.livecoinwatch_id
+        }
+        else if (source == "coinpaprika")
+        {
+            let rel_ticker = coin_info_right.coinpaprika_id
+            let base_ticker = coin_info_left.coinpaprika_id
+        }
+        else if (source == "coingecko")
+        {
+            let rel_ticker = coin_info_right.coingecko_id
+            let base_ticker = coin_info_left.coingecko_id
+        }
+
+        if (rel_ticker != "" && source != "livecoinwatch")
         {
             pair_supported = true
-            symbol = rel_ticker+"-"+base_ticker
+        }
+        else if (rel_ticker != "" && base_ticker != "")
+        {
+            pair_supported = true
+        }
 
+        if (pair_supported)
+        {
+            symbol = rel_ticker+"-"+base_ticker
             if (symbol === loaded_symbol && !force)
             {
                 webEngineViewPlaceHolder.visible = true
@@ -95,7 +121,7 @@ Item
         {
             chart_html = `
             <script src="https://widgets.coingecko.com/gecko-coin-price-chart-widget.js"></script>
-            <gecko-coin-price-chart-widget locale="en" dark-mode="true" outlined="true" coin-id="${rel_ticker}" initial-currency="${API.app.settings_pg.current_currency}" width="${root.implicitWidth}" height="${root.implicitHeight}"></gecko-coin-price-chart-widget>
+            <gecko-coin-price-chart-widget locale="en" dark-mode="${dark_theme}" coin-id="${rel_ticker}" initial-currency="${API.app.settings_pg.current_currency}" width="${root.implicitWidth}" height="${root.implicitHeight}"></gecko-coin-price-chart-widget>
             `
         }
 
@@ -105,6 +131,7 @@ Item
             let widget_y = 600
             let scale_x = root.implicitWidth / widget_x
             let scale_y = root.implicitHeight / widget_y
+            let night_mode = dark_theme ? "cp-widget__night-mode" : ""
 
             chart_html = `
             <style>
@@ -116,7 +143,7 @@ Item
                 a { pointer-events: none; }
             </style>
             <script type="text/javascript" src="https://unpkg.com/@coinpaprika/widget-currency@2.0.13/dist/widget.min.js"></script>
-            <div class="coinpaprika-currency-widget cp-widget__night-mode" data-primary-currency="${API.app.settings_pg.current_currency}" data-currency="${rel_ticker}" data-custom-date="false" data-start-date="0" data-end-date="0" data-modules='["market_details","chart"]' data-update-active="false"></div>
+            <div class="coinpaprika-currency-widget ${night_mode}" data-primary-currency="${API.app.settings_pg.current_currency}" data-currency="${rel_ticker}" data-custom-date="false" data-start-date="0" data-end-date="0" data-modules='["market_details","chart"]' data-update-active="false"></div>
             `
         }
 
