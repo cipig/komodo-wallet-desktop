@@ -2,5 +2,6 @@
     <qresource>
         <file>bignumberjs/qmldir</file>
         <file>bignumberjs/bignumber.js/bignumber.js</file>
+        <file>coinpaprika/widget.min.js</file>
     </qresource>
 </RCC>
