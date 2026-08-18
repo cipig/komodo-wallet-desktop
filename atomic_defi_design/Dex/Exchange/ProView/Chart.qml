@@ -11,10 +11,9 @@ Item
 {
     id: root
     implicitWidth: 530
-    implicitHeight: 500
+    implicitHeight: 400
 
     readonly property bool dark_theme: Dex.CurrentTheme.getColorMode() === Dex.CurrentTheme.ColorMode.Dark
-    property string loaded_symbol
     property bool pair_supported: false
     property string selected_testcoin
 
@@ -35,13 +34,14 @@ Item
 
     Component.onCompleted: startupTimer.start()
 
-    function loadChart(right_ticker, left_ticker, force = false, source="coingecko")
+    function loadChart(right_ticker, left_ticker, source="coingecko")
     {
-        console.log("right_ticker: ", right_ticker)
-        console.log("left_ticker: ", left_ticker)
+        // console.log("right_ticker: ", right_ticker) // right_ticker:  KMD
+        // console.log("left_ticker: ", left_ticker) // left_ticker:  LTC-segwit
+        // TODO: obviously it's the other way around
 
+        let chart_url = ""
         let chart_html = ""
-        let symbol = ""
         selected_testcoin = ""
         let rel_ticker = ""
         let base_ticker = ""
@@ -62,6 +62,34 @@ Item
             return
         }
 
+        if (source == "coingecko")
+        {
+            rel_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(right_ticker).coingecko_id
+            base_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(left_ticker).coingecko_id
+            if (rel_ticker != "")
+            {
+                pair_supported = true
+            }
+            else
+            {
+                source = "coinpaprika"
+            }
+        }
+
+        if (source == "coinpaprika")
+        {
+            rel_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(right_ticker).coinpaprika_id
+            base_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(left_ticker).coinpaprika_id
+            if (rel_ticker != "")
+            {
+                pair_supported = true
+            }
+            else
+            {
+                source = "livecoinwatch"
+            }
+        }
+
         if (source == "livecoinwatch")
         {
             rel_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(right_ticker).livecoinwatch_id
@@ -71,38 +99,6 @@ Item
                 pair_supported = true
             }
         }
-        else if (source == "coinpaprika")
-        {
-            rel_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(right_ticker).coinpaprika_id
-            base_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(left_ticker).coinpaprika_id
-            if (rel_ticker != "")
-            {
-                pair_supported = true
-            }
-        }
-        else if (source == "coingecko")
-        {
-            rel_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(right_ticker).coingecko_id
-            base_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(left_ticker).coingecko_id
-            if (rel_ticker != "")
-            {
-                pair_supported = true
-            }
-        }
-
-        console.log("rel_ticker: ", rel_ticker)
-        console.log("base_ticker: ", base_ticker)
-
-        if (pair_supported)
-        {
-            symbol = rel_ticker+"-"+base_ticker
-            if (symbol === loaded_symbol && !force)
-            {
-                webEngineViewPlaceHolder.visible = true
-                console.log("symbol === loaded_symbol, ok")
-                return
-            }
-        }
 
         if (source == "livecoinwatch" && pair_supported)
         {
@@ -110,7 +106,7 @@ Item
             let widget_y = 200
             let scale_x = root.implicitWidth / widget_x
             let scale_y = root.implicitHeight / widget_y
-
+            chart_url = "https://www.livecoinwatch.com"
             chart_html = `
             <style>
                 body { margin: auto; }
@@ -127,8 +123,9 @@ Item
 
         if (source == "coingecko" && pair_supported)
         {
+            chart_url = "https://widgets.coingecko.com"
             chart_html = `
-            <script src="https://widgets.coingecko.com/gecko-coin-price-chart-widget.js"></script>
+            <script defer src="https://widgets.coingecko.com/gecko-coin-price-chart-widget.js"></script>
             <gecko-coin-price-chart-widget locale="en" dark-mode="${dark_theme}" coin-id="${rel_ticker}" initial-currency="${API.app.settings_pg.current_currency}" width="${root.implicitWidth}" height="${root.implicitHeight}"></gecko-coin-price-chart-widget>
             `
         }
@@ -140,7 +137,7 @@ Item
             let scale_x = root.implicitWidth / widget_x
             let scale_y = root.implicitHeight / widget_y
             let night_mode = dark_theme ? "cp-widget__night-mode" : ""
-
+            chart_url = "https://unpkg.com"
             chart_html = `
             <style>
                 body { margin: auto; }
@@ -156,7 +153,7 @@ Item
         }
 
         console.log(chart_html)
-        dashboard.webEngineView.loadHtml(chart_html)
+        dashboard.webEngineView.loadHtml(chart_html, chart_url)
     }
 
     Item {
@@ -243,8 +240,7 @@ Item
         function onThemeChanged()
         {
             loadChart(left_ticker?? atomic_app_primary_coin,
-                      right_ticker?? atomic_app_secondary_coin,
-                      true)
+                      right_ticker?? atomic_app_secondary_coin)
         }
     }
 }
