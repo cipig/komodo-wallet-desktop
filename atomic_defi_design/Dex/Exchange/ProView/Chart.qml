@@ -74,7 +74,7 @@ Item
                 chart_url = "https://coinpaprika.com"
                 chart_html = `
                 <script defer src="https://unpkg.com/@coinpaprika/widget-currency@2.0.13/dist/widget.min.js"></script>
-                <div class="coinpaprika-currency-widget ${night_mode}" data-primary-currency="usd" data-currency="${rel_ticker}" data-custom-date="false" data-start-date="0" data-end-date="0" data-modules='["chart"]' data-update-active="false"></div>
+                <div class="coinpaprika-currency-widget ${night_mode}" data-primary-currency="usd" data-currency="${rel_ticker}" data-range="7d" data-modules='["chart"]' data-update-active="false"></div>
                 `
             }
             else

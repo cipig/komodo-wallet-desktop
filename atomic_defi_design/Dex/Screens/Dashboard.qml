@@ -142,10 +142,13 @@ Item
         {
             id: webEngineView
             backgroundColor: "transparent"
+            settings.javascriptEnabled: true
+            settings.localStorageEnabled: true
             settings.localContentCanAccessRemoteUrls: true
             settings.errorPageEnabled: false
-            onJavaScriptConsoleMessage: (level, message, lineNumber, sourceID) => {
-                // By not printing or handling this, you "suppress" it within your app logic
+            onJavaScriptConsoleMessage: function(level, message, lineNumber, sourceID)
+            {
+                console.log("JS:", message, "line:", lineNumber, "source:", sourceID)
             }
         }
 
