@@ -11,7 +11,7 @@ Item
 {
     id: root
     implicitWidth: 530
-    implicitHeight: 400
+    implicitHeight: 350
 
     readonly property bool dark_theme: Dex.CurrentTheme.getColorMode() === Dex.CurrentTheme.ColorMode.Dark
     property bool pair_supported: false
@@ -62,6 +62,7 @@ Item
             return
         }
 
+        // coingecko only has 24h charts
         if (source == "coingecko")
         {
             rel_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(right_ticker).coingecko_id
@@ -100,6 +101,11 @@ Item
             }
         }
 
+        console.log("source: ", source)
+        console.log("pair_supported: ", pair_supported)
+        console.log("rel_ticker: , rel_ticker)
+        console.log("base_ticker: , base_ticker)
+
         if (source == "livecoinwatch" && pair_supported)
         {
             let widget_x = 390
@@ -126,8 +132,9 @@ Item
             chart_url = "https://widgets.coingecko.com"
             chart_html = `
             <script defer src="https://widgets.coingecko.com/gecko-coin-price-chart-widget.js"></script>
-            <gecko-coin-price-chart-widget locale="en" dark-mode="${dark_theme}" coin-id="${rel_ticker}" initial-currency="${API.app.settings_pg.current_currency}" width="${root.implicitWidth}" height="${root.implicitHeight}"></gecko-coin-price-chart-widget>
+            <gecko-coin-price-chart-widget locale="en" dark-mode="${dark_theme}" transparent-background="true" coin-id="${rel_ticker}" initial-currency="usd" width="${root.implicitWidth}" height="${root.implicitHeight}"></gecko-coin-price-chart-widget>
             `
+            //<gecko-coin-price-chart-widget locale="en" dark-mode="${dark_theme}" transparent-background="true" coin-id="${rel_ticker}" initial-currency="${API.app.settings_pg.current_currency}" width="${root.implicitWidth}" height="${root.implicitHeight}"></gecko-coin-price-chart-widget>
         }
 
         if (source == "coinpaprika" && pair_supported)
@@ -141,10 +148,6 @@ Item
             chart_html = `
             <style>
                 body { margin: auto; }
-                .coinpaprika-currency-widget {
-                    transform: scale(${Math.min(scale_x, scale_y)});
-                    transform-origin: top left;
-                }
                 a { pointer-events: none; }
             </style>
             <script type="text/javascript" src="https://unpkg.com/@coinpaprika/widget-currency@2.0.13/dist/widget.min.js"></script>
