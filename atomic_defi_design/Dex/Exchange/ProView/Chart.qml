@@ -35,16 +35,14 @@ Item
 
     function loadChart(right_ticker, left_ticker, source="coinpaprika")
     {
-        // console.log("right_ticker: ", right_ticker) // right_ticker:  KMD
-        // console.log("left_ticker: ", left_ticker) // left_ticker:  LTC-segwit
-        // TODO: obviously it's the other way around
+        // TODO: obviously it's the other way around (right_ticker, left_ticker)
+        // coingecko only has 24h charts
 
         let chart_url = ""
         let chart_html = ""
         let rel_ticker = ""
         let base_ticker = ""
 
-        // coingecko only has 24h charts
         if (source == "coingecko")
         {
             rel_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(right_ticker).coingecko_id
@@ -52,6 +50,11 @@ Item
             if (rel_ticker != "")
             {
                 pair_supported = true
+                chart_url = "https://widgets.coingecko.com"
+                chart_html = `
+                <script defer src="https://widgets.coingecko.com/gecko-coin-price-chart-widget.js"></script>
+                <gecko-coin-price-chart-widget locale="en" dark-mode="${dark_theme}" transparent-background="true" coin-id="${rel_ticker}" initial-currency="usd" width="${root.implicitWidth}" height="${root.implicitHeight}"></gecko-coin-price-chart-widget>
+                `
             }
             else
             {
@@ -67,6 +70,12 @@ Item
             if (rel_ticker != "")
             {
                 pair_supported = true
+                let night_mode = dark_theme ? "cp-widget__night-mode" : ""
+                chart_url = "https://coinpaprika.com"
+                chart_html = `
+                <script defer src="https://unpkg.com/@coinpaprika/widget-currency@2.0.13/dist/widget.min.js"></script>
+                <div class="coinpaprika-currency-widget ${night_mode}" data-primary-currency="usd" data-currency="${rel_ticker}" data-custom-date="false" data-start-date="0" data-end-date="0" data-modules='["chart"]' data-update-active="false"></div>
+                `
             }
             else
             {
@@ -82,58 +91,29 @@ Item
             if (rel_ticker != "" && base_ticker != "")
             {
                 pair_supported = true
+                let widget_x = 390
+                let widget_y = 200
+                let scale_x = root.implicitWidth / widget_x
+                let scale_y = root.implicitHeight / widget_y
+                chart_url = "https://www.livecoinwatch.com"
+                chart_html = `
+                <style>
+                    body { margin: auto; }
+                    .livecoinwatch-widget-1 {
+                        transform: scale(${Math.min(scale_x, scale_y)});
+                        transform-origin: top left;
+                    }
+                    a { pointer-events: none; }
+                </style>
+                <script defer src="https://www.livecoinwatch.com/static/lcw-widget.js"></script>
+                <div class="livecoinwatch-widget-1" lcw-coin="${rel_ticker}" lcw-base="${API.app.settings_pg.current_currency}" lcw-secondary="${base_ticker}" lcw-period="m" lcw-color-tx="${Dex.CurrentTheme.foregroundColor}" lcw-color-pr="#58c7c5" lcw-color-bg="${Dex.CurrentTheme.comboBoxBackgroundColor}" lcw-border-w="0" lcw-digits="9"></div>
+                `
             }
             else
             {
                 pair_supported = false
-                console.log("no ids, no chart")
                 return
             }
-        }
-
-        console.log("source: ", source)
-        console.log("pair_supported: ", pair_supported)
-        console.log("rel_ticker: ", rel_ticker)
-        console.log("base_ticker: ", base_ticker)
-
-        if (source == "livecoinwatch" && pair_supported)
-        {
-            let widget_x = 390
-            let widget_y = 200
-            let scale_x = root.implicitWidth / widget_x
-            let scale_y = root.implicitHeight / widget_y
-            chart_url = "https://www.livecoinwatch.com"
-            chart_html = `
-            <style>
-                body { margin: auto; }
-                .livecoinwatch-widget-1 {
-                    transform: scale(${Math.min(scale_x, scale_y)});
-                    transform-origin: top left;
-                }
-                a { pointer-events: none; }
-            </style>
-            <script defer src="https://www.livecoinwatch.com/static/lcw-widget.js"></script>
-            <div class="livecoinwatch-widget-1" lcw-coin="${rel_ticker}" lcw-base="${API.app.settings_pg.current_currency}" lcw-secondary="${base_ticker}" lcw-period="m" lcw-color-tx="${Dex.CurrentTheme.foregroundColor}" lcw-color-pr="#58c7c5" lcw-color-bg="${Dex.CurrentTheme.comboBoxBackgroundColor}" lcw-border-w="0" lcw-digits="9"></div>
-            `
-        }
-
-        if (source == "coingecko" && pair_supported)
-        {
-            chart_url = "https://widgets.coingecko.com"
-            chart_html = `
-            <script defer src="https://widgets.coingecko.com/gecko-coin-price-chart-widget.js"></script>
-            <gecko-coin-price-chart-widget locale="en" dark-mode="${dark_theme}" transparent-background="true" coin-id="${rel_ticker}" initial-currency="usd" width="${root.implicitWidth}" height="${root.implicitHeight}"></gecko-coin-price-chart-widget>
-            `
-        }
-
-        if (source == "coinpaprika" && pair_supported)
-        {
-            let night_mode = dark_theme ? "cp-widget__night-mode" : ""
-            chart_url = "https://unpkg.com"
-            chart_html = `
-            <script defer src="https://unpkg.com/@coinpaprika/widget-currency@2.0.13/dist/widget.min.js"></script>
-            <div class="coinpaprika-currency-widget ${night_mode}" data-primary-currency="${API.app.settings_pg.current_currency}" data-currency="${rel_ticker}" data-custom-date="false" data-start-date="0" data-end-date="0" data-modules='["chart"]' data-update-active="false"></div>
-            `
         }
 
         console.log(chart_html)
