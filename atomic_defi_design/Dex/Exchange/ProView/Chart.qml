@@ -65,7 +65,7 @@ Item
                 <script
                     src="qrc:/coinpaprika/widget.min.js"
                     data-cp-currency-widget='{
-                        "origin-src": "https://unpkg.com/@coinpaprika/widget-currency@2.0.13/dist"
+                        "origin-src": "https://unpkg.com/@coinpaprika/widget-currency@2.0.13"
                     }'>
                 </script>
                 `
