@@ -15,7 +15,6 @@ Item
 
     readonly property bool dark_theme: Dex.CurrentTheme.getColorMode() === Dex.CurrentTheme.ColorMode.Dark
     property bool pair_supported: false
-    property string selected_testcoin
 
     onPair_supportedChanged: if (!pair_supported) webEngineViewPlaceHolder.visible = false
 
@@ -34,7 +33,7 @@ Item
 
     Component.onCompleted: startupTimer.start()
 
-    function loadChart(right_ticker, left_ticker, source="coingecko")
+    function loadChart(right_ticker, left_ticker, source="coinpaprika")
     {
         // console.log("right_ticker: ", right_ticker) // right_ticker:  KMD
         // console.log("left_ticker: ", left_ticker) // left_ticker:  LTC-segwit
@@ -42,25 +41,8 @@ Item
 
         let chart_url = ""
         let chart_html = ""
-        selected_testcoin = ""
         let rel_ticker = ""
         let base_ticker = ""
-
-        if (General.is_testcoin(left_ticker))
-        {
-            pair_supported = false
-            selected_testcoin = left_ticker
-            console.log("no chart, testcoin", selected_testcoin)
-            return
-        }
-
-        if (General.is_testcoin(right_ticker))
-        {
-            pair_supported = false
-            selected_testcoin = right_ticker
-            console.log("no chart, testcoin", selected_testcoin)
-            return
-        }
 
         // coingecko only has 24h charts
         if (source == "coingecko")
@@ -73,6 +55,7 @@ Item
             }
             else
             {
+                pair_supported = false
                 source = "coinpaprika"
             }
         }
@@ -87,6 +70,7 @@ Item
             }
             else
             {
+                pair_supported = false
                 source = "livecoinwatch"
             }
         }
@@ -98,6 +82,12 @@ Item
             if (rel_ticker != "" && base_ticker != "")
             {
                 pair_supported = true
+            }
+            else
+            {
+                pair_supported = false
+                console.log("no ids, no chart")
+                return
             }
         }
 
@@ -134,24 +124,15 @@ Item
             <script defer src="https://widgets.coingecko.com/gecko-coin-price-chart-widget.js"></script>
             <gecko-coin-price-chart-widget locale="en" dark-mode="${dark_theme}" transparent-background="true" coin-id="${rel_ticker}" initial-currency="usd" width="${root.implicitWidth}" height="${root.implicitHeight}"></gecko-coin-price-chart-widget>
             `
-            //<gecko-coin-price-chart-widget locale="en" dark-mode="${dark_theme}" transparent-background="true" coin-id="${rel_ticker}" initial-currency="${API.app.settings_pg.current_currency}" width="${root.implicitWidth}" height="${root.implicitHeight}"></gecko-coin-price-chart-widget>
         }
 
         if (source == "coinpaprika" && pair_supported)
         {
-            let widget_x = 570
-            let widget_y = 600
-            let scale_x = root.implicitWidth / widget_x
-            let scale_y = root.implicitHeight / widget_y
             let night_mode = dark_theme ? "cp-widget__night-mode" : ""
             chart_url = "https://unpkg.com"
             chart_html = `
-            <style>
-                body { margin: auto; }
-                a { pointer-events: none; }
-            </style>
-            <script type="text/javascript" src="https://unpkg.com/@coinpaprika/widget-currency@2.0.13/dist/widget.min.js"></script>
-            <div class="coinpaprika-currency-widget ${night_mode}" data-primary-currency="${API.app.settings_pg.current_currency}" data-currency="${rel_ticker}" data-custom-date="false" data-start-date="0" data-end-date="0" data-modules='["market_details","chart"]' data-update-active="false"></div>
+            <script defer src="https://unpkg.com/@coinpaprika/widget-currency@2.0.13/dist/widget.min.js"></script>
+            <div class="coinpaprika-currency-widget ${night_mode}" data-primary-currency="${API.app.settings_pg.current_currency}" data-currency="${rel_ticker}" data-custom-date="false" data-start-date="0" data-end-date="0" data-modules='["chart"]' data-update-active="false"></div>
             `
         }
 
@@ -175,7 +156,6 @@ Item
             DexLabel {
                 text_value: {
                     if (pair_supported) return qsTr("Loading pair chart data") + "..."
-                    if (selected_testcoin !== "") return qsTr("There is no chart data for %1 (testcoin) pairs").arg(selected_testcoin)
                     return qsTr("There is no chart data for this pair")
                 }
             }

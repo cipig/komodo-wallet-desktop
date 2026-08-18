@@ -63,12 +63,6 @@ QtObject {
         }
     }
 
-    function is_testcoin(ticker)
-    {
-        let coin_info = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(ticker)
-        return coin_info.is_testnet
-    }
-
     function coinName(ticker) {
         return (ticker === "" || ticker === "All" || ticker===undefined) ? "" : API.app.portfolio_pg.global_cfg_mdl.get_coin_info(ticker).name
     }
