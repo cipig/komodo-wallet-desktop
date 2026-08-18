@@ -35,7 +35,7 @@ Item
 
     Component.onCompleted: startupTimer.start()
 
-    function loadChart(right_ticker, left_ticker, force = false, source="coinpaprika")
+    function loadChart(right_ticker, left_ticker, force = false, source="livecoinwatch")
     {
         let chart_html = ""
         let symbol = ""
@@ -57,23 +57,20 @@ Item
             return
         }
 
-        let coin_info_right = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(right_ticker)
-        let coin_info_left = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(left_ticker)
-
         if (source == "livecoinwatch")
         {
-            let rel_ticker = coin_info_right.livecoinwatch_id
-            let base_ticker = coin_info_left.livecoinwatch_id
+            let rel_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(right_ticker).livecoinwatch_id
+            let base_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(left_ticker).livecoinwatch_id
         }
         else if (source == "coinpaprika")
         {
-            let rel_ticker = coin_info_right.coinpaprika_id
-            let base_ticker = coin_info_left.coinpaprika_id
+            let rel_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(right_ticker).coinpaprika_id
+            let base_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(left_ticker).coinpaprika_id
         }
         else if (source == "coingecko")
         {
-            let rel_ticker = coin_info_right.coingecko_id
-            let base_ticker = coin_info_left.coingecko_id
+            let rel_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(right_ticker).coingecko_id
+            let base_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(left_ticker).coingecko_id
         }
 
         if (rel_ticker != "" && source != "livecoinwatch")
