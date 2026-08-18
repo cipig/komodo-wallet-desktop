@@ -11,7 +11,7 @@ Item
 {
     id: root
     implicitWidth: 530
-    implicitHeight: 300
+    implicitHeight: 500
 
     readonly property bool dark_theme: Dex.CurrentTheme.getColorMode() === Dex.CurrentTheme.ColorMode.Dark
     property string loaded_symbol
@@ -35,8 +35,11 @@ Item
 
     Component.onCompleted: startupTimer.start()
 
-    function loadChart(right_ticker, left_ticker, force = false, source="livecoinwatch")
+    function loadChart(right_ticker, left_ticker, force = false, source="coingecko")
     {
+        console.log("right_ticker: ", right_ticker)
+        console.log("left_ticker: ", left_ticker)
+
         let chart_html = ""
         let symbol = ""
         selected_testcoin = ""
@@ -118,7 +121,7 @@ Item
                 a { pointer-events: none; }
             </style>
             <script defer src="https://www.livecoinwatch.com/static/lcw-widget.js"></script>
-            <div class="livecoinwatch-widget-1" lcw-coin="${API.app.portfolio_pg.global_cfg_mdl.get_coin_info(right_ticker).livecoinwatch_id}" lcw-base="${API.app.settings_pg.current_currency}" lcw-secondary="${API.app.portfolio_pg.global_cfg_mdl.get_coin_info(left_ticker).livecoinwatch_id}" lcw-period="m" lcw-color-tx="${Dex.CurrentTheme.foregroundColor}" lcw-color-pr="#58c7c5" lcw-color-bg="${Dex.CurrentTheme.comboBoxBackgroundColor}" lcw-border-w="0" lcw-digits="9" ></div>
+            <div class="livecoinwatch-widget-1" lcw-coin="${rel_ticker}" lcw-base="${API.app.settings_pg.current_currency}" lcw-secondary="${base_ticker}" lcw-period="m" lcw-color-tx="${Dex.CurrentTheme.foregroundColor}" lcw-color-pr="#58c7c5" lcw-color-bg="${Dex.CurrentTheme.comboBoxBackgroundColor}" lcw-border-w="0" lcw-digits="9"></div>
             `
         }
 
