@@ -26,15 +26,16 @@ ColumnLayout {
 
     function refreshChart()
     {
+        console.log("market_mode: ", API.app.trading_pg.market_mode)
         if (API.app.trading_pg.market_mode == MarketMode.Sell)
-        {
-            chart.loadChart(API.app.trading_pg.market_pairs_mdl.right_selected_coin,
-                            API.app.trading_pg.market_pairs_mdl.left_selected_coin)
-        }
-        else
         {
             chart.loadChart(API.app.trading_pg.market_pairs_mdl.left_selected_coin,
                             API.app.trading_pg.market_pairs_mdl.right_selected_coin)
+        }
+        else
+        {
+            chart.loadChart(API.app.trading_pg.market_pairs_mdl.right_selected_coin,
+                            API.app.trading_pg.market_pairs_mdl.left_selected_coin)
         }
     }
 
