@@ -62,6 +62,11 @@ RowLayout
         tradingInfo.resetChartState()
     }
 
+    function refreshChart()
+    {
+        tradingInfo.refreshChart()
+    }
+
     Connections
     {
         target: exchange_trade

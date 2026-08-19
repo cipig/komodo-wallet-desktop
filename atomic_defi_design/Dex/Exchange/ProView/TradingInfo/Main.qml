@@ -24,6 +24,20 @@ ColumnLayout {
         chart.resetChartState()
     }
 
+    function refreshChart()
+    {
+        if (API.app.trading_pg.market_mode == MarketMode.Sell)
+        {
+            chart.loadChart(API.app.trading_pg.market_pairs_mdl.right_selected_coin,
+                            API.app.trading_pg.market_pairs_mdl.left_selected_coin)
+        }
+        else
+        {
+            chart.loadChart(API.app.trading_pg.market_pairs_mdl.left_selected_coin,
+                            API.app.trading_pg.market_pairs_mdl.right_selected_coin)
+        }
+    }
+
     Qaterial.LatoTabBar {
         id: tabView
         Layout.fillWidth: true

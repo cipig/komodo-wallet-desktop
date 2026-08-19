@@ -71,6 +71,11 @@ Item
         proView.resetChartState()
     }
 
+    function refreshChart()
+    {
+        proView.refreshChart()
+    }
+
     Timer
     {
         id: swap_cooldown

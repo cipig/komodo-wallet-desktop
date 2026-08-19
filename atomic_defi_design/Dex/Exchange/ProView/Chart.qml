@@ -35,7 +35,8 @@ Item
         if (source == "coingecko")
         {
             rel_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(right_ticker).coingecko_id
-            base_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(left_ticker).coingecko_id
+            //base_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(left_ticker).coingecko_id
+            base_ticker = ""
             if (rel_ticker != "")
             {
                 pair_supported = true
@@ -57,7 +58,8 @@ Item
         if (source == "coinpaprika")
         {
             rel_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(right_ticker).coinpaprika_id
-            base_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(left_ticker).coinpaprika_id
+            //base_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(left_ticker).coinpaprika_id
+            base_ticker = ""
             if (rel_ticker != "")
             {
                 pair_supported = true
@@ -127,7 +129,7 @@ Item
             }
         }
 
-        const chartKey = [source, rel_ticker, source === "livecoinwatch" ? base_ticker : "", dark_theme ? "dark" : "light"].join("|")
+        const chartKey = [source, rel_ticker, base_ticker, dark_theme ? "dark" : "light"].join("|")
         console.log("chartKey: ", chartKey)
         console.log("activeChartKey: ", activeChartKey)
         if (activeChartKey === chartKey)
