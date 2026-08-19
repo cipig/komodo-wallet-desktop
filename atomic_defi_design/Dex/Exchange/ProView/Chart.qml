@@ -66,8 +66,11 @@ Item
                 chart_url = `https://coinpaprika.com/coin/${rel_ticker}/`
                 chart_html = `
                 <style>
-                    * { cursor: default !important; }
-                    a { pointer-events: none; }
+                .coinpaprika-currency-widget .cp-widget__main h3 a,
+                .coinpaprika-currency-widget .cp-widget__footer a {
+                    pointer-events: none !important;
+                    cursor: default !important;
+                }
                 </style>
                 <div class="coinpaprika-currency-widget ${night_mode}" data-primary-currency="${API.app.settings_pg.current_currency}" data-currency="${rel_ticker}" data-range="7d" data-modules='["chart"]' data-update-active="false" data-volume-visible="false"></div>
                 <script
