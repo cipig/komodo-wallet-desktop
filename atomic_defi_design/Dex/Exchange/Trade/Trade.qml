@@ -66,11 +66,6 @@ Item
         API.app.trading_pg.market_mode = v
     }
 
-    function resetChartState()
-    {
-        proView.resetChartState()
-    }
-
     function refreshChart()
     {
         proView.refreshChart()

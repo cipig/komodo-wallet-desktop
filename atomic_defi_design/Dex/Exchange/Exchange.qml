@@ -23,7 +23,6 @@ Item
 
     Component.onCompleted: {
         API.app.trading_pg.on_gui_enter_dex()
-        trade.resetChartState()
         trade.refreshChart()
     }
 

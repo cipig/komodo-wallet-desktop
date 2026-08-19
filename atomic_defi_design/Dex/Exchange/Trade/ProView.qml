@@ -57,11 +57,6 @@ RowLayout
         placeOrderForm.visible = true
     }
 
-    function resetChartState()
-    {
-        tradingInfo.resetChartState()
-    }
-
     function refreshChart()
     {
         tradingInfo.refreshChart()

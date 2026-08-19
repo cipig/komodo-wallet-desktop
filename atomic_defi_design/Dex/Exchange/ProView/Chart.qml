@@ -19,11 +19,6 @@ Item
 
     onPair_supportedChanged: if (!pair_supported) webEngineViewPlaceHolder.visible = false
 
-    function resetChartState()
-    {
-        activeChartKey = ""
-    }
-
     // TODO: obviously it's the other way around (right_ticker, left_ticker)
     function loadChart(right_ticker, left_ticker, source="coinpaprika")
     {

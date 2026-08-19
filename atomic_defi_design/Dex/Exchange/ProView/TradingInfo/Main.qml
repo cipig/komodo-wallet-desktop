@@ -19,11 +19,6 @@ ColumnLayout {
 
     property alias currentIndex: tabView.currentIndex
 
-    function resetChartState()
-    {
-        chart.resetChartState()
-    }
-
     function refreshChart()
     {
         console.log("market_mode: ", API.app.trading_pg.market_mode)
