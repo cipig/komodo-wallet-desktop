@@ -205,6 +205,9 @@ Item
         target: app
         function onPairChanged(left, right)
         {
+            console.log("market_mode:", API.app.trading_pg.market_mode)
+            console.log("left: ", left)
+            console.log("right: ", right)
             if (API.app.trading_pg.market_mode == MarketMode.Sell)
             {
                 root.loadChart(left, right)

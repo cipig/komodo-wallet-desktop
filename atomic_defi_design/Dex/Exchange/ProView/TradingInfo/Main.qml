@@ -22,16 +22,11 @@ ColumnLayout {
     function refreshChart()
     {
         console.log("market_mode: ", API.app.trading_pg.market_mode)
-        if (API.app.trading_pg.market_mode == MarketMode.Sell)
-        {
-            chart.loadChart(API.app.trading_pg.market_pairs_mdl.left_selected_coin,
-                            API.app.trading_pg.market_pairs_mdl.right_selected_coin)
-        }
-        else
-        {
-            chart.loadChart(API.app.trading_pg.market_pairs_mdl.right_selected_coin,
-                            API.app.trading_pg.market_pairs_mdl.left_selected_coin)
-        }
+        console.log("left_selected_coin: ", API.app.trading_pg.market_pairs_mdl.left_selected_coin)
+        console.log("right_selected_coin: ", API.app.trading_pg.market_pairs_mdl.right_selected_coin)
+
+        chart.loadChart(API.app.trading_pg.market_pairs_mdl.left_selected_coin,
+                        API.app.trading_pg.market_pairs_mdl.right_selected_coin)
     }
 
     Qaterial.LatoTabBar {
@@ -104,8 +99,8 @@ ColumnLayout {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         Layout.topMargin: 8
-                        Layout.leftMargin: 4
-                        Layout.rightMargin: 4
+                        Layout.leftMargin: 2
+                        Layout.rightMargin: 2
                     }
 
                     PriceLineSimplified {
