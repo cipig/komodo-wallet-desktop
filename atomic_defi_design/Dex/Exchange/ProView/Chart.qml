@@ -24,10 +24,9 @@ Item
         activeChartKey = ""
     }
 
+    // TODO: obviously it's the other way around (right_ticker, left_ticker)
     function loadChart(right_ticker, left_ticker, source="coinpaprika")
     {
-        // TODO: obviously it's the other way around (right_ticker, left_ticker)
-
         let chart_url = ""
         let chart_html = ""
         let rel_ticker = ""
@@ -42,8 +41,8 @@ Item
                 pair_supported = true
                 chart_url = "https://widgets.coingecko.com"
                 chart_html = `
-                <script defer src="https://widgets.coingecko.com/gecko-coin-price-chart-widget.js"></script>
                 <gecko-coin-price-chart-widget locale="en" dark-mode="${dark_theme}" transparent-background="true" coin-id="${rel_ticker}" initial-currency="usd" width="${root.implicitWidth}" height="${root.implicitHeight}"></gecko-coin-price-chart-widget>
+                <script src="https://widgets.coingecko.com/gecko-coin-price-chart-widget.js"></script>
                 `
             }
             else
@@ -66,11 +65,9 @@ Item
                 chart_url = `https://coinpaprika.com/coin/${rel_ticker}/`
                 chart_html = `
                 <style>
-                .coinpaprika-currency-widget .cp-widget__main h3 a,
-                .coinpaprika-currency-widget .cp-widget__footer a {
-                    pointer-events: none !important;
-                    cursor: default !important;
-                }
+                    * { cursor: default !important; }
+                    .coinpaprika-currency-widget .cp-widget__main h3 a,
+                    .coinpaprika-currency-widget .cp-widget__footer a { pointer-events: none !important; }
                 </style>
                 <div class="coinpaprika-currency-widget ${night_mode}" data-primary-currency="${API.app.settings_pg.current_currency}" data-currency="${rel_ticker}" data-range="7d" data-modules='["chart"]' data-update-active="false" data-volume-visible="false"></div>
                 <script
@@ -103,15 +100,24 @@ Item
                 chart_url = "https://www.livecoinwatch.com"
                 chart_html = `
                 <style>
-                    body { margin: auto; }
+                    body { margin: auto; overflow: hidden; }
                     .livecoinwatch-widget-1 {
                         transform: scale(${Math.min(scale_x, scale_y)});
                         transform-origin: top left;
                     }
                     a { pointer-events: none; }
                 </style>
-                <script defer src="https://www.livecoinwatch.com/static/lcw-widget.js"></script>
-                <div class="livecoinwatch-widget-1" lcw-coin="${rel_ticker}" lcw-base="${API.app.settings_pg.current_currency}" lcw-secondary="${base_ticker}" lcw-period="m" lcw-color-tx="${Dex.CurrentTheme.foregroundColor}" lcw-color-pr="#58c7c5" lcw-color-bg="${Dex.CurrentTheme.comboBoxBackgroundColor}" lcw-border-w="0" lcw-digits="9"></div>
+                <div class="livecoinwatch-widget-1"
+                     lcw-coin="${rel_ticker}"
+                     lcw-base="${API.app.settings_pg.current_currency}"
+                     lcw-secondary="${base_ticker}"
+                     lcw-period="m"
+                     lcw-color-tx="${Dex.CurrentTheme.foregroundColor}"
+                     lcw-color-pr="#58c7c5"
+                     lcw-color-bg="${Dex.CurrentTheme.comboBoxBackgroundColor}"
+                     lcw-border-w="0"
+                     lcw-digits="9"></div>
+                <script src="https://www.livecoinwatch.com/static/lcw-widget.js"></script>
                 `
             }
             else
@@ -130,11 +136,11 @@ Item
             return
         }
 
+        activeChartKey = chartKey
         console.log(chart_html)
         dashboard.webEngineView.visible = false
         webEngineViewPlaceHolder.visible = false
         dashboard.webEngineView.loadHtml(chart_html, chart_url)
-        activeChartKey = chartKey
     }
 
     Item {
@@ -188,7 +194,7 @@ Item
                 {
                     webEngineViewPlaceHolder.visible = true
                 }
-                else
+                else if (webEngineLoadReq.status === WebEngineView.LoadFailedStatus)
                 {
                     webEngineViewPlaceHolder.visible = false
                     activeChartKey = ""
