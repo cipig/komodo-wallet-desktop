@@ -10982,22 +10982,20 @@ class widgetsClass {
     const state = this.states && this.states[index];
     if (!state || state.isWordpress)
         return;
-    if (!this.states[index].isWordpress) {
-      let mainElement = this.getMainElement(index);
-      if (mainElement) {
-        if (mainElement.children[0].localName === "style") {
-          mainElement.removeChild(mainElement.childNodes[0]);
-        }
-        let footerElement = mainElement.querySelector(".cp-widget__footer");
-        let value = footerElement.getBoundingClientRect().width - 43;
-        for (let i = 0; i < footerElement.childNodes.length; i++) {
-          value -= footerElement.childNodes[i].getBoundingClientRect().width;
-        }
-        let style = document.createElement("style");
-        style.innerHTML = ".cp-widget__footer--" + index + "::before{width:" + value.toFixed(0) + "px;}";
-        mainElement.insertBefore(style, mainElement.children[0]);
-      }
+    const mainElement = this.getMainElement(index);
+    if (!mainElement)
+        return;
+    if (mainElement.children[0].localName === "style") {
+      mainElement.removeChild(mainElement.childNodes[0]);
     }
+    let footerElement = mainElement.querySelector(".cp-widget__footer");
+    let value = footerElement.getBoundingClientRect().width - 43;
+    for (let i = 0; i < footerElement.childNodes.length; i++) {
+        value -= footerElement.childNodes[i].getBoundingClientRect().width;
+    }
+    let style = document.createElement("style");
+    style.innerHTML = ".cp-widget__footer--" + index + "::before{width:" + value.toFixed(0) + "px;}";
+    mainElement.insertBefore(style, mainElement.children[0]);
   }
   updateWidgetElement(index, key, value, ticker) {
     let state = this.states[index];
@@ -11190,10 +11188,10 @@ class widgetsClass {
   }
   widgetFooter(index) {
     const state = this.states && this.states[index];
-    if (!state)
+    if (!state || state.isWordpress)
         return "";
-    const e = state.currency;
-    return !this.states[index].isWordpress ? '<p class="cp-widget__footer cp-widget__footer--' + index + '"><span class="cp-translation translation_powered_by">' + this.getTranslation(index, "powered_by") + ' </span><img style="width: 16px" src="' + this.main_logo_link() + '" alt=""/><a target="_blank" href="' + this.coin_link(currency) + '">coinpaprika.com</a></p>' : "";
+    const currency = state.currency;
+    return '<p class="cp-widget__footer cp-widget__footer--' + index + '"><span class="cp-translation translation_powered_by">' + this.getTranslation(index, "powered_by") + ' </span><img style="width: 16px" src="' + this.main_logo_link() + '" alt=""/><a target="_blank" href="' + this.coin_link(currency) + '">coinpaprika.com</a></p>';
   }
   getImage(index) {
     let data = this.states[index];
