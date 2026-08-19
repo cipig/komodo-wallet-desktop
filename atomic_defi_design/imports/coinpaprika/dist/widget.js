@@ -10689,6 +10689,7 @@ class widgetsClass {
       endDate: null,
       style_src: null,
       img_src: null,
+      icon_src: null,
       lang_src: null,
       data_src: null,
       origin_src: "https://unpkg.com/@coinpaprika/widget-currency@latest",
@@ -10831,6 +10832,8 @@ class widgetsClass {
           this.updateData(index, "logo_src", mainElement.dataset.langSrc);
         if (mainElement.dataset.imgSrc)
           this.updateData(index, "logo_src", mainElement.dataset.imgSrc);
+        if (mainElement.dataset.iconSrc)
+          this.updateData(index, "icon_src", mainElement.dataset.iconSrc);
         return resolve();
       }
       return resolve();
@@ -11205,7 +11208,11 @@ class widgetsClass {
         img.src = newImg.src;
         imgContainer.classList.remove("cp-widget__img--hidden");
       };
-      newImg.src = this.img_src(data.currency);
+      newImg.onerror = () => {
+        newImg.onerror = null;
+        newImg.src = this.img_src(data.currency);
+      };
+      newImg.src = data.icon_src || this.img_src(data.currency);
     }
   }
   img_src(id) {

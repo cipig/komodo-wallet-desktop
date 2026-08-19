@@ -21,10 +21,6 @@ ColumnLayout {
 
     function refreshChart()
     {
-        console.log("market_mode: ", API.app.trading_pg.market_mode)
-        console.log("left_selected_coin: ", API.app.trading_pg.market_pairs_mdl.left_selected_coin)
-        console.log("right_selected_coin: ", API.app.trading_pg.market_pairs_mdl.right_selected_coin)
-
         chart.loadChart(API.app.trading_pg.market_pairs_mdl.left_selected_coin,
                         API.app.trading_pg.market_pairs_mdl.right_selected_coin)
     }
