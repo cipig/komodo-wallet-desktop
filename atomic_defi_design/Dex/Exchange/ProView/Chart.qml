@@ -22,7 +22,6 @@ Item
     function loadChart(right_ticker, left_ticker, source="coinpaprika")
     {
         // TODO: obviously it's the other way around (right_ticker, left_ticker)
-        // coingecko only has 24h charts
 
         let chart_url = ""
         let chart_html = ""
@@ -50,6 +49,7 @@ Item
         }
 
         // https://npm.io/package/%40coinpaprika/widget-currency
+        // https://github.com/coinpaprika/widget-currency
         if (source == "coinpaprika")
         {
             rel_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(right_ticker).coinpaprika_id
@@ -60,7 +60,7 @@ Item
                 let night_mode = dark_theme ? "cp-widget__night-mode" : ""
                 chart_url = `https://coinpaprika.com/coin/${rel_ticker}/`
                 chart_html = `
-                <div class="coinpaprika-currency-widget ${night_mode}" data-primary-currency="${API.app.settings_pg.current_currency}" data-currency="${rel_ticker}" data-range="7d" data-modules='["chart"]' data-update-active="false"></div>
+                <div class="coinpaprika-currency-widget ${night_mode}" data-primary-currency="${API.app.settings_pg.current_currency}" data-currency="${rel_ticker}" data-range="7d" data-modules='["chart"]' data-update-active="false" data-volume-visible="false"></div>
                 <script
                     src="qrc:/coinpaprika/dist/widget.js"
                     data-cp-currency-widget='{

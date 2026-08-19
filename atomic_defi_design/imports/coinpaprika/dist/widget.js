@@ -11748,6 +11748,17 @@ class chartClass {
       return this.customDate ? this.fetchDataPackage(this.startDate, this.endDate, true) : this.fetchDataPackage();
     });
     promise = promise.then(() => {
+        return new Promise(resolve => {
+            setTimeout(() => {
+                if (this.chart) {
+                    this.chart.reflow();
+                    this.chart.redraw(false);
+                }
+                resolve();
+            }, 100);
+        });
+    });
+    promise = promise.then(() => {
       return this.setRangeSwitcher();
     });
     promise = promise.then(() => {
