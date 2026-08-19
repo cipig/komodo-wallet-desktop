@@ -65,6 +65,10 @@ Item
                 let night_mode = dark_theme ? "cp-widget__night-mode" : ""
                 chart_url = `https://coinpaprika.com/coin/${rel_ticker}/`
                 chart_html = `
+                <style>
+                    * { cursor: default !important; }
+                    a { pointer-events: none; }
+                </style>
                 <div class="coinpaprika-currency-widget ${night_mode}" data-primary-currency="${API.app.settings_pg.current_currency}" data-currency="${rel_ticker}" data-range="7d" data-modules='["chart"]' data-update-active="false" data-volume-visible="false"></div>
                 <script
                     src="qrc:/coinpaprika/dist/widget.js"
@@ -114,7 +118,9 @@ Item
             }
         }
 
-        const chartKey = [source, rel_ticker, base_ticker, dark_theme ? "dark" : "light"].join("|")
+        const chartKey = [source, rel_ticker, source === "livecoinwatch" ? base_ticker : "", dark_theme ? "dark" : "light"].join("|")
+        console.log("chartKey: ", chartKey)
+        console.log("activeChartKey: ", activeChartKey)
         if (activeChartKey === chartKey)
         {
             console.log("Skipping duplicate chart load:", chartKey)

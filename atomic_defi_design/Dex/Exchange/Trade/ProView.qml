@@ -57,6 +57,11 @@ RowLayout
         placeOrderForm.visible = true
     }
 
+    function resetChartState()
+    {
+        tradingInfo.resetChartState()
+    }
+
     Connections
     {
         target: exchange_trade
