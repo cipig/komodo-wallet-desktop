@@ -11,13 +11,18 @@ Item
 {
     id: root
     implicitWidth: 530
-    implicitHeight: 350
+    implicitHeight: 330
 
     readonly property bool dark_theme: Dex.CurrentTheme.getColorMode() === Dex.CurrentTheme.ColorMode.Dark
     property bool pair_supported: false
-    property string activeChartTicker: ""
+    property string activeChartKey: ""
 
     onPair_supportedChanged: if (!pair_supported) webEngineViewPlaceHolder.visible = false
+
+    function resetChartState()
+    {
+        activeChartKey = ""
+    }
 
     function loadChart(right_ticker, left_ticker, source="coinpaprika")
     {
@@ -109,9 +114,10 @@ Item
             }
         }
 
-        if (activeChartTicker === rel_ticker)
+        const chartKey = [source, rel_ticker, base_ticker, dark_theme ? "dark" : "light"].join("|")
+        if (activeChartKey === chartKey)
         {
-            console.log("Skipping duplicate chart load:", rel_ticker)
+            console.log("Skipping duplicate chart load:", chartKey)
             return
         }
 
@@ -119,7 +125,7 @@ Item
         dashboard.webEngineView.visible = false
         webEngineViewPlaceHolder.visible = false
         dashboard.webEngineView.loadHtml(chart_html, chart_url)
-        activeChartTicker = rel_ticker
+        activeChartKey = chartKey
     }
 
     Item {
@@ -176,7 +182,7 @@ Item
                 else
                 {
                     webEngineViewPlaceHolder.visible = false
-                    activeChartTicker = ""
+                    activeChartKey = ""
                 }
             }
         }

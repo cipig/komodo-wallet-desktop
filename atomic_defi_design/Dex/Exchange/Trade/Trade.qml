@@ -64,6 +64,11 @@ Item
         API.app.trading_pg.market_mode = v
     }
 
+    function resetChartState()
+    {
+        proView.resetChartState()
+    }
+
     Timer
     {
         id: swap_cooldown

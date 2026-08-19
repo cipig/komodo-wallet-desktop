@@ -19,6 +19,11 @@ ColumnLayout {
 
     property alias currentIndex: tabView.currentIndex
 
+    function resetChartState()
+    {
+        chart.resetChartState()
+    }
+
     Qaterial.LatoTabBar {
         id: tabView
         Layout.fillWidth: true
