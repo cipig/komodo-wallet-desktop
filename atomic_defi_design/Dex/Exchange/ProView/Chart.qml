@@ -76,8 +76,7 @@ Item
                     src="qrc:/coinpaprika/dist/widget.js"
                     data-cp-currency-widget='{
                         "origin-src": "https://unpkg.com/@coinpaprika/widget-currency@2.0.13",
-                        "lang-src": "qrc:/coinpaprika/dist/lang",
-                        "img-src": "qrc:/coinpaprika/dist/img",
+                        "img-src": "qrc:/coinpaprika/dist/img/logo_widget.svg",
                         "style-src": "qrc:/coinpaprika/dist/widget.min.css"
                     }'>
                 </script>
