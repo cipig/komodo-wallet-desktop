@@ -5,5 +5,10 @@
 
         <file>coinpaprika/dist/widget.js</file>
         <file>coinpaprika/dist/widget.min.css</file>
+        <file>coinpaprika/dist/img/logo_widget.svg</file>
+        <file>coinpaprika/dist/lang/en.json</file>
+        <file>coinpaprika/dist/lang/de.json</file>
+        <file>coinpaprika/dist/lang/fr.json</file>
+        <file>coinpaprika/dist/lang/pl.json</file>
     </qresource>
 </RCC>

@@ -10829,9 +10829,9 @@ class widgetsClass {
         if (mainElement.dataset.styleSrc)
           this.updateData(index, "style_src", mainElement.dataset.styleSrc);
         if (mainElement.dataset.langSrc)
-          this.updateData(index, "logo_src", mainElement.dataset.langSrc);
+          this.updateData(index, "lang_src", mainElement.dataset.langSrc);
         if (mainElement.dataset.imgSrc)
-          this.updateData(index, "logo_src", mainElement.dataset.imgSrc);
+          this.updateData(index, "img_src", mainElement.dataset.imgSrc);
         if (mainElement.dataset.iconSrc)
           this.updateData(index, "icon_src", mainElement.dataset.iconSrc);
         return resolve();

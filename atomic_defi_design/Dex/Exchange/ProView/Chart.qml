@@ -68,8 +68,7 @@ Item
                      data-primary-currency="${API.app.settings_pg.current_currency}"
                      data-currency="${rel_ticker}"
                      data-icon-src="${General.coinIcon(right_ticker)}"
-                     data-range-list='["24h", "7d", "30d", "1q", "1y", "all"]'
-                     data-range="7d"
+                     data-range="30d"
                      data-modules='["chart"]'
                      data-update-active="false"
                      data-volume-visible="false"></div>
@@ -77,6 +76,8 @@ Item
                     src="qrc:/coinpaprika/dist/widget.js"
                     data-cp-currency-widget='{
                         "origin-src": "https://unpkg.com/@coinpaprika/widget-currency@2.0.13",
+                        "lang-src": "qrc:/coinpaprika/dist/lang",
+                        "img-src": "qrc:/coinpaprika/dist/img",
                         "style-src": "qrc:/coinpaprika/dist/widget.min.css"
                     }'>
                 </script>
