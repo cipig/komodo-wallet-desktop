@@ -61,7 +61,6 @@ Item
                 chart_html = `
                 <link rel="icon" href="data:,">
                 <style>
-                    * { cursor: default !important; }
                     .coinpaprika-currency-widget .cp-widget__main h3 a,
                     .coinpaprika-currency-widget .cp-widget__footer a { pointer-events: none !important; }
                 </style>
@@ -69,6 +68,7 @@ Item
                      data-primary-currency="${API.app.settings_pg.current_currency}"
                      data-currency="${rel_ticker}"
                      data-icon-src="${General.coinIcon(right_ticker)}"
+                     data-range-list='["24h", "7d", "30d", "1q", "1y", "all"]'
                      data-range="7d"
                      data-modules='["chart"]'
                      data-update-active="false"

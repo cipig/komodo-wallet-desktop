@@ -11432,7 +11432,7 @@ class chartClass {
                     y: -2,
                     style: {
                       color: "#9e9e9e",
-                      fontSize: "9px"
+                      fontSize: "10px"
                     }
                   }
                 },
@@ -11452,7 +11452,7 @@ class chartClass {
                     y: -2,
                     style: {
                       color: "#5085ec",
-                      fontSize: "9px"
+                      fontSize: "10px"
                     }
                   }
                 }
@@ -11500,7 +11500,7 @@ class chartClass {
                     y: -2,
                     style: {
                       color: "#9e9e9e",
-                      fontSize: "9px"
+                      fontSize: "10px"
                     }
                   }
                 },
@@ -11520,7 +11520,7 @@ class chartClass {
                     y: -2,
                     style: {
                       color: "#5085ec",
-                      fontSize: "9px"
+                      fontSize: "10px"
                     }
                   }
                 }
