@@ -23,7 +23,6 @@ RowLayout
     function onClickedSwap()
     {
         dashboard.current_ticker = api_wallet_page.ticker
-        dashboard.open_dex_with_ticker = true
         dashboard.switchPage(Dashboard.PageType.DEX)
         API.app.trading_pg.set_pair(true, api_wallet_page.ticker)
     }

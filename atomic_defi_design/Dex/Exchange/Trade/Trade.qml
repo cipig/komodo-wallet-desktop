@@ -18,7 +18,7 @@ Item
 
     Component.onCompleted:
     {
-        if (dashboard.open_dex_with_ticker && dashboard.current_ticker !== undefined)
+        if (dashboard.current_ticker !== undefined)
         {
             onOpened(dashboard.current_ticker)
         }
@@ -28,7 +28,6 @@ Item
         }
 
         dashboard.current_ticker = undefined
-        dashboard.open_dex_with_ticker = false
     }
 
     readonly property string total_amount: API.app.trading_pg.total_amount

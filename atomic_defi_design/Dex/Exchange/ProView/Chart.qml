@@ -68,6 +68,7 @@ Item
                      data-primary-currency="${API.app.settings_pg.current_currency}"
                      data-currency="${rel_ticker}"
                      data-icon-src="${General.coinIcon(right_ticker)}"
+                     data-language="en"
                      data-range="30d"
                      data-modules='["chart"]'
                      data-update-active="false"

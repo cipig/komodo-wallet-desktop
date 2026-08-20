@@ -40,7 +40,6 @@ Item
     readonly property int idx_exchange_orders: 1
     readonly property int idx_exchange_history: 2
     property var current_ticker
-    property bool open_dex_with_ticker: false
     property var notifications_list: ([])
     readonly property var portfolio_mdl: API.app.portfolio_pg.portfolio_mdl
     property var portfolio_coins: portfolio_mdl.portfolio_proxy_mdl
