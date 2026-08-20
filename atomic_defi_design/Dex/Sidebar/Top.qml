@@ -1,5 +1,4 @@
 import QtQuick 2.15
-
 import "../Components"
 import "../Constants"
 import App 1.0
@@ -76,7 +75,6 @@ MouseArea
         anchors.horizontalCenter: dexLogo.horizontalCenter
         anchors.top: dexLogo.bottom
         anchors.topMargin: 35
-
         text_value: General.version_string
         font: DexTypo.caption
         color: Dex.CurrentTheme.sidebarVersionTextColor

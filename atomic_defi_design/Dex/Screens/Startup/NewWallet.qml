@@ -19,7 +19,6 @@ SetupPage
     property string current_mnemonic
     property string text_error
     property string guess_text_error
-
     property bool form_is_filled: false
     property int currentStep: 0
     property int current_word_idx: 0

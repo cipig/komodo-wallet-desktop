@@ -10,7 +10,6 @@ RowLayout {
         enabled: API.app_discord_url !== ""
         visible: enabled
         Layout.leftMargin: 0
-
         id: discord_icon
         link: API.app_discord_url
         source: General.image_path + "icon-discord.png"
@@ -20,7 +19,6 @@ RowLayout {
     LinkIcon {
         enabled: API.app_twitter_url !== ""
         visible: enabled
-
         link: API.app_twitter_url
         source: General.image_path + "icon-twitter.png"
         text: qsTr("Follow us on Twitter")
@@ -30,7 +28,6 @@ RowLayout {
         enabled: API.app_support_url !== ""
         visible: enabled
         Layout.rightMargin: 0
-
         link: API.app_support_url
         source: General.image_path + "icon-support.png"
         text: qsTr("Go to Support Guides")

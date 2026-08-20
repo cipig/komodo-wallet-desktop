@@ -2,7 +2,6 @@ import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import "../Constants" as Dex
 import "../Components" as Dex
-import "../String.js" as DexString
 import "../Screens"
 import App 1.0 as Dex
 import Dex.Themes 1.0 as Dex
@@ -114,7 +113,6 @@ Dex.DefaultListView
 
         width: list.width
         height: _assetRowHeight
-
         color: mouseArea.containsMouse ? Dex.CurrentTheme.listItemHoveredBackground : _idleColor
 
         RowLayout
@@ -174,7 +172,6 @@ Dex.DefaultListView
                     anchors.bottom: assetImage.bottom
                     anchors.left: assetImage.right
                     anchors.leftMargin: 15
-
                     text: model.type
                     font: Dex.DexTypo.overLine
                     opacity: .7
@@ -202,11 +199,9 @@ Dex.DefaultListView
                 Layout.preferredWidth: _assetBalanceColumnWidth
                 horizontalAlignment: Text.AlignRight
                 verticalAlignment: Text.AlignVCenter
-
                 font: Dex.DexTypo.body2
                 text_value:
                 {
-
                     if (Dex.General.isZhtlc(ticker))
                     {
                         let x = activation_pct
@@ -218,7 +213,6 @@ Dex.DefaultListView
                     // this is being called for every enabled coin when switching to Portfolio or sorting
                     return parseFloat(balance).toFixed(8)
                 }
-
                 privacy: true
             }
 
@@ -229,7 +223,6 @@ Dex.DefaultListView
                 Layout.preferredWidth: _fiatBalanceColumnWidth
                 horizontalAlignment: Text.AlignRight
                 verticalAlignment: Text.AlignVCenter
-
                 font: Dex.DexTypo.body2
                 text_value: Dex.General.formatFiat("", main_currency_balance, Dex.API.app.settings_pg.current_currency)
                 privacy: true
@@ -240,11 +233,9 @@ Dex.DefaultListView
                 id: assetChange24hLabel
                 Layout.fillHeight: true
                 Layout.preferredWidth: _assetChange24hColumnWidth
-
                 font: Dex.DexTypo.body2
                 horizontalAlignment: Text.AlignRight
                 verticalAlignment: Text.AlignVCenter
-
                 text_value:
                 {
                     const v = parseFloat(change_24h)
@@ -258,11 +249,9 @@ Dex.DefaultListView
                 id: price24hLabe
                 Layout.fillHeight: true
                 Layout.preferredWidth: _assetPriceColumWidth
-
                 font: Dex.DexTypo.body2
                 horizontalAlignment: Text.AlignRight
                 verticalAlignment: Text.AlignVCenter
-
                 text_value: Dex.General.formatFiat('', main_currency_price_for_one_unit,
                                                    Dex.API.app.settings_pg.current_currency, 8)
             }
@@ -280,30 +269,12 @@ Dex.DefaultListView
                     source: enabled ? Dex.General.providerIcon(priceProvider) : ""
                     width: 16
                     height: 16
-
-                    Dex.DefaultMouseArea
-                    {
-                        id: priceProviderIconMouseArea
-                        anchors.fill: parent
-                        hoverEnabled: true
-                    }
-
-                    Dex.DefaultTooltip
-                    {
-                        contentItem: Dex.DexLabel
-                        {
-                           text: qsTr("Price provider is: %1").arg(DexString.capitalizeFirstLetter(priceProvider))
-                           font: Dex.DexTypo.caption
-                           padding: 5
-                        }
-                        visible: priceProviderIconMouseArea.containsMouse
-                    }
                 }
             }
 
             Dex.CoinMenu { id: contextMenu }
-
         }
+
         Dex.DefaultMouseArea
         {
             id: mouseArea

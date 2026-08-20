@@ -1,8 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
-
 import Qaterial 1.0 as Qaterial
-
 import "../Constants" as Constants
 import App 1.0
 import Dex.Themes 1.0 as Dex
@@ -28,9 +26,7 @@ ComponentWithTitle
         DexLabel
         {
             id: _text
-
             width: implicitWidth > parent.width * 0.9 ? parent.width * 0.9 : implicitWidth
-
             clip: true
             textFormat: TextEdit.AutoText
             opacity: show_content ? 1 : 0
