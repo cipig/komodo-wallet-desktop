@@ -35,7 +35,7 @@
     "strong-type",
     "tl-expected"
   ],
-  "builtin-baseline": "e55144c5a465b53bc71bd0b59111ea0b8bb039a5",
+  "builtin-baseline": "809d4e072ea48e74bc0c5e6c1227a5cc636a63ad",
   "overrides": [
     {
       "name": "entt",
