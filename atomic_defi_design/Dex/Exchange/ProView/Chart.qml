@@ -19,7 +19,6 @@ Item
 
     onPair_supportedChanged: if (!pair_supported) webEngineViewPlaceHolder.visible = false
 
-    // TODO: obviously it's the other way around (right_ticker, left_ticker)
     function loadChart(right_ticker, left_ticker, source="coinpaprika")
     {
         let chart_url = ""
@@ -30,13 +29,13 @@ Item
         if (source == "coingecko")
         {
             rel_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(right_ticker).coingecko_id
-            //base_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(left_ticker).coingecko_id
             base_ticker = ""
             if (rel_ticker != "")
             {
                 pair_supported = true
                 chart_url = "https://widgets.coingecko.com"
                 chart_html = `
+                <link rel="icon" href="data:,">
                 <gecko-coin-price-chart-widget locale="en" dark-mode="${dark_theme}" transparent-background="true" coin-id="${rel_ticker}" initial-currency="usd" width="${root.implicitWidth}" height="${root.implicitHeight}"></gecko-coin-price-chart-widget>
                 <script src="https://widgets.coingecko.com/gecko-coin-price-chart-widget.js"></script>
                 `
@@ -53,7 +52,6 @@ Item
         if (source == "coinpaprika")
         {
             rel_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(right_ticker).coinpaprika_id
-            //base_ticker = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(left_ticker).coinpaprika_id
             base_ticker = ""
             if (rel_ticker != "")
             {
@@ -61,6 +59,7 @@ Item
                 let night_mode = dark_theme ? "cp-widget__night-mode" : ""
                 chart_url = `https://coinpaprika.com/coin/${rel_ticker}/`
                 chart_html = `
+                <link rel="icon" href="data:,">
                 <style>
                     * { cursor: default !important; }
                     .coinpaprika-currency-widget .cp-widget__main h3 a,
@@ -103,6 +102,7 @@ Item
                 let scale_y = root.implicitHeight / widget_y
                 chart_url = "https://www.livecoinwatch.com"
                 chart_html = `
+                <link rel="icon" href="data:,">
                 <style>
                     body { margin: auto; overflow: hidden; }
                     .livecoinwatch-widget-1 {
@@ -132,15 +132,13 @@ Item
         }
 
         const chartKey = [source, rel_ticker, base_ticker, dark_theme ? "dark" : "light"].join("|")
-        //console.log("chartKey: ", chartKey)
-        //console.log("activeChartKey: ", activeChartKey)
         if (activeChartKey === chartKey)
         {
             console.log("Skipping duplicate chart load:", chartKey)
             return
         }
-
         activeChartKey = chartKey
+
         console.log(chart_html)
         dashboard.webEngineView.visible = false
         webEngineViewPlaceHolder.visible = false
