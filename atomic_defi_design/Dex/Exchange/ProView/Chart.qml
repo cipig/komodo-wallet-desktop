@@ -74,7 +74,7 @@ Item
                      data-update-active="false"
                      data-volume-visible="false"></div>
                 <script
-                    src="qrc:/coinpaprika/dist/widget.js"
+                    src="qrc:/coinpaprika/dist/widget.min.js"
                     data-cp-currency-widget='{
                         "origin-src": "https://unpkg.com/@coinpaprika/widget-currency@2.0.13",
                         "img-src": "qrc:/coinpaprika/dist/img/logo_widget.svg",

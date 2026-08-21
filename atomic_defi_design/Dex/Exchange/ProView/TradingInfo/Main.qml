@@ -95,8 +95,6 @@ ColumnLayout {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         Layout.topMargin: 8
-                        Layout.leftMargin: 2
-                        Layout.rightMargin: 2
                     }
 
                     PriceLineSimplified {
