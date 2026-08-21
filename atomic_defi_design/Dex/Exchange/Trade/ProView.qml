@@ -102,7 +102,7 @@ RowLayout
     TradingInfo.Main
     {
         id: tradingInfo
-        Layout.preferredWidth: 610
+        Layout.preferredWidth: 570
         Layout.fillWidth: true
         Layout.fillHeight: true
         Layout.alignment: Qt.AlignTop

@@ -5,10 +5,10 @@ import AtomicDEX.MarketMode 1.0
 
 QtObject {
     // See https://gs.statcounter.com/screen-resolution-stats/desktop/worldwide
-    readonly property int width: 1440
-    readonly property int height: 900
-    readonly property int minimumWidth: 1440
-    readonly property int minimumHeight: 900
+    readonly property int width: 1400
+    readonly property int height: 864
+    readonly property int minimumWidth: 1400
+    readonly property int minimumHeight: 864
     readonly property int max_camo_pw_length: 256
     readonly property int max_std_pw_length: 256
     readonly property int max_pw_length: max_std_pw_length + max_camo_pw_length

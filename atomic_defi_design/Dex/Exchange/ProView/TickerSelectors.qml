@@ -23,9 +23,8 @@ RowLayout
     SearchableTickerSelector
     {
         id: selectorLeft
-        Layout.preferredWidth: 230
+        Layout.preferredWidth: 245
         Layout.preferredHeight: 85
-
         left_side: true
         model: API.app.trading_pg.market_pairs_mdl.left_selection_box
         ticker: left_ticker
@@ -67,7 +66,7 @@ RowLayout
     SearchableTickerSelector
     {
         id: selectorRight
-        Layout.preferredWidth: 230
+        Layout.preferredWidth: 245
         Layout.preferredHeight: 85
         left_side: false
         model: API.app.trading_pg.market_pairs_mdl.right_selection_box

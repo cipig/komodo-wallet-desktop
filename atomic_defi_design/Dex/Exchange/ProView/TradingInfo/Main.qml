@@ -13,7 +13,7 @@ import "../../ProView"
 ColumnLayout {
     id: root
     Layout.fillWidth: true 
-    Layout.maximumWidth: 610
+    Layout.maximumWidth: 570
     Layout.fillHeight: true
     spacing: 0
 
