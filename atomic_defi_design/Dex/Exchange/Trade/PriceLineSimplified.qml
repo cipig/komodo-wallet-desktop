@@ -9,7 +9,7 @@ import Dex.Themes 1.0 as Dex
 ColumnLayout
 {
     Layout.fillWidth: true
-    spacing: 12
+    spacing: 10
 
     readonly property string price: non_null_price
     readonly property string price_reversed: API.app.trading_pg.price_reversed
