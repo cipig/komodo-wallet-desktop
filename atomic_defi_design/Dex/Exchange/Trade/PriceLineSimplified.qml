@@ -9,7 +9,7 @@ import Dex.Themes 1.0 as Dex
 ColumnLayout
 {
     Layout.fillWidth: true
-    spacing: 24
+    spacing: 12
 
     readonly property string price: non_null_price
     readonly property string price_reversed: API.app.trading_pg.price_reversed
@@ -108,7 +108,7 @@ ColumnLayout
 
             GradientRectangle
             {
-                anchors.bottom: parent.bottom
+                Layout.alignment: Qt.AlignBottom
                 Layout.fillWidth: true
                 Layout.preferredHeight: 6
                 start_color: Dex.CurrentTheme.okColor
