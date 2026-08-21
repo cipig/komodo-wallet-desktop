@@ -10,7 +10,7 @@ import AtomicDEX.MarketMode 1.0
 Item
 {
     id: root
-    implicitWidth: 530
+    implicitWidth: 610
     implicitHeight: 330
 
     readonly property bool dark_theme: Dex.CurrentTheme.getColorMode() === Dex.CurrentTheme.ColorMode.Dark

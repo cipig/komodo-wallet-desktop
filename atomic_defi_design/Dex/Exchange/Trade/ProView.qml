@@ -72,25 +72,23 @@ RowLayout
                 return
 
             const response = General.clone(buy_sell_last_rpc_data)
+
             if (response.error_code)
             {
                 confirm_trade_modal.close()
-
                 toast.show(qsTr("Failed to place the order"),
                            General.time_toast_important_error,
                            response.error_message)
-
                 return
             }
             else if (response.result && response.result.uuid)
             {
                 // Make sure there is information
                 confirm_trade_modal.close()
-
                 toast.show(qsTr("Placed the order"), General.time_toast_basic_info,
                            General.prettifyJSON(response.result), false)
-
                 General.prevent_coin_disabling.restart()
+
                 // Show the orders tab unless settings say otherwise
                 if (API.app.settings_pg.postorder_enabled)
                 {
@@ -104,7 +102,7 @@ RowLayout
     TradingInfo.Main
     {
         id: tradingInfo
-        Layout.preferredWidth: 530
+        Layout.preferredWidth: 610
         Layout.fillWidth: true
         Layout.fillHeight: true
         Layout.alignment: Qt.AlignTop
