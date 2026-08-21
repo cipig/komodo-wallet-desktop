@@ -11,7 +11,7 @@ Item
 {
     id: root
     implicitWidth: 570
-    implicitHeight: 350
+    implicitHeight: 500
 
     readonly property bool dark_theme: Dex.CurrentTheme.getColorMode() === Dex.CurrentTheme.ColorMode.Dark
     property bool pair_supported: false

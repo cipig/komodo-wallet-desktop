@@ -12207,8 +12207,8 @@ class chartClass {
     let promise = Promise.resolve();
     promise = promise.then(() => {
       return document.addEventListener(this.id + "SetExtremes", (e) => {
-        let minDate = cpBootstrap.round(e.detail.minDate / 1e3, 0);
-        let maxDate = cpBootstrap.round(e.detail.maxDate / 1e3, 0);
+        let minDate = Math.round(e.detail.minDate / 1e3).toString();
+        let maxDate = Math.round(e.detail.maxDate / 1e3).toString();
         let promise2 = Promise.resolve();
         promise2 = promise2.then(() => {
           return this.fetchDataPackage(minDate, maxDate);

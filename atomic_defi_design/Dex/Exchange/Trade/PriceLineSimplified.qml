@@ -104,12 +104,13 @@ ColumnLayout
         RowLayout
         {
             Layout.fillWidth: true
+            Layout.preferredHeight: 30
 
             GradientRectangle
             {
+                anchors.bottom: parent.bottom
                 Layout.fillWidth: true
                 Layout.preferredHeight: 6
-
                 start_color: Dex.CurrentTheme.okColor
                 end_color: Dex.CurrentTheme.warningColor
 

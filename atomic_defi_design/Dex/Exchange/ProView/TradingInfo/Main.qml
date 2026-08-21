@@ -100,8 +100,8 @@ ColumnLayout {
                     PriceLineSimplified {
                         id: price_line
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 40
-                        Layout.bottomMargin: 12
+                        Layout.preferredHeight: 95
+                        Layout.bottomMargin: 8
                         Layout.leftMargin: 8
                         Layout.rightMargin: 8
                     }
