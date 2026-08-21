@@ -41,11 +41,8 @@ DefaultRectangle
     RowLayout
     {
         anchors.fill: parent
-        anchors.centerIn: parent
-        Layout.leftMargin: 20
-        Layout.rightMargin: 20
+        spacing: 6
 
-        // Coin Icon
         Dex.Image
         {
             id: icon
@@ -53,23 +50,31 @@ DefaultRectangle
             Layout.preferredWidth: 40
             Layout.preferredHeight: 40
             Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-            Layout.leftMargin: 20
-            Layout.rightMargin: 10
-            Layout.topMargin: 0
-            Layout.bottomMargin: 0
+            Layout.leftMargin: 12
+            Layout.rightMargin: 8
         }
 
-        //
         ColumnLayout
         {
-            spacing: 2
+            spacing: 1
             Layout.alignment: Qt.AlignVCenter
+            Layout.fillWidth: true
 
             DexLabel
             {
-                Layout.preferredWidth: parent.width - 15
-                text_value: `<font color="${Style.getCoinColor(ticker)}"><b>${ticker}</b></font>&nbsp;&nbsp;&nbsp;<font color="${Dex.CurrentTheme.foregroundColor}">${fullname}</font>`
+                Layout.fillWidth: true
+                text_value: `<font color="${Style.getCoinColor(ticker)}"><b>${ticker}</b></font>`
                 font: Dex.DexTypo.body2
+                elide: Text.ElideRight
+                wrapMode: Text.NoWrap
+            }
+
+            DexLabel
+            {
+                Layout.fillWidth: true
+                text_value: fullname
+                font: Dex.DexTypo.body3
+                color: Dex.CurrentTheme.foregroundColor
                 elide: Text.ElideRight
                 wrapMode: Text.NoWrap
             }
