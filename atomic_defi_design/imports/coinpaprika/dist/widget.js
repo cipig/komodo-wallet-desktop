@@ -11207,7 +11207,7 @@ class widgetsClass {
       buttons += '<button class="' + (data.toLowerCase() === this.states[index][label].toLowerCase() ? "cp-widget-active " : "") + (label === "primary_currency" ? "" : "cp-translation translation_" + data.toLowerCase()) + '" data-option="' + data + '">' + this.getTranslation(index, data.toLowerCase()) + "</button>";
     }
     let title = this.getTranslation(index, "zoom_in");
-    return '<div data-type="' + label + '" class="cp-widget-select"><label class="cp-translation translation_' + label + '">' + title + '</label><div class="cp-widget-select__options"><span class="arrow-down cp-widget__capitalize cp-translation translation_' + this.states[index][label].toLowerCase() + '">' + this.getTranslation(index, this.states[index][label].toLowerCase()) + '</span><div class="cp-widget-select__dropdown">' + buttons + "</div></div></div>";
+    return '<div data-type="' + label + '" class="cp-widget-select"><label class="cp-translation translation_zoom_in">' + title + '</label><div class="cp-widget-select__options"><span class="arrow-down cp-widget__capitalize cp-translation translation_' + this.states[index][label].toLowerCase() + '">' + this.getTranslation(index, this.states[index][label].toLowerCase()) + '</span><div class="cp-widget-select__dropdown">' + buttons + "</div></div></div>";
   }
   widgetFooter(index) {
     const state = this.states && this.states[index];
