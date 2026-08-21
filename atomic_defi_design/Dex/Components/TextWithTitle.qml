@@ -11,13 +11,10 @@ ComponentWithTitle {
 
     DexLabel {
         id: text
-
         clip: true
         Layout.fillWidth: true
-
         Layout.preferredHeight: show_content ? contentHeight : 0
         Behavior on Layout.preferredHeight { SmoothedAnimation { id: expand_animation; duration: Style.animationDuration * 2; velocity: -1 } }
-
         opacity: show_content ? 1 : 0
         Behavior on opacity { SmoothedAnimation { duration: expand_animation.duration; velocity: -1 } }
     }

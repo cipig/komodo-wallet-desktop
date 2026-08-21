@@ -59,7 +59,6 @@ DexWindow
     DexPopup
     {
         id: userMenu
-
         spacing: 8
         padding: 2
         backgroundColor: Dex.CurrentTheme.backgroundColor
@@ -68,6 +67,7 @@ DexWindow
         {
             implicitWidth: 130
             implicitHeight: 30
+
             Rectangle
             {
                 width: parent.width - 10
@@ -75,6 +75,7 @@ DexWindow
                 anchors.centerIn: parent
                 radius: 18
                 color: logout_area.containsMouse ? Dex.CurrentTheme.buttonColorHovered : Dex.CurrentTheme.backgroundColor
+
                 Row
                 {
                     anchors.centerIn: parent
@@ -271,21 +272,6 @@ DexWindow
                     visible: _label.visible
                     privacy: true
                     anchors.verticalCenter: parent.verticalCenter
-                    //DefaultMouseArea
-                    //{
-                    //    anchors.fill: parent
-                    //    onClicked:
-                    //    {
-                    //        const current_fiat = API.app.settings_pg.current_currency
-                    //        const available_fiats = API.app.settings_pg.get_available_currencies()
-                    //        const current_index = available_fiats.indexOf(
-                    //            current_fiat)
-                    //        const next_index = (current_index + 1) %
-                    //            available_fiats.length
-                    //        const next_fiat = available_fiats[next_index]
-                    //        API.app.settings_pg.current_currency = next_fiat
-                    //    }
-                    //}
                 }
             }
 
@@ -304,6 +290,7 @@ DexWindow
                 icon: Qaterial.Icons.bellOutline
                 visible: _label.visible
                 active: app.notification_modal.opened
+
                 AnimatedRectangle
                 {
                     anchors.rightMargin: -3
@@ -317,6 +304,7 @@ DexWindow
                     visible: app.notifications_list !== undefined ? app.notifications_list.length > 0 : false
                     z: 1
                 }
+
                 onClicked:
                 {
                     if (app.notification_modal.visible)

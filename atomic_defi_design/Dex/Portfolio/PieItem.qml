@@ -1,11 +1,9 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
-
 import QtGraphicalEffects 1.15
 import QtCharts 2.15
 import Qaterial 1.0 as Qaterial
-
 import "../Components"
 import "../Constants"
 import App 1.0
@@ -16,6 +14,7 @@ PieSlice
     borderColor: DexTheme.backgroundColor
     labelColor: 'white'; labelFont: DexTypo.head5
     borderWidth: 3
+
     Behavior on explodeDistanceFactor
     {
         NumberAnimation

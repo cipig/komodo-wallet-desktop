@@ -8,8 +8,6 @@ import "../Constants"
 
 Popup
 {
-
-
     id: dialog
     width: 420
     // There is a binding loop issue if this line is active
@@ -43,9 +41,7 @@ Popup
     signal reset()
     signal checkValidator()
 
-    property
-    var validator: undefined
-
+    property var validator: undefined
     property string title: ""
     property string text: ""
     property string placeholderText: ""
@@ -68,6 +64,7 @@ Popup
     background: Qaterial.ClipRRect
     {
         radius: 4
+
         DefaultRectangle
         {
             anchors.fill: parent
@@ -85,6 +82,7 @@ Popup
         // height: _insideColumn.height >  dialog.height ? _insideColumn.height + 92 : dialog.height
         radius: 18
         focus: true
+
         Column
         {
             id: _insideColumn
@@ -95,6 +93,7 @@ Popup
             spacing: 0
             bottomPadding: 3
             anchors.verticalCenter: parent.verticalCenter
+
             Item
             {
                 id: _header
@@ -123,6 +122,7 @@ Popup
                 width: parent.width
                 bottomPadding: 10
                 topPadding: 10
+
                 contentItem: Column
                 {
                     Qaterial.IconLabel
@@ -133,13 +133,10 @@ Popup
                         icon.height: dialog.iconSource === "" ? 0 : 48
                         icon.color: dialog.iconColor
                         width: parent.width
-
                         color: DexTheme.foregroundColor
-
                         text: dialog.text
                         wrapMode: Text.WordWrap
                         horizontalAlignment: dialog.centerAlign ? Text.AlignHCenter : Text.AlignLeft
-
                         display: dialog.iconSource === "" ? AbstractButton.TextOnly : AbstractButton.TextBesideIcon
                     }
 
@@ -182,6 +179,7 @@ Popup
                                 }
                             }
                         }
+
                         field.onAccepted:
                         {
                             if (dialog.enableAcceptButton)
@@ -208,6 +206,7 @@ Popup
                             }
 
                         }
+
                         Qaterial.AppBarButton
                         {
                             visible: dialog.isPassword
@@ -251,11 +250,13 @@ Popup
                 {
                     color: dialog.backgroundColor
                 }
+
                 contentItem:  RowLayout
                 {
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: parent.width - 80
+
                     CancelButton
                     {
                         id: cancelBtn
@@ -271,10 +272,12 @@ Popup
                             dialog.close()
                         }
                     }
+
                     Item
                     {
                         Layout.fillWidth: true
                     }
+
                     GradientButton
                     {
                         text: dialog.yesButtonText !== "" ? dialog.yesButtonText : "Yes"
@@ -284,6 +287,7 @@ Popup
                         rightPadding: 20
                         radius: 18
                         enabled: dialog.enableAcceptButton
+
                         onClicked:
                         {
                             if (dialog.getText)
@@ -342,6 +346,7 @@ Popup
                 {
                     color: DexTheme.backgroundDarkColor6
                 }
+
                 delegate: Qaterial.Button
                 {
                     id: _dialogManagerButton
@@ -352,6 +357,7 @@ Popup
                     enabled: DialogButtonBox.buttonRole === DialogButtonBox.RejectRole ? true : dialog.enableAcceptButton
                     backgroundColor: DialogButtonBox.buttonRole === DialogButtonBox.RejectRole ? 'transparent' : dialog.warning ? DexTheme.warningColor : DexTheme.accentColor
                     property alias cursorShape: mouseArea.cursorShape
+
                     Component.onCompleted:
                     {
                         if (text === "Yes" && dialog.yesButtonText !== "")

@@ -140,7 +140,7 @@ Item
         }
         activeChartKey = chartKey
 
-        console.log(chart_html)
+        //console.log(chart_html)
         dashboard.webEngineView.visible = false
         webEngineViewPlaceHolder.visible = false
         dashboard.webEngineView.loadHtml(chart_html, chart_url)

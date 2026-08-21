@@ -1,16 +1,12 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
-
 import QtWebEngine 1.10
-
 import QtGraphicalEffects 1.15
 import QtCharts 2.15
 import Qaterial 1.0 as Qaterial
 import ModelHelper 0.1
-
 import AtomicDEX.WalletChartsCategories 1.0
-
 import "../Components"
 import "../Constants" as Constants
 import App 1.0
@@ -184,14 +180,11 @@ Item {
                         DefaultCheckBox
                         {
                             id: hide_zero_balance_checkbox
-
                             spacing: 2
-
                             label.wrapMode: Label.NoWrap
                             label.font.pixelSize: 14
                             text: qsTr("Show only coins with balance") + " <b>%1</b>".arg(qsTr("(%1/%2)").arg(coinsList.count).arg(portfolio_mdl.length))
                             textColor: Dex.CurrentTheme.foregroundColor2
-
                             checked: portfolio_coins.with_balance
                             onCheckedChanged: portfolio_coins.with_balance = checked
                             Component.onDestruction: portfolio_coins.with_balance = false

@@ -47,20 +47,17 @@ Item
     ColumnLayout
     {
         id: wallet_layout
-
         width: parent.width
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.topMargin: layout_margin
         anchors.bottom: parent.bottom
-
         spacing: 20
 
         // Balance box
         InnerBackground
         {
             id: balance_box
-
             Layout.fillWidth: true
             Layout.preferredHeight: 100
             Layout.leftMargin: layout_margin
@@ -92,7 +89,6 @@ Item
                             Layout.preferredHeight: 60
                             Layout.preferredWidth: Layout.preferredHeight
                             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-
 
                             DefaultRectangle
                             {
@@ -175,8 +171,8 @@ Item
                         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                         Layout.leftMargin: 10
                         Layout.rightMargin: 10
-
                         spacing: 5
+
                         DexLabel
                         {
                             id: price
@@ -190,7 +186,7 @@ Item
                         {
                             text_value:
                             {
-                                const v = General.formatFiat('', current_ticker_infos.current_currency_ticker_price, API.app.settings_pg.current_currency)
+                                const v = General.formatFiat('', current_ticker_infos.current_currency_ticker_price, API.app.settings_pg.current_currency, 6)
                                 return current_ticker_infos.current_currency_ticker_price == 0 ? 'N/A' : v
                             }
                             Layout.alignment: Qt.AlignHCenter
@@ -205,8 +201,8 @@ Item
                         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                         Layout.leftMargin: 10
                         Layout.rightMargin: 10
-
                         spacing: 5
+
                         DexLabel
                         {
                             id: change_24hr
@@ -236,8 +232,8 @@ Item
                         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                         Layout.leftMargin: 10
                         Layout.rightMargin: 10
-
                         spacing: 5
+
                         DexLabel
                         {
                             id: portfolio_title
@@ -420,9 +416,11 @@ Item
                     MultipageModalContent
                     {
                         titleText: qsTr("Enable %1 ?").arg(coin_to_enable_ticker)
+
                         RowLayout
                         {
                             Layout.fillWidth: true
+
                             DefaultButton
                             {
                                 Layout.fillWidth: true
@@ -474,12 +472,10 @@ Item
                     enabled: General.isZhtlcReady(api_wallet_page.ticker)
                     anchors.fill: parent
                     radius: 18
-
                     label.text: qsTr("Receive")
                     label.font.pixelSize: 16
                     content.anchors.left: content.parent.left
                     content.anchors.leftMargin: enabled ? 23 : 48
-
                     onClicked: receive_modal.open()
 
                     Row
@@ -523,13 +519,11 @@ Item
                     enabled: !General.isWalletOnly(api_wallet_page.ticker) && activation_pct == 100
                     anchors.fill: parent
                     radius: 18
-
                     // Inner text.
                     label.text: qsTr("Swap")
                     label.font.pixelSize: 16
                     content.anchors.left: content.parent.left
                     content.anchors.leftMargin: enabled ? 23 : 48
-
                     onClicked: onClickedSwap()
 
                     Row
@@ -585,6 +579,7 @@ Item
                         claimRewardsModal.open()
                         claimRewardsModal.item.prepareClaimRewards()
                     }
+
                     Row
                     {
                         anchors.verticalCenter: parent.verticalCenter
@@ -625,7 +620,6 @@ Item
                     content.anchors.left: content.parent.left
                     content.anchors.leftMargin: enabled ? 23 : 48
                     content.anchors.rightMargin: 23
-
                     onClicked: api_wallet_page.claim_faucet()
 
                     Row
@@ -714,7 +708,6 @@ Item
             {
                 Layout.preferredHeight: 40
                 Layout.preferredWidth: 165
-
                 visible: current_ticker_infos.name === "Tokel" || current_ticker_infos.name === "Marmara Credit Loops"
 
                 DefaultButton
@@ -731,6 +724,7 @@ Item
                         API.app.settings_pg.fetchPublicKey()
                         publicKeyModal.open()
                     }
+
                     Row
                     {
                         anchors.verticalCenter: parent.verticalCenter
@@ -750,6 +744,7 @@ Item
                 ModalLoader
                 {
                     id: publicKeyModal
+
                     sourceComponent: MultipageModal
                     {
                         MultipageModalContent
@@ -759,7 +754,6 @@ Item
                             DefaultBusyIndicator
                             {
                                 Layout.alignment: Qt.AlignCenter
-
                                 visible: API.app.settings_pg.fetchingPublicKey
                                 enabled: visible
                             }
@@ -794,10 +788,8 @@ Item
                             Image
                             {
                                 visible: !API.app.settings_pg.fetchingPublicKey
-
                                 Layout.topMargin: 20
                                 Layout.alignment: Qt.AlignHCenter
-
                                 sourceSize.width: 300
                                 sourceSize.height: 300
                                 source: API.qt_utilities.get_qrcode_svg_from_string(API.app.settings_pg.publicKey)
@@ -813,7 +805,6 @@ Item
                 Layout.preferredHeight: 40
                 Layout.preferredWidth: 165
                 enabled: addressURL != ""
-                
 
                 DefaultButton
                 {
@@ -841,7 +832,6 @@ Item
                     }
                 }
             }
-
         }
 
         Rectangle {
@@ -851,9 +841,7 @@ Item
             Layout.leftMargin: layout_margin
             Layout.rightMargin: layout_margin
             Layout.bottomMargin: !fetching_text_row.visible ? layout_margin : undefined
-
             implicitHeight: wallet.height*0.54
-
             color: Dex.CurrentTheme.floatingBackgroundColor
             radius: 18
 

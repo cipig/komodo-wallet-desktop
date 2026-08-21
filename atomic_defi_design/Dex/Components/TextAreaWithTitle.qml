@@ -1,8 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
-
 import Qaterial 1.0 as Qaterial
-
 import "../Constants"
 import App 1.0
 import Dex.Themes 1.0 as Dex
@@ -19,10 +17,8 @@ ColumnLayout
     property bool  copyable: false
     property bool  hidable: false
     property var   onReturn // function
-
     property alias remove_newline: input_field.remove_newline
     property bool  hiding: true
-
     property bool  saveable: false
 
     signal saved()
@@ -33,17 +29,13 @@ ColumnLayout
     DexLabel
     {
         id: title_text
-
         Layout.alignment: Qt.AlignVCenter
-
         color: titleColor
 
         Qaterial.Icon
         {
             visible: control.copyable
-
             Layout.alignment: Qt.AlignVCenter
-
             x: title_text.implicitWidth + 10
             size: 16
             icon: Qaterial.Icons.contentCopy
@@ -54,6 +46,7 @@ ColumnLayout
                 id: copyArea
                 anchors.fill: parent
                 hoverEnabled: true
+
                 onClicked:
                 {
                     Qaterial.Clipboard.text = input_field.text
@@ -66,6 +59,7 @@ ColumnLayout
     Item {
         Layout.fillWidth: true
         Layout.preferredHeight: input_field.height + 5
+
         DexTextArea {
             id: input_field
             enabled: !saveable

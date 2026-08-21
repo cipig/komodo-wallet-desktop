@@ -37,10 +37,8 @@ Item
     Column
     {
         id: column
-
         anchors.fill: parent
         anchors.margins: root.margins
-
         spacing: root.spacing
 
         // Header
@@ -55,12 +53,9 @@ Item
         ColumnLayout
         {
             id: content
-
             visible: !root.collapsed
-
             width: parent.width
             height: parent.height - y
-
             spacing: root.contentSpacing
         }
     }
@@ -70,11 +65,9 @@ Item
     {
         enabled: resizable && !collapsed
         visible: enabled
-
         anchors.bottom: root.bottom
         width: root.width
         height: 5
-
         cursorShape: Qt.SizeVerCursor
 
         onMouseYChanged:
@@ -104,6 +97,7 @@ Item
         RowLayout
         {
             Item { Layout.fillWidth: true }
+
             Qaterial.Icon
             {
                 visible: root.collapsable

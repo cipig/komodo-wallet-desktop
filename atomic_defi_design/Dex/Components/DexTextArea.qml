@@ -7,9 +7,7 @@ import Dex.Themes 1.0 as Dex
 
 TextArea {
     id: text_field
-
     font.family: Style.font_family
-
     color: Dex.CurrentTheme.foregroundColor
     placeholderTextColor: Dex.CurrentTheme.colorPlaceholderText
     selectedTextColor: Dex.CurrentTheme.colorSelectedText
@@ -20,6 +18,7 @@ TextArea {
             duration: Style.animationDuration
         }
     }
+
     Behavior on placeholderTextColor {
         ColorAnimation {
             duration: Style.animationDuration
