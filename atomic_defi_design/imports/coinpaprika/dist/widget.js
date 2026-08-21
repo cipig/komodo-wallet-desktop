@@ -10840,6 +10840,26 @@ class widgetsClass {
     });
   }
   setOriginLink(index) {
+    if (!this.defaults.translations) {
+      this.defaults.translations = {};
+    }
+    this.defaults.translations["en"] = {
+      "rank": "Rank",
+      "ath": "ATH",
+      "volume_24h": "Volume 24h",
+      "market_cap": "Market cap",
+      "powered_by": "powered by",
+      "zoom_in": "Zoom in: ",
+      "24h": "24h",
+      "7d": "7d",
+      "30d": "30d",
+      "1q": "1q",
+      "1y": "1y",
+      "ytd": "YTD",
+      "all": "ALL",
+      "data_unavailable": "Data is currently unavailable",
+      "data_loading": "Data is loading..."
+    };
     if (Object.keys(this.defaults.translations).length === 0)
       this.getTranslations(this.defaults.language);
     let promise = Promise.resolve();
