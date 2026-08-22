@@ -1147,7 +1147,21 @@ namespace atomic_dex
         {
             if (base == rel || base.isEmpty() || rel.isEmpty())
             {
-                set_current_orderbook(DEX_PRIMARY_COIN, DEX_SECOND_PRIMARY_COIN);
+                QString next_base = base;
+                QString next_rel  = rel;
+
+                if (!requested_ticker.isEmpty())
+                {
+                    if (is_left_side) next_base = requested_ticker;
+                    else              next_rel  = requested_ticker;
+                }
+
+                // ensure valid non-empty/non-equal pair before applying
+                if (next_base.isEmpty()) next_base = DEX_PRIMARY_COIN;
+                if (next_rel.isEmpty() || next_rel == next_base) next_rel = DEX_SECOND_PRIMARY_COIN;
+                if (next_rel == next_base) next_base = DEX_PRIMARY_COIN;
+
+                set_current_orderbook(next_base, next_rel);
             }
             else
             {
