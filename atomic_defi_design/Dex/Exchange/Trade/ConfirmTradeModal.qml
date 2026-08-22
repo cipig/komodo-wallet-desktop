@@ -16,16 +16,16 @@ MultipageModal
     readonly property var fees: API.app.trading_pg.fees
     width: 720
     horizontalPadding: 10
-    verticalPadding: 30
+    verticalPadding: 20
     closePolicy: Popup.NoAutoClose
 
     MultipageModalContent
     {
-        titleText: qsTr(" ")
+        titleText: qsTr("")
         titleAlignment: Qt.AlignHCenter
-        titleTopMargin: 5
-        topMarginAfterTitle: 5
-        flickMax: 750
+        titleTopMargin: 0
+        topMarginAfterTitle: 0
+        flickMax: window.height - 40
 
         header: [
             RowLayout

@@ -18,19 +18,20 @@ Dex.ComboBoxWithSearchBar
     popupForceMaxHeight: true
     searchBar.visible: true
     searchBar.searchModel: model
-
-    property var    currentItem: model.index(currentIndex, 0)
-    property bool   left_side: false
+    property var currentItem: (model && currentIndex >= 0 && currentIndex < model.rowCount())
+                              ? model.index(currentIndex, 0)
+                              : null
+    property bool left_side: false
+    property bool index_changed: false
     property string ticker
-    property bool   index_changed: false
 
     delegate: ItemDelegate
     {
         id: _delegate
         width: control.width
-        height: visible ? 85 : 0
+        height: 85
+        visible: true
         highlighted: control.highlightedIndex === index
-
         contentItem: DexComboBoxLine { details: model }
         background: Dex.DefaultRectangle
         {
@@ -43,7 +44,6 @@ Dex.ComboBoxWithSearchBar
     {
         id: _contentRow
         padding: 8
-
         property int update_count: 0
         property var prev_details
 
@@ -92,6 +92,10 @@ Dex.ComboBoxWithSearchBar
             }
         }
     }
+
     searchBar.onVisibleChanged: if (!visible) { searchBar.textField.text = "" }
-    searchBar.textField.onTextChanged: control.model.setFilterFixedString(searchBar.textField.text)
+    searchBar.textField.onTextChanged: {
+        if (control.model)
+            control.model.setFilterFixedString(searchBar.textField.text)
+    }
 }
