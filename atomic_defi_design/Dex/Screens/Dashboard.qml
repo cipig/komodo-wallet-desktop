@@ -256,10 +256,20 @@ Item
         id: sidebar
         enabled: loader.status === Loader.Ready
 
-        onLineSelected: currentPage = lineType;
         onAddCryptoClicked: enable_coin_modal.open()
         onSettingsClicked: setting_modal.open()
         onSupportClicked: support_modal.open()
+        onLineSelected:
+        {
+            // If leaving DEX to Wallet, open wallet for current DEX left-selected coin
+            if (currentPage === Dashboard.PageType.DEX && lineType === Dashboard.PageType.Wallet)
+            {
+                const dexLeft = API.app.trading_pg.market_pairs_mdl.left_selected_coin
+                if (dexLeft && dexLeft !== "")
+                    dashboard.current_ticker = dexLeft
+            }
+            currentPage = lineType
+        }
     }
 
     // CEX Rates info

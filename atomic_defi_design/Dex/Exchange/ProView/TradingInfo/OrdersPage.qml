@@ -77,13 +77,12 @@ Item {
     {
         anchors.fill: parent
         anchors.margins: 8
-        anchors.bottomMargin: is_history ? 0 : 10
         spacing: 8
 
         RowLayout
         {
             Layout.fillWidth: true
-            Layout.preferredHeight: 30
+            Layout.preferredHeight: 40
 
             DefaultButton
             {
@@ -210,6 +209,7 @@ Item {
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 0
+
                 DatePicker
                 {
                     id: min_date
