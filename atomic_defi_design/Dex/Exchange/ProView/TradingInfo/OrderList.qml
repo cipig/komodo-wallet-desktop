@@ -1,7 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
-
 import App 1.0
 import "../../../Components"
 import "../../../"
@@ -10,9 +9,6 @@ import Dex.Themes 1.0 as Dex
 Item
 {
     id: root
-    visible: currentIndex > 0
-    enabled: visible
-
     property string title
     property var    items
     property bool   is_history: false
@@ -32,12 +28,6 @@ Item
         DefaultListView
         {
             id: list
-
-            property int            animationTimestamp: 0
-            readonly property int   animationTime: 600
-            readonly property int   animationDelay: 20
-            property bool           resetAnimation: false
-
             clip: true
             Layout.fillWidth: true
             Layout.preferredHeight: is_history ? parent.height - 70 : parent.height
@@ -49,44 +39,9 @@ Item
             // Row
             delegate: OrderLine
             {
-                readonly property double anim_time: list.animationTimestamp > index * list.animationDelay ?
-                    Math.min((list.animationTimestamp - index * list.animationDelay) / (list.animationTime), 1) : 0
-
                 details: model
-                opacity: anim_time
+                opacity: 1
                 width: list.width
-            }
-
-            populate: Transition
-            {
-                PropertyAction
-                {
-                    target: list
-                    property: "resetAnimation"
-                    value: !list.resetAnimation
-                }
-            }
-
-            onResetAnimationChanged:
-            {
-                list.animationTimestamp = 0
-                spawn_anim_timer.repeat = true
-                spawn_anim_timer.restart()
-            }
-
-            Timer
-            {
-                id: spawn_anim_timer
-                interval: 20
-                running: true
-                repeat: true
-                onTriggered: () => {
-                    //console.log("OrderList list.count = " + list.count)
-                    //console.log("OrderList spawn_anim_timer.repeat = " + spawn_anim_timer.repeat)
-                    if (list.animationTimestamp > list.animationDelay * list.count + list.animationTime)
-                        repeat = false
-                    list.animationTimestamp += interval
-                }
             }
         }
 
