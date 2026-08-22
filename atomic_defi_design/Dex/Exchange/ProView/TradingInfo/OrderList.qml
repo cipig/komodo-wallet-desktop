@@ -50,8 +50,8 @@ Item
         {
             visible: is_history && list.count > 0
             enabled: list.enabled
-            Layout.maximumHeight: 70
-            Layout.preferredHeight: visible ? 70 : 0
+            Layout.maximumHeight: 50
+            Layout.preferredHeight: visible ? 50 : 0
             Layout.fillWidth: true
             Layout.bottomMargin: 10
             itemsPerPageComboBox.mainBackgroundColor: Dex.CurrentTheme.comboBoxBackgroundColor
