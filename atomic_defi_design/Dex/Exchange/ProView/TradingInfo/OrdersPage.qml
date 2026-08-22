@@ -19,8 +19,6 @@ Item {
     property alias title: order_list.title
     property alias items: order_list.items
     property bool is_history: false
-    visible: root.page_index > 0
-    enabled: visible
 
     function update()
     {

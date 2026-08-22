@@ -72,6 +72,7 @@ MultipageModal
             PriceLineSimplified
             {
                 id: price_line
+                Layout.topMargin: 10
                 Layout.leftMargin: 40
                 Layout.rightMargin: 40
                 Layout.fillWidth: true
@@ -85,7 +86,7 @@ MultipageModal
             Layout.fillWidth: true
             Layout.leftMargin: 4
             Layout.rightMargin: 4
-            Layout.topMargin: 4
+            Layout.topMargin: 10
             spacing: 5
 
             readonly property var default_config: API.app.trading_pg.get_raw_kdf_coin_cfg(rel_ticker)
@@ -95,7 +96,7 @@ MultipageModal
             DefaultRectangle {
                 Layout.alignment: Qt.AlignCenter
                 Layout.preferredHeight: 150
-                Layout.preferredWidth: parent.width - 40
+                Layout.preferredWidth: parent.width - 20
                 color: DexTheme.contentColorTop
                 visible: !buy_sell_rpc_busy
 

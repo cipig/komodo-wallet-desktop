@@ -109,27 +109,24 @@ ColumnLayout {
             }
 
             Loader {
+                id: ordersLoader
                 active: swipeView.currentIndex === tabView.order_idx
-                sourceComponent: OrdersPage {
-                    page_index: swipeView.currentIndex
-                    visible: true
-                    enabled: true
-                }
+                sourceComponent: OrdersPage { is_history: false }
             }
 
             Loader {
+                id: historyLoader
                 active: swipeView.currentIndex === tabView.history_idx
-                sourceComponent: OrdersPage {
-                    page_index: swipeView.currentIndex
-                    is_history: true
-                    visible: true
-                    enabled: true
-                }
+                sourceComponent: OrdersPage { is_history: true }
             }
 
             onCurrentIndexChanged: {
-                if (currentIndex !== tabView.pair_chart_idx && swipeView.currentItem) {
-                    swipeView.currentItem.update()
+                if (currentIndex === tabView.order_idx && ordersLoader.item) {
+                    ordersLoader.item.page_index = currentIndex
+                    ordersLoader.item.update()
+                } else if (currentIndex === tabView.history_idx && historyLoader.item) {
+                    historyLoader.item.page_index = currentIndex
+                    historyLoader.item.update()
                 }
             }
         }
