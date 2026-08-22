@@ -22,17 +22,20 @@ Item {
 
     function update()
     {
-        reset()
-        if (combo_base.currentTicker !== "All" || combo_rel.currentTicker !== "All") {
+        list_model_proxy.is_history = is_history
+        applyFilter()
+        list_model_proxy.apply_all_filtering()
+
+        if ((combo_base.currentTicker !== "All") || (combo_rel.currentTicker !== "All")) {
             buttonDelay.start()
         }
     }
 
-    function reset() {
-        list_model_proxy.is_history = !is_history
+    function reset()
+    {
+        list_model_proxy.is_history = is_history
         applyFilter()
         list_model_proxy.apply_all_filtering()
-        list_model_proxy.is_history = is_history
     }
 
     Component.onDestruction: reset()
