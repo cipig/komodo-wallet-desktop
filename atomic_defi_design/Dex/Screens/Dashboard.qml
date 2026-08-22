@@ -267,6 +267,7 @@ Item
                 const dexLeft = API.app.trading_pg.market_pairs_mdl.left_selected_coin
                 if (dexLeft && dexLeft !== "")
                     dashboard.current_ticker = dexLeft
+                    API.app.wallet_pg.ticker = dexLeft
             }
             currentPage = lineType
         }

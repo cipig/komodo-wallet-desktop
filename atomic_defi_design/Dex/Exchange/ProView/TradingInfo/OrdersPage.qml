@@ -77,12 +77,13 @@ Item {
     {
         anchors.fill: parent
         anchors.margins: 8
+        anchors.bottomMargin: is_history ? 0 : 10
         spacing: 8
 
         RowLayout
         {
             Layout.fillWidth: true
-            Layout.preferredHeight: 40
+            Layout.preferredHeight: 32
 
             DefaultButton
             {
