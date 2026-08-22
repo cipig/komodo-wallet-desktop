@@ -107,12 +107,8 @@ QtObject {
     property color iconButtonColor: buttonColorEnabled
     property color iconButtonForegroundColor: buttonColorTextEnabled
 
-    property bool portfolioPieGradient: false
-
     property color senderColorStart: warningColor
     property color receiverColorStart: okColor
-
-    property color chartGridLineColor: Qt.rgba(255,255,255,0.4)
 
     // Button
     property color buttonColorDisabled: Dex.CurrentTheme.buttonColorDisabled

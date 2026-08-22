@@ -3,10 +3,8 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 import QtWebEngine 1.10
 import QtGraphicalEffects 1.15
-import QtCharts 2.15
 import Qaterial 1.0 as Qaterial
 import ModelHelper 0.1
-import AtomicDEX.WalletChartsCategories 1.0
 import "../Components"
 import "../Constants" as Constants
 import App 1.0
@@ -25,34 +23,10 @@ Item {
     readonly property int sort_by_trend: 4
     readonly property int sort_by_price: 5
     readonly property int sort_by_unset: 6
-    property bool isSpline: false
     property bool ascending: false
-    property bool isUltraLarge: width > 1400
-    property string currentValue: ""
-    property string currentTotal: ""
-    property string total: Constants.General.formatFiat(
-                               "", Constants.API.app.portfolio_pg.balance_fiat_all,
-                               Constants.API.app.settings_pg.current_currency)
-    property var portfolio_helper: portfolio_mdl.pie_chart_proxy_mdl.ModelHelper
     property int current_sort: sort_by_value
 
-    onTotalChanged: {
-        pie.refresh()
-        pie.pieTimer2.restart()
-    }
-
-    function getPercent(fiat_amount) {
-        const portfolio_balance = parseFloat(
-                                    Constants.API.app.portfolio_pg.balance_fiat_all)
-        if (fiat_amount <= 0 || portfolio_balance <= 0)
-            return "-"
-
-        return Constants.General.formatPercent(
-                    (100 * fiat_amount / portfolio_balance).toFixed(2), false)
-    }
-
     function applyCurrentSort() {
-        // Apply the sort
         switch (current_sort) {
         case sort_by_name:
             portfolio_coins.sort_by_name(ascending)
@@ -70,36 +44,6 @@ Item {
         }
     }
 
-    function updateChart(chart, historical, color) {
-        chart.removeAllSeries()
-
-        let i
-        if (historical.length > 0) {
-            // Fill chart
-            let series = chart.createSeries(ChartView.SeriesTypeSpline,
-                                            "Price", chart.axes[0],
-                                            chart.axes[1])
-            series.style = Qt.SolidLine
-            series.color = color
-
-            let min = 999999999
-            let max = -999999999
-            for (i = 0; i < historical.length; ++i) {
-                let price = historical[i]
-                series.append(i / historical.length, historical[i])
-                min = Math.min(min, price)
-                max = Math.max(max, price)
-            }
-
-            chart.axes[1].min = min * 0.99
-            chart.axes[1].max = max * 1.01
-        }
-
-        // Hide background grid
-        for (i = 0; i < chart.axes.length; ++i)
-            chart.axes[i].visible = false
-    }
-
     DefaultFlickable {
         id: flick
         anchors.fill: parent
@@ -113,38 +57,6 @@ Item {
             topPadding: 0
             width: parent.width
             spacing: 16
-
-            Connections
-            {
-                target: Constants.API.app.portfolio_pg.portfolio_mdl
-
-                function onLengthChanged()
-                {
-                    pie_container.visible = Constants.API.app.portfolio_pg.portfolio_mdl.pie_chart_proxy_mdl.rowCount() > 1
-                }
-            }
-
-            Item {
-                id: pie_container
-                visible: Constants.API.app.portfolio_pg.portfolio_mdl.pie_chart_proxy_mdl.rowCount() > 1
-                width: parent.width
-                anchors.horizontalCenter: parent.horizontalCenter
-                height: 250
-
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.rightMargin: 30
-                    anchors.leftMargin: 30
-                    spacing: 0
-
-                    AssetPieChart {
-                        id: pie
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 240
-                        Layout.preferredWidth: 240
-                    }
-                }
-            }
 
             // Filters (search and balance)
             Item {

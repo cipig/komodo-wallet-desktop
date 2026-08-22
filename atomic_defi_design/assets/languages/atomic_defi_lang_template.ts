@@ -61,13 +61,6 @@
     </message>
 </context>
 <context>
-    <name>AmountChart</name>
-    <message>
-        <location filename="../../Dex/Portfolio/AmountChart.qml" line="332"/>
-        <source>Work in progress</source>
-    </message>
-</context>
-<context>
     <name>App</name>
     <message>
         <location filename="../../Dex/App.qml" line="188"/>
@@ -91,13 +84,6 @@
     <message>
         <location filename="../../Dex/Addressbook/AssetFromStandardSelector.qml" line="92"/>
         <source>Disabled</source>
-    </message>
-</context>
-<context>
-    <name>AssetPieChart</name>
-    <message>
-        <location filename="../../Dex/Portfolio/AssetPieChart.qml" line="182"/>
-        <source>Assets</source>
     </message>
 </context>
 <context>
@@ -2655,17 +2641,6 @@ They will be removed from the orderbook until you log in again.</source>
     <message>
         <location filename="../../Dex/Wallet/Sidebar.qml" line="137"/>
         <source>Add asset</source>
-    </message>
-</context>
-<context>
-    <name>SmartChartView</name>
-    <message>
-        <location filename="../../Dex/Portfolio/SmartChartView.qml" line="126"/>
-        <source>Loading market data</source>
-    </message>
-    <message>
-        <location filename="../../Dex/Portfolio/SmartChartView.qml" line="132"/>
-        <source>There is no chart data for this ticker yet</source>
     </message>
 </context>
 <context>

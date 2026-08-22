@@ -140,7 +140,7 @@ jobs:
           host: ${{ matrix.host }}
           dir: '${{ github.workspace }}'
           target: 'desktop'
-          modules: 'qtcharts debug_info qtwebengine'
+          modules: 'debug_info qtwebengine'
           tools: 'tools_ifw'
           setup-python: 'false'
           cache: true
@@ -153,7 +153,7 @@ jobs:
           host: ${{ matrix.host }}
           dir: 'C:\'
           target: 'desktop'
-          modules: 'qtcharts debug_info qtwebengine'
+          modules: 'debug_info qtwebengine'
           tools: 'tools_ifw'
           cache: true
 
@@ -213,7 +213,7 @@ jobs:
         with:
           version: '${{ matrix.type }}-1.2'
           execute_install_scripts: true
-          packages: autoconf autoconf-archive automake bison build-essential curl gperf libcap-dev libpulse-dev libtool libssl-dev libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb1-dev libxcb-keysyms1-dev libxcb-render-util0-dev libxcb-xinerama0 libfuse2 libxcursor-dev libxcomposite-dev libxdamage-dev libxrandr-dev libxtst-dev libxss-dev libdbus-1-dev libevent-dev libfontconfig1-dev libgl1-mesa-dev libudev-dev libpci-dev libnss3-dev libegl1-mesa-dev linux-libc-dev lsb-release ninja-build nodejs software-properties-common unzip wget zstd qtbase5-dev qtdeclarative5-dev qtquickcontrols2-5-dev qttools5-dev qtwebengine5-dev libqt5svg5-dev libqt5charts5-dev libqt5waylandclient5-dev qml-module-qtquick-controls qml-module-qtquick-controls2 qml-module-qtquick-dialogs qml-module-qtquick-extras qml-module-qtquick-layouts qml-module-qtquick-shapes qml-module-qtcharts qml-module-qtgraphicaleffects qml-module-qtwebengine qml-module-qt-labs-platform qml-module-qt-labs-settings
+          packages: autoconf autoconf-archive automake bison build-essential curl gperf libcap-dev libpulse-dev libtool libssl-dev libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb1-dev libxcb-keysyms1-dev libxcb-render-util0-dev libxcb-xinerama0 libfuse2 libxcursor-dev libxcomposite-dev libxdamage-dev libxrandr-dev libxtst-dev libxss-dev libdbus-1-dev libevent-dev libfontconfig1-dev libgl1-mesa-dev libudev-dev libpci-dev libnss3-dev libegl1-mesa-dev linux-libc-dev lsb-release ninja-build nodejs software-properties-common unzip wget zstd qtbase5-dev qtdeclarative5-dev qtquickcontrols2-5-dev qttools5-dev qtwebengine5-dev libqt5svg5-dev libqt5waylandclient5-dev qml-module-qtquick-controls qml-module-qtquick-controls2 qml-module-qtquick-dialogs qml-module-qtquick-extras qml-module-qtquick-layouts qml-module-qtquick-shapes qml-module-qtgraphicaleffects qml-module-qtwebengine qml-module-qt-labs-platform qml-module-qt-labs-settings
 
       - name: Verify autotools prerequisites (Linux)
         if: runner.os == 'Linux'

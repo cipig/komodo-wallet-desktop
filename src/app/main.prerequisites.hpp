@@ -46,7 +46,6 @@
 
 //! Project Headers
 #include "app.hpp"
-#include "atomicdex/constants/qt.wallet.enums.hpp"
 #include "atomicdex/constants/dex.constants.hpp"
 #include "atomicdex/models/qt.portfolio.model.hpp"
 #include "atomicdex/utilities/kill.hpp"
@@ -312,7 +311,6 @@ handle_settings(QSettings& settings)
     using namespace std::chrono;
     int timestamp  = duration_cast<seconds>(system_clock::now().time_since_epoch()).count() - 86400 * 2;
     create_settings_functor("AutomaticUpdateOrderBot", QVariant(false));
-    create_settings_functor("WalletChartsCategory", qint32(WalletChartsCategories::OneMonth));
     create_settings_functor("AvailableLang", QStringList{"en", "es", "fr", "de", "tr", "ru"});
     create_settings_functor("CurrentLang", QString("en"));
     create_settings_functor("2FA", 0);
@@ -395,9 +393,6 @@ run_app(int argc, char** argv)
     qmlRegisterUncreatableType<atomic_dex::MarketModeGadget>("AtomicDEX.MarketMode", 1, 0, "MarketMode", "Not creatable as it is an enum type");
     qRegisterMetaType<TradingMode>("TradingMode");
     qmlRegisterUncreatableType<atomic_dex::TradingModeGadget>("AtomicDEX.TradingMode", 1, 0, "TradingMode", "Not creatable as it is an enum type");
-    qRegisterMetaType<TradingMode>("WalletChartsCategories");
-    qmlRegisterUncreatableType<atomic_dex::WalletChartsCategoriesGadget>(
-        "AtomicDEX.WalletChartsCategories", 1, 0, "WalletChartsCategories", "Not creatable as it is an enum type");
     qRegisterMetaType<TradingError>("TradingError");
     qRegisterMetaType<SelectedOrderStatus>("SelectedOrderStatus");
     qmlRegisterUncreatableType<atomic_dex::SelectedOrderGadget>(

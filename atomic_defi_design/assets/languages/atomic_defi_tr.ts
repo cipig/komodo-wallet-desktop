@@ -79,14 +79,6 @@
     </message>
 </context>
 <context>
-    <name>AmountChart</name>
-    <message>
-        <location filename="../../Dex/Portfolio/AmountChart.qml" line="332"/>
-        <source>Work in progress</source>
-        <translation>İş devam ediyor</translation>
-    </message>
-</context>
-<context>
     <name>App</name>
     <message>
         <location filename="../../Dex/App.qml" line="188"/>
@@ -115,14 +107,6 @@
         <location filename="../../Dex/Addressbook/AssetFromStandardSelector.qml" line="92"/>
         <source>Disabled</source>
         <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>AssetPieChart</name>
-    <message>
-        <location filename="../../Dex/Portfolio/AssetPieChart.qml" line="182"/>
-        <source>Assets</source>
-        <translation>Varlıklar</translation>
     </message>
 </context>
 <context>

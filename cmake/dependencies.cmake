@@ -60,7 +60,7 @@ else ()
 endif ()
 add_library(komodo-date::date ALIAS komodo-date)
 
-find_package(Qt5 5.15 COMPONENTS Core Quick LinguistTools Svg Charts WebEngine WebEngineCore WebEngineWidgets Widgets REQUIRED)
+find_package(Qt5 5.15 COMPONENTS Core Quick LinguistTools Svg WebEngine WebEngineCore WebEngineWidgets Widgets REQUIRED)
 
 set(BUILD_TESTING OFF CACHE BOOL "Override option" FORCE)
 set(EXPECTED_ENABLE_TESTS OFF CACHE BOOL "Override option" FORCE)

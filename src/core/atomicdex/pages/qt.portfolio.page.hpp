@@ -21,10 +21,8 @@
 #include <QVariant>
 
 //! Project headers
-#include "atomicdex/constants/qt.wallet.enums.hpp"
 #include "atomicdex/models/qt.global.coins.cfg.model.hpp"
 #include "atomicdex/models/qt.portfolio.model.hpp"
-
 
 namespace atomic_dex
 {

@@ -33,20 +33,13 @@ namespace atomic_dex
 {
     portfolio_model::portfolio_model(ag::ecs::system_manager& system_manager, entt::dispatcher& dispatcher, QObject* parent) :
         QAbstractListModel(parent), m_system_manager(system_manager), m_dispatcher(dispatcher),
-        m_model_proxy(new portfolio_proxy_model(m_system_manager, parent)), m_pie_chart_proxy_model(new portfolio_proxy_model(m_system_manager, parent))
+        m_model_proxy(new portfolio_proxy_model(m_system_manager, parent))
     {
         m_model_proxy->setSourceModel(this);
         m_model_proxy->setDynamicSortFilter(true);
         m_model_proxy->sort_by_currency_balance(false);
         m_model_proxy->setFilterRole(NameAndTicker);
         m_model_proxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
-
-        m_pie_chart_proxy_model->setSourceModel(this);
-        m_pie_chart_proxy_model->setDynamicSortFilter(true);
-        m_pie_chart_proxy_model->set_with_fiat_balance(true);
-        m_pie_chart_proxy_model->sort_by_currency_balance(false);
-        m_pie_chart_proxy_model->setFilterRole(NameAndTicker);
-        m_pie_chart_proxy_model->setFilterCaseSensitivity(Qt::CaseInsensitive);
     }
 
     void
@@ -444,12 +437,6 @@ namespace atomic_dex
     atomic_dex::portfolio_model::get_portfolio_proxy_mdl() const
     {
         return m_model_proxy;
-    }
-
-    portfolio_proxy_model*
-    portfolio_model::get_pie_char_proxy_mdl() const
-    {
-        return m_pie_chart_proxy_model;
     }
 
     int

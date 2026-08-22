@@ -228,7 +228,6 @@ namespace atomic_dex
       signals:
         void orderbookChanged();
         void ordersWidgetChanged();
-        void candlestickChartsChanged();
         void marketPairsChanged();
         void buySellLastRpcDataChanged();
         void buySellRpcStatusChanged();
