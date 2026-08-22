@@ -77,6 +77,14 @@ Item {
         list_model_proxy.apply_all_filtering()
     }
 
+    onVisibleChanged: {
+        if (visible) {
+            list_model_proxy.is_history = is_history
+            applyFilter()
+            list_model_proxy.apply_all_filtering()
+        }
+    }
+
     ColumnLayout
     {
         anchors.fill: parent

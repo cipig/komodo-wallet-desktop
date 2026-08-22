@@ -8,7 +8,6 @@ import "Orders/"
 
 MultipageModal {
     id: root
-
     width: 1100
     onOpened: reset()
     function reset() {}
@@ -20,7 +19,6 @@ MultipageModal {
             id: list
             Layout.fillWidth: true
             Layout.fillHeight: true
-
             model: API.app.trading_pg.market_pairs_mdl.multi_order_coins
 
             // Row
@@ -53,9 +51,7 @@ MultipageModal {
         FloatingBackground {
             Layout.alignment: Qt.AlignHCenter
             Layout.bottomMargin: 10
-
             color: Style.colorTheme5
-
             width: warning_texts.width + 20
             height: warning_texts.height + 20
 
@@ -65,27 +61,23 @@ MultipageModal {
 
                 DexLabel {
                     Layout.alignment: Qt.AlignHCenter
-
                     text_value: qsTr("These swaps requests can not be undone and this is the final event!")
                 }
 
                 DexLabel {
                     Layout.alignment: Qt.AlignHCenter
-
                     text_value: qsTr("These transactions can take up to 60 mins - DO NOT close this application!")
                     font.pixelSize: Style.textSizeSmall4
                 }
 
                 DexLabel {
                     Layout.alignment: Qt.AlignHCenter
-
                     text_value: qsTr("Same funds will be used until an order matches.")
                     font.pixelSize: Style.textSizeSmall4
                 }
 
                 DexLabel {
                     Layout.alignment: Qt.AlignHCenter
-
                     text_value: qsTr("Note that if one order is filled other will not be cancelled.")
                     font.pixelSize: Style.textSizeSmall4
                 }
@@ -106,11 +98,8 @@ MultipageModal {
                 onClicked: {
                     console.log("Submitting multiple sell order")
                     API.app.trading_pg.place_multiple_sell_order()
-
                     root.close()
-
                     toast.show(qsTr("Placed multiple orders"), General.time_toast_basic_info, "", false)
-
                     onOrderSuccess()
                 }
             }

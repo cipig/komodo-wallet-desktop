@@ -729,12 +729,18 @@ namespace atomic_dex
         if (this->m_market_mode != market_mode)
         {
             this->m_market_mode = market_mode;
-            // SPDLOG_DEBUG("switching market_mode, new mode: {}", m_market_mode == MarketMode::Buy ? "buy" : "sell");
             this->clear_forms("set_market_mode");
+
             const auto* market_selector_mdl = get_market_pairs_mdl();
-            set_current_orderbook(market_selector_mdl->get_left_selected_coin(), market_selector_mdl->get_right_selected_coin());
+            const auto left = market_selector_mdl->get_left_selected_coin();
+            const auto right = market_selector_mdl->get_right_selected_coin();
+
+            if (!left.isEmpty() && !right.isEmpty() && left != right)
+            {
+                set_current_orderbook(left, right);
+            }
             emit marketModeChanged();
-            
+
             if (m_market_mode == MarketMode::Buy)
             {
                 this->get_orderbook_wrapper()->get_best_orders()->get_orderbook_proxy()->sort(0, Qt::AscendingOrder);
