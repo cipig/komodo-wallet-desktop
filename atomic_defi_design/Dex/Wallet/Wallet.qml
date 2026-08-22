@@ -24,7 +24,6 @@ RowLayout
     {
         dashboard.current_ticker = api_wallet_page.ticker
         dashboard.switchPage(Dashboard.PageType.DEX)
-        API.app.trading_pg.set_pair(true, api_wallet_page.ticker)
     }
 
     function reset()

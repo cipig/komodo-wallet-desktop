@@ -73,9 +73,11 @@ Item
 
     onCurrentPageChanged: {
         sidebar.currentLineType = currentPage
-        if (currentPage == Dashboard.PageType.DEX)
-        {
-            API.app.trading_pg.set_pair(true, api_wallet_page.ticker)
+        if (currentPage == Dashboard.PageType.DEX) {
+            const t = dashboard.current_ticker && dashboard.current_ticker !== ""
+                    ? dashboard.current_ticker
+                    : api_wallet_page.ticker
+            API.app.trading_pg.set_pair(true, t)
         }
     }
 
