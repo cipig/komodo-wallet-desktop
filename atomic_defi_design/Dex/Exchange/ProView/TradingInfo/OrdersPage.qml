@@ -25,10 +25,6 @@ Item {
         list_model_proxy.is_history = is_history
         applyFilter()
         list_model_proxy.apply_all_filtering()
-
-        if ((combo_base.currentTicker !== "All") || (combo_rel.currentTicker !== "All")) {
-            buttonDelay.start()
-        }
     }
 
     function reset()
@@ -36,15 +32,6 @@ Item {
         list_model_proxy.is_history = is_history
         applyFilter()
         list_model_proxy.apply_all_filtering()
-    }
-
-    Timer {
-        id: buttonDelay
-        interval: 200
-        onTriggered: {
-            applyFilter()
-            list_model_proxy.apply_all_filtering()
-        }
     }
 
     function applyDateFilter() {
