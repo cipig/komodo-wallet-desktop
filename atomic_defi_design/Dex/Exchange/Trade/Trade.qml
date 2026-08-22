@@ -87,24 +87,30 @@ Item
     readonly property var curr_fee_info: API.app.trading_pg.fees
     property var fees_data: []
 
-    // Trade
     function onOpened(ticker)
     {
+        // Prefer contextual ticker (from wallet/swap/sidebar context)
+        if (ticker && ticker !== "") {
+            setPair(true, ticker)
+            General.initialized_orderbook_pair = true
+            return
+        }
+
+        // Fallback only when no ticker context is available
         if (!General.initialized_orderbook_pair)
         {
             if (API.app.trading_pg.current_trading_mode == TradingMode.Pro)
             {
                 API.app.trading_pg.set_current_orderbook(General.default_base,
-                                                     General.default_rel)
+                                                         General.default_rel)
             }
             else
             {
                 API.app.trading_pg.set_current_orderbook(General.default_rel,
-                                                     General.default_base)
+                                                         General.default_base)
             }
             General.initialized_orderbook_pair = true
         }
-        setPair(true, ticker)
     }
 
     function setPair(is_left_side, changed_ticker, is_swap=false) {
