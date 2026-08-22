@@ -38,8 +38,6 @@ Item {
         list_model_proxy.apply_all_filtering()
     }
 
-    Component.onDestruction: reset()
-
     Timer {
         id: buttonDelay
         interval: 200
@@ -79,6 +77,16 @@ Item {
 
     onVisibleChanged: {
         if (visible) {
+            list_model_proxy.is_history = is_history
+            applyFilter()
+            list_model_proxy.apply_all_filtering()
+        }
+    }
+
+    onPage_indexChanged: {
+        const isOrdersTab = !is_history && page_index === 1
+        const isHistoryTab = is_history && page_index === 2
+        if (isOrdersTab || isHistoryTab) {
             list_model_proxy.is_history = is_history
             applyFilter()
             list_model_proxy.apply_all_filtering()
