@@ -27,13 +27,6 @@ Item {
         list_model_proxy.apply_all_filtering()
     }
 
-    function reset()
-    {
-        list_model_proxy.is_history = is_history
-        applyFilter()
-        list_model_proxy.apply_all_filtering()
-    }
-
     function applyDateFilter() {
         list_model_proxy.filter_minimum_date = min_date.selectedDate
 
