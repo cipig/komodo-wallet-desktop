@@ -56,7 +56,7 @@ DefaultRectangle
 
         ColumnLayout
         {
-            spacing: 1
+            spacing: 2
             Layout.alignment: Qt.AlignVCenter
             Layout.fillWidth: true
 

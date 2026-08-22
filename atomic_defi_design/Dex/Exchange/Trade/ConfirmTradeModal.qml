@@ -82,7 +82,9 @@ MultipageModal
         {
             id: config_section
             Layout.alignment: Qt.AlignCenter
-            Layout.preferredWidth: dex_pair_badges.width - 40
+            Layout.fillWidth: true
+            Layout.leftMargin: 20
+            Layout.rightMargin: 20
             Layout.topMargin: 4
             spacing: 5
 
@@ -324,8 +326,7 @@ MultipageModal
             {
                 Layout.alignment: Qt.AlignCenter
                 Layout.preferredWidth: parent.width - 10
-                Layout.preferredHeight: 90
-                height: childrenRect.height
+                Layout.preferredHeight: 160
                 visible: !buy_sell_rpc_busy
 
                 ColumnLayout
