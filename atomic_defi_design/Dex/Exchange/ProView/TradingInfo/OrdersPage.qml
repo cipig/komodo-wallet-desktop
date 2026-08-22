@@ -11,7 +11,6 @@ import Dex.Themes 1.0 as Dex
 
 Item {
     id: root
-
     readonly property date default_min_date: new Date("2019-01-01")
     readonly property date default_max_date: new Date(new Date().setDate(new Date().getDate() + 30))
     property var list_model: API.app.orders_mdl
@@ -20,14 +19,13 @@ Item {
     property alias title: order_list.title
     property alias items: order_list.items
     property bool is_history: false
-
     visible: root.page_index > 0
     enabled: visible
 
     function update()
     {
         reset()
-        if (combo_base.currentTicker !== "All" | combo_rel.currentTicker !== "All") {
+        if (combo_base.currentTicker !== "All" || combo_rel.currentTicker !== "All") {
             buttonDelay.start()
         }
     }
@@ -265,22 +263,19 @@ Item {
     FileDialog
     {
         id: export_csv_dialog
-
         title: qsTr("Please choose the CSV export name and location")
         fileMode: FileDialog.SaveFile
-
         defaultSuffix: "csv"
         nameFilters: ["CSV files (*.csv)", "All files (*)"]
 
         onAccepted: {
             const path = currentFile.toString()
-
             console.log("Exporting to CSV: " + path)
             API.app.exporter_service.export_swaps_history_to_csv(path.replace(General.os_file_prefix, ""))
-
             const folder_path = path.substring(0, path.lastIndexOf("/"))
             Qt.openUrlExternally(folder_path)
         }
+
         onRejected: {
             console.log("CSV export cancelled")
         }

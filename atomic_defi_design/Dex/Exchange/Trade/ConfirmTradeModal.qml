@@ -24,7 +24,7 @@ MultipageModal
         titleText: qsTr("")
         titleAlignment: Qt.AlignHCenter
         titleTopMargin: 0
-        topMarginAfterTitle: 0
+        topMarginAfterTitle: 10
         flickMax: window.height - 40
 
         header: [
@@ -83,8 +83,8 @@ MultipageModal
             id: config_section
             Layout.alignment: Qt.AlignCenter
             Layout.fillWidth: true
-            Layout.leftMargin: 20
-            Layout.rightMargin: 20
+            Layout.leftMargin: 4
+            Layout.rightMargin: 4
             Layout.topMargin: 4
             spacing: 5
 

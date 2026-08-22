@@ -108,17 +108,23 @@ ColumnLayout {
                 }
             }
 
-            OrdersPage {
-                page_index: swipeView.currentIndex
-                visible: swipeView.currentIndex === tabView.order_idx
-                enabled: visible
+            Loader {
+                active: swipeView.currentIndex === tabView.order_idx
+                sourceComponent: OrdersPage {
+                    page_index: swipeView.currentIndex
+                    visible: true
+                    enabled: true
+                }
             }
 
-            OrdersPage {
-                page_index: swipeView.currentIndex
-                is_history: true
-                visible: swipeView.currentIndex === tabView.history_idx
-                enabled: visible
+            Loader {
+                active: swipeView.currentIndex === tabView.history_idx
+                sourceComponent: OrdersPage {
+                    page_index: swipeView.currentIndex
+                    is_history: true
+                    visible: true
+                    enabled: true
+                }
             }
 
             onCurrentIndexChanged: {
