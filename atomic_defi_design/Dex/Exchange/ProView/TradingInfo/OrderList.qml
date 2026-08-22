@@ -22,7 +22,8 @@ Item
         HorizontalLine
         {
             Layout.fillWidth: true
-            Layout.fillHeight: true
+            Layout.preferredHeight: 1
+            Layout.maximumHeight: 1
         }
 
         DefaultListView
@@ -30,8 +31,7 @@ Item
             id: list
             clip: true
             Layout.fillWidth: true
-            Layout.preferredHeight: is_history ? parent.height - 70 : parent.height
-
+            Layout.fillHeight: true
             model: items.orders_proxy_mdl
             enabled: !is_history || !API.app.orders_mdl.fetching_busy
             visible: enabled
@@ -45,17 +45,13 @@ Item
             }
         }
 
-        Item
-        {
-            Layout.fillHeight: true
-        }
-
         // Pagination
         DexPaginator
         {
             visible: is_history && list.count > 0
             enabled: list.enabled
             Layout.maximumHeight: 70
+            Layout.preferredHeight: visible ? 70 : 0
             Layout.fillWidth: true
             Layout.bottomMargin: 10
             itemsPerPageComboBox.mainBackgroundColor: Dex.CurrentTheme.comboBoxBackgroundColor
