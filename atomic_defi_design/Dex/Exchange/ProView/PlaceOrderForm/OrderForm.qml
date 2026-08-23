@@ -412,12 +412,12 @@ ColumnLayout
     {
         Layout.fillWidth: true
         Layout.alignment: Qt.AlignHCenter
-        height: 28
+        height: 36
 
-        DexAppOutlineButton
+        GradientButton
         {
             id: swap_btn
-            height: 32
+            height: 36
             anchors.fill: parent
             radius: 18
             text: API.app.trading_pg.maker_mode ? qsTr("CREATE MAKER SWAP") : qsTr("START TAKER SWAP")

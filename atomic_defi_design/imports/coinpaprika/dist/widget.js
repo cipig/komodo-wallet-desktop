@@ -11775,15 +11775,34 @@ class chartClass {
       return this.customDate ? this.fetchDataPackage(this.startDate, this.endDate, true) : this.fetchDataPackage();
     });
     promise = promise.then(() => {
-        return new Promise(resolve => {
-            setTimeout(() => {
-                if (this.chart) {
-                    this.chart.reflow();
-                    this.chart.redraw(false);
-                }
-                resolve();
-            }, 100);
-        });
+      return new Promise(resolve => {
+        setTimeout(() => {
+          if (this.chart) {
+            const axis = this.chart.xAxis[0];
+            const priceSeries = this.getPriceSeries();
+            let dataMin, dataMax;
+            if (priceSeries && priceSeries.xData && priceSeries.xData.length > 0) {
+              dataMin = priceSeries.xData[0];
+              dataMax = priceSeries.xData[priceSeries.xData.length - 1];
+              console.log("Series length: " + priceSeries.xData.length);
+              console.log("First point timestamp: " + dataMin);
+              console.log("Last point timestamp: " + dataMax);
+            }
+            console.log("Before reflow - axis.min: " + axis.min + " axis.max: " + axis.max);
+            console.log("Before reflow - axis.dataMin: " + axis.dataMin + " axis.dataMax: " + axis.dataMax);
+            this.chart.reflow();
+            console.log("After reflow - axis.min: " + axis.min + " axis.max: " + axis.max);
+            if (dataMin !== undefined && dataMax !== undefined) {
+              console.log("Calling setExtremes with dataMin: " + dataMin + " dataMax: " + dataMax);
+              axis.setExtremes(dataMin, dataMax, false, false);
+            }
+            console.log("Before redraw - axis.min: " + axis.min + " axis.max: " + axis.max);
+            this.chart.redraw(false);
+            console.log("After redraw - axis.min: " + axis.min + " axis.max: " + axis.max);
+          }
+          resolve();
+        }, 100);
+      });
     });
     promise = promise.then(() => {
       return this.setRangeSwitcher();
@@ -12139,7 +12158,7 @@ class chartClass {
       if (options.navigator === true) {
         navigatorOptions = {
           navigator: {
-            enable: true,
+            enabled: true,
             margin: 20,
             series: {
               lineWidth: 1
