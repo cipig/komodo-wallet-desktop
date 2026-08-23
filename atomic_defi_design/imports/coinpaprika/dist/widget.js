@@ -11776,28 +11776,19 @@ class chartClass {
     });
     promise = promise.then(() => {
       return new Promise(resolve => {
-        if (!this.chart) {
-          resolve();
-          return;
-        }
-        const axis = this.chart.xAxis[0];
-        const priceSeries = this.getPriceSeries();
-        if (!priceSeries || !priceSeries.xData || priceSeries.xData.length === 0) {
-          resolve();
-          return;
-        }
-        const dataMin = priceSeries.xData[0];
-        const dataMax = priceSeries.xData[priceSeries.xData.length - 1];
-        const checkReady = () => {
-          if (this.chart && axis.width !== undefined && axis.width > 0) {
-            axis.setExtremes(dataMin, dataMax, false, false);
-            this.chart.redraw(false);
-            resolve();
-          } else {
-            requestAnimationFrame(checkReady);
+        setTimeout(() => {
+          if (this.chart) {
+            const axis = this.chart.xAxis[0];
+            const priceSeries = this.getPriceSeries();
+            if (priceSeries && priceSeries.xData && priceSeries.xData.length > 0) {
+              const dataMin = priceSeries.xData[0];
+              const dataMax = priceSeries.xData[priceSeries.xData.length - 1];
+              axis.setExtremes(dataMin, dataMax, false, false);
+              this.chart.redraw(false);
+            }
           }
-        };
-        requestAnimationFrame(checkReady);
+          resolve();
+        }, 500);
       });
     });
     promise = promise.then(() => {
