@@ -93,9 +93,9 @@ ColumnLayout {
                     Chart {
                         id: chart
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 520
-                        Layout.minimumHeight: 520
-                        Layout.topMargin: 8
+                        Layout.preferredHeight: 540
+                        Layout.minimumHeight: 540
+                        Layout.maximumHeight: 540
                     }
 
                     Item {
@@ -107,7 +107,7 @@ ColumnLayout {
                         id: price_line
                         Layout.fillWidth: true
                         Layout.preferredHeight: 95
-                        Layout.bottomMargin: 8
+                        Layout.bottomMargin: 4
                         Layout.leftMargin: 8
                         Layout.rightMargin: 8
                     }

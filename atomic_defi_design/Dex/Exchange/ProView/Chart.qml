@@ -11,7 +11,7 @@ Item
 {
     id: root
     implicitWidth: 570
-    implicitHeight: 520
+    implicitHeight: 540
 
     readonly property bool dark_theme: Dex.CurrentTheme.getColorMode() === Dex.CurrentTheme.ColorMode.Dark
     property bool pair_supported: false
@@ -196,12 +196,6 @@ Item
                 if (webEngineLoadReq.status === WebEngineView.LoadSucceededStatus)
                 {
                     webEngineViewPlaceHolder.visible = true
-
-                    Qt.callLater(function() {
-                        dashboard.webEngineView.runJavaScript(
-                            "(function(){try{if(window.Highcharts&&Highcharts.charts){Highcharts.charts.forEach(function(c){if(c){c.reflow();}});}}catch(e){}})();"
-                        )
-                    })
                 }
                 else if (webEngineLoadReq.status === WebEngineView.LoadFailedStatus)
                 {
