@@ -82,23 +82,25 @@ MultipageModal
         {
             Layout.fillWidth: true
             Layout.topMargin: 30
-            spacing: 12
+            spacing: 30
 
             CancelButton
             {
                 text: qsTr("Cancel")
                 Layout.fillWidth: true
                 Layout.preferredHeight: 40
+                radius: 18
                 onClicked: root.close()
             }
 
             DefaultButton
             {
                 id: submitButton
+                text: qsTr("View")
                 Layout.fillWidth: true
                 Layout.preferredHeight: 40
+                radius: 18
                 enabled: _inputPassword.field.length > 0
-                text: qsTr("View")
                 onClicked: tryViewKeysAndSeed()
             }
         }
@@ -283,7 +285,7 @@ MultipageModal
             visible: false
             enabled: false
             Layout.fillWidth: true
-            Layout.preferredHeight: 480
+            Layout.preferredHeight: 385
             Layout.alignment: Qt.AlignHCenter
             radius: 10
             border.color: Dex.CurrentTheme.lineSeparatorColor

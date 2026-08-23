@@ -414,7 +414,7 @@ ColumnLayout
         Layout.alignment: Qt.AlignHCenter
         height: 28
 
-        GradientButton
+        DexAppOutlineButton
         {
             id: swap_btn
             height: 32
