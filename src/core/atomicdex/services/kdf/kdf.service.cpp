@@ -296,13 +296,12 @@ namespace atomic_dex
 
     void kdf_service::update()
     {
-        using namespace std::chrono_literals;
-
         if (not m_kdf_running)
         {
             return;
         }
 
+        using namespace std::chrono_literals;
         const auto now          = std::chrono::high_resolution_clock::now();
         const auto s_orderbook  = std::chrono::duration_cast<std::chrono::seconds>(now - m_orderbook_clock);
         const auto s_info       = std::chrono::duration_cast<std::chrono::seconds>(now - m_info_clock);
@@ -323,8 +322,10 @@ namespace atomic_dex
 
         if (s_activation >= 4s)
         {
+            spdlog::stopwatch sw; using namespace std::chrono;
             auto                     coins = this->get_enabled_coins();
             std::vector<std::string> tickers;
+
             for (auto&& coin: coins)
             {
                 if (!coin.active)
@@ -332,12 +333,14 @@ namespace atomic_dex
                     tickers.push_back(coin.ticker);
                 }
             }
+
             if (!tickers.empty())
             {
                 // Mark coins as active internally, and updates the coins file
                 SPDLOG_DEBUG("Making sure {} enabled coins are marked as active", tickers.size());
                 update_coin_status(this->m_current_wallet_name, tickers, true, m_coins_informations, m_coin_cfg_mutex);
             }
+            SPDLOG_DEBUG("Time elapsed in kdf_service::update s_activation: {}", duration_cast<milliseconds>(sw.elapsed()));
 
             if (!m_activation_queue.empty())
             {

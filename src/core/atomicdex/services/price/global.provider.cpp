@@ -90,7 +90,6 @@ namespace
     }
 } // namespace
 
-
 namespace atomic_dex
 {
     global_price_service::global_price_service(entt::registry& registry, ag::ecs::system_manager& system_manager, atomic_dex::cfg& cfg) :
@@ -111,9 +110,10 @@ namespace atomic_dex
         const auto s   = std::chrono::duration_cast<std::chrono::seconds>(now - m_update_clock);
         if (s >= 57min)
         {
-            SPDLOG_INFO("global_price_service::update - 57min elapsed, updating rates");
+            spdlog::stopwatch sw; using namespace std::chrono;
             this->on_force_update_providers({});
             m_update_clock = std::chrono::high_resolution_clock::now();
+            SPDLOG_DEBUG("Time elapsed in global_price_service::update: {}", duration_cast<milliseconds>(sw.elapsed()));
         }
     }
 

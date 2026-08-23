@@ -90,9 +90,9 @@ namespace atomic_dex
             SPDLOG_WARN("{} is wallet only - skipping", base.toStdString());
             return;
         }
-        SPDLOG_INFO("Setting current orderbook: {} / {}", base.toStdString(), rel.toStdString());
-        auto* market_selector_mdl = get_market_pairs_mdl();
 
+        spdlog::stopwatch sw; using namespace std::chrono;
+        auto* market_selector_mdl = get_market_pairs_mdl();
         const bool to_change = base != market_selector_mdl->get_left_selected_coin() || rel != market_selector_mdl->get_right_selected_coin();
         market_selector_mdl->set_left_selected_coin(base);
         market_selector_mdl->set_right_selected_coin(rel);
@@ -107,6 +107,7 @@ namespace atomic_dex
 
         emit kdfMinTradeVolChanged();
         dispatcher_.trigger<refresh_orderbook_model_data>(base.toStdString(), rel.toStdString());
+        SPDLOG_DEBUG("Time elapsed in trading_page::set_current_orderbook to {} / {}: {}", base.toStdString(), rel.toStdString(), duration_cast<milliseconds>(sw.elapsed()));
     }
 
     void
@@ -771,7 +772,7 @@ namespace atomic_dex
             m_price = std::move(price);
             if (this->m_preferred_order.has_value() && this->m_preferred_order->contains("locked"))
             {
-                SPDLOG_INFO("releasing preferred order because price has been modified");
+                //SPDLOG_INFO("releasing preferred order because price has been modified");
                 this->m_preferred_order = std::nullopt;
                 emit preferredOrderChanged();
             }
@@ -810,7 +811,6 @@ namespace atomic_dex
         m_minimal_trading_amount = "0.0001";
         emit minTradeVolChanged();
         this->set_volume("0");
-        
         this->set_total_amount("0");
         this->set_trading_error(TradingError::None);
         this->m_preferred_order  = std::nullopt;
@@ -885,7 +885,6 @@ namespace atomic_dex
             const auto max_taker_vol      = max_taker_vol_obj["decimal"].toString().toStdString();
             const auto max_taker_vol_coin = max_taker_vol_obj["coin"].toString().toStdString();
             const auto base               = get_market_pairs_mdl()->get_left_selected_coin().toStdString();
-
 
             if (!max_taker_vol.empty())
             {

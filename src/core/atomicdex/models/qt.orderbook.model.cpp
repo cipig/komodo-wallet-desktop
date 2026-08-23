@@ -382,7 +382,6 @@ namespace atomic_dex
         return rowCount();
     }
 
-
     void
     orderbook_model::initialize_order(const kdf::order_contents& order)
     {
@@ -414,9 +413,7 @@ namespace atomic_dex
                     t_float_50       preferred_price = safe_float(preferred_order.value("price", "0").toString().toStdString());
                     if (price_std > preferred_price)
                     {
-                        SPDLOG_INFO(
-                            "An order with a better price is inserted, uuid: {}, new_price: {}, current_price: {}", order.uuid, utils::format_float(price_std),
-                            utils::format_float(preferred_price));
+                        //SPDLOG_DEBUG("An order with a better price is inserted, uuid: {}, new_price: {}, current_price: {}", order.uuid, utils::format_float(price_std), utils::format_float(preferred_price));
                         trading_pg.set_selected_order_status(SelectedOrderStatus::BetterPriceAvailable);
                         emit betterOrderDetected(get_order_from_uuid(QString::fromStdString(order.uuid)));
                     }
@@ -565,8 +562,7 @@ namespace atomic_dex
                     const auto selected_order_uuid = preferred_order.value("uuid", "").toString().toStdString();
                     if (selected_order_uuid == uuid_to_be_removed)
                     {
-                        SPDLOG_WARN(
-                            "The selected order uuid: {} is removed from the orderbook model, checking if a better order is available", uuid_to_be_removed);
+                        //SPDLOG_WARN("The selected order uuid: {} is removed from the orderbook model, checking if a better order is available", uuid_to_be_removed);
                         check_for_better_order(trading_pg, preferred_order, selected_order_uuid);
                     }
                 }
