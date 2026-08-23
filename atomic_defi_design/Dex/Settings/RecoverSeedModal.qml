@@ -80,8 +80,9 @@ MultipageModal
         // Footer
         RowLayout
         {
-            Layout.preferredWidth: parent.width
+            Layout.fillWidth: true
             Layout.topMargin: 30
+
             CancelButton
             {
                 text: qsTr("Cancel")
@@ -112,6 +113,7 @@ MultipageModal
             id: loading
             repeat: true
             running: false
+            interval: 100
             onTriggered:
             {
                 if (!settings_page.fetching_priv_keys_busy)
@@ -135,8 +137,8 @@ MultipageModal
             visible: false
             enabled: false
             spacing: 5
-            width: parent.width
-            height: 130
+            Layout.fillWidth: true
+            Layout.preferredHeight: 130
 
             // Logo
             DefaultImage
@@ -277,9 +279,8 @@ MultipageModal
             id: coinsList
             visible: false
             enabled: false
-            Layout.preferredWidth: parent.width
-            Layout.preferredHeight: 420
-            Layout.fillHeight: true
+            Layout.fillWidth: true
+            Layout.preferredHeight: 480
             Layout.alignment: Qt.AlignHCenter
             radius: 10
             border.color: Dex.CurrentTheme.lineSeparatorColor
@@ -439,6 +440,7 @@ MultipageModal
                             }
                         }
                     }
+
                     HorizontalLine { Layout.fillWidth: true }
                 }
             }
