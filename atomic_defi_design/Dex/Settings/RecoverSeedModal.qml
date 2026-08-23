@@ -82,18 +82,21 @@ MultipageModal
         {
             Layout.fillWidth: true
             Layout.topMargin: 30
+            spacing: 12
 
             CancelButton
             {
                 text: qsTr("Cancel")
-                Layout.preferredWidth: parent.width / 100 * 48
+                Layout.fillWidth: true
+                Layout.preferredHeight: 40
                 onClicked: root.close()
             }
 
             DefaultButton
             {
                 id: submitButton
-                Layout.preferredWidth: parent.width / 100 * 48
+                Layout.fillWidth: true
+                Layout.preferredHeight: 40
                 enabled: _inputPassword.field.length > 0
                 text: qsTr("View")
                 onClicked: tryViewKeysAndSeed()

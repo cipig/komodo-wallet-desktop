@@ -12208,7 +12208,7 @@ class chartClass {
     promise = promise.then(() => {
       return document.addEventListener(this.id + "SetExtremes", (e) => {
         let minDate = Math.floor(e.detail.minDate / 1e3).toString();
-        let maxDate = Math.floor(e.detail.maxDate / 1e3).toString();
+        let maxDate = (Math.floor(e.detail.maxDate / 1e3) + 1).toString();  // +1 sec buffer
         let promise2 = Promise.resolve();
         promise2 = promise2.then(() => {
           return this.fetchDataPackage(minDate, maxDate);
