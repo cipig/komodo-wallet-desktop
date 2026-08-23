@@ -80,7 +80,14 @@ Item
                      data-modules='["chart"]'
                      data-update-active="false"
                      data-volume-visible="false"></div>
-                <script src="qrc:/coinpaprika/dist/widget.min.js" ...></script>
+                <script
+                    src="qrc:/coinpaprika/dist/widget.min.js"
+                    data-cp-currency-widget='{
+                        "origin-src": "https://unpkg.com/@coinpaprika/widget-currency@2.0.13",
+                        "img-src": "qrc:/coinpaprika/dist/img/logo_widget.svg",
+                        "style-src": "qrc:/coinpaprika/dist/widget.min.css"
+                    }'>
+                </script>
                 `
             }
             else
