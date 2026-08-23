@@ -343,6 +343,7 @@ namespace atomic_dex
     void
     orderbook_model::reset_orderbook(const t_orders_contents& orderbook)
     {
+        spdlog::stopwatch sw; using namespace std::chrono;
         this->beginResetModel();
         m_model_data = orderbook;
         m_orders_id_registry.clear();
@@ -374,6 +375,7 @@ namespace atomic_dex
                 this->m_model_proxy->sort(0, Qt::AscendingOrder);
             }
         }
+        SPDLOG_DEBUG("Time elapsed in orderbook_model::reset_orderbook: {}", duration_cast<milliseconds>(sw.elapsed()));
     }
 
     int
@@ -465,10 +467,7 @@ namespace atomic_dex
                         t_float_50       preferred_price = safe_float(preferred_order.value("price", "0").toString().toStdString());
                         if (price_std > preferred_price)
                         {
-                            SPDLOG_INFO(
-                                "An order with a better price is available, uuid: {}, new_price: {}, current_price: {}",
-                                order.uuid, utils::format_float(price_std), utils::format_float(preferred_price)
-                            );
+                            //SPDLOG_INFO("An order with a better price is available, uuid: {}, new_price: {}, current_price: {}", order.uuid, utils::format_float(price_std), utils::format_float(preferred_price));
                             trading_pg.set_selected_order_status(SelectedOrderStatus::BetterPriceAvailable);
                             emit betterOrderDetected(get_order_from_uuid(QString::fromStdString(order.uuid)));
                         }
@@ -638,9 +637,7 @@ namespace atomic_dex
 
                 if (price_std > preferred_price)
                 {
-                    SPDLOG_INFO(
-                        "An order with a better price is available, uuid: {}, new_price: {}, current_price: {}", order.uuid, utils::format_float(price_std),
-                        utils::format_float(preferred_price));
+                    //SPDLOG_INFO("An order with a better price is available, uuid: {}, new_price: {}, current_price: {}", order.uuid, utils::format_float(price_std), utils::format_float(preferred_price));
                     trading_pg.set_selected_order_status(SelectedOrderStatus::BetterPriceAvailable);
                     emit betterOrderDetected(get_order_from_uuid(QString::fromStdString(order.uuid)));
                     hit = true;

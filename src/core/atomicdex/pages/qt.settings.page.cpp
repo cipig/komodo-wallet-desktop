@@ -291,7 +291,7 @@ namespace atomic_dex
             emit onCurrencyChanged();
             emit onCurrencySignChanged();
             emit onFiatSignChanged();
-            SPDLOG_DEBUG("Time elapsed in settings_page::set_current_currency change currency {} to {}: {}", m_config.current_currency, current_currency.toStdString(), duration_cast<milliseconds>(sw.elapsed()));
+            SPDLOG_DEBUG("Time elapsed in settings_page::set_current_currency to {}: {}", current_currency.toStdString(), duration_cast<milliseconds>(sw.elapsed()));
         }
         else
         {
@@ -324,10 +324,8 @@ namespace atomic_dex
         {
             if (current_fiat.toStdString() != m_config.current_fiat)
             {
-                spdlog::stopwatch sw; using namespace std::chrono;
                 atomic_dex::change_fiat(m_config, current_fiat.toStdString());
                 emit onFiatChanged();
-                SPDLOG_DEBUG("Time elapsed in settings_page::set_current_fiat change fiat {} to {}: {}", m_config.current_fiat, current_fiat.toStdString(), duration_cast<milliseconds>(sw.elapsed()));
             }
         }
         else
