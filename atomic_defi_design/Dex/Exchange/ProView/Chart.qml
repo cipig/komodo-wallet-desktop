@@ -196,6 +196,12 @@ Item
                 if (webEngineLoadReq.status === WebEngineView.LoadSucceededStatus)
                 {
                     webEngineViewPlaceHolder.visible = true
+
+                    Qt.callLater(function() {
+                        dashboard.webEngineView.runJavaScript(
+                            "(function(){try{if(window.Highcharts&&Highcharts.charts){Highcharts.charts.forEach(function(c){if(c){c.reflow();}});}}catch(e){}})();"
+                        )
+                    })
                 }
                 else if (webEngineLoadReq.status === WebEngineView.LoadFailedStatus)
                 {

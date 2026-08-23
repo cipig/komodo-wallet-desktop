@@ -320,8 +320,9 @@ namespace atomic_dex
             m_orders_clock = std::chrono::high_resolution_clock::now();
         }
 
-        if (s_activation >= 6s)
+        if (s_activation >= 5s)
         {
+            spdlog::stopwatch sw; using namespace std::chrono;
             auto                     coins = this->get_enabled_coins();
             std::vector<std::string> tickers;
 
@@ -345,7 +346,7 @@ namespace atomic_dex
                 std::unique_lock lock(m_activation_mutex);
                 SPDLOG_DEBUG("{} coins in the activation queue", m_activation_queue.size());
                 t_coins to_enable;
-                for (size_t i = 0; i < 30 && i < m_activation_queue.size(); ++i) {
+                for (size_t i = 0; i < 25 && i < m_activation_queue.size(); ++i) {
                     to_enable.push_back(m_activation_queue[i]);
                 }
                 activate_coins(to_enable);
@@ -353,8 +354,9 @@ namespace atomic_dex
                 m_activation_clock = std::chrono::high_resolution_clock::now();
             }
             else {
-                m_activation_clock = std::chrono::high_resolution_clock::now() + std::chrono::duration_cast<std::chrono::seconds>(std::chrono::seconds(7));
+                m_activation_clock = std::chrono::high_resolution_clock::now() + std::chrono::duration_cast<std::chrono::seconds>(std::chrono::seconds(60));
             }
+            SPDLOG_DEBUG("Time elapsed in kdf_service::update s_activation: {}", duration_cast<milliseconds>(sw.elapsed()));
         }
 
         if (s_info >= 43s)

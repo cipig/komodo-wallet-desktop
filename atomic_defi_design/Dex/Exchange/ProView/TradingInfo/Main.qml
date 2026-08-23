@@ -93,8 +93,14 @@ ColumnLayout {
                     Chart {
                         id: chart
                         Layout.fillWidth: true
-                        Layout.fillHeight: true
+                        Layout.preferredHeight: 520
+                        Layout.minimumHeight: 520
                         Layout.topMargin: 8
+                    }
+
+                    Item {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
                     }
 
                     PriceLineSimplified {

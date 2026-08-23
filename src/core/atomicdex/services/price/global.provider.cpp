@@ -374,7 +374,6 @@ namespace atomic_dex
                 [this](web::http::http_response resp)
                 {
                     this->m_other_fiats_rates = process_fetch_fiat_answer(resp);
-                    SPDLOG_INFO("Successfully retrieved rate");
                 })
             .then(error_functor);
     }
