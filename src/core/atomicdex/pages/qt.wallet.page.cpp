@@ -37,19 +37,18 @@ namespace atomic_dex
     void
     wallet_page::update()
     {
-        if (!m_page_open)
-        {
-            return;
-        }
-        using namespace std::chrono_literals;
-
-        const auto now = std::chrono::high_resolution_clock::now();
-        const auto s   = std::chrono::duration_cast<std::chrono::seconds>(now - m_update_clock);
-        if (s >= 5s)
-        {
-            check_send_availability();
-            m_update_clock = std::chrono::high_resolution_clock::now();
-        }
+//        if (!m_page_open)
+//        {
+//            return;
+//        }
+//        using namespace std::chrono_literals;
+//        const auto now = std::chrono::high_resolution_clock::now();
+//        const auto s   = std::chrono::duration_cast<std::chrono::seconds>(now - m_update_clock);
+//        if (s >= 5s)
+//        {
+//            check_send_availability();
+//            m_update_clock = std::chrono::high_resolution_clock::now();
+//        }
     }
 } // namespace atomic_dex
 
@@ -59,8 +58,6 @@ namespace atomic_dex
     void
     wallet_page::check_send_availability()
     {
-        spdlog::stopwatch sw; using namespace std::chrono;
-
         auto& kdf              = m_system_manager.get_system<kdf_service>();
         auto  global_coins_cfg = m_system_manager.get_system<portfolio_page>().get_global_cfg();
         auto  ticker_info      = global_coins_cfg->get_coin_info(kdf.get_current_ticker());
@@ -95,11 +92,10 @@ namespace atomic_dex
                 m_current_ticker_fees_coin_enabled = true;
             }
         }
+
         emit sendAvailableChanged();
         emit sendAvailabilityStateChanged();
         emit currentTickerFeesCoinEnabledChanged();
-
-        SPDLOG_DEBUG("Time elapsed in wallet_page::check_send_availability for ticker {} with result {}: {}", ticker_info.ticker, m_send_available, duration_cast<milliseconds>(sw.elapsed()));
     }
 } // namespace atomic_dex
 
@@ -422,7 +418,6 @@ namespace atomic_dex
         m_claiming_rpc_result = rpc_data.toJsonObject();
         emit claimingRpcDataChanged();
     }
-
 
     QVariant
     wallet_page::get_rpc_claiming_faucet_data() const
