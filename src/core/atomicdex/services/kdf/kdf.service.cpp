@@ -309,7 +309,7 @@ namespace atomic_dex
         const auto s_activation = std::chrono::duration_cast<std::chrono::seconds>(now - m_activation_clock);
         const auto s_orders     = std::chrono::duration_cast<std::chrono::seconds>(now - m_orders_clock);
 
-        if (s_orderbook >= 13s)
+        if (s_orderbook >= 11s)
         {
             fetch_current_orderbook_thread(false); // process_orderbook (not a reset) if on trading page
             m_orderbook_clock = std::chrono::high_resolution_clock::now();
