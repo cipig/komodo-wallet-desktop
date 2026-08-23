@@ -10,8 +10,8 @@ import AtomicDEX.MarketMode 1.0
 Item
 {
     id: root
-    implicitWidth: 570
-    implicitHeight: 540
+    implicitWidth: parent.width
+    implicitHeight: parent.height
 
     readonly property bool dark_theme: Dex.CurrentTheme.getColorMode() === Dex.CurrentTheme.ColorMode.Dark
     property bool pair_supported: false
@@ -25,6 +25,9 @@ Item
         let chart_html = ""
         let rel_ticker = ""
         let base_ticker = ""
+
+        console.log("loadChart implicitWidth:" + root.implicitWidth)
+        console.log("loadChart implicitHeight:" + root.implicitHeight)
 
         if (source == "coingecko")
         {
@@ -61,8 +64,12 @@ Item
                 chart_html = `
                 <link rel="icon" href="data:,">
                 <style>
-                    .coinpaprika-currency-widget .cp-widget__main h3 a,
-                    .coinpaprika-currency-widget .cp-widget__footer a { pointer-events: none !important; }
+                  html, body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; }
+                  .coinpaprika-currency-widget { width:100% !important; height:100% !important; }
+                  .coinpaprika-currency-widget .cp-widget { width:100% !important; height:100% !important; }
+                  .coinpaprika-currency-widget .cp-widget__chart { width:100% !important; height:100% !important; }
+                  .coinpaprika-currency-widget .cp-widget__main h3 a,
+                  .coinpaprika-currency-widget .cp-widget__footer a { pointer-events: none !important; }
                 </style>
                 <div class="coinpaprika-currency-widget ${night_mode}"
                      data-primary-currency="${API.app.settings_pg.current_currency}"
@@ -73,14 +80,7 @@ Item
                      data-modules='["chart"]'
                      data-update-active="false"
                      data-volume-visible="false"></div>
-                <script
-                    src="qrc:/coinpaprika/dist/widget.min.js"
-                    data-cp-currency-widget='{
-                        "origin-src": "https://unpkg.com/@coinpaprika/widget-currency@2.0.13",
-                        "img-src": "qrc:/coinpaprika/dist/img/logo_widget.svg",
-                        "style-src": "qrc:/coinpaprika/dist/widget.min.css"
-                    }'>
-                </script>
+                <script src="qrc:/coinpaprika/dist/widget.min.js" ...></script>
                 `
             }
             else
