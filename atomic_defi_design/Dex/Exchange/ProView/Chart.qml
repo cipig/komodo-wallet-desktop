@@ -72,15 +72,12 @@ Item
                   .coinpaprika-currency-widget .cp-widget__chart,
                   .coinpaprika-currency-widget .cp-widget__chart > div {
                     display: block !important;
-                    height: 100% !important;
+                    height: auto !important;
                     max-height: 100% !important;
-                  }
-                  .coinpaprika-currency-widget .cp-widget__chart {
-                    padding-bottom: 10px !important;
                   }
                   .coinpaprika-currency-widget .cp-widget__footer {
                     position: absolute !important;
-                    bottom: 5px !important;
+                    bottom: 8px !important;
                     right: 15px !important;
                     z-index: 10 !important;
                     background: transparent !important;
@@ -108,6 +105,11 @@ Item
                         "img-src": "qrc:/coinpaprika/dist/img/logo_widget.svg",
                         "style-src": "qrc:/coinpaprika/dist/widget.min.css"
                     }'>
+                </script>
+                <script>
+                  window.addEventListener('load', function() {
+                    window.dispatchEvent(new Event('resize'));
+                  });
                 </script>
                 `
             }
