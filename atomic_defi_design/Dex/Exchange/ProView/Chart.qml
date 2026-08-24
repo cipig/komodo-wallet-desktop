@@ -64,7 +64,7 @@ Item
                 chart_html = `
                 <link rel="icon" href="data:,">
                 <style>
-                  .coinpaprika-currency-widget .cp-widget__chart { width:100% !important; height:100% !important; }
+                  .coinpaprika-currency-widget .cp-widget__chart { width:100% !important; }
                   .coinpaprika-currency-widget .cp-widget__main h3 a,
                   .coinpaprika-currency-widget .cp-widget__footer a { pointer-events: none !important; }
                 </style>
