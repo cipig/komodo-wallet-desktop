@@ -67,10 +67,11 @@ Item
                     box-sizing: border-box !important;
                     overflow: hidden !important;
                   }
+                  .coinpaprika-currency-widget .cp-widget__main,
                   .coinpaprika-currency-widget .cp-widget__chart,
                   .coinpaprika-currency-widget .cp-widget__chart > div {
-                    height: 100% !important;
-                    overflow: hidden !important;
+                    height: auto !important;
+                    max-height: 100% !important;
                   }
                   .coinpaprika-currency-widget .cp-widget__main h3 a,
                   .coinpaprika-currency-widget .cp-widget__footer a {
@@ -153,8 +154,8 @@ Item
         }
         activeChartKey = chartKey
 
-        console.log("loadChart height:" + height)
-        console.log(chart_html)
+        //console.log("loadChart height:" + height)
+        //console.log(chart_html)
         dashboard.webEngineView.visible = false
         webEngineViewPlaceHolder.visible = false
         dashboard.webEngineView.loadHtml(chart_html, chart_url)
