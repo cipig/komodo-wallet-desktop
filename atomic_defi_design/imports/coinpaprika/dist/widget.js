@@ -11432,6 +11432,7 @@ class chartClass {
               chart: {
                 marginTop: 0,
                 zoomType: "none",
+                marginBottom: 55,
                 marginLeft: 10,
                 marginRight: 10,
                 height: null
