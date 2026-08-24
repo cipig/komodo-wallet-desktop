@@ -94,9 +94,9 @@ ColumnLayout {
                         id: chart
                         Layout.preferredWidth: 570
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 520
-                        Layout.maximumHeight: 520
-                        Layout.minimumHeight: 520
+                        Layout.preferredHeight: 535
+                        Layout.maximumHeight: 535
+                        Layout.minimumHeight: 535
                     }
 
                     Item {

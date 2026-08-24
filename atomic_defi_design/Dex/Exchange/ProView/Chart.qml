@@ -73,6 +73,15 @@ Item
                     height: auto !important;
                     max-height: 100% !important;
                   }
+                  .coinpaprika-currency-widget .cp-widget__volume-toggle {
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    display: inline-flex !important;
+                    align-items: center !important;
+                  }
+                  .highcharts-range-selector-group {
+                    transform: translateY(5px);
+                  }
                   .coinpaprika-currency-widget .cp-widget__main h3 a,
                   .coinpaprika-currency-widget .cp-widget__footer a {
                     pointer-events: none !important;
