@@ -94,7 +94,7 @@ ColumnLayout {
                         id: chart
                         Layout.preferredWidth: 570
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 540
+                        Layout.preferredHeight: 550
                         Layout.fillHeight: true
                     }
 

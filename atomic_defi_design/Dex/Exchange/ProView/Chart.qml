@@ -21,7 +21,6 @@ Item
 
     function loadChart(right_ticker, left_ticker, source="coinpaprika")
     {
-        console.log("loadChart height:" + height)
         let chart_url = ""
         let chart_html = ""
         let rel_ticker = ""
@@ -142,9 +141,11 @@ Item
         }
         activeChartKey = chartKey
 
+        console.log("loadChart height:" + height)
         //console.log(chart_html)
         dashboard.webEngineView.visible = false
         webEngineViewPlaceHolder.visible = false
+        console.log("loadChart height:" + height)
         dashboard.webEngineView.loadHtml(chart_html, chart_url)
     }
 
