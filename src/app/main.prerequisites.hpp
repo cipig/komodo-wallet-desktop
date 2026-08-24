@@ -426,8 +426,8 @@ run_app(int argc, char** argv)
     engine.rootContext()->setContextProperty("qtversion", QString(qVersion()));
     engine.rootContext()->setContextProperty("DexFilesystem", &qml_filesystem);
     SPDLOG_INFO("QML context properties created");
-    // Load Qaterial.
 
+    // Load Qaterial.
     qaterial::loadQmlResources(false);
     qaterial::registerQmlTypes("Qaterial", 1, 0);
     // QQuickStyle::setStyle(QStringLiteral("Qaterial"));

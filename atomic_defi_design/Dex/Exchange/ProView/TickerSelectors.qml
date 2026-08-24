@@ -24,7 +24,7 @@ RowLayout
     {
         id: selectorLeft
         Layout.preferredWidth: 245
-        Layout.preferredHeight: 85
+        Layout.preferredHeight: 84
         left_side: true
         model: API.app.trading_pg.market_pairs_mdl.left_selection_box
         ticker: left_ticker
@@ -67,7 +67,7 @@ RowLayout
     {
         id: selectorRight
         Layout.preferredWidth: 245
-        Layout.preferredHeight: 85
+        Layout.preferredHeight: 84
         left_side: false
         model: API.app.trading_pg.market_pairs_mdl.right_selection_box
         ticker: right_ticker

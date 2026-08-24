@@ -78,14 +78,13 @@ ColumnLayout {
 
                 ColumnLayout {
                     anchors.fill: parent
-                    anchors.topMargin: 4
-                    spacing: 6
+                    spacing: 5
                     visible: swipeView.currentIndex === tabView.pair_chart_idx
 
                     TickerSelectors {
                         id: selectors
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 85
+                        Layout.preferredHeight: 84
                         Layout.leftMargin: 8
                         Layout.rightMargin: 8
                     }
@@ -94,23 +93,23 @@ ColumnLayout {
                         id: chart
                         Layout.preferredWidth: 570
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 550
-                        Layout.maximumHeight: 550
-                        Layout.minimumHeight: 550
+                        Layout.preferredHeight: 560
+                        Layout.maximumHeight: 560
+                        Layout.minimumHeight: 560
                     }
 
                     Item {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         Component.onCompleted: {
-                            console.log("Item below Chart height = " + height) // 8 with 535
+                            console.log("Item below Chart height = " + height) // 1 with 550
                         }
                     }
 
                     PriceLineSimplified {
                         id: price_line
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 95
+                        Layout.preferredHeight: 90
                         Layout.leftMargin: 8
                         Layout.rightMargin: 8
                     }

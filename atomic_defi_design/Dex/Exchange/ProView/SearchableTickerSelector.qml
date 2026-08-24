@@ -10,11 +10,11 @@ import "../../Constants" as Dex
 Dex.ComboBoxWithSearchBar
 {
     id: control
-    height: 85
+    height: 84
     enabled: !block_everything
     textRole: "ticker"
     valueRole: "ticker"
-    popupMaxHeight: Math.min(model.rowCount() * 85 + 85, 570)
+    popupMaxHeight: Math.min(model.rowCount() * 84 + 84, 570)
     popupForceMaxHeight: true
     searchBar.visible: true
     searchBar.searchModel: model
@@ -29,7 +29,7 @@ Dex.ComboBoxWithSearchBar
     {
         id: _delegate
         width: control.width
-        height: 85
+        height: 84
         visible: true
         highlighted: control.highlightedIndex === index
         contentItem: DexComboBoxLine { details: model }

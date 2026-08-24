@@ -77,12 +77,15 @@ Item
                   }
                   .coinpaprika-currency-widget .cp-widget__footer {
                     position: absolute !important;
-                    bottom: 8px !important;
+                    bottom: 3px !important;
                     right: 15px !important;
                     z-index: 10 !important;
                     background: transparent !important;
                     margin: 0 !important;
                     padding: 0 !important;
+                  }
+                  .highcharts-range-selector-group {
+                    transform: translateY(12px) !important;
                   }
                   .coinpaprika-currency-widget .cp-widget__main h3 a,
                   .coinpaprika-currency-widget .cp-widget__footer a {
