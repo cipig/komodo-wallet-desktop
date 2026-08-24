@@ -66,21 +66,26 @@ Item
                     width: 100% !important;
                     box-sizing: border-box !important;
                     overflow: hidden !important;
+                    position: relative !important;
                   }
                   .coinpaprika-currency-widget .cp-widget__main,
                   .coinpaprika-currency-widget .cp-widget__chart,
                   .coinpaprika-currency-widget .cp-widget__chart > div {
-                    height: auto !important;
+                    display: block !important;
+                    height: 100% !important;
                     max-height: 100% !important;
                   }
-                  .coinpaprika-currency-widget .cp-widget__volume-toggle {
+                  .coinpaprika-currency-widget .cp-widget__chart {
+                    padding-bottom: 10px !important;
+                  }
+                  .coinpaprika-currency-widget .cp-widget__footer {
+                    position: absolute !important;
+                    bottom: 5px !important;
+                    right: 15px !important;
+                    z-index: 10 !important;
+                    background: transparent !important;
                     margin: 0 !important;
                     padding: 0 !important;
-                    display: inline-flex !important;
-                    align-items: center !important;
-                  }
-                  .highcharts-range-selector-group {
-                    transform: translateY(5px);
                   }
                   .coinpaprika-currency-widget .cp-widget__main h3 a,
                   .coinpaprika-currency-widget .cp-widget__footer a {
