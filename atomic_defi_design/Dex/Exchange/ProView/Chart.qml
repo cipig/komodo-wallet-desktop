@@ -21,13 +21,11 @@ Item
 
     function loadChart(right_ticker, left_ticker, source="coinpaprika")
     {
+        console.log("loadChart height:" + height)
         let chart_url = ""
         let chart_html = ""
         let rel_ticker = ""
         let base_ticker = ""
-
-        console.log("loadChart height:" + height)
-        console.log("loadChart width:" + width)
 
         if (source == "coingecko")
         {
