@@ -67,12 +67,15 @@ Item
                     box-sizing: border-box !important;
                     overflow: hidden !important;
                     position: relative !important;
+                    display: flex !important;
+                    flex-direction: column !important;
                   }
                   .coinpaprika-currency-widget .cp-widget__main,
                   .coinpaprika-currency-widget .cp-widget__chart,
                   .coinpaprika-currency-widget .cp-widget__chart > div {
                     display: block !important;
-                    height: 100% !important;
+                    flex-grow: 1 !important;
+                    height: auto !important;
                     max-height: 100% !important;
                   }
                   .coinpaprika-currency-widget .cp-widget__footer {
