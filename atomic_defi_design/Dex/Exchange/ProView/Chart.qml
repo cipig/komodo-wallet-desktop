@@ -61,9 +61,19 @@ Item
                 chart_html = `
                 <link rel="icon" href="data:,">
                 <style>
-                  .coinpaprika-currency-widget .cp-widget__chart { width:100% !important; }
                   .coinpaprika-currency-widget .cp-widget__main h3 a,
-                  .coinpaprika-currency-widget .cp-widget__footer a { pointer-events: none !important; }
+                  .coinpaprika-currency-widget .cp-widget__footer a {
+                    pointer-events: none !important;
+                  }
+                  .coinpaprika-currency-widget .cp-widget__details,
+                  .coinpaprika-currency-widget [data-module="market_details"] {
+                    display: none !important;
+                    height: 0 !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    opacity: 0 !important;
+                    visibility: hidden !important;
+                  }
                 </style>
                 <div class="coinpaprika-currency-widget ${night_mode}"
                      data-primary-currency="${API.app.settings_pg.current_currency}"
@@ -142,10 +152,9 @@ Item
         activeChartKey = chartKey
 
         console.log("loadChart height:" + height)
-        //console.log(chart_html)
+        console.log(chart_html)
         dashboard.webEngineView.visible = false
         webEngineViewPlaceHolder.visible = false
-        console.log("loadChart height:" + height)
         dashboard.webEngineView.loadHtml(chart_html, chart_url)
     }
 
