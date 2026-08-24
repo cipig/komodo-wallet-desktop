@@ -93,14 +93,12 @@ ColumnLayout {
                     Chart {
                         id: chart
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 550
-                        Layout.minimumHeight: 550
-                        Layout.maximumHeight: 550
-                    }
-
-                    Item {
-                        Layout.fillWidth: true
+                        Layout.preferredHeight: 540
                         Layout.fillHeight: true
+                        Component.onCompleted: {
+                            console.log("Chart height = " + height)
+                            console.log("Chart width = " + width)
+                        }
                     }
 
                     PriceLineSimplified {

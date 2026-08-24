@@ -10,7 +10,7 @@ import AtomicDEX.MarketMode 1.0
 Item
 {
     id: root
-    implicitWidth: parent.width
+    implicitWidth: 570
     implicitHeight: parent.height
 
     readonly property bool dark_theme: Dex.CurrentTheme.getColorMode() === Dex.CurrentTheme.ColorMode.Dark
@@ -26,8 +26,8 @@ Item
         let rel_ticker = ""
         let base_ticker = ""
 
-        console.log("loadChart implicitWidth:" + root.implicitWidth)
-        console.log("loadChart implicitHeight:" + root.implicitHeight)
+        console.log("loadChart height:" + height)
+        console.log("loadChart width:" + width)
 
         if (source == "coingecko")
         {
@@ -64,9 +64,6 @@ Item
                 chart_html = `
                 <link rel="icon" href="data:,">
                 <style>
-                  html, body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; }
-                  .coinpaprika-currency-widget { width:100% !important; height:100% !important; }
-                  .coinpaprika-currency-widget .cp-widget { width:100% !important; height:100% !important; }
                   .coinpaprika-currency-widget .cp-widget__chart { width:100% !important; height:100% !important; }
                   .coinpaprika-currency-widget .cp-widget__main h3 a,
                   .coinpaprika-currency-widget .cp-widget__footer a { pointer-events: none !important; }
