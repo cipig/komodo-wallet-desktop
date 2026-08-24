@@ -63,14 +63,14 @@ Item
                 <style>
                   .coinpaprika-currency-widget {
                     height: 100% !important;
-                    display: flex !important;
-                    flex-direction: column !important;
+                    width: 100% !important;
                     box-sizing: border-box !important;
+                    overflow: hidden !important;
                   }
                   .coinpaprika-currency-widget .cp-widget__chart,
                   .coinpaprika-currency-widget .cp-widget__chart > div {
-                    flex-grow: 1 !important;
                     height: 100% !important;
+                    overflow: hidden !important;
                   }
                   .coinpaprika-currency-widget .cp-widget__main h3 a,
                   .coinpaprika-currency-widget .cp-widget__footer a {
