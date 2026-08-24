@@ -87,6 +87,9 @@ Item
                     margin: 0 !important;
                     padding: 0 !important;
                   }
+                  .coinpaprika-currency-widget .cp-widget__volume-toggle {
+                    white-space: nowrap !important;
+                  }
                   .coinpaprika-currency-widget .cp-widget__main h3 a,
                   .coinpaprika-currency-widget .cp-widget__footer a {
                     pointer-events: none !important;
