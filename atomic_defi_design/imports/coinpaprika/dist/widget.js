@@ -11408,7 +11408,7 @@ class chartClass {
                 }
               },
               chart: {
-                height: 400,
+                height: null,
                 marginTop: 35,
                 marginBottom: 0,
                 spacingTop: 0,
@@ -11434,7 +11434,7 @@ class chartClass {
                 zoomType: "none",
                 marginLeft: 10,
                 marginRight: 10,
-                height: 350
+                height: null
               },
               yAxis: [
                 {

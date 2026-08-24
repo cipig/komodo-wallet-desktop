@@ -61,18 +61,20 @@ Item
                 chart_html = `
                 <link rel="icon" href="data:,">
                 <style>
+                  .coinpaprika-currency-widget {
+                    height: 100% !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    box-sizing: border-box !important;
+                  }
+                  .coinpaprika-currency-widget .cp-widget__chart,
+                  .coinpaprika-currency-widget .cp-widget__chart > div {
+                    flex-grow: 1 !important;
+                    height: 100% !important;
+                  }
                   .coinpaprika-currency-widget .cp-widget__main h3 a,
                   .coinpaprika-currency-widget .cp-widget__footer a {
                     pointer-events: none !important;
-                  }
-                  .coinpaprika-currency-widget .cp-widget__details,
-                  .coinpaprika-currency-widget [data-module="market_details"] {
-                    display: none !important;
-                    height: 0 !important;
-                    margin: 0 !important;
-                    padding: 0 !important;
-                    opacity: 0 !important;
-                    visibility: hidden !important;
                   }
                 </style>
                 <div class="coinpaprika-currency-widget ${night_mode}"
