@@ -11384,7 +11384,7 @@ class chartClass {
     this.isEventsHidden = false;
     this.excludeSeriesIds = [];
     this.asyncUrl = `/currency/data/${state.currency}/_range_/`;
-    this.asyncParams = `?quote=${state.primary_currency.toUpperCase()}&fields=price,volume`;
+    this.asyncParams = `?quote=${state.primary_currency.toUpperCase()}&fields=price`;
     this.init();
   }
   setOptions() {
@@ -11568,7 +11568,7 @@ class chartClass {
         plotBorderWidth: 0,
         zoomType: "none",
         height: null,
-        marginBottom: 42
+        marginBottom: 45
       },
       rangeSelector: {
         enabled: true,
@@ -11579,7 +11579,7 @@ class chartClass {
       colors: ["#5085ec", "#1f9809", "#985d65", "#ee983b", "#4c4c4c"],
       legend: {
         margin: 0,
-        enabled: true,
+        enabled: false,
         align: "right",
         symbolRadius: 0,
         itemDistance: 40,
