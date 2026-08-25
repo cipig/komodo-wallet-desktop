@@ -11430,12 +11430,17 @@ class chartClass {
             },
             chartOptions: {
               chart: {
-                marginTop: 0,
+                marginTop: 10,
                 zoomType: "none",
-                marginBottom: 20,
+                marginBottom: 80,
                 marginLeft: 10,
                 marginRight: 10,
                 height: null
+              },
+              rangeSelector: {
+                enabled: true,
+                verticalAlign: 'bottom',
+                y: 35
               },
               yAxis: [
                 {

@@ -67,32 +67,26 @@ Item
                     box-sizing: border-box !important;
                     overflow: hidden !important;
                     position: relative !important;
-                    display: flex !important;
-                    flex-direction: column !important;
                   }
                   .coinpaprika-currency-widget .cp-widget__main,
                   .coinpaprika-currency-widget .cp-widget__chart,
                   .coinpaprika-currency-widget .cp-widget__chart > div {
                     display: block !important;
-                    flex-grow: 1 !important;
-                    height: auto !important;
+                    height: 100% !important;
                     max-height: 100% !important;
-                  }
-                  .coinpaprika-currency-widget .cp-widget__chart {
-                    padding-bottom: 0 !important;
-                    margin-bottom: 0 !important;
                   }
                   .coinpaprika-currency-widget .cp-widget__footer {
                     position: absolute !important;
                     bottom: 5px !important;
                     right: 15px !important;
-                    z-index: 10 !important;
+                    z-index: 100 !important;
                     background: transparent !important;
                     margin: 0 !important;
                     padding: 0 !important;
                   }
                   .coinpaprika-currency-widget .cp-widget__volume-toggle {
                     white-space: nowrap !important;
+                    transform: translateY(16px) !important;
                   }
                   .coinpaprika-currency-widget .cp-widget__main h3 a,
                   .coinpaprika-currency-widget .cp-widget__footer a {
@@ -180,11 +174,11 @@ Item
         }
         activeChartKey = chartKey
 
+        dashboard.webEngineView.visible = false
+        webEngineViewPlaceHolder.visible = false
         if (pair_supported)
         {
             //console.log(chart_html)
-            dashboard.webEngineView.visible = false
-            webEngineViewPlaceHolder.visible = false
             dashboard.webEngineView.loadHtml(chart_html, chart_url)
         }
     }
