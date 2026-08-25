@@ -11430,9 +11430,9 @@ class chartClass {
             },
             chartOptions: {
               chart: {
-                marginTop: 10,
+                marginTop: 5,
                 zoomType: "none",
-                marginBottom: 80,
+                marginBottom: 90,
                 marginLeft: 10,
                 marginRight: 10,
                 height: null
@@ -11440,7 +11440,12 @@ class chartClass {
               rangeSelector: {
                 enabled: true,
                 verticalAlign: 'bottom',
-                y: 35
+                y: 40
+              },
+              navigator: {
+                enabled: true,
+                height: 35,
+                margin: 10
               },
               yAxis: [
                 {
