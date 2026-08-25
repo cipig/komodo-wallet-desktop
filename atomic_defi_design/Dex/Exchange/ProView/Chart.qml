@@ -81,14 +81,14 @@ Item
                     display: inline-flex !important;
                     align-items: center !important;
                     right: 15px !important;
-                    bottom: 92px !important;
+                    bottom: 48px !important;
                     margin: 0 !important;
                     padding: 0 !important;
                     transform: none !important;
                   }
                   .coinpaprika-currency-widget .cp-widget__footer {
                     position: absolute !important;
-                    bottom: 8px !important;
+                    bottom: 5px !important;
                     right: 20px !important;
                     z-index: 100 !important;
                     background: transparent !important;
