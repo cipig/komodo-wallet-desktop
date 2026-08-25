@@ -73,7 +73,7 @@ Item
                   .coinpaprika-currency-widget .cp-widget__chart > div {
                     display: block !important;
                     height: 100% !important;
-                    max-height: 100% !important;
+                    max-height: 98% !important;
                   }
                   .coinpaprika-currency-widget .cp-widget__footer {
                     position: absolute !important;

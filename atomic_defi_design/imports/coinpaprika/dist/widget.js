@@ -11568,12 +11568,12 @@ class chartClass {
         plotBorderWidth: 0,
         zoomType: "none",
         height: null,
-        marginBottom: 45
+        marginBottom: 60
       },
       rangeSelector: {
         enabled: true,
         verticalAlign: 'bottom',
-        y: 0
+        y: 35
       },
       cpEvents: false,
       colors: ["#5085ec", "#1f9809", "#985d65", "#ee983b", "#4c4c4c"],
