@@ -79,8 +79,12 @@ Item
                   }
                   .coinpaprika-currency-widget .cp-widget__chart-ranges {
                     order: 2 !important;
-                    margin: 10px 0 5px 15px !important;
+                    margin: 4px 0 10px 15px !important;
                     position: static !important;
+                    display: block !important;
+                  }
+                  .highcharts-range-selector-buttons {
+                    display: none !important;
                   }
                   .coinpaprika-currency-widget .cp-widget__footer {
                     position: absolute !important;
