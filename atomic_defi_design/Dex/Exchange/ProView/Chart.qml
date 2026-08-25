@@ -73,7 +73,7 @@ Item
                   .coinpaprika-currency-widget .cp-widget__chart > div {
                     display: block !important;
                     height: 100% !important;
-                    max-height: 98% !important;
+                    max-height: 100% !important;
                   }
                   .coinpaprika-currency-widget .cp-widget__footer {
                     position: absolute !important;
@@ -87,6 +87,12 @@ Item
                   .coinpaprika-currency-widget .cp-widget__main h3 a,
                   .coinpaprika-currency-widget .cp-widget__footer a {
                     pointer-events: none !important;
+                  }
+                  .highcharts-range-selector-group {
+                    position: absolute !important;
+                    left: 10px !important;
+                    bottom: 82px !important;
+                    transform: none !important;
                   }
                 </style>
                 <div class="coinpaprika-currency-widget ${night_mode}"
