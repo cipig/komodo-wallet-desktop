@@ -11568,7 +11568,7 @@ class chartClass {
         plotBorderWidth: 0,
         zoomType: "none",
         height: null,
-        marginBottom: 0
+        marginBottom: 105
       },
       rangeSelector: {
         enabled: false,
@@ -11583,7 +11583,7 @@ class chartClass {
       navigator: {
         enabled: true,
         height: 40,
-        margin: 10
+        margin: 5
       },
       tooltip: {
         shared: true,
