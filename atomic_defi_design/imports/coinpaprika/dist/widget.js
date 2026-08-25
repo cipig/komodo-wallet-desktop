@@ -11564,8 +11564,16 @@ class chartClass {
       },
       chart: {
         backgroundColor: "none",
-        marginTop: 50,
-        plotBorderWidth: 0
+        marginTop: 10,
+        plotBorderWidth: 0,
+        zoomType: "none",
+        height: null,
+        marginBottom: 85
+      },
+      rangeSelector: {
+        enabled: true,
+        verticalAlign: 'bottom',
+        y: 35
       },
       cpEvents: false,
       colors: ["#5085ec", "#1f9809", "#985d65", "#ee983b", "#4c4c4c"],
@@ -11581,7 +11589,10 @@ class chartClass {
         },
         itemMarginTop: 8
       },
-      navigator: true,
+      navigator: {
+        enabled: true,
+        margin: 5
+      },
       tooltip: {
         shared: true,
         split: false,
