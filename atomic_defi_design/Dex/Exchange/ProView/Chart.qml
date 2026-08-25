@@ -77,7 +77,7 @@ Item
                   .coinpaprika-currency-widget .cp-widget__chart-ranges {
                     position: absolute !important;
                     left: 15px !important;
-                    bottom: 52px !important;
+                    bottom: 58px !important;
                     z-index: 100 !important;
                     margin: 0 !important;
                     padding: 0 !important;

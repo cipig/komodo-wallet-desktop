@@ -11568,7 +11568,9 @@ class chartClass {
         plotBorderWidth: 0,
         zoomType: "none",
         height: null,
-        marginBottom: 105
+        margin: [10, 10, 110, 10],
+        spacingBottom: 0,
+        marginBottom: 110
       },
       rangeSelector: {
         enabled: false,
