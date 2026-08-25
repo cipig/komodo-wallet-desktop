@@ -99,16 +99,17 @@ Item
                   .coinpaprika-currency-widget .cp-widget__chart {
                     display: block !important;
                     position: absolute !important;
-                    top: 0 !important;
+                    bottom: 40px !important;
+                    top: auto !important;
                     left: 0 !important;
                     width: 100% !important;
-                    height: 390px !important;
-                    max-height: 390px !important;
+                    height: 420px !important;
+                    max-height: 420px !important;
                   }
                   .coinpaprika-currency-widget .cp-widget__chart > div {
                     display: block !important;
-                    height: 390px !important;
-                    max-height: 390px !important;
+                    height: 420px !important;
+                    max-height: 420px !important;
                   }
                   .highcharts-range-selector-buttons {
                     display: none !important;
@@ -117,8 +118,8 @@ Item
                   .coinpaprika-currency-widget .cp-widget-select {
                     position: absolute !important;
                     left: 15px !important;
-                    top: 315px !important;
-                    bottom: auto !important;
+                    bottom: 125px !important;
+                    top: auto !important;
                     z-index: 100 !important;
                     margin: 0 !important;
                     padding: 0 !important;
