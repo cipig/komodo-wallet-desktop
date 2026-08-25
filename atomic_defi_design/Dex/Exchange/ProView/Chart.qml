@@ -60,6 +60,13 @@ Item
                 chart_html = `
                 <link rel="icon" href="data:,">
                 <style>
+                  html, body {
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    overflow: hidden !important;
+                    height: 100% !important;
+                    width: 100% !important;
+                  }
                   .coinpaprika-currency-widget {
                     height: 100% !important;
                     width: 100% !important;
@@ -77,7 +84,7 @@ Item
                   .coinpaprika-currency-widget .cp-widget__chart-ranges {
                     position: absolute !important;
                     left: 15px !important;
-                    bottom: 56px !important;
+                    bottom: 42px !important;
                     z-index: 100 !important;
                     margin: 0 !important;
                     padding: 0 !important;
