@@ -11564,20 +11564,19 @@ class chartClass {
       },
       chart: {
         backgroundColor: "none",
-        marginTop: 10,
         plotBorderWidth: 0,
         zoomType: "none",
-        height: 365,
-        margin: [10, 10, 105, 10],
+        width: 570,
+        height: 440,
+        marginTop: 10,
+        marginBottom: 85,
         spacingBottom: 0,
-        marginBottom: 105
+        margin: [10, 10, 85, 10]
       },
       rangeSelector: {
         enabled: false,
         inputEnabled: false
       },
-      cpEvents: false,
-      colors: ["#5085ec", "#1f9809", "#985d65", "#ee983b", "#4c4c4c"],
       legend: {
         margin: 0,
         enabled: false
@@ -11587,6 +11586,8 @@ class chartClass {
         height: 40,
         margin: 5
       },
+      cpEvents: false,
+      colors: ["#5085ec", "#1f9809", "#985d65", "#ee983b", "#4c4c4c"],
       tooltip: {
         shared: true,
         split: false,
