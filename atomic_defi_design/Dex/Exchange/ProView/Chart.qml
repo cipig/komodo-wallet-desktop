@@ -47,7 +47,6 @@ Item
             }
         }
 
-        // https://npm.io/package/%40coinpaprika/widget-currency
         // https://github.com/coinpaprika/widget-currency
         if (source == "coinpaprika")
         {
@@ -75,9 +74,13 @@ Item
                     height: 100% !important;
                     max-height: 100% !important;
                   }
-                  .highcharts-range-selector-group {
-                    position: static !important;
-                    transform: none !important;
+                  .coinpaprika-currency-widget .cp-widget__chart-ranges {
+                    position: absolute !important;
+                    left: 15px !important;
+                    bottom: 42px !important;
+                    z-index: 100 !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
                   }
                   .coinpaprika-currency-widget .cp-widget__footer {
                     position: absolute !important;
