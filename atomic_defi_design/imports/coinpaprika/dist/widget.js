@@ -11568,31 +11568,22 @@ class chartClass {
         plotBorderWidth: 0,
         zoomType: "none",
         height: null,
-        marginBottom: 45
+        marginBottom: 0
       },
       rangeSelector: {
         enabled: false,
-        inputEnabled: false,
-        verticalAlign: 'bottom',
-        y: 35
+        inputEnabled: false
       },
       cpEvents: false,
       colors: ["#5085ec", "#1f9809", "#985d65", "#ee983b", "#4c4c4c"],
       legend: {
         margin: 0,
-        enabled: false,
-        align: "right",
-        symbolRadius: 0,
-        itemDistance: 40,
-        itemStyle: {
-          fontWeight: "normal",
-          color: this.isNightMode ? "#80a6e5" : "#0645ad"
-        },
-        itemMarginTop: 8
+        enabled: false
       },
       navigator: {
         enabled: true,
-        margin: 5
+        height: 40,
+        margin: 10
       },
       tooltip: {
         shared: true,
