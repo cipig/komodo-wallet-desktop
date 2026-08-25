@@ -75,40 +75,24 @@ Item
                     position: relative !important;
                   }
                   .coinpaprika-currency-widget .cp-widget__header {
-                    height: 84px !important;
+                    height: auto !important;
+                    padding: 15px 15px 5px 15px !important;
+                  }
+                  .coinpaprika-currency-widget .cp-widget__header a {
+                    pointer-events: none !important;
+                    cursor: default !important;
                   }
                   .coinpaprika-currency-widget .cp-widget__main {
                     display: block !important;
-                    height: calc(560px - 84px) !important;
-                    max-height: 476px !important;
+                    height: auto !important;
                     overflow: hidden !important;
-                  }
-                  .coinpaprika-currency-widget .cp-widget__chart {
-                    display: block !important;
-                    height: 440px !important;
-                    max-height: 440px !important;
-                    overflow: hidden !important;
-                  }
-                  .coinpaprika-currency-widget .cp-widget__chart > div {
-                    display: block !important;
-                    max-height: 440px !important;
-                  }
-                  .coinpaprika-currency-widget .cp-widget__footer {
-                    position: absolute !important;
-                    bottom: 8px !important;
-                    right: 20px !important;
-                    z-index: 100 !important;
-                    margin: 0 !important;
-                    padding: 0 !important;
                   }
                   .coinpaprika-currency-widget .cp-widget__chart-ranges,
                   .coinpaprika-currency-widget .cp-widget-select {
-                    position: absolute !important;
-                    left: 15px !important;
-                    bottom: 42px !important;
+                    position: relative !important;
+                    left: 0 !important;
+                    margin: 5px 0 5px 15px !important;
                     z-index: 100 !important;
-                    margin: 0 !important;
-                    padding: 0 !important;
                     pointer-events: none !important;
                   }
                   .coinpaprika-currency-widget .cp-widget__chart-ranges button,
@@ -116,13 +100,31 @@ Item
                   .coinpaprika-currency-widget .cp-widget-select__dropdown button {
                     pointer-events: auto !important;
                   }
+                  .coinpaprika-currency-widget .cp-widget__chart {
+                    display: block !important;
+                    height: 400px !important;
+                    max-height: 400px !important;
+                    position: relative !important;
+                  }
+                  .coinpaprika-currency-widget .cp-widget__chart > div {
+                    display: block !important;
+                    height: 400px !important;
+                    max-height: 400px !important;
+                  }
                   .highcharts-range-selector-buttons {
                     display: none !important;
                   }
-                  .coinpaprika-currency-widget .cp-widget__header a,
+                  .coinpaprika-currency-widget .cp-widget__footer {
+                    position: absolute !important;
+                    bottom: 10px !important;
+                    right: 25px !important;
+                    z-index: 100 !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    pointer-events: none !important;
+                  }
                   .coinpaprika-currency-widget .cp-widget__footer a {
                     pointer-events: none !important;
-                    cursor: default !important; /* Removes the hand-pointer cursor so it behaves like static text */
                   }
                 </style>
                 <div class="coinpaprika-currency-widget ${night_mode}"
