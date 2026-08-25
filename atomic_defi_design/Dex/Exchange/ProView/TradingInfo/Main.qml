@@ -102,7 +102,7 @@ ColumnLayout {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         Component.onCompleted: {
-                            console.log("Item below Chart height = " + height) // 1 with 550
+                            console.log("Item below Chart height = " + height)
                         }
                     }
 

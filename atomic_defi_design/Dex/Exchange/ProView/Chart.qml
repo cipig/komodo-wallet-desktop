@@ -78,6 +78,10 @@ Item
                     height: auto !important;
                     max-height: 100% !important;
                   }
+                  .coinpaprika-currency-widget .cp-widget__chart {
+                    padding-bottom: 0 !important;
+                    margin-bottom: 0 !important;
+                  }
                   .coinpaprika-currency-widget .cp-widget__footer {
                     position: absolute !important;
                     bottom: 5px !important;
@@ -164,7 +168,7 @@ Item
             else
             {
                 pair_supported = false
-                return
+                source = ""
             }
         }
 
@@ -176,11 +180,13 @@ Item
         }
         activeChartKey = chartKey
 
-        //console.log("loadChart height:" + height)
-        //console.log(chart_html)
-        dashboard.webEngineView.visible = false
-        webEngineViewPlaceHolder.visible = false
-        dashboard.webEngineView.loadHtml(chart_html, chart_url)
+        if (pair_supported)
+        {
+            //console.log(chart_html)
+            dashboard.webEngineView.visible = false
+            webEngineViewPlaceHolder.visible = false
+            dashboard.webEngineView.loadHtml(chart_html, chart_url)
+        }
     }
 
     Item {
