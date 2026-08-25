@@ -11568,10 +11568,11 @@ class chartClass {
         plotBorderWidth: 0,
         zoomType: "none",
         height: null,
-        marginBottom: 60
+        marginBottom: 95
       },
       rangeSelector: {
         enabled: true,
+        inputEnabled: false,
         verticalAlign: 'bottom',
         y: 35
       },

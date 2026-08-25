@@ -75,6 +75,10 @@ Item
                     height: 100% !important;
                     max-height: 100% !important;
                   }
+                  .highcharts-range-selector-group {
+                    position: static !important;
+                    transform: none !important;
+                  }
                   .coinpaprika-currency-widget .cp-widget__footer {
                     position: absolute !important;
                     bottom: 5px !important;
@@ -87,12 +91,6 @@ Item
                   .coinpaprika-currency-widget .cp-widget__main h3 a,
                   .coinpaprika-currency-widget .cp-widget__footer a {
                     pointer-events: none !important;
-                  }
-                  .highcharts-range-selector-group {
-                    position: absolute !important;
-                    left: 10px !important;
-                    bottom: 82px !important;
-                    transform: none !important;
                   }
                 </style>
                 <div class="coinpaprika-currency-widget ${night_mode}"
