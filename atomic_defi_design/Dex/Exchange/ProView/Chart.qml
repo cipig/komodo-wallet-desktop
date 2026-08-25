@@ -81,7 +81,7 @@ Item
                     display: inline-flex !important;
                     align-items: center !important;
                     right: 15px !important;
-                    bottom: 53px !important;
+                    bottom: 38px !important;
                     margin: 0 !important;
                     padding: 0 !important;
                     transform: none !important;
