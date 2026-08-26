@@ -72,38 +72,17 @@ div.coinpaprika-currency-widget {
   height: 560px !important;
   width: 570px !important;
   box-sizing: border-box !important;
-  overflow: visible !important; /* Keeps the footer text completely visible without truncation */
+  overflow: visible !important; /* Allows the footer text to sit clearly outside the baseline */
   position: relative !important;
 }
 
-/* 1. Header Box Layer: Fixed at 140px to safely clear the name, price, and rank text fields */
+/* 1. Header Container: Set to a completely static relative block so content stays structured naturally */
 div.coinpaprika-currency-widget > div.cp-widget__header {
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
+  position: relative !important;
   width: 100% !important;
-  height: 140px !important; 
+  height: 140px !important; /* Hardcoded layout box room clears text columns safely */
   padding: 15px 15px 5px 15px !important;
   box-sizing: border-box !important;
-  display: flex !important;
-  flex-direction: row !important;      /* Forces your text back to the right side of the icon logo */
-  align-items: center !important;
-  justify-content: flex-start !important;
-}
-
-/* Keep the token icon pinned neatly on the left margin */
-div.coinpaprika-currency-widget > div.cp-widget__header > .cp-widget__logo {
-  display: inline-block !important;
-  flex-shrink: 0 !important;
-}
-
-/* Keep the text block columns safely aligned right next to the logo */
-div.coinpaprika-currency-widget > div.cp-widget__header > .cp-widget__main-currency {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: flex-start !important;
-  margin-left: 15px !important;
-  flex-grow: 1 !important;
 }
 
 div.coinpaprika-currency-widget > div.cp-widget__header a {
@@ -111,26 +90,25 @@ div.coinpaprika-currency-widget > div.cp-widget__header a {
   cursor: default !important;
 }
 
-/* 2. Main Wrapper Framework Box: Hard-shifted down past the 140px header block */
+/* 2. Main Wrapper Box */
 div.coinpaprika-currency-widget > div.cp-widget__main {
   display: block !important;
   position: absolute !important;
-  top: 140px !important; 
+  top: 0 !important; /* Pull to the absolute top of the parent window */
   left: 0 !important;
   width: 100% !important;
-  height: 420px !important; 
+  height: 560px !important; /* Cover the entire 560px view area */
   overflow: visible !important;
 }
 
-/* 3. Highcharts Container Window (Sized cleanly to fill the lower quadrant space) */
+/* 3. Highcharts Canvas Window: Hard-pinned using a static top value to stop overlapping */
 div.cp-widget__main div.cp-widget__chart {
   display: block !important;
   position: absolute !important;
-  bottom: 25px !important;       
-  top: auto !important;
+  top: 145px !important;        /* CRUCIAL: Forces the top of the chart canvas to start precisely below the header area */
   left: 0 !important;
   width: 100% !important;
-  height: 340px !important;      /* Matches your exact working 340px height configuration */
+  height: 340px !important;      /* Sets the absolute visual box height limits */
   max-height: 340px !important;
   overflow: visible !important;  
 }
@@ -142,7 +120,7 @@ div.cp-widget__main div.cp-widget__chart > div {
   overflow: visible !important;  
 }
 
-/* Cuts your trailing left accent plot border line exactly above the navigator slider track */
+/* Targets the left vertical axis line, stopping it right at the navigator base floor line */
 .highcharts-plot-border {
   max-height: 230px !important;  
 }
@@ -151,13 +129,13 @@ div.cp-widget__main div.cp-widget__chart > div {
   display: none !important;
 }
 
-/* 4. Zoom Text Controls Row: Centered inside your working bottom pocket gap */
+/* 4. Zoom Text Controls Row: Positioned relative to the 560px frame */
 div.cp-widget__main div.cp-widget__chart-ranges,
 div.cp-widget__main div.cp-widget-select {
   position: absolute !important;
   left: 15px !important;
-  bottom: 66px !important;       
-  top: auto !important;          
+  top: 414px !important;         /* Hard-pinned right into the blank space between your chart dates and the handles */
+  bottom: auto !important;          
   z-index: 9999 !important;      
   margin: 0 !important;
   padding: 0 !important;
