@@ -64,19 +64,19 @@ html, body {
   margin: 0 !important;
   padding: 0 !important;
   overflow: hidden !important;
-  height: 560px !important;
+  height: 585px !important;  /* CRUCIAL FIX: Expands the inner viewport window depth to stop cutting off text characters */
   width: 570px !important;
 }
 
 div.coinpaprika-currency-widget {
-  height: 560px !important;
+  height: 560px !important;  /* Keeps the rigid 560px baseline ceiling for your QT App container size */
   width: 570px !important;
   box-sizing: border-box !important;
-  overflow: visible !important; /* Allows the footer text to sit clearly outside the baseline */
+  overflow: visible !important; 
   position: relative !important;
 }
 
-/* 1. Header Box Layer: Low top-padding matches your clean raised height alignment */
+/* 1. Header Box Layer */
 div.coinpaprika-currency-widget > div.cp-widget__header {
   position: relative !important;
   width: 100% !important;
@@ -90,7 +90,7 @@ div.coinpaprika-currency-widget > div.cp-widget__header a {
   cursor: default !important;
 }
 
-/* 2. Main Container Box */
+/* 2. Main Wrapper Box */
 div.coinpaprika-currency-widget > div.cp-widget__main {
   display: block !important;
   position: absolute !important;
@@ -101,14 +101,14 @@ div.coinpaprika-currency-widget > div.cp-widget__main {
   overflow: visible !important;
 }
 
-/* 3. Expanded Highcharts Canvas Container Window */
+/* 3. Highcharts Container Window */
 div.cp-widget__main div.cp-widget__chart {
   display: block !important;
   position: absolute !important;
-  top: 120px !important;        /* Starts perfectly right below the 120px header box */
+  top: 120px !important;        
   left: 0 !important;
   width: 100% !important;
-  height: 380px !important;      /* Expanded from 340px to 380px to match the widget.js code change */
+  height: 380px !important;      /* Locks the exact working height from your working 'ours.png' state */
   max-height: 380px !important;
   overflow: visible !important;  
 }
@@ -120,26 +120,26 @@ div.cp-widget__main div.cp-widget__chart > div {
   overflow: visible !important;  
 }
 
-/* Keeps the left axis line cleanly cut at the navigator floor track base */
+/* Keeps the left vertical axis border line cleanly cut right above the navigator bar tracks */
 .highcharts-plot-border {
-  max-height: 270px !important;  /* Raised from 230px to adapt to the taller chart lines */
+  max-height: 270px !important;  
 }
 
 .highcharts-range-selector-buttons {
   display: none !important;
 }
 
-/* 4. Zoom Text Controls Row: Shifted to follow the new taller dimensions perfectly */
+/* 4. Zoom Text Controls Row: Pinned exactly inside your working coordinates */
 div.cp-widget__main div.cp-widget__chart-ranges,
 div.cp-widget__main div.cp-widget-select {
   position: absolute !important;
   left: 15px !important;
-  top: 414px !important;         /* Re-calculated to 414px to drop perfectly right above the new navigator line position */
+  top: 414px !important;         /* Matches the working 'ours.png' layout positioning perfectly */
   bottom: auto !important;          
   z-index: 9999 !important;      
   margin: 0 !important;
   padding: 0 !important;
-  pointer-events: none !important; /* Retains left-handle click slider actions */
+  pointer-events: none !important; 
 }
 
 div.cp-widget__main div.cp-widget__chart-ranges button,
@@ -148,10 +148,10 @@ div.cp-widget__main div.cp-widget-select__dropdown button {
   pointer-events: auto !important;
 }
 
-/* 5. Footer Layout Pinning */
+/* 5. Footer Layout Pinning: Pushed down into the expanded body padding area to show the text cleanly */
 div.coinpaprika-currency-widget > div.cp-widget__footer {
   position: absolute !important;
-  bottom: 2px !important;        
+  bottom: -22px !important;       /* Shifted slightly past the container base line to prevent cutting off the text weights */
   right: 25px !important;
   top: auto !important;
   z-index: 100 !important;
