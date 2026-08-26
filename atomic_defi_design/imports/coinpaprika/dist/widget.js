@@ -11569,10 +11569,10 @@ class chartClass {
         width: null,
         height: 380,
         marginTop: 10,
-        marginBottom: 76,
+        marginBottom: 90,
         spacingBottom: 0,
         // [Top, Right, Bottom, Left]
-        margin: [10, 45, 76, 15]
+        margin: [10, 45, 90, 15]
       },
       rangeSelector: {
         enabled: false,
@@ -11584,7 +11584,7 @@ class chartClass {
       },
       navigator: {
         enabled: true,
-        height: 46,
+        height: 60,
         margin: 5
       },
       cpEvents: false,

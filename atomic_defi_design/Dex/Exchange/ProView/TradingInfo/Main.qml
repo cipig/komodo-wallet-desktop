@@ -78,25 +78,28 @@ ColumnLayout {
 
                 ColumnLayout {
                     anchors.fill: parent
-                    anchors.topMargin: 4
-                    spacing: 6
+                    anchors.topMargin: 5
+                    spacing: 10
                     visible: swipeView.currentIndex === tabView.pair_chart_idx
 
                     TickerSelectors {
                         id: selectors
                         Layout.fillWidth: true
                         Layout.preferredHeight: 84
-                        Layout.leftMargin: 8
-                        Layout.rightMargin: 8
+                        Layout.leftMargin: 5
+                        Layout.rightMargin: 5
                     }
 
                     Chart {
                         id: chart
-                        Layout.preferredWidth: 570
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 550
-                        Layout.maximumHeight: 550
-                        Layout.minimumHeight: 550
+                        Layout.preferredWidth: 560
+                        Layout.preferredHeight: 540
+                        Layout.maximumWidth: 560
+                        Layout.maximumHeight: 540
+                        Layout.minimumWidth: 560
+                        Layout.minimumHeight: 540
+                        Layout.leftMargin: 5
+                        Layout.rightMargin: 5
                     }
 
                     Item {
@@ -111,9 +114,9 @@ ColumnLayout {
                         id: price_line
                         Layout.fillWidth: true
                         Layout.preferredHeight: 90
-                        Layout.leftMargin: 8
-                        Layout.rightMargin: 8
-                        Layout.bottomMargin: 4
+                        Layout.leftMargin: 5
+                        Layout.rightMargin: 5
+                        Layout.bottomMargin: 5
                     }
                 }
             }
