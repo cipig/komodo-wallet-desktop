@@ -76,12 +76,12 @@ div.coinpaprika-currency-widget {
   position: relative !important;
 }
 
-/* 1. Header Container: Set to a completely static relative block so content stays structured naturally */
+/* 1. Header Box Layer: Low top-padding matches your clean raised height alignment */
 div.coinpaprika-currency-widget > div.cp-widget__header {
   position: relative !important;
   width: 100% !important;
-  height: 140px !important; /* Hardcoded layout box room clears text columns safely */
-  padding: 15px 15px 5px 15px !important;
+  height: 120px !important; 
+  padding: 5px 15px 5px 15px !important;
   box-sizing: border-box !important;
 }
 
@@ -90,51 +90,51 @@ div.coinpaprika-currency-widget > div.cp-widget__header a {
   cursor: default !important;
 }
 
-/* 2. Main Wrapper Box */
+/* 2. Main Container Box */
 div.coinpaprika-currency-widget > div.cp-widget__main {
   display: block !important;
   position: absolute !important;
-  top: 0 !important; /* Pull to the absolute top of the parent window */
+  top: 0 !important;
   left: 0 !important;
   width: 100% !important;
-  height: 560px !important; /* Cover the entire 560px view area */
+  height: 560px !important;
   overflow: visible !important;
 }
 
-/* 3. Highcharts Canvas Window: Hard-pinned using a static top value to stop overlapping */
+/* 3. Expanded Highcharts Canvas Container Window */
 div.cp-widget__main div.cp-widget__chart {
   display: block !important;
   position: absolute !important;
-  top: 145px !important;        /* CRUCIAL: Forces the top of the chart canvas to start precisely below the header area */
+  top: 120px !important;        /* Starts perfectly right below the 120px header box */
   left: 0 !important;
   width: 100% !important;
-  height: 340px !important;      /* Sets the absolute visual box height limits */
-  max-height: 340px !important;
+  height: 380px !important;      /* Expanded from 340px to 380px to match the widget.js code change */
+  max-height: 380px !important;
   overflow: visible !important;  
 }
 
 div.cp-widget__main div.cp-widget__chart > div {
   display: block !important;
-  height: 340px !important;
-  max-height: 340px !important;
+  height: 380px !important;
+  max-height: 380px !important;
   overflow: visible !important;  
 }
 
-/* Targets the left vertical axis line, stopping it right at the navigator base floor line */
+/* Keeps the left axis line cleanly cut at the navigator floor track base */
 .highcharts-plot-border {
-  max-height: 230px !important;  
+  max-height: 270px !important;  /* Raised from 230px to adapt to the taller chart lines */
 }
 
 .highcharts-range-selector-buttons {
   display: none !important;
 }
 
-/* 4. Zoom Text Controls Row: Positioned relative to the 560px frame */
+/* 4. Zoom Text Controls Row: Shifted to follow the new taller dimensions perfectly */
 div.cp-widget__main div.cp-widget__chart-ranges,
 div.cp-widget__main div.cp-widget-select {
   position: absolute !important;
   left: 15px !important;
-  top: 414px !important;         /* Hard-pinned right into the blank space between your chart dates and the handles */
+  top: 414px !important;         /* Re-calculated to 414px to drop perfectly right above the new navigator line position */
   bottom: auto !important;          
   z-index: 9999 !important;      
   margin: 0 !important;
