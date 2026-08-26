@@ -60,92 +60,132 @@ Item
                 chart_html = `
                 <link rel="icon" href="data:,">
                 <style>
-                  html, body {
-                    margin: 0 !important;
-                    padding: 0 !important;
-                    overflow: hidden !important;
-                    height: 560px !important;
-                    width: 570px !important;
-                  }
-                  div.coinpaprika-currency-widget {
-                    height: 560px !important;
-                    width: 570px !important;
-                    box-sizing: border-box !important;
-                    overflow: visible !important; /* Ensures the footer text doesn't cut off at the base line */
-                    position: relative !important;
-                  }
-                  div.coinpaprika-currency-widget > div.cp-widget__header {
-                    position: relative !important;
-                    top: auto !important;
-                    left: auto !important;
-                    width: 100% !important;
-                    height: auto !important; /* Lets the layout dynamically size to clear the wrapped price elements cleanly */
-                    padding: 15px 15px 5px 15px !important;
-                    box-sizing: border-box !important;
-                    display: inline-block !important;
-                  }
-                  div.coinpaprika-currency-widget > div.cp-widget__header a {
-                    pointer-events: none !important;
-                    cursor: default !important;
-                  }
-                  div.coinpaprika-currency-widget > div.cp-widget__main {
-                    display: block !important;
-                    position: relative !important;
-                    top: auto !important;
-                    left: 0 !important;
-                    width: 100% !important;
-                    height: auto !important;
-                    overflow: visible !important;
-                  }
-                  div.cp-widget__main div.cp-widget__chart {
-                    display: block !important;
-                    position: relative !important;
-                    width: 100% !important;
-                    height: 340px !important;      /* Reduced to 340px to safely clear the header text zone */
-                    max-height: 340px !important;
-                    overflow: visible !important;
-                  }
-                  div.cp-widget__main div.cp-widget__chart > div {
-                    display: block !important;
-                    height: 340px !important;
-                    max-height: 340px !important;
-                    overflow: visible !important;
-                  }
-                  .highcharts-plot-border {
-                    max-height: 230px !important;  /* Strictly clips the border path line right above the navigator track base */
-                  }
-                  .highcharts-range-selector-buttons {
-                    display: none !important;
-                  }
-                  div.cp-widget__main div.cp-widget__chart-ranges,
-                  div.cp-widget__main div.cp-widget-select {
-                    position: absolute !important;
-                    left: 15px !important;
-                    bottom: 66px !important;       /* Hardpinned above the navigator bar handles */
-                    top: auto !important;
-                    z-index: 9999 !important;
-                    margin: 0 !important;
-                    padding: 0 !important;
-                    pointer-events: none !important;
-                  }
-                  div.cp-widget__main div.cp-widget__chart-ranges button,
-                  div.cp-widget__main div.cp-widget-select__options,
-                  div.cp-widget__main div.cp-widget-select__dropdown button {
-                    pointer-events: auto !important;
-                  }
-                  div.coinpaprika-currency-widget > div.cp-widget__footer {
-                    position: absolute !important;
-                    bottom: 2px !important;
-                    right: 25px !important;
-                    top: auto !important;
-                    z-index: 100 !important;
-                    margin: 0 !important;
-                    padding: 0 !important;
-                    pointer-events: none !important;
-                  }
-                  div.coinpaprika-currency-widget > div.cp-widget__footer a {
-                    pointer-events: none !important;
-                  }
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  height: 560px !important;
+  width: 570px !important;
+}
+
+div.coinpaprika-currency-widget {
+  height: 560px !important;
+  width: 570px !important;
+  box-sizing: border-box !important;
+  overflow: visible !important; /* Keeps the footer text completely visible without truncation */
+  position: relative !important;
+}
+
+/* 1. Header Box Layer: Fixed at 140px to safely clear the name, price, and rank text fields */
+div.coinpaprika-currency-widget > div.cp-widget__header {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 140px !important; 
+  padding: 15px 15px 5px 15px !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: row !important;      /* Forces your text back to the right side of the icon logo */
+  align-items: center !important;
+  justify-content: flex-start !important;
+}
+
+/* Keep the token icon pinned neatly on the left margin */
+div.coinpaprika-currency-widget > div.cp-widget__header > .cp-widget__logo {
+  display: inline-block !important;
+  flex-shrink: 0 !important;
+}
+
+/* Keep the text block columns safely aligned right next to the logo */
+div.coinpaprika-currency-widget > div.cp-widget__header > .cp-widget__main-currency {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  margin-left: 15px !important;
+  flex-grow: 1 !important;
+}
+
+div.coinpaprika-currency-widget > div.cp-widget__header a {
+  pointer-events: none !important;
+  cursor: default !important;
+}
+
+/* 2. Main Wrapper Framework Box: Hard-shifted down past the 140px header block */
+div.coinpaprika-currency-widget > div.cp-widget__main {
+  display: block !important;
+  position: absolute !important;
+  top: 140px !important; 
+  left: 0 !important;
+  width: 100% !important;
+  height: 420px !important; 
+  overflow: visible !important;
+}
+
+/* 3. Highcharts Container Window (Sized cleanly to fill the lower quadrant space) */
+div.cp-widget__main div.cp-widget__chart {
+  display: block !important;
+  position: absolute !important;
+  bottom: 25px !important;       
+  top: auto !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 340px !important;      /* Matches your exact working 340px height configuration */
+  max-height: 340px !important;
+  overflow: visible !important;  
+}
+
+div.cp-widget__main div.cp-widget__chart > div {
+  display: block !important;
+  height: 340px !important;
+  max-height: 340px !important;
+  overflow: visible !important;  
+}
+
+/* Cuts your trailing left accent plot border line exactly above the navigator slider track */
+.highcharts-plot-border {
+  max-height: 230px !important;  
+}
+
+.highcharts-range-selector-buttons {
+  display: none !important;
+}
+
+/* 4. Zoom Text Controls Row: Centered inside your working bottom pocket gap */
+div.cp-widget__main div.cp-widget__chart-ranges,
+div.cp-widget__main div.cp-widget-select {
+  position: absolute !important;
+  left: 15px !important;
+  bottom: 66px !important;       
+  top: auto !important;          
+  z-index: 9999 !important;      
+  margin: 0 !important;
+  padding: 0 !important;
+  pointer-events: none !important; /* Retains left-handle click slider actions */
+}
+
+div.cp-widget__main div.cp-widget__chart-ranges button,
+div.cp-widget__main div.cp-widget-select__options,
+div.cp-widget__main div.cp-widget-select__dropdown button {
+  pointer-events: auto !important;
+}
+
+/* 5. Footer Layout Pinning */
+div.coinpaprika-currency-widget > div.cp-widget__footer {
+  position: absolute !important;
+  bottom: 2px !important;        
+  right: 25px !important;
+  top: auto !important;
+  z-index: 100 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  pointer-events: none !important;
+}
+
+div.coinpaprika-currency-widget > div.cp-widget__footer a {
+  pointer-events: none !important;
+}
+
                 </style>
                 <div class="coinpaprika-currency-widget ${night_mode}"
                      data-primary-currency="${API.app.settings_pg.current_currency}"
