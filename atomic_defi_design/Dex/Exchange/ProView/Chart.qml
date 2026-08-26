@@ -99,7 +99,7 @@ Item
                   .coinpaprika-currency-widget .cp-widget__chart {
                     display: block !important;
                     position: absolute !important;
-                    bottom: 40px !important;
+                    bottom: 35px !important;
                     top: auto !important;
                     left: 0 !important;
                     width: 100% !important;
@@ -118,9 +118,9 @@ Item
                   .coinpaprika-currency-widget .cp-widget-select {
                     position: absolute !important;
                     left: 15px !important;
-                    bottom: 125px !important;
+                    bottom: 85px !important;
                     top: auto !important;
-                    z-index: 100 !important;
+                    z-index: 150 !important;
                     margin: 0 !important;
                     padding: 0 !important;
                     pointer-events: none !important;
