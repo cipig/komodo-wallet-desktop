@@ -71,32 +71,18 @@ Item
                     height: 560px !important;
                     width: 570px !important;
                     box-sizing: border-box !important;
-                    overflow: visible !important; /* Allows the footer to display text safely without clipping */
+                    overflow: visible !important; /* Ensures the footer text doesn't cut off at the base line */
                     position: relative !important;
                   }
                   div.coinpaprika-currency-widget > div.cp-widget__header {
-                    position: absolute !important;
-                    top: 0 !important;
-                    left: 0 !important;
+                    position: relative !important;
+                    top: auto !important;
+                    left: auto !important;
                     width: 100% !important;
-                    height: 120px !important;
+                    height: auto !important; /* Lets the layout dynamically size to clear the wrapped price elements cleanly */
                     padding: 15px 15px 5px 15px !important;
                     box-sizing: border-box !important;
-                    display: flex !important;
-                    flex-direction: row !important;
-                    align-items: center !important;
-                    justify-content: flex-start !important;
-                  }
-                  div.coinpaprika-currency-widget > div.cp-widget__header > .cp-widget__logo {
                     display: inline-block !important;
-                    flex-shrink: 0 !important;
-                  }
-                  div.coinpaprika-currency-widget > div.cp-widget__header > .cp-widget__main-currency {
-                    display: flex !important;
-                    flex-direction: column !important;
-                    align-items: flex-start !important;
-                    margin-left: 15px !important;
-                    flex-grow: 1 !important;
                   }
                   div.coinpaprika-currency-widget > div.cp-widget__header a {
                     pointer-events: none !important;
@@ -104,32 +90,29 @@ Item
                   }
                   div.coinpaprika-currency-widget > div.cp-widget__main {
                     display: block !important;
-                    position: absolute !important;
-                    top: 120px !important;
+                    position: relative !important;
+                    top: auto !important;
                     left: 0 !important;
                     width: 100% !important;
-                    height: 440px !important;
+                    height: auto !important;
                     overflow: visible !important;
                   }
                   div.cp-widget__main div.cp-widget__chart {
                     display: block !important;
-                    position: absolute !important;
-                    bottom: 25px !important;
-                    top: auto !important;
-                    left: 0 !important;
+                    position: relative !important;
                     width: 100% !important;
-                    height: 415px !important;
-                    max-height: 415px !important;
+                    height: 340px !important;      /* Reduced to 340px to safely clear the header text zone */
+                    max-height: 340px !important;
                     overflow: visible !important;
                   }
                   div.cp-widget__main div.cp-widget__chart > div {
                     display: block !important;
-                    height: 415px !important;
-                    max-height: 415px !important;
+                    height: 340px !important;
+                    max-height: 340px !important;
                     overflow: visible !important;
                   }
                   .highcharts-plot-border {
-                    max-height: 295px !important;
+                    max-height: 230px !important;  /* Strictly clips the border path line right above the navigator track base */
                   }
                   .highcharts-range-selector-buttons {
                     display: none !important;
@@ -138,7 +121,7 @@ Item
                   div.cp-widget__main div.cp-widget-select {
                     position: absolute !important;
                     left: 15px !important;
-                    bottom: 66px !important;
+                    bottom: 66px !important;       /* Hardpinned above the navigator bar handles */
                     top: auto !important;
                     z-index: 9999 !important;
                     margin: 0 !important;

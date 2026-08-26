@@ -11567,7 +11567,7 @@ class chartClass {
         plotBorderWidth: 0,
         zoomType: "none",
         width: null,
-        height: 415,
+        height: 340,
         marginTop: 10,
         marginBottom: 70,
         spacingBottom: 0,
