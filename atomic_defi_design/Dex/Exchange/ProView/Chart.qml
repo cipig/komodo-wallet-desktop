@@ -71,34 +71,32 @@ Item
                     height: 560px !important;
                     width: 570px !important;
                     box-sizing: border-box !important;
-                    overflow: visible !important;
+                    overflow: visible !important; /* Allows the footer to display text safely without clipping */
                     position: relative !important;
                   }
                   div.coinpaprika-currency-widget > div.cp-widget__header {
-                    position: relative !important;
+                    position: absolute !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    width: 100% !important;
+                    height: 120px !important;
+                    padding: 15px 15px 5px 15px !important;
+                    box-sizing: border-box !important;
                     display: flex !important;
                     flex-direction: row !important;
                     align-items: center !important;
                     justify-content: flex-start !important;
-                    width: 100% !important;
-                    height: auto !important;
-                    padding: 15px 15px 10px 15px !important;
-                    box-sizing: border-box !important;
-                    overflow: visible !important;
                   }
-                  div.cp-widget__header div.cp-widget__main-currency {
+                  div.coinpaprika-currency-widget > div.cp-widget__header > .cp-widget__logo {
+                    display: inline-block !important;
+                    flex-shrink: 0 !important;
+                  }
+                  div.coinpaprika-currency-widget > div.cp-widget__header > .cp-widget__main-currency {
                     display: flex !important;
                     flex-direction: column !important;
                     align-items: flex-start !important;
-                    margin-left: 20px !important;
+                    margin-left: 15px !important;
                     flex-grow: 1 !important;
-                  }
-                  div.cp-widget__header h3,
-                  div.cp-widget__header h4 {
-                    display: flex !important;
-                    flex-direction: row !important;
-                    align-items: center !important;
-                    margin: 2px 0 !important;
                   }
                   div.coinpaprika-currency-widget > div.cp-widget__header a {
                     pointer-events: none !important;
@@ -106,24 +104,32 @@ Item
                   }
                   div.coinpaprika-currency-widget > div.cp-widget__main {
                     display: block !important;
-                    position: relative !important;
+                    position: absolute !important;
+                    top: 120px !important;
+                    left: 0 !important;
                     width: 100% !important;
-                    margin-top: 10px !important;
-                    overflow: hidden !important;
+                    height: 440px !important;
+                    overflow: visible !important;
                   }
                   div.cp-widget__main div.cp-widget__chart {
                     display: block !important;
-                    position: relative !important;
+                    position: absolute !important;
+                    bottom: 25px !important;
+                    top: auto !important;
+                    left: 0 !important;
                     width: 100% !important;
-                    height: 380px !important;
-                    max-height: 380px !important;
-                    overflow: hidden !important;
+                    height: 415px !important;
+                    max-height: 415px !important;
+                    overflow: visible !important;
                   }
                   div.cp-widget__main div.cp-widget__chart > div {
                     display: block !important;
-                    height: 380px !important;
-                    max-height: 380px !important;
-                    overflow: hidden !important;
+                    height: 415px !important;
+                    max-height: 415px !important;
+                    overflow: visible !important;
+                  }
+                  .highcharts-plot-border {
+                    max-height: 295px !important;
                   }
                   .highcharts-range-selector-buttons {
                     display: none !important;
@@ -132,7 +138,7 @@ Item
                   div.cp-widget__main div.cp-widget-select {
                     position: absolute !important;
                     left: 15px !important;
-                    bottom: 50px !important;
+                    bottom: 66px !important;
                     top: auto !important;
                     z-index: 9999 !important;
                     margin: 0 !important;
@@ -146,7 +152,7 @@ Item
                   }
                   div.coinpaprika-currency-widget > div.cp-widget__footer {
                     position: absolute !important;
-                    bottom: -5px !important;
+                    bottom: 2px !important;
                     right: 25px !important;
                     top: auto !important;
                     z-index: 100 !important;
