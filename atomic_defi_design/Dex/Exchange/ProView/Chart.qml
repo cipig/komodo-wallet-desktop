@@ -82,6 +82,10 @@ Item
                     height: 125px !important;
                     padding: 15px 15px 5px 15px !important;
                     box-sizing: border-box !important;
+                    display: flex !important;
+                    flex-direction: row !important;
+                    align-items: flex-start !important;
+                    overflow: visible !important;
                   }
                   .coinpaprika-currency-widget .cp-widget__header a {
                     pointer-events: none !important;
@@ -117,9 +121,9 @@ Item
                   .coinpaprika-currency-widget .cp-widget__chart-ranges,
                   .coinpaprika-currency-widget .cp-widget-select {
                     position: absolute !important;
-                    left: 15px !important;
-                    bottom: 52px !important;
+                    bottom: -290px !important;
                     top: auto !important;
+                    left: 15px !important;
                     z-index: 150 !important;
                     margin: 0 !important;
                     padding: 0 !important;
