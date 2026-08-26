@@ -79,7 +79,7 @@ Item
                     top: 0 !important;
                     left: 0 !important;
                     width: 100% !important;
-                    height: 100px !important;
+                    height: 125px !important;
                     padding: 15px 15px 5px 15px !important;
                     box-sizing: border-box !important;
                   }
@@ -90,10 +90,10 @@ Item
                   .coinpaprika-currency-widget .cp-widget__main {
                     display: block !important;
                     position: absolute !important;
-                    top: 100px !important;
+                    top: 125px !important;
                     left: 0 !important;
                     width: 100% !important;
-                    height: 460px !important;
+                    height: 435px !important;
                     overflow: hidden !important;
                   }
                   .coinpaprika-currency-widget .cp-widget__chart {
@@ -103,13 +103,13 @@ Item
                     top: auto !important;
                     left: 0 !important;
                     width: 100% !important;
-                    height: 420px !important;
-                    max-height: 420px !important;
+                    height: 400px !important;
+                    max-height: 400px !important;
                   }
                   .coinpaprika-currency-widget .cp-widget__chart > div {
                     display: block !important;
-                    height: 420px !important;
-                    max-height: 420px !important;
+                    height: 400px !important;
+                    max-height: 400px !important;
                   }
                   .highcharts-range-selector-buttons {
                     display: none !important;
@@ -118,7 +118,7 @@ Item
                   .coinpaprika-currency-widget .cp-widget-select {
                     position: absolute !important;
                     left: 15px !important;
-                    bottom: 85px !important;
+                    bottom: 52px !important;
                     top: auto !important;
                     z-index: 150 !important;
                     margin: 0 !important;

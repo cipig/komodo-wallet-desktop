@@ -11567,12 +11567,12 @@ class chartClass {
         plotBorderWidth: 0,
         zoomType: "none",
         width: null,
-        height: 420,
+        height: 400,
         marginTop: 10,
-        marginBottom: 120,
+        marginBottom: 95,
         spacingBottom: 0,
         // [Top, Right, Bottom, Left]
-        margin: [10, 45, 120, 15]
+        margin: [10, 45, 95, 15]
       },
       rangeSelector: {
         enabled: false,
