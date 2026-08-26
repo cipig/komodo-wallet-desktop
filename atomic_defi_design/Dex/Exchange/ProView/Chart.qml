@@ -64,14 +64,14 @@ Item
                     margin: 0 !important;
                     padding: 0 !important;
                     overflow: hidden !important;
-                    height: 585px !important;
+                    height: 550px !important;
                     width: 570px !important;
                   }
                   div.coinpaprika-currency-widget {
-                    height: 560px !important;
+                    height: 550px !important;
                     width: 570px !important;
                     box-sizing: border-box !important;
-                    overflow: visible !important;
+                    overflow: hidden !important;
                     position: relative !important;
                   }
                   div.coinpaprika-currency-widget > div.cp-widget__header {
@@ -91,8 +91,8 @@ Item
                     top: 0 !important;
                     left: 0 !important;
                     width: 100% !important;
-                    height: 560px !important;
-                    overflow: visible !important;
+                    height: 550px !important;
+                    overflow: hidden !important;
                   }
                   div.cp-widget__main div.cp-widget__chart {
                     display: block !important;
@@ -111,7 +111,7 @@ Item
                     overflow: visible !important;
                   }
                   .highcharts-plot-border {
-                    max-height: 270px !important;
+                    max-height: 264px !important;
                   }
                   .highcharts-range-selector-buttons {
                     display: none !important;
@@ -120,7 +120,7 @@ Item
                   div.cp-widget__main div.cp-widget-select {
                     position: absolute !important;
                     left: 15px !important;
-                    top: 414px !important;
+                    top: 410px !important;
                     bottom: auto !important;
                     z-index: 9999 !important;
                     margin: 0 !important;
@@ -134,7 +134,7 @@ Item
                   }
                   div.coinpaprika-currency-widget > div.cp-widget__footer {
                     position: absolute !important;
-                    bottom: -22px !important;
+                    bottom: 6px !important;
                     right: 25px !important;
                     top: auto !important;
                     z-index: 100 !important;
