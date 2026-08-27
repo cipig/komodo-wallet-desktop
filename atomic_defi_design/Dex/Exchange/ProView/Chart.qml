@@ -116,6 +116,10 @@ Item
                   .highcharts-range-selector-buttons {
                     display: none !important;
                   }
+                  .highcharts-range-selector-group,
+                  g.highcharts-range-selector-group {
+                    transform: translateY(22px) !important;
+                  }
                   div.cp-widget__main div.cp-widget-select,
                   div.cp-widget__main div.cp-widget__chart-ranges {
                     position: absolute !important;
@@ -126,24 +130,20 @@ Item
                     padding: 0 !important;
                     pointer-events: none !important;
                     display: block !important;
+                    transform: translateY(22px) !important;
                   }
                   div.cp-widget__main div.cp-widget-select { left: 15px !important; }
                   div.cp-widget__main div.cp-widget__chart-ranges { left: 85px !important; }
-
                   div.cp-widget__main div.cp-widget-select label,
                   div.cp-widget__main div.cp-widget-select__options,
                   div.cp-widget__main div.cp-widget-select__options span,
                   div.cp-widget__main div.cp-widget-select__dropdown button,
                   div.cp-widget__main div.cp-widget__chart-ranges button,
                   div.cp-widget__main button[data-option] {
-                    position: relative !important;
-                    left: auto !important;
-                    top: auto !important;
-                    bottom: auto !important;
-                    display: inline-flex !important;
+                    display: inline-block !important;
                     vertical-align: middle !important;
-                    align-items: center !important;
-                    transform: translateY(22px) !important;
+                    position: static !important;
+                    transform: none !important;
                   }
                   div.cp-widget__main div.cp-widget__chart-ranges button,
                   div.cp-widget__main button[data-option] {
