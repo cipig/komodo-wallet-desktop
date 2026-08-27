@@ -116,36 +116,35 @@ Item
                   .highcharts-range-selector-buttons {
                     display: none !important;
                   }
-                  .highcharts-range-selector-group,
-                  g.highcharts-range-selector-group {
-                    transform: translateY(22px) !important;
-                  }
-                  div.cp-widget__main div.cp-widget-select,
-                  div.cp-widget__main div.cp-widget__chart-ranges {
+                  div.cp-widget__main div[class*="cp-widget-select"],
+                  div.cp-widget__main div[class*="cp-widget__chart-ranges"] {
                     position: absolute !important;
-                    bottom: 40px !important;
+                    bottom: 12px !important;
                     top: auto !important;
                     z-index: 9999 !important;
                     margin: 0 !important;
                     padding: 0 !important;
                     pointer-events: none !important;
-                    display: block !important;
-                    transform: translateY(22px) !important;
+                    display: inline-block !important;
                   }
-                  div.cp-widget__main div.cp-widget-select { left: 15px !important; }
-                  div.cp-widget__main div.cp-widget__chart-ranges { left: 85px !important; }
-                  div.cp-widget__main div.cp-widget-select label,
-                  div.cp-widget__main div.cp-widget-select__options,
-                  div.cp-widget__main div.cp-widget-select__options span,
-                  div.cp-widget__main div.cp-widget-select__dropdown button,
-                  div.cp-widget__main div.cp-widget__chart-ranges button,
+                  div.cp-widget__main div[class*="cp-widget-select"] {
+                    left: 15px !important;
+                  }
+                  div.cp-widget__main div[class*="cp-widget__chart-ranges"] {
+                    left: 85px !important;
+                  }
+                  div.cp-widget__main div[class*="cp-widget-select"] label,
+                  div.cp-widget__main div[class*="cp-widget-select"] div,
+                  div.cp-widget__main div[class*="cp-widget-select"] span,
+                  div.cp-widget__main div[class*="cp-widget-select"] button,
+                  div.cp-widget__main div[class*="cp-widget__chart-ranges"] button,
                   div.cp-widget__main button[data-option] {
                     display: inline-block !important;
                     vertical-align: middle !important;
                     position: static !important;
                     transform: none !important;
                   }
-                  div.cp-widget__main div.cp-widget__chart-ranges button,
+                  div.cp-widget__main div[class*="cp-widget__chart-ranges"] button,
                   div.cp-widget__main button[data-option] {
                     margin-right: 5px !important;
                   }
