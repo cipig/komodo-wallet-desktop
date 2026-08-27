@@ -127,9 +127,10 @@ Item
                     pointer-events: none !important;
                     display: inline-block !important;
                     vertical-align: middle !important;
+                    transform: translateY(22px) !important;
                   }
                   div.cp-widget__main div.cp-widget__chart-ranges {
-                    left: 80px !important;
+                    left: 85px !important;
                   }
                   div.cp-widget__main div.cp-widget-select {
                     left: 15px !important;
