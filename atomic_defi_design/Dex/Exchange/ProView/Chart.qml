@@ -125,24 +125,29 @@ Item
                     margin: 0 !important;
                     padding: 0 !important;
                     pointer-events: none !important;
-                    display: inline-block !important;
-                    vertical-align: middle !important;
-                    transform: translateY(22px) !important;
+                    display: block !important;
                   }
-                  div.cp-widget__main div.cp-widget__chart-ranges {
-                    left: 85px !important;
-                  }
-                  div.cp-widget__main div.cp-widget-select {
-                    left: 15px !important;
-                  }
+                  div.cp-widget__main div.cp-widget-select { left: 15px !important; }
+                  div.cp-widget__main div.cp-widget__chart-ranges { left: 85px !important; }
+
                   div.cp-widget__main div.cp-widget-select label,
                   div.cp-widget__main div.cp-widget-select__options,
+                  div.cp-widget__main div.cp-widget-select__options span,
+                  div.cp-widget__main div.cp-widget-select__dropdown button,
                   div.cp-widget__main div.cp-widget__chart-ranges button,
                   div.cp-widget__main button[data-option] {
-                    display: inline-block !important;
+                    position: relative !important;
+                    left: auto !important;
+                    top: auto !important;
+                    bottom: auto !important;
+                    display: inline-flex !important;
                     vertical-align: middle !important;
-                    position: static !important;
-                    transform: none !important;
+                    align-items: center !important;
+                    transform: translateY(22px) !important;
+                  }
+                  div.cp-widget__main div.cp-widget__chart-ranges button,
+                  div.cp-widget__main button[data-option] {
+                    margin-right: 5px !important;
                   }
                   div.cp-widget__main div.cp-widget__chart-ranges button,
                   div.cp-widget__main div.cp-widget-select__options,
