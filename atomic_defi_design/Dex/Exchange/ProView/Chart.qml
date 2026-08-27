@@ -120,8 +120,8 @@ Item
                   div.cp-widget__main div.cp-widget-select {
                     position: absolute !important;
                     left: 15px !important;
-                    top: 425px !important;
-                    bottom: auto !important;
+                    bottom: 70px !important;
+                    top: auto !important;
                     z-index: 9999 !important;
                     margin: 0 !important;
                     padding: 0 !important;
@@ -134,7 +134,7 @@ Item
                   }
                   div.coinpaprika-currency-widget > div.cp-widget__footer {
                     position: absolute !important;
-                    bottom: 4px !important;
+                    bottom: 8px !important;
                     right: 25px !important;
                     top: auto !important;
                     z-index: 100 !important;
