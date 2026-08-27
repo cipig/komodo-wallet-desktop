@@ -116,7 +116,8 @@ Item
                   .highcharts-range-selector-buttons {
                     display: none !important;
                   }
-                  div.cp-widget__main div.cp-widget-select {
+                  div.cp-widget__main div.cp-widget-select,
+                  div.cp-widget__main div.cp-widget__chart-ranges {
                     position: absolute !important;
                     left: 15px !important;
                     bottom: 40px !important;
@@ -132,6 +133,7 @@ Item
                   div.cp-widget__main div.cp-widget-select__options,
                   div.cp-widget__main div.cp-widget-select__options span,
                   div.cp-widget__main div.cp-widget-select__dropdown button,
+                  div.cp-widget__main div.cp-widget__chart-ranges button,
                   div.cp-widget__main button[data-option] {
                     display: inline-block !important;
                     vertical-align: middle !important;
