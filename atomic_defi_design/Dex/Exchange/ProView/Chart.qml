@@ -116,13 +116,22 @@ Item
                   .highcharts-range-selector-buttons {
                     display: none !important;
                   }
-                  div.coinpaprika-currency-widget .cp-widget-select label,
-                  div.coinpaprika-currency-widget .cp-widget-select__options,
-                  div.coinpaprika-currency-widget .cp-widget-select__dropdown button,
-                  div.coinpaprika-currency-widget button[data-option] {
-                    position: relative !important;
-                    transform: translateY(22px) !important;
+                  div.cp-widget__main div.cp-widget-select {
+                    position: absolute !important;
+                    left: 15px !important;
+                    top: 345px !important;
+                    bottom: auto !important;
+                    z-index: 9999 !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    pointer-events: none !important;
+                    display: block !important;
+                  }
+                  div.cp-widget__main div.cp-widget-select label,
+                  div.cp-widget__main div.cp-widget-select__options {
                     display: inline-block !important;
+                    vertical-align: middle !important;
+                    transform: none !important;
                   }
                   div.cp-widget__main div.cp-widget__chart-ranges button,
                   div.cp-widget__main div.cp-widget-select__options,
