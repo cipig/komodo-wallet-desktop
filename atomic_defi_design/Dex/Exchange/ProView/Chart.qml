@@ -100,18 +100,18 @@ Item
                     top: 120px !important;
                     left: 0 !important;
                     width: 100% !important;
-                    height: 380px !important;
-                    max-height: 380px !important;
+                    height: 405px !important;
+                    max-height: 405px !important;
                     overflow: visible !important;
                   }
                   div.cp-widget__main div.cp-widget__chart > div {
                     display: block !important;
-                    height: 380px !important;
-                    max-height: 380px !important;
+                    height: 405px !important;
+                    max-height: 405px !important;
                     overflow: visible !important;
                   }
                   .highcharts-plot-border {
-                    max-height: 250px !important;
+                    max-height: 285px !important;
                   }
                   .highcharts-range-selector-buttons {
                     display: none !important;
@@ -120,7 +120,7 @@ Item
                   div.cp-widget__main div.cp-widget-select {
                     position: absolute !important;
                     left: 15px !important;
-                    top: 420px !important;
+                    top: 454px !important;
                     bottom: auto !important;
                     z-index: 9999 !important;
                     margin: 0 !important;
@@ -134,7 +134,7 @@ Item
                   }
                   div.coinpaprika-currency-widget > div.cp-widget__footer {
                     position: absolute !important;
-                    bottom: 6px !important;
+                    bottom: 4px !important;
                     right: 25px !important;
                     top: auto !important;
                     z-index: 100 !important;
