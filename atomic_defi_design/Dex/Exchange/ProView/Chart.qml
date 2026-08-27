@@ -92,7 +92,7 @@ Item
                     left: 0 !important;
                     width: 100% !important;
                     height: 540px !important;
-                    overflow: hidden !important;
+                    overflow: visible !important;
                   }
                   div.cp-widget__main div.cp-widget__chart {
                     display: block !important;
@@ -120,7 +120,7 @@ Item
                   div.cp-widget__main div.cp-widget-select {
                     position: absolute !important;
                     left: 15px !important;
-                    bottom: 70px !important;
+                    bottom: 40px !important;
                     top: auto !important;
                     z-index: 9999 !important;
                     margin: 0 !important;
