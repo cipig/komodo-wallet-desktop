@@ -120,7 +120,8 @@ Item
                   div.cp-widget__main div.cp-widget-select {
                     position: absolute !important;
                     left: 15px !important;
-                    bottom: 82px !important;
+                    bottom: 40px !important;
+                    transform: translateY(22px) !important;
                     top: auto !important;
                     z-index: 9999 !important;
                     margin: 0 !important;
