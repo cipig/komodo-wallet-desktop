@@ -125,6 +125,7 @@ Item
                     margin: 0 !important;
                     padding: 0 !important;
                     pointer-events: none !important;
+                    display: block !important;
                     transform: translateY(22px) !important;
                   }
                   div.cp-widget__main div.cp-widget-select label,
