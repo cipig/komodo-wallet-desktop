@@ -118,20 +118,22 @@ Item
                   }
                   div.cp-widget__main div[class*="cp-widget-select"],
                   div.cp-widget__main div[class*="cp-widget__chart-ranges"] {
+                    all: unset !important;
                     position: absolute !important;
                     bottom: 12px !important;
                     top: auto !important;
                     z-index: 9999 !important;
                     margin: 0 !important;
                     padding: 0 !important;
-                    pointer-events: none !important;
                     display: inline-block !important;
+                    height: 20px !important;
                   }
                   div.cp-widget__main div[class*="cp-widget-select"] {
                     left: 15px !important;
                   }
                   div.cp-widget__main div[class*="cp-widget__chart-ranges"] {
                     left: 85px !important;
+                    pointer-events: auto !important;
                   }
                   div.cp-widget__main div[class*="cp-widget-select"] label,
                   div.cp-widget__main div[class*="cp-widget-select"] div,
