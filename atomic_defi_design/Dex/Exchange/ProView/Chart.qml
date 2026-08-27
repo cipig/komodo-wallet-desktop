@@ -116,28 +116,20 @@ Item
                   .highcharts-range-selector-buttons {
                     display: none !important;
                   }
-                  div.cp-widget__main div.cp-widget-select,
-                  div.cp-widget__main div.cp-widget__chart-ranges {
-                    position: absolute !important;
-                    left: 15px !important;
-                    bottom: 40px !important;
-                    top: auto !important;
-                    z-index: 9999 !important;
-                    margin: 0 !important;
-                    padding: 0 !important;
-                    pointer-events: none !important;
-                    display: block !important;
+                  div.coinpaprika-currency-widget .cp-widget-select label,
+                  div.coinpaprika-currency-widget .cp-widget-select__options,
+                  div.coinpaprika-currency-widget .cp-widget-select__dropdown button,
+                  div.coinpaprika-currency-widget .cp-widget__chart-ranges button,
+                  div.coinpaprika-currency-widget button[data-option] {
+                    position: relative !important;
+                    display: inline-flex !important;
+                    vertical-align: middle !important;
+                    align-items: center !important;
                     transform: translateY(22px) !important;
                   }
-                  div.cp-widget__main div.cp-widget-select label,
-                  div.cp-widget__main div.cp-widget-select__options,
-                  div.cp-widget__main div.cp-widget-select__options span,
-                  div.cp-widget__main div.cp-widget-select__dropdown button,
-                  div.cp-widget__main div.cp-widget__chart-ranges button,
-                  div.cp-widget__main button[data-option] {
-                    display: inline-block !important;
-                    vertical-align: middle !important;
-                    transform: none !important;
+                  div.coinpaprika-currency-widget .cp-widget-select__options,
+                  div.coinpaprika-currency-widget button[data-option] {
+                    margin-left: 6px !important;
                   }
                   div.cp-widget__main div.cp-widget__chart-ranges button,
                   div.cp-widget__main div.cp-widget-select__options,
