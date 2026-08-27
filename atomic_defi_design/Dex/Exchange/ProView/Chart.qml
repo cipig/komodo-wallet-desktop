@@ -119,16 +119,19 @@ Item
                   div.cp-widget__main div.cp-widget-select {
                     position: absolute !important;
                     left: 15px !important;
-                    top: 345px !important;
-                    bottom: auto !important;
+                    bottom: 40px !important;
+                    top: auto !important;
                     z-index: 9999 !important;
                     margin: 0 !important;
                     padding: 0 !important;
                     pointer-events: none !important;
-                    display: block !important;
+                    transform: translateY(22px) !important;
                   }
                   div.cp-widget__main div.cp-widget-select label,
-                  div.cp-widget__main div.cp-widget-select__options {
+                  div.cp-widget__main div.cp-widget-select__options,
+                  div.cp-widget__main div.cp-widget-select__options span,
+                  div.cp-widget__main div.cp-widget-select__dropdown button,
+                  div.cp-widget__main button[data-option] {
                     display: inline-block !important;
                     vertical-align: middle !important;
                     transform: none !important;
