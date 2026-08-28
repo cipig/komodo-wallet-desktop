@@ -149,7 +149,7 @@ Item
                   }
                   div.coinpaprika-currency-widget > div.cp-widget__footer {
                     position: fixed !important;
-                    bottom: 2px !important;
+                    bottom: -2px !important;
                     right: 25px !important;
                     top: auto !important;
                     left: auto !important;
@@ -201,6 +201,7 @@ Item
                       var footer = document.querySelector('div.cp-widget__footer');
                       if (footer) {
                         footer.style.position = 'fixed';
+                        footer.style.bottom = '-2px';
                         footer.style.display = 'block';
                         footer.style.visibility = 'visible';
                         footer.style.overflow = 'visible';
