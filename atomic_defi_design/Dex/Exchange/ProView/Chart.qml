@@ -71,7 +71,7 @@ Item
                     height: 540px !important;
                     width: 560px !important;
                     box-sizing: border-box !important;
-                    overflow: hidden !important;
+                    overflow: visible !important;
                     position: relative !important;
                   }
                   div.coinpaprika-currency-widget > div.cp-widget__header {
@@ -102,7 +102,7 @@ Item
                     width: 100% !important;
                     height: 405px !important;
                     max-height: 405px !important;
-                    overflow: visible !important;
+                    overflow: hidden !important;
                   }
                   div.cp-widget__main div.cp-widget__chart > div {
                     display: block !important;
@@ -119,7 +119,7 @@ Item
                   div.cp-widget__main div.cp-widget-select,
                   div.cp-widget__main div.cp-widget__chart-ranges {
                     position: absolute !important;
-                    bottom: 55px !important;
+                    bottom: 90px !important;
                     top: auto !important;
                     z-index: 9999 !important;
                     margin: 0 !important;
@@ -184,13 +184,13 @@ Item
                       var rangeSelector = document.querySelector('div.cp-widget-select');
                       if (rangeSelector) {
                         rangeSelector.style.top = 'auto';
-                        rangeSelector.style.bottom = '55px';
+                        rangeSelector.style.bottom = '90px';
                         rangeSelector.style.position = 'absolute';
                       }
                       var chartRanges = document.querySelector('div.cp-widget__chart-ranges');
                       if (chartRanges) {
                         chartRanges.style.top = 'auto';
-                        chartRanges.style.bottom = '55px';
+                        chartRanges.style.bottom = '90px';
                         chartRanges.style.position = 'absolute';
                       }
                     }, 600);
