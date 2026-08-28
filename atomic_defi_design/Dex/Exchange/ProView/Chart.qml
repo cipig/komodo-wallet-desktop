@@ -180,6 +180,20 @@ Item
                 <script>
                   window.addEventListener('load', function() {
                     window.dispatchEvent(new Event('resize'));
+                    setTimeout(function() {
+                      var rangeSelector = document.querySelector('div.cp-widget-select');
+                      if (rangeSelector) {
+                        rangeSelector.style.top = 'auto';
+                        rangeSelector.style.bottom = '55px';
+                        rangeSelector.style.position = 'absolute';
+                      }
+                      var chartRanges = document.querySelector('div.cp-widget__chart-ranges');
+                      if (chartRanges) {
+                        chartRanges.style.top = 'auto';
+                        chartRanges.style.bottom = '55px';
+                        chartRanges.style.position = 'absolute';
+                      }
+                    }, 600);
                   });
                 </script>
                 `
