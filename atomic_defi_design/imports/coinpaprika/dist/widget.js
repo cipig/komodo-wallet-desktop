@@ -11575,16 +11575,8 @@ class chartClass {
         margin: [10, 45, 80, 15]
       },
       rangeSelector: {
-        enabled: true,
-        inputEnabled: false,
-        verticalAlign: 'bottom',
-        x: 0,
-        y: 22,
-        buttonTheme: {
-          style: {
-            color: '#ffffff'
-          }
-        }
+        enabled: false,
+        inputEnabled: false
       },
       legend: {
         margin: 0,
