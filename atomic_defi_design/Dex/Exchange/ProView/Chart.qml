@@ -119,11 +119,11 @@ Item
                   div.cp-widget__main div.cp-widget-select,
                   div.cp-widget__main div.cp-widget__chart-ranges {
                     position: absolute !important;
-                    bottom: 40px !important;
+                    bottom: 72px !important;
                     top: auto !important;
                     z-index: 9999 !important;
                     margin: 0 !important;
-                    padding-top: 4px !important;
+                    padding: 0 !important;
                     pointer-events: none !important;
                     display: inline-block !important;
                     vertical-align: middle !important;
