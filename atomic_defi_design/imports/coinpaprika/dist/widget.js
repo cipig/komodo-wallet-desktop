@@ -11569,10 +11569,10 @@ class chartClass {
         width: null,
         height: 405,
         marginTop: 10,
-        marginBottom: 80,
+        marginBottom: 120,
         spacingBottom: 0,
         // [Top, Right, Bottom, Left]
-        margin: [10, 45, 80, 15]
+        margin: [10, 45, 120, 15]
       },
       rangeSelector: {
         enabled: true,
