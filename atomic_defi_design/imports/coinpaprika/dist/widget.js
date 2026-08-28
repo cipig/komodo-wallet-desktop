@@ -11575,7 +11575,7 @@ class chartClass {
         margin: [10, 45, 80, 15]
       },
       rangeSelector: {
-        enabled: false,
+        enabled: true,
         inputEnabled: false
       },
       legend: {
