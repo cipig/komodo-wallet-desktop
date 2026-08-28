@@ -116,10 +116,10 @@ Item
                   .highcharts-range-selector-buttons {
                     display: none !important;
                   }
-                  div.cp-widget__main [class*="cp-widget-select"],
-                  div.cp-widget__main [class*="cp-widget__chart-ranges"] {
+                  div.cp-widget__main div.cp-widget-select,
+                  div.cp-widget__main div.cp-widget__chart-ranges {
                     position: absolute !important;
-                    bottom: 85px !important;
+                    bottom: 76px !important;
                     top: auto !important;
                     z-index: 9999 !important;
                     margin: 0 !important;
@@ -128,30 +128,28 @@ Item
                     display: inline-block !important;
                     vertical-align: middle !important;
                   }
-                  div.cp-widget__main [class*="cp-widget-select"] {
+                  div.cp-widget__main div.cp-widget-select {
                     left: 15px !important;
                   }
-                  div.cp-widget__main [class*="cp-widget__chart-ranges"] {
+                  div.cp-widget__main div.cp-widget__chart-ranges {
                     left: 80px !important;
                   }
-                  div.cp-widget__main [class*="cp-widget-select"] label,
-                  div.cp-widget__main [class*="cp-widget-select"] div,
-                  div.cp-widget__main [class*="cp-widget-select"] span,
-                  div.cp-widget__main [class*="cp-widget-select"] button,
-                  div.cp-widget__main [class*="cp-widget__chart-ranges"] button,
+                  div.cp-widget__main div.cp-widget-select label,
+                  div.cp-widget__main div.cp-widget-select__options,
+                  div.cp-widget__main div.cp-widget__chart-ranges button,
                   div.cp-widget__main button[data-option] {
                     display: inline-block !important;
                     vertical-align: middle !important;
                     position: static !important;
                     transform: none !important;
                   }
-                  div.cp-widget__main [class*="cp-widget__chart-ranges"] button,
+                  div.cp-widget__main div.cp-widget__chart-ranges button,
                   div.cp-widget__main button[data-option] {
                     margin-right: 5px !important;
                   }
-                  div.cp-widget__main [class*="cp-widget__chart-ranges"] button,
-                  div.cp-widget__main [class*="cp-widget-select"] div,
-                  div.cp-widget__main [class*="cp-widget-select"] button {
+                  div.cp-widget__main div.cp-widget__chart-ranges button,
+                  div.cp-widget__main div.cp-widget-select__options,
+                  div.cp-widget__main div.cp-widget-select__dropdown button {
                     pointer-events: auto !important;
                   }
                   div.coinpaprika-currency-widget > div.cp-widget__footer {
