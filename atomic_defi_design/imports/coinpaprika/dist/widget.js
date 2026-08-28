@@ -11805,7 +11805,7 @@ class chartClass {
             }
           }
           resolve();
-        }, 500);
+        }, 420);
       });
     });
     promise = promise.then(() => {

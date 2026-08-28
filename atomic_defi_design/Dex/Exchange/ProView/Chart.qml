@@ -147,7 +147,7 @@ Item
                     pointer-events: auto !important;
                   }
                   div.coinpaprika-currency-widget > div.cp-widget__footer {
-                    position: absolute !important;
+                    position: fixed !important;
                     bottom: 8px !important;
                     right: 25px !important;
                     top: auto !important;
@@ -155,6 +155,8 @@ Item
                     margin: 0 !important;
                     padding: 0 !important;
                     pointer-events: none !important;
+                    overflow: visible !important;
+                    white-space: nowrap !important;
                   }
                   div.coinpaprika-currency-widget > div.cp-widget__footer a {
                     pointer-events: none !important;
@@ -193,7 +195,7 @@ Item
                         chartRanges.style.bottom = '90px';
                         chartRanges.style.position = 'absolute';
                       }
-                    }, 600);
+                    }, 500);
                   });
                 </script>
                 `
