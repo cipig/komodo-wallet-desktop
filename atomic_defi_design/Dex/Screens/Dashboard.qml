@@ -145,11 +145,11 @@ Item
             id: webEngineView
             backgroundColor: "transparent"
             // disable caching for better testing
-            //profile: WebEngineProfile {
-            //    storageName: "dev_profile"
-            //    offTheRecord: true
-            //    httpCacheType: WebEngineProfile.NoCache
-            //}
+            profile: WebEngineProfile {
+                storageName: "dev_profile"
+                offTheRecord: true
+                httpCacheType: WebEngineProfile.NoCache
+            }
             settings.javascriptEnabled: true
             settings.localStorageEnabled: true
             settings.localContentCanAccessRemoteUrls: true

@@ -118,21 +118,13 @@ Item
                   }
                   div.cp-widget__main div.cp-widget-select,
                   div.cp-widget__main div.cp-widget__chart-ranges {
-                    position: absolute !important;
-                    bottom: 76px !important;
-                    top: auto !important;
+                    position: relative !important;
                     z-index: 9999 !important;
                     margin: 0 !important;
                     padding: 0 !important;
                     pointer-events: none !important;
                     display: inline-block !important;
                     vertical-align: middle !important;
-                  }
-                  div.cp-widget__main div.cp-widget-select {
-                    left: 15px !important;
-                  }
-                  div.cp-widget__main div.cp-widget__chart-ranges {
-                    left: 80px !important;
                   }
                   div.cp-widget__main div.cp-widget-select label,
                   div.cp-widget__main div.cp-widget-select__options,
