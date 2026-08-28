@@ -148,16 +148,18 @@ Item
                     pointer-events: auto !important;
                   }
                   div.coinpaprika-currency-widget > div.cp-widget__footer {
-                    position: absolute !important;
+                    position: fixed !important;
                     bottom: 2px !important;
                     right: 25px !important;
                     top: auto !important;
+                    left: auto !important;
                     z-index: 101 !important;
                     margin: 0 !important;
                     padding: 0 !important;
                     pointer-events: none !important;
                     overflow: visible !important;
                     white-space: nowrap !important;
+                    display: block !important;
                   }
                   div.coinpaprika-currency-widget > div.cp-widget__footer a {
                     pointer-events: none !important;
@@ -198,12 +200,10 @@ Item
                       }
                       var footer = document.querySelector('div.cp-widget__footer');
                       if (footer) {
-                        var footerClone = footer.cloneNode(true);
-                        footerClone.style.position = 'fixed';
-                        footerClone.style.bottom = '2px';
-                        footerClone.style.right = '25px';
-                        document.body.appendChild(footerClone);
-                        footer.style.display = 'none';
+                        footer.style.position = 'fixed';
+                        footer.style.display = 'block';
+                        footer.style.visibility = 'visible';
+                        footer.style.overflow = 'visible';
                       }
                     }, 500);
                   });
