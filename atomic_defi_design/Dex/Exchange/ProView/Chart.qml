@@ -148,7 +148,7 @@ Item
                     pointer-events: auto !important;
                   }
                   div.coinpaprika-currency-widget > div.cp-widget__footer {
-                    position: fixed !important;
+                    position: absolute !important;
                     bottom: -2px !important;
                     right: 25px !important;
                     top: auto !important;
@@ -198,8 +198,7 @@ Item
                       }
                       var footer = document.querySelector('div.cp-widget__footer');
                       if (footer) {
-                        footer.style.bottom = '-5px';
-                        footer.style.position = 'absolute';
+                        footer.style.bottom = '-2px';
                       }
                     }, 500);
                   });
