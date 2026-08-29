@@ -200,14 +200,10 @@ Item
                       }
                       var footer = document.querySelector('div.cp-widget__footer');
                       if (footer) {
-                        footer.style.position = 'fixed';
-                        footer.style.bottom = '-2px';
-                        footer.style.display = 'block';
-                        footer.style.visibility = 'visible';
-                        footer.style.overflow = 'visible';
+                        footer.style.cssText = 'position: fixed !important; bottom: -2px !important; display: block !important; visibility: visible !important; overflow: visible !important;';
                       }
                     }
-                    setTimeout(updatePositions, 2000);
+                    setTimeout(updatePositions, 550);
                     window.addEventListener('resize', updatePositions);
                   });
                 </script>
