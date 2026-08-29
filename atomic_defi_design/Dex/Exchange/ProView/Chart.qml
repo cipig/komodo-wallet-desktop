@@ -207,7 +207,7 @@ Item
                         footer.style.overflow = 'visible';
                       }
                     }
-                    setTimeout(updatePositions, 500);
+                    setTimeout(updatePositions, 2000);
                     window.addEventListener('resize', updatePositions);
                   });
                 </script>
