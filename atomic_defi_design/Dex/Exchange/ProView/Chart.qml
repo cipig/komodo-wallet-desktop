@@ -185,7 +185,7 @@ Item
                 <script>
                   window.addEventListener('load', function() {
                     window.dispatchEvent(new Event('resize'));
-                    setTimeout(function() {
+                    function updatePositions() {
                       var rangeSelector = document.querySelector('div.cp-widget-select');
                       if (rangeSelector) {
                         rangeSelector.style.top = 'auto';
@@ -206,7 +206,9 @@ Item
                         footer.style.visibility = 'visible';
                         footer.style.overflow = 'visible';
                       }
-                    }, 500);
+                    }
+                    setTimeout(updatePositions, 500);
+                    window.addEventListener('resize', updatePositions);
                   });
                 </script>
                 `
