@@ -200,7 +200,7 @@ Item
                       }
                       var footer = document.querySelector('div.cp-widget__footer');
                       if (footer) {
-                        footer.style.cssText = 'position: fixed !important; bottom: -2px !important; display: block !important; visibility: visible !important; overflow: visible !important;';
+                        footer.style.display = 'none';
                       }
                     }
                     setTimeout(updatePositions, 550);
