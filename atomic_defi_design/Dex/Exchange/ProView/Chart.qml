@@ -185,18 +185,12 @@ Item
                 <script>
                   window.addEventListener('load', function() {
                     window.dispatchEvent(new Event('resize'));
-                    const observer = new MutationObserver(function() {
+                    setInterval(function() {
                       var footer = document.querySelector('div.cp-widget__footer');
                       if (footer) {
                         footer.style.cssText = 'position: fixed !important; bottom: -2px !important; right: 25px !important; top: auto !important; left: auto !important; z-index: 101 !important; margin: 0 !important; padding: 0 !important; pointer-events: none !important; overflow: visible !important; white-space: nowrap !important; display: block !important; visibility: visible !important;';
                       }
-                    });
-                    observer.observe(document.body, {
-                      childList: true,
-                      subtree: true,
-                      attributes: true,
-                      attributeFilter: ['style']
-                    });
+                    }, 100);
                     function updatePositions() {
                       var rangeSelector = document.querySelector('div.cp-widget-select');
                       if (rangeSelector) {
