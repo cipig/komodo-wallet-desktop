@@ -185,6 +185,18 @@ Item
                 <script>
                   window.addEventListener('load', function() {
                     window.dispatchEvent(new Event('resize'));
+                    const observer = new MutationObserver(function() {
+                      var footer = document.querySelector('div.cp-widget__footer');
+                      if (footer) {
+                        footer.style.cssText = 'position: fixed !important; bottom: -2px !important; right: 25px !important; top: auto !important; left: auto !important; z-index: 101 !important; margin: 0 !important; padding: 0 !important; pointer-events: none !important; overflow: visible !important; white-space: nowrap !important; display: block !important; visibility: visible !important;';
+                      }
+                    });
+                    observer.observe(document.body, {
+                      childList: true,
+                      subtree: true,
+                      attributes: true,
+                      attributeFilter: ['style']
+                    });
                     function updatePositions() {
                       var rangeSelector = document.querySelector('div.cp-widget-select');
                       if (rangeSelector) {
@@ -198,12 +210,8 @@ Item
                         chartRanges.style.bottom = '90px';
                         chartRanges.style.position = 'absolute';
                       }
-                      var footer = document.querySelector('div.cp-widget__footer');
-                      if (footer) {
-                        footer.style.display = 'none';
-                      }
                     }
-                    setTimeout(updatePositions, 550);
+                    setTimeout(updatePositions, 500);
                     window.addEventListener('resize', updatePositions);
                   });
                 </script>
