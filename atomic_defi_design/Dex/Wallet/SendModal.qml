@@ -61,7 +61,6 @@ MultipageModal
         api_wallet_page.broadcast(send_result.withdraw_answer.tx_hex, false, send_result.withdraw_answer.max, input_amount.text)
     }
 
-
     function hasErc20CaseIssue(addr) {
         if(!General.isERC20(current_ticker_infos)) return false
         if(addr.length <= 2) return false
