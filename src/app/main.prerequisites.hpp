@@ -312,6 +312,12 @@ run_app(int argc, char** argv)
     SPDLOG_DEBUG("Installing qt_message_handler");
     qInstallMessageHandler(&qt_message_handler);
     SPDLOG_DEBUG("SSL: {} {} {}", QSslSocket::supportsSsl(), QSslSocket::sslLibraryBuildVersionString().toStdString(), QSslSocket::sslLibraryVersionString().toStdString());
+
+#if defined(Q_OS_LINUX)
+    // Force the app to run via X11/XWayland layer cleanly to avoid missing wayland plugin warnings
+    qputenv("QT_QPA_PLATFORM", "xcb");
+#endif
+
 #if defined(Q_OS_MACOS)
     // https://bugreports.qt.io/browse/QTBUG-89379
     qputenv("QT_ENABLE_GLYPH_CACHE_WORKAROUND", "1");
@@ -331,6 +337,7 @@ run_app(int argc, char** argv)
         }
     }
 #endif
+
     init_logging();
     connect_signals_handler();
     init_timezone_db();
@@ -392,6 +399,7 @@ run_app(int argc, char** argv)
     engine.rootContext()->setContextProperty("atomic_app_primary_coin", QString{DEX_PRIMARY_COIN});
     engine.rootContext()->setContextProperty("atomic_app_secondary_coin", QString{DEX_SECOND_PRIMARY_COIN});
     engine.rootContext()->setContextProperty("atomic_qt_utilities", &qt_utilities);
+
     #if defined(_WIN32) || defined(WIN32)
         engine.rootContext()->setContextProperty("atomic_cfg_file", QString::fromStdWString((atomic_dex::utils::get_current_configs_path() / "cfg.ini").wstring()));
         engine.rootContext()->setContextProperty("atomic_logo_path", QString::fromStdWString((atomic_dex::utils::get_atomic_dex_data_folder() / "logo").wstring()));
