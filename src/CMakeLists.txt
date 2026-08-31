@@ -85,6 +85,7 @@ add_executable(${PROJECT_NAME}
         ${QM_FILES}
         ${TS_FILES})
 
+target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}::core)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ENTT_API_IMPORT)
 set_target_properties(${PROJECT_NAME}
         PROPERTIES
