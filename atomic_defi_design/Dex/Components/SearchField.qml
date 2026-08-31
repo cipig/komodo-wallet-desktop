@@ -1,7 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 
-import Qaterial 1.0 as Qaterial
+import "../Qaterial" as Qaterial
 
 import "../Constants"
 import Dex.Themes 1.0 as Dex
@@ -74,7 +74,7 @@ Rectangle
             anchors.centerIn: parent
             iconSize: 12
             color: Dex.CurrentTheme.textPlaceholderColor
-            source: Qaterial.Icons.close
+            source: "qrc:/assets/images/qaterial/close.svg"
         }
 
         DefaultMouseArea

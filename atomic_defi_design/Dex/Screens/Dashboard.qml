@@ -213,7 +213,7 @@ Item
                     label.font.pixelSize: 11
                     label_width: 180
                     pct_value.text: "0.00 %"
-                    pct_value.font.family: 'lato'
+                    pct_value.font.family: 'Lato'
                     pct_value.font.pixelSize: 11
                 }
 

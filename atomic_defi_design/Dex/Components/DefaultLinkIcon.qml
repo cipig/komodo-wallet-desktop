@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
-import Qaterial 1.0 as Qaterial
+import "../Qaterial" as Qaterial
 import App 1.0
 
 
@@ -12,7 +12,7 @@ Qaterial.Icon
     Layout.alignment: Qt.AlignVCenter
 
     size: iconSize
-    icon: Qaterial.Icons.linkVariant
+    icon: "qrc:/assets/images/qaterial/link-variant.svg"
     color: linkArea.containsMouse ? Style.colorText2 : DexTheme.foregroundColor
     
     DefaultMouseArea

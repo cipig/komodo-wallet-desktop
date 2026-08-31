@@ -76,23 +76,15 @@ dex_generate_qrc(${CMAKE_SOURCE_DIR}/atomic_defi_design/assets assets_qrc
 add_executable(${PROJECT_NAME}
         MACOSX_BUNDLE
         ${ICON}
-
         app/app.cpp
         app/main.cpp
-
         ${CMAKE_SOURCE_DIR}/cmake/install/windows/dex.rc
-
-        ##! QRC
         ${qml_qrc}
         ${assets_qrc}
         ${imports_qrc}
-
-
-        ##! Linguistic
         ${QM_FILES}
         ${TS_FILES})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}::core Qaterial)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ENTT_API_IMPORT)
 set_target_properties(${PROJECT_NAME}
         PROPERTIES
@@ -144,7 +136,6 @@ if (WIN32)
     else ()
         set(WINDEPLOYQT_PATH $ENV{QT_INSTALL_CMAKE_PATH}/bin/windeployqt.exe)
     endif ()
-
     if (EXISTS ${WINDEPLOYQT_PATH})
         message(STATUS "windeployqt path is -> ${WINDEPLOYQT_PATH}")
     else ()
@@ -156,11 +147,6 @@ if (WIN32)
             COMMAND ${WINDEPLOYQT_PATH} ${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME}.exe --qmldir ${CMAKE_SOURCE_DIR}/atomic_defi_design/Dex
             )
     include(${CMAKE_SOURCE_DIR}/cmake/install/windows/dex_install.cmake)
-
-    # Configures OpenSSL
-    #set(DEX_OPENSSL_FOLDER ${CMAKE_SOURCE_DIR}/vendor/OpenSSL/Win_x64)
-    #configure_file(${DEX_OPENSSL_FOLDER}/libcrypto-1_1-x64.dll ${CMAKE_BINARY_DIR}/bin/ COPYONLY)
-    #configure_file(${DEX_OPENSSL_FOLDER}/libssl-1_1-x64.dll ${CMAKE_BINARY_DIR}/bin/ COPYONLY)
 endif ()
 
 if (APPLE)

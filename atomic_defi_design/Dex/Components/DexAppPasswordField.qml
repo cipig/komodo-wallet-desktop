@@ -1,7 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Window 2.15
-import Qaterial 1.0 as Qaterial
+import "../Qaterial" as Qaterial
 import App 1.0
 import Dex.Themes 1.0 as Dex
 import "../Constants"
@@ -11,7 +11,7 @@ DexAppTextField
     id: _inputPassword
 
     property bool forceFocus: false
-    property string leftIcon: Qaterial.Icons.keyVariant
+    property string leftIcon: "qrc:/assets/images/qaterial/key-variant.svg"
     property color leftIconColor: Dex.CurrentTheme.inputLeftIconColor
     property color rightIconColor: Dex.CurrentTheme.inputRightIconColor
     property alias hideFieldButton: _hideFieldButton
@@ -59,7 +59,7 @@ DexAppTextField
         opacity: .8
         icon
         {
-            source: _inputPassword.field.echoMode === TextField.Password ? Qaterial.Icons.eyeOffOutline : Qaterial.Icons.eyeOutline
+            source: _inputPassword.field.echoMode === TextField.Password ? "qrc:/assets/images/qaterial/eye-off-outline.svg" : "qrc:/assets/images/qaterial/eye-outline.svg"
             color: rightIconColor
         }
         anchors

@@ -3,7 +3,7 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 import QtWebEngine 1.10
 import QtGraphicalEffects 1.15
-import Qaterial 1.0 as Qaterial
+import "../Qaterial" as Qaterial
 import ModelHelper 0.1
 import "../Components"
 import "../Constants" as Constants

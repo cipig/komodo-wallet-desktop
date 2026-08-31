@@ -3,7 +3,7 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
 import QtQuick.Window 2.15
-import Qaterial 1.0 as Qaterial
+import "../../Qaterial" as Qaterial
 import "../../Components"
 import "../../Constants"
 import "../../Settings"
@@ -188,7 +188,7 @@ SetupPage
                                 {
                                     anchors.fill: parent
                                     color: Dex.CurrentTheme.userIconColorStart
-                                    source: Qaterial.Icons.account
+                                    source: "qrc:/assets/images/qaterial/account.svg"
                                     iconSize: 28
                                 }
                             }
@@ -216,7 +216,7 @@ SetupPage
                             Qaterial.ColorIcon
                             {
                                 visible: mouse_area.containsMouse || _deleteArea.containsMouse
-                                source: Qaterial.Icons.close
+                                source: "qrc:/assets/images/qaterial/close.svg"
                                 iconSize: 18
                                 anchors.centerIn: parent
                                 opacity: .8

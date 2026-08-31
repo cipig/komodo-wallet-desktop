@@ -1,7 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
-import Qaterial 1.0 as Qaterial
+import "../../../Qaterial" as Qaterial
 import "../../../Components"
 import "../../../Constants"
 import App 1.0
@@ -28,7 +28,7 @@ Item
             {
                 Layout.fillHeight: true
                 Layout.alignment: Qt.AlignVCenter
-                source: Qaterial.Icons.alert
+                source: "qrc:/assets/images/qaterial/alert.svg"
                 color: Qaterial.Colors.amber
             }
 
@@ -257,7 +257,7 @@ Item
                         anchors.centerIn: parent
                         iconSize: 14
                         color: Dex.CurrentTheme.warningColor
-                        source: Qaterial.Icons.close
+                        source: "qrc:/assets/images/qaterial/close.svg"
                         visible: is_mine
                         scale: is_mine && mouse_area.containsMouse ? 1 : 0
                         Behavior on scale { NumberAnimation { duration: 150 } }

@@ -2,7 +2,7 @@ import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 import Qt.labs.platform 1.1
-import Qaterial 1.0 as Qaterial
+import "../../../Qaterial" as Qaterial
 import App 1.0
 import "../../../Components"
 import "../../../Constants"
@@ -91,7 +91,7 @@ Item {
                 radius: 8
                 label.font: DexTypo.body2
                 text: qsTr("Filter")
-                iconSource: Qaterial.Icons.filter
+                iconSource: "qrc:/assets/images/qaterial/filter.svg"
                 onClicked: settings.visible = !settings.visible
             }
 
@@ -143,7 +143,7 @@ Item {
                 label.font: DexTypo.body2
                 enabled: list_model.length > 0 && !General.privacy_mode
                 text: qsTr("Cancel All")
-                iconSource: Qaterial.Icons.close
+                iconSource: "qrc:/assets/images/qaterial/close.svg"
                 onClicked: API.app.trading_pg.orders.cancel_order(list_model_proxy.get_filtered_ids())
             }
         }
@@ -176,7 +176,7 @@ Item {
                 {
                     id: swapCoinFilterIcon
                     Layout.preferredWidth: 24
-                    source: Qaterial.Icons.swapHorizontal
+                    source: "qrc:/assets/images/qaterial/swap-horizontal.svg"
                     color: Dex.CurrentTheme.foregroundColor
 
                     DefaultMouseArea

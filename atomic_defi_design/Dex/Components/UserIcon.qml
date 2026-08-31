@@ -1,12 +1,9 @@
-// 3rdParty Imports
-import Qaterial 1.0 as Qaterial //> ColorIcon
-
-// Project Imports
-import Dex.Themes 1.0 as Dex //> CurrentTheme
+import "../Qaterial" as Qaterial
+import Dex.Themes 1.0 as Dex
 
 Qaterial.ColorIcon
 {
     color: Dex.CurrentTheme.userIconColorStart
-    source: Qaterial.Icons.account
+    source: "qrc:/assets/images/qaterial/account.svg"
     iconSize: 28
 }

@@ -33,12 +33,6 @@
 #include <QFontDatabase>
 #include <QtWebEngine>
 
-//! Qaterial
-#include <Qaterial/Qaterial.hpp>
-#if defined(ATOMICDEX_HOT_RELOAD)
-#    include <Qaterial/HotReload/HotReload.hpp>
-#endif
-
 //! Deps
 #include <QSslSocket>
 #include <sodium/core.h>
@@ -56,14 +50,6 @@
 #ifdef __APPLE__
 #    include "atomicdex/platform/osx/manager.hpp"
 #    include <sys/sysctl.h>
-#endif
-
-#if defined(ATOMICDEX_HOT_RELOAD)
-void
-installLoggers()
-{
-    qInstallMessageHandler(&qaterial::HotReload::log);
-}
 #endif
 
 static void
@@ -178,7 +164,6 @@ init_dpi()
             SPDLOG_DEBUG("logical dpi: {}", cur_screen->logicalDotsPerInch());
             double scale = cur_screen->logicalDotsPerInch() / 96.0;
             SPDLOG_DEBUG("scale: {}", scale);
-
             double height = cur_screen->availableSize().height();
             SPDLOG_DEBUG("height: {}", height);
             if (scale * min_window_size > height)
@@ -323,19 +308,13 @@ handle_settings(QSettings& settings)
 inline int
 run_app(int argc, char** argv)
 {
-#if !defined(ATOMICDEX_HOT_RELOAD)
     SPDLOG_DEBUG("Installing qt_message_handler");
     qInstallMessageHandler(&qt_message_handler);
-#endif
-    SPDLOG_DEBUG(
-        "SSL: {} {} {}", QSslSocket::supportsSsl(), QSslSocket::sslLibraryBuildVersionString().toStdString(),
-        QSslSocket::sslLibraryVersionString().toStdString());
-
+    SPDLOG_DEBUG("SSL: {} {} {}", QSslSocket::supportsSsl(), QSslSocket::sslLibraryBuildVersionString().toStdString(), QSslSocket::sslLibraryVersionString().toStdString());
 #if defined(Q_OS_MACOS)
     // https://bugreports.qt.io/browse/QTBUG-89379
     qputenv("QT_ENABLE_GLYPH_CACHE_WORKAROUND", "1");
     qputenv("QML_USE_GLYPHCACHE_WORKAROUND", "1");
-
     std::filesystem::path old_path    = std::filesystem::path(std::getenv("HOME")) / ".atomic_qt";
     std::filesystem::path target_path = atomic_dex::utils::get_atomic_dex_data_folder();
     SPDLOG_INFO("{} exists -> {}", old_path.string(), std::filesystem::exists(old_path));
@@ -395,8 +374,7 @@ run_app(int argc, char** argv)
     qmlRegisterUncreatableType<atomic_dex::TradingModeGadget>("AtomicDEX.TradingMode", 1, 0, "TradingMode", "Not creatable as it is an enum type");
     qRegisterMetaType<TradingError>("TradingError");
     qRegisterMetaType<SelectedOrderStatus>("SelectedOrderStatus");
-    qmlRegisterUncreatableType<atomic_dex::SelectedOrderGadget>(
-        "AtomicDEX.SelectedOrderStatus", 1, 0, "SelectedOrderStatus", "Not creatable as it is an enum type");
+    qmlRegisterUncreatableType<atomic_dex::SelectedOrderGadget>("AtomicDEX.SelectedOrderStatus", 1, 0, "SelectedOrderStatus", "Not creatable as it is an enum type");
     qmlRegisterUncreatableType<atomic_dex::TradingErrorGadget>("AtomicDEX.TradingError", 1, 0, "TradingError", "Not creatable as it is an enum type");
     qRegisterMetaType<CoinType>("CoinType");
     qmlRegisterUncreatableType<atomic_dex::CoinTypeGadget>("AtomicDEX.CoinType", 1, 0, "CoinType", "Not creatable as it is an enum type");
@@ -427,13 +405,6 @@ run_app(int argc, char** argv)
     engine.rootContext()->setContextProperty("DexFilesystem", &qml_filesystem);
     SPDLOG_INFO("QML context properties created");
 
-    // Load Qaterial.
-    qaterial::loadQmlResources(false);
-    qaterial::registerQmlTypes("Qaterial", 1, 0);
-    // QQuickStyle::setStyle(QStringLiteral("Qaterial"));
-    //  SPDLOG_INFO("{}",  QQuickStyle::ge))
-    SPDLOG_INFO("Qaterial type created");
-
     engine.addImportPath("qrc:/imports");
     engine.addImportPath("qrc:/Constants");
     qmlRegisterSingletonType(QUrl("qrc:/Dex/Constants/DexTheme.qml"), "App", 1, 0, "DexTheme");
@@ -444,17 +415,6 @@ run_app(int argc, char** argv)
     qRegisterMetaType<t_portfolio_roles>("PortfolioRoles");
     SPDLOG_INFO("QML singleton created");
 
-#if defined(ATOMICDEX_HOT_RELOAD)
-    engine.rootContext()->setContextProperty("debug_bar", QVariant(true));
-    engine.addImportPath("qrc:/");
-    installLoggers();
-    qaterial::registerQmlTypes();
-    qaterial::HotReload::registerSingleton();
-    qqsfpm::registerQmlTypes();
-    engine.load(QUrl("qrc:/Qaterial/HotReload/Main.qml"));
-    if (engine.rootObjects().isEmpty())
-        return -1;
-#else
     SPDLOG_INFO("Load qml engine");
     engine.rootContext()->setContextProperty("debug_bar", QVariant(false));
     const QUrl url(QStringLiteral("qrc:/Dex/main.qml"));
@@ -471,20 +431,15 @@ run_app(int argc, char** argv)
 
     engine.load(url);
     SPDLOG_INFO("qml engine successfully loaded");
-#endif
-
 
 #ifdef __APPLE__
-#    if !defined(ATOMICDEX_HOT_RELOAD)
     QWindowList windows = QGuiApplication::allWindows();
     QWindow*    win     = windows.first();
     atomic_dex::mac_window_setup(win->winId());
-#    endif
 #endif
+
     atomic_app.launch();
-
     res = app->exec();
-
     clean_wally();
     return res;
 }

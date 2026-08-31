@@ -1,7 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
-import Qaterial 1.0 as Qaterial
+import "../Qaterial" as Qaterial
 import "../Components"
 import "../Constants"
 import Dex.Themes 1.0 as Dex
@@ -72,7 +72,7 @@ Dex.ListView
                 {
                     id: received_icon
                     size: 16
-                    icon: is_spam ? Qaterial.Icons.radioactive : am_i_sender ? Qaterial.Icons.arrowTopRight : Qaterial.Icons.arrowBottomRight
+                    icon: is_spam ? "qrc:/assets/images/qaterial/radioactive.svg" : am_i_sender ? "qrc:/assets/images/qaterial/arrow-top-right.svg" : "qrc:/assets/images/qaterial/arrow-bottom-right.svg"
                     color: is_spam ? Style.colorOrange : am_i_sender ? Dex.CurrentTheme.warningColor : Dex.CurrentTheme.okColor
                 }
 

@@ -3,7 +3,7 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 import QtWebEngine 1.10
 import QtGraphicalEffects 1.15
-import Qaterial 1.0 as Qaterial
+import "../Qaterial" as Qaterial
 import "../Components"
 import "../Constants"
 import App 1.0
@@ -320,7 +320,7 @@ Item
 
                             Qaterial.Icon {
                                 size: headerTextFont
-                                icon: Qaterial.Icons.linkVariant
+                                icon: "qrc:/assets/images/qaterial/link-variant.svg"
                                 color: contract_linkArea.containsMouse ? headerTextColor : headerTitleColor
                                 visible: General.contractURL(api_wallet_page.ticker) != ""
 
@@ -379,7 +379,7 @@ Item
 
                         Qaterial.Icon
                         {
-                            icon: Qaterial.Icons.arrowTopRight
+                            icon: "qrc:/assets/images/qaterial/arrow-top-right.svg"
                             size: 24
                             anchors.verticalCenter: parent.verticalCenter
                             color: Dex.CurrentTheme.warningColor
@@ -485,7 +485,7 @@ Item
 
                         Qaterial.Icon
                         {
-                            icon: Qaterial.Icons.arrowBottomRight
+                            icon: "qrc:/assets/images/qaterial/arrow-bottom-right.svg"
                             size: 24
                             anchors.verticalCenter: parent.verticalCenter
                             color: Dex.CurrentTheme.okColor
@@ -533,7 +533,7 @@ Item
 
                         Qaterial.Icon
                         {
-                            icon: Qaterial.Icons.swapHorizontal
+                            icon: "qrc:/assets/images/qaterial/swap-horizontal.svg"
                             size: 28
                             anchors.verticalCenter: parent.verticalCenter
                             color: Dex.CurrentTheme.swapIconColor
@@ -587,7 +587,7 @@ Item
 
                         Qaterial.Icon
                         {
-                            icon: Qaterial.Icons.leaf
+                            icon: "qrc:/assets/images/qaterial/leaf.svg"
                             size: 24
                             anchors.verticalCenter: parent.verticalCenter
                             color: "forestgreen"
@@ -629,7 +629,7 @@ Item
 
                         Qaterial.Icon
                         {
-                            icon: Qaterial.Icons.water
+                            icon: "qrc:/assets/images/qaterial/water.svg"
                             size: 24
                             anchors.verticalCenter: parent.verticalCenter
                             color: "royalblue"
@@ -676,7 +676,7 @@ Item
 
                         Qaterial.Icon
                         {
-                            icon: Qaterial.Icons.vote
+                            icon: "qrc:/assets/images/qaterial/vote.svg"
                             size: 24
                             anchors.verticalCenter: parent.verticalCenter
                             color: "#2c87b9"
@@ -732,7 +732,7 @@ Item
 
                         Qaterial.Icon
                         {
-                            icon: Qaterial.Icons.keyVariant
+                            icon: "qrc:/assets/images/qaterial/key-variant.svg"
                             size: 24
                             anchors.verticalCenter: parent.verticalCenter
                             color: "gold"
@@ -774,7 +774,7 @@ Item
                                     backgroundImplicitWidth: 40
                                     backgroundImplicitHeight: 30
                                     backgroundColor: "transparent"
-                                    icon.source: Qaterial.Icons.contentCopy
+                                    icon.source: "qrc:/assets/images/qaterial/content-copy.svg"
                                     icon.color: Dex.CurrentTheme.foregroundColor
                                     onClicked:
                                     {
@@ -823,7 +823,7 @@ Item
 
                         Qaterial.Icon
                         {
-                            icon: Qaterial.Icons.databaseSearch
+                            icon: "qrc:/assets/images/qaterial/database-search.svg"
                             size: 24
                             anchors.verticalCenter: parent.verticalCenter
                             color: "steelblue"

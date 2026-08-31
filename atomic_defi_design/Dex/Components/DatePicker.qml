@@ -1,7 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 
-import Qaterial 1.0 as Qaterial
+import "../Qaterial" as Qaterial
 
 import Dex.Themes 1.0 as Dex
 import "../Constants"
@@ -49,7 +49,7 @@ DefaultMouseArea {
             DefaultImage {
                 Layout.preferredWidth: 25
                 Layout.preferredHeight: 25
-                source: Qaterial.Icons.calendarBlank
+                source: "qrc:/assets/images/qaterial/calendar-blank.svg"
 
                 DefaultColorOverlay {
                     source: parent

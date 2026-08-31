@@ -1,7 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
-import Qaterial 1.0 as Qaterial
+import "../../Qaterial" as Qaterial
 import "../../Components"
 import "../../Constants"
 import App 1.0
@@ -222,7 +222,7 @@ SetupPage
                 spacing: 10
                 SquareButton
                 {
-                    icon.source: Qaterial.Icons.chevronLeft
+                    icon.source: "qrc:/assets/images/qaterial/chevron-left.svg"
                     Layout.alignment: Qt.AlignVCenter
                     onClicked:
                     {
@@ -322,7 +322,7 @@ SetupPage
                         {
                             anchors.centerIn: parent
                             iconSize: 19
-                            source: Qaterial.Icons.wallet
+                            source: "qrc:/assets/images/qaterial/wallet.svg"
                             color: Dex.CurrentTheme.inputLeftIconColor
                         }
                     }
@@ -393,7 +393,7 @@ SetupPage
                         {
                             implicitWidth: 45
                             backgroundColor: "transparent"
-                            icon.source: Qaterial.Icons.contentCopy
+                            icon.source: "qrc:/assets/images/qaterial/content-copy.svg"
                             icon.color: Dex.CurrentTheme.foregroundColor
                             Layout.alignment: Qt.AlignVCenter
 
@@ -476,7 +476,7 @@ SetupPage
                         enabled: input_wallet_name.field.text !== "" && text_error == ""
                         opacity: enabled ? 1 : .7
                         Layout.preferredHeight: 45
-                        iconSourceRight: Qaterial.Icons.arrowRight
+                        iconSourceRight: "qrc:/assets/images/qaterial/arrow-right.svg"
 
                         onClicked:
                         {
@@ -650,7 +650,7 @@ SetupPage
                         padding: 16
                         opacity: enabled ? 1 : .7
                         Layout.preferredHeight: 45
-                        iconSourceRight: Qaterial.Icons.check
+                        iconSourceRight: "qrc:/assets/images/qaterial/check.svg"
                         enabled: validGuessField(input_seed_word.field)
                         onClicked: tryGuess()
                     }
@@ -731,7 +731,7 @@ SetupPage
                         padding: 16
                         opacity: enabled ? 1 : .7
                         Layout.preferredHeight: 45
-                        iconSourceRight: Qaterial.Icons.arrowRight
+                        iconSourceRight: "qrc:/assets/images/qaterial/arrow-right.svg"
                         enabled: _keyChecker.isValid()
                         onClicked: eula_modal.open()
                     }

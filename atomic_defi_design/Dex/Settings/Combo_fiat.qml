@@ -7,7 +7,7 @@ import Qt.labs.settings 1.0
 
 import QtQuick.Window 2.15
 
-import Qaterial 1.0 as Qaterial
+import "../Qaterial" as Qaterial
 
 // Project Imports
 import "../Components"

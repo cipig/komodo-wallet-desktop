@@ -6,7 +6,7 @@ import Qt.labs.settings 1.0
 import QtQml 2.15
 import QtQuick.Window 2.15
 import QtQuick.Controls.Universal 2.15
-import Qaterial 1.0 as Qaterial
+import "../Qaterial" as Qaterial
 import "../Components"
 import "../Constants"
 import App 1.0

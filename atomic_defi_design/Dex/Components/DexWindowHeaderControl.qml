@@ -3,9 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Controls.Universal 2.15
 import QtQuick.Layouts 1.15
 import ModelHelper 0.1
-
-import Qaterial 1.0 as Qaterial
-
+import "../Qaterial" as Qaterial
 import "../Constants"
 import Dex.Themes 1.0 as Dex
 
@@ -31,7 +29,7 @@ RowLayout
         Layout.preferredWidth: 40
         Layout.fillHeight: true
         foregroundColor: Dex.CurrentTheme.foregroundColor
-        icon.source: Qaterial.Icons.windowMinimize
+        icon.source: "qrc:/assets/images/qaterial/window-minimize.svg"
         onClicked: window.showMinimized()
     }
 
@@ -46,7 +44,7 @@ RowLayout
         Layout.preferredWidth: 40
         Layout.fillHeight: true
         foregroundColor: Dex.CurrentTheme.foregroundColor
-        icon.source: window.visibility === ApplicationWindow.Maximized ? Qaterial.Icons.dockWindow : Qaterial.Icons.windowMaximize
+        icon.source: window.visibility === ApplicationWindow.Maximized ? "qrc:/assets/images/qaterial/dock-window.svg" : "qrc:/assets/images/qaterial/window-maximize.svg"
 
         onClicked:
         {
@@ -70,10 +68,7 @@ RowLayout
         Layout.preferredWidth: 40
         Layout.fillHeight: true
         foregroundColor: Dex.CurrentTheme.foregroundColor
-        icon.source: Qaterial.Icons.windowClose
-        //Component.onCompleted: {
-        //      console.log("DexWindowHeaderControl height = " + height) // 30
-        //}
+        icon.source: "qrc:/assets/images/qaterial/window-close.svg"
         onClicked: 
         {
             if (orders.count === 0 || !API.app.wallet_mgr.log_status()) Qt.quit()

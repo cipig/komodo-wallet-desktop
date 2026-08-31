@@ -6,7 +6,7 @@ import Qt.labs.settings 1.0
 import QtQml 2.15
 import QtQuick.Window 2.15
 import QtQuick.Controls.Universal 2.15
-import Qaterial 1.0 as Qaterial
+import "../Qaterial" as Qaterial
 import ModelHelper 0.1
 import "../Components"
 import "../Constants"
@@ -64,7 +64,7 @@ Qaterial.Dialog
             anchors.right: parent.right
             anchors.rightMargin: 30
             iconSize: 30
-            icon: Qaterial.Icons.close
+            icon: "qrc:/assets/images/qaterial/close.svg"
             anchors.verticalCenter: parent.verticalCenter
             onClicked: setting_modal.close()
         }
@@ -797,7 +797,7 @@ Qaterial.Dialog
                     family: DexTypo.fontFamily,
                     weight: Font.Normal
                 })
-                iconSource: Qaterial.Icons.logout
+                iconSource: "qrc:/assets/images/qaterial/logout.svg"
 
                 onClicked:
                 {

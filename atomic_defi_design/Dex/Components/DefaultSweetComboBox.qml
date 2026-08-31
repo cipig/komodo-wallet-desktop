@@ -2,7 +2,7 @@ import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 import QtQuick.Controls.impl 2.15
-import Qaterial 1.0 as Qaterial
+import "../Qaterial" as Qaterial
 import "../Constants" as Constants
 import App 1.0
 import Dex.Themes 1.0 as Dex
@@ -66,7 +66,7 @@ ComboBox
         x: control.mirrored ? control.padding : control.width - width - control.padding - 4
         y: control.topPadding + (control.availableHeight - height) / 2
         color: Dex.CurrentTheme.foregroundColor
-        icon: Qaterial.Icons.chevronDown
+        icon: "qrc:/assets/images/qaterial/chevron-down.svg"
     }
 
     // Dropdown itself

@@ -1,6 +1,5 @@
 import QtQuick 2.15
-import Qaterial 1.0 as Qaterial
-
+import "../Qaterial" as Qaterial
 import App 1.0
 import Dex.Themes 1.0 as Dex
 
@@ -14,7 +13,6 @@ DefaultRectangle
     property int horizontalAlignment: Qt.AlignHCenter
     property int verticalPadding: 2
     property int horizontalPadding: 2
-
 
     // old button property
     property alias text_obj: _label
@@ -58,6 +56,7 @@ DefaultRectangle
                     Dex.CurrentTheme.gradientButtonDisabledEndColor
         }
     }
+
     height: _label.implicitHeight + (padding * verticalPadding)
     width: _contentRow.implicitWidth + (padding * horizontalPadding)
 

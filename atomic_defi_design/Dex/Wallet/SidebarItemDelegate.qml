@@ -1,7 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
-import Qaterial 1.0 as Qaterial
+import "../Qaterial" as Qaterial
 import QtGraphicalEffects 1.15
 import "../Components"
 import "../Constants" as Dex

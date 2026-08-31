@@ -260,7 +260,7 @@ QtObject {
     }
 
     function qaterialIcon(name) {
-        return "qrc:/Qaterial/Icons/" + name + ".svg"
+        return "qrc:/assets/images/qaterial/" + name + ".svg"
     }
 
     readonly property string cex_icon: 'ⓘ'

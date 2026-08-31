@@ -2,7 +2,7 @@ import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 import Qt.labs.platform 1.1
-import Qaterial 1.0 as Qaterial
+import "../Qaterial" as Qaterial
 import ModelHelper 0.1
 import Dex.Themes 1.0 as Dex
 import "../Constants"
@@ -205,11 +205,11 @@ DexPopup
         switch (notification.kind)
         {
         case NotificationsModal.NotificationKind.Send:
-            return Qaterial.Icons.arrowTopRight
+            return "qrc:/assets/images/qaterial/arrow-top-right.svg"
         case NotificationsModal.NotificationKind.Receive:
-            return Qaterial.Icons.arrowBottomRight
+            return "qrc:/assets/images/qaterial/arrow-bottom-right.svg"
         case NotificationsModal.NotificationKind.Others:
-            return Qaterial.Icons.messageOutline
+            return "qrc:/assets/images/qaterial/message-outline.svg"
         }
     }
 
@@ -408,7 +408,7 @@ DexPopup
             Qaterial.Icon
             {
                 anchors.centerIn: parent
-                icon: Qaterial.Icons.bellOutline
+                icon: "qrc:/assets/images/qaterial/bell-outline.svg"
                 size: 166
                 opacity: 0.03
             }

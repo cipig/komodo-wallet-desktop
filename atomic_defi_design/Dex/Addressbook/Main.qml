@@ -1,10 +1,6 @@
-// Qt Imports
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
-
-import Qaterial 1.0 as Qaterial
-
-// Project Imports
+import "../Qaterial" as Qaterial
 import Dex.Components 1.0 as Dex
 import "../Components" as Dex
 import Dex.Themes 1.0 as Dex
@@ -45,7 +41,6 @@ Item
     {
         anchors.fill: parent
         anchors.margins: 30
-
         spacing: 32
 
         Row
@@ -66,12 +61,10 @@ Item
                 Dex.SearchField
                 {
                     id: searchbar
-
                     width: 206
                     height: 42
                     textField.forceFocus: true
                     textField.placeholderText: qsTr("Search contact")
-
                     textField.onTextChanged: Dex.API.app.addressbookPg.model.proxy.searchExp = textField.text
                     Component.onDestruction: Dex.API.app.addressbookPg.model.proxy.searchExp = ""
                 }
@@ -87,9 +80,7 @@ Item
                     height: 40
                     radius: 18
                     text: qsTr("+ NEW CONTACT")
-
                     onClicked: newContactPopup.open()
-
                     NewContactPopup
                     {
                         id: newContactPopup
@@ -144,13 +135,11 @@ Item
 
             Layout.fillWidth: true
             Layout.fillHeight: true
-
             model: Dex.API.app.addressbookPg.model.proxy
 
             delegate: Dex.Expandable
             {
                 id: expandable
-
                 padding: 10
                 color: index % 2 === 0 ? Dex.CurrentTheme.innerBackgroundColor : Dex.CurrentTheme.backgroundColor
                 width: contactTable.width
@@ -262,7 +251,6 @@ Item
                             RemoveContactPopup
                             {
                                 id: removeContactPopup
-
                                 contactName: modelData.name
                             }
                         }
@@ -277,7 +265,6 @@ Item
                     Dex.ListView
                     {
                         id: addressList
-
                         visible: addressList.model.rowCount() > 0
                         x: 30
                         model: modelData.proxyFilter
@@ -288,7 +275,6 @@ Item
                         delegate: Item
                         {
                             property var coinInfo: Dex.API.app.portfolio_pg.global_cfg_mdl.get_coin_info(address_type)
-
                             width: addressList.width
                             height: 30
 
@@ -330,12 +316,11 @@ Item
                                     text: "%1 : %2".arg(address_key).arg(address_value)
                                 }
 
-
                                 Dex.Button
                                 {
                                     width: 25
                                     height: 25
-                                    iconSource: Qaterial.Icons.contentCopy
+                                    iconSource: "qrc:/assets/images/qaterial/content-copy.svg"
                                     color: "transparent"
                                     onClicked:
                                     {
@@ -348,7 +333,7 @@ Item
                                 {
                                     width: 25
                                     height: 25
-                                    iconSource: Qaterial.Icons.sendOutline
+                                    iconSource: "qrc:/assets/images/qaterial/send-outline.svg"
                                     color: "transparent"
                                     onClicked: trySend(address_value, address_type)
                                 }
@@ -373,22 +358,16 @@ Item
     Dex.ModalLoader
     {
         id: editContactLoader
-
         property var contactModel
-
         onLoaded: item.contactModel = contactModel
-
         sourceComponent: EditContactModal { }
     }
 
     Dex.ModalLoader
     {
         id: sendModalLoader
-
         property string address
-
         onLoaded: item.address_field.text = address
-
         sourceComponent: Wallet.SendModal
         {
             address_field.enabled: false
@@ -398,12 +377,9 @@ Item
     Dex.ModalLoader
     {
         id: assetFromStandardSelectorLoader
-
         property string standard
         property string address
-
         onLoaded: item.standard = standard
-
         sourceComponent: AssetFromStandardSelector
         {
             onSelected:
@@ -416,11 +392,8 @@ Item
     Dex.ModalLoader
     {
         id: enabledAssetModalLoader
-
         property string assetTicker
-
         onLoaded: item.assetTicker = assetTicker
-
         sourceComponent: EnableAssetModal { }
     }
 }

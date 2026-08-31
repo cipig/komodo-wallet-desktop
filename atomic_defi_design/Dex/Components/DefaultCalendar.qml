@@ -2,7 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 
-import Qaterial 1.0 as Qaterial
+import "../Qaterial" as Qaterial
 
 import Dex.Themes 1.0 as Dex
 
@@ -35,7 +35,7 @@ Calendar
                 anchors.left: parent.left
                 anchors.leftMargin: 5
                 anchors.verticalCenter: parent.verticalCenter
-                iconSource: Qaterial.Icons.arrowLeft
+                iconSource: "qrc:/assets/images/qaterial/arrow-left.svg"
                 onClicked: control.showPreviousYear()
             }
 
@@ -47,7 +47,7 @@ Calendar
                 anchors.left: previousYear.right
                 anchors.leftMargin: 2
                 anchors.verticalCenter: parent.verticalCenter
-                iconSource: Qaterial.Icons.arrowLeft
+                iconSource: "qrc:/assets/images/qaterial/arrow-left.svg"
                 onClicked: control.showPreviousMonth()
             }
 
@@ -72,7 +72,7 @@ Calendar
                 anchors.right: parent.right
                 anchors.rightMargin: 5
                 anchors.verticalCenter: parent.verticalCenter
-                iconSource: Qaterial.Icons.arrowRight
+                iconSource: "qrc:/assets/images/qaterial/arrow-right.svg"
                 onClicked: control.showNextYear()
             }
 
@@ -84,7 +84,7 @@ Calendar
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: nextYear.left
                 anchors.rightMargin: 2
-                iconSource: Qaterial.Icons.arrowRight
+                iconSource: "qrc:/assets/images/qaterial/arrow-right.svg"
                 onClicked: control.showNextMonth()
             }
         }

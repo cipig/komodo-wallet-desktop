@@ -2,7 +2,7 @@
 import QtQuick 2.15
 
 //! 3rdParty Imports.
-import Qaterial 1.0 as Qaterial
+import "../Qaterial" as Qaterial
 
 //! Project Imports.
 import App 1.0
@@ -13,7 +13,7 @@ Item
     id: control
 
     property int    padding: 10
-    property string icon: Qaterial.Icons.bellOutline
+    property string icon: "qrc:/assets/images/qaterial/bell-outline.svg"
     property alias  color: _label.color
     property alias  iconSize: _label.size
     property alias  containsMouse: _controlMouseArea.containsMouse

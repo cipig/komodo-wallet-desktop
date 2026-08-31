@@ -1,9 +1,6 @@
-// Qt Imports
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
-
-// Project Imports
 import "../Constants" as Dex
 import "../Components" as Dex
 import App 1.0
@@ -64,6 +61,6 @@ RowLayout
         Layout.preferredWidth: 60
         text: "0.00 %"
         Layout.alignment: Qt.AlignVCenter
-        Component.onCompleted: font.family = 'lato'
+        Component.onCompleted: font.family = 'Lato'
     }
 }

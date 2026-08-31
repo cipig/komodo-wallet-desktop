@@ -1,7 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
-import Qaterial 1.0 as Qaterial
+import "../Qaterial" as Qaterial
 import "../Components"
 import "../Constants"
 import App 1.0
@@ -168,7 +168,7 @@ MultipageModal
                         backgroundImplicitWidth: 30
                         backgroundImplicitHeight: 30
                         backgroundColor: "transparent"
-                        icon.source: Qaterial.Icons.qrcodeScan
+                        icon.source: "qrc:/assets/images/qaterial/qrcode-scan.svg"
                         icon.color: Dex.CurrentTheme.foregroundColor2
                         onClicked:
                         {
@@ -182,7 +182,7 @@ MultipageModal
                         backgroundImplicitWidth: 30
                         backgroundImplicitHeight: 30
                         backgroundColor: "transparent"
-                        icon.source: Qaterial.Icons.contentCopy
+                        icon.source: "qrc:/assets/images/qaterial/content-copy.svg"
                         icon.color: Dex.CurrentTheme.foregroundColor2
                         onClicked:
                         {
@@ -221,7 +221,7 @@ MultipageModal
                         backgroundImplicitWidth: 30
                         backgroundImplicitHeight: 30
                         backgroundColor: "transparent"
-                        icon.source: Qaterial.Icons.qrcodeScan
+                        icon.source: "qrc:/assets/images/qaterial/qrcode-scan.svg"
                         icon.color: Dex.CurrentTheme.foregroundColor2
                         onClicked:
                         {
@@ -235,7 +235,7 @@ MultipageModal
                         backgroundImplicitWidth: 30
                         backgroundImplicitHeight: 30
                         backgroundColor: "transparent"
-                        icon.source: Qaterial.Icons.contentCopy
+                        icon.source: "qrc:/assets/images/qaterial/content-copy.svg"
                         icon.color: Dex.CurrentTheme.foregroundColor2
                         onClicked:
                         {
@@ -341,7 +341,7 @@ MultipageModal
                                     backgroundImplicitWidth: 40
                                     backgroundImplicitHeight: 30
                                     backgroundColor: "transparent"
-                                    icon.source: Qaterial.Icons.qrcodeScan
+                                    icon.source: "qrc:/assets/images/qaterial/qrcode-scan.svg"
                                     icon.color: Dex.CurrentTheme.foregroundColor2
                                     onClicked:
                                     {
@@ -355,7 +355,7 @@ MultipageModal
                                     backgroundImplicitWidth: 40
                                     backgroundImplicitHeight: 30
                                     backgroundColor: "transparent"
-                                    icon.source: Qaterial.Icons.contentCopy
+                                    icon.source: "qrc:/assets/images/qaterial/content-copy.svg"
                                     icon.color: Dex.CurrentTheme.foregroundColor2
                                     onClicked:
                                     {
@@ -393,7 +393,7 @@ MultipageModal
                                     backgroundImplicitWidth: 40
                                     backgroundImplicitHeight: 30
                                     backgroundColor: "transparent"
-                                    icon.source: Qaterial.Icons.qrcodeScan
+                                    icon.source: "qrc:/assets/images/qaterial/qrcode-scan.svg"
                                     icon.color: Dex.CurrentTheme.foregroundColor2
                                     onClicked:
                                     {
@@ -407,7 +407,7 @@ MultipageModal
                                     backgroundImplicitWidth: 40
                                     backgroundImplicitHeight: 30
                                     backgroundColor: "transparent"
-                                    icon.source: Qaterial.Icons.contentCopy
+                                    icon.source: "qrc:/assets/images/qaterial/content-copy.svg"
                                     icon.color: Dex.CurrentTheme.foregroundColor2
                                     onClicked:
                                     {

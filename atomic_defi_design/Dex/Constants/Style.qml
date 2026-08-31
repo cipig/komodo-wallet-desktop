@@ -1,6 +1,6 @@
 pragma Singleton
 import QtQuick 2.15
-import Qaterial 1.0 as Qaterial
+import "../Qaterial" as Qaterial
 import Dex.Themes 1.0 as Dex
 
 QtObject {
@@ -25,6 +25,15 @@ QtObject {
     readonly property FontLoader fontRI: FontLoader { source: "../../assets/fonts/Ubuntu-R.ttf" }
     readonly property FontLoader fontTh: FontLoader { source: "../../assets/fonts/Ubuntu-Th.ttf" }
     readonly property string font_family: "Ubuntu"
+
+    readonly property FontLoader fontLatoR: FontLoader { source: "../../assets/fonts/Lato-Regular.ttf" }
+    readonly property FontLoader fontLatoB: FontLoader { source: "../../assets/fonts/Lato-Bold.ttf" }
+    readonly property FontLoader fontLatoI: FontLoader { source: "../../assets/fonts/Lato-Italic.ttf" }
+    readonly property FontLoader fontLatoL: FontLoader { source: "../../assets/fonts/Lato-Light.ttf" }
+    readonly property FontLoader fontRobotoR: FontLoader { source: "../../assets/fonts/Roboto-Regular.ttf" }
+    readonly property FontLoader fontRobotoB: FontLoader { source: "../../assets/fonts/Roboto-Bold.ttf" }
+    readonly property FontLoader fontMontR: FontLoader { source: "../../assets/fonts/Montserrat-Regular.ttf" }
+    readonly property FontLoader fontMontB: FontLoader { source: "../../assets/fonts/Montserrat-Bold.ttf" }
 
     readonly property string listItemPrefix:  " ⚬   "
     readonly property string successCharacter:  "✓"

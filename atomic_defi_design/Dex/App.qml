@@ -4,15 +4,14 @@ import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
 import Qt.labs.settings 1.0
 import Qt.labs.platform 1.1
-import Qaterial 1.0 as Qaterial
+import "Qaterial" as Qaterial
 import "Screens"
 import "Constants"
 import "Components"
 import "Dashboard"
 import App 1.0
 import Dex.Themes 1.0 as Dex
-import "Screens/Startup"
-as Startup
+import "Screens/Startup" as Startup
 
 DefaultRectangle
 {
@@ -152,17 +151,12 @@ DefaultRectangle
     LogModal
     {
         id: recoverFundsResultModal
-
         visible: false
-
         header: qsTr("Recover Funds Result")
-
         onClosed: field.text = "{}"
-
         Connections // Catches signals from orders_model.
         {
             target: API.app.orders_mdl
-
             function onRecoverFundDataChanged()
             {
                 if (!API.app.orders_mdl.recover_fund_busy)
@@ -177,24 +171,21 @@ DefaultRectangle
     Component
     {
         id: alertComponent
+
         Popup
         {
             id: alertPopup
 
             property color  backgroundColor: Dex.CurrentTheme.notifPopupBackgroundColor
             property color  foregroundColor: Dex.CurrentTheme.notifPopupTextColor
-
             property string title: "Test Title"
             property string subTitle: "Lorem ipsum dolor sit amet, consectetur adipis"
-
             property color  timerColor: Dex.CurrentTheme.notifPopupTimerColor
             property color  timerBackgroundColor: Dex.CurrentTheme.notifPopupTimerBackgroundColor
-
-            property string icon: Qaterial.Icons.checkCircleOutline
+            property string icon: "qrc:/assets/images/qaterial/check-circle-outline.svg"
             property real   iconSize: 50
             property color  iconStartColor: Dex.CurrentTheme.notifPopupIconStartColor
             property color  iconEndColor: Dex.CurrentTheme.notifPopupIconEndColor
-
             property real   timeout: 3000
 
             x: parent.width - width - 40
@@ -255,6 +246,7 @@ DefaultRectangle
                     radius: 0
                     border.width: 0
                     color: alertPopup.timerBackgroundColor
+
                     DefaultRectangle
                     {
                         id: insideRect
@@ -342,6 +334,7 @@ DefaultRectangle
                     }
                 }
             }
+
             DefaultMouseArea
             {
                 id: areaAlert
@@ -358,7 +351,7 @@ DefaultRectangle
         {
             title: title,
             subTitle: subTitle,
-            icon: Qaterial.Icons.contentCopy,
+            icon: "qrc:/assets/images/qaterial/content-copy.svg",
             iconSize: 35
         });
     }

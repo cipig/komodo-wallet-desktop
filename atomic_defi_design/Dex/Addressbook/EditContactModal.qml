@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
-import Qaterial 1.0 as Qaterial
+import "../Qaterial" as Qaterial
 import Dex.Themes 1.0 as Dex
 import Dex.Components 1.0 as Dex
 import "../Constants" as Dex
@@ -127,7 +127,7 @@ Dex.MultipageModal
                                 Layout.preferredHeight: 30
                                 radius: 18
                                 visible: addressRowMouseArea.containsMouse
-                                iconSource: Qaterial.Icons.sendOutline
+                                iconSource: "qrc:/assets/images/qaterial/send-outline.svg"
                                 onClicked: trySend(address_value, address_type)
                             }
 
@@ -138,7 +138,7 @@ Dex.MultipageModal
                                 Layout.preferredHeight: 16
                                 color: "transparent"
                                 visible: addressRowMouseArea.containsMouse
-                                iconSource: Qaterial.Icons.close
+                                iconSource: "qrc:/assets/images/qaterial/close.svg"
                                 onClicked: contactModel.removeAddressEntry(address_type, address_key)
                             }
                         }
@@ -170,7 +170,7 @@ Dex.MultipageModal
                                 Layout.preferredWidth: 16
                                 Layout.preferredHeight: 16
                                 color: "transparent"
-                                iconSource: Qaterial.Icons.contentCopy
+                                iconSource: "qrc:/assets/images/qaterial/content-copy.svg"
                                 onClicked:
                                 {
                                     Dex.API.qt_utilities.copy_text_to_clipboard(address_value)
@@ -254,7 +254,7 @@ Dex.MultipageModal
                         width: 16
                         height: 16
                         color: "transparent"
-                        iconSource: Qaterial.Icons.close
+                        iconSource: "qrc:/assets/images/qaterial/close.svg"
                         onClicked: contactModel.removeCategory(modelData)
                     }
                 }
@@ -262,7 +262,7 @@ Dex.MultipageModal
 
             Dex.Button
             {
-                iconSource: Qaterial.Icons.plus
+                iconSource: "qrc:/assets/images/qaterial/plus.svg"
                 text: qsTr("Add tag")
                 font: Dex.DexTypo.body2
                 color: "transparent"

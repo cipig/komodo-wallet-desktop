@@ -3,7 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Controls.Universal 2.15
 import QtQuick.Layouts 1.15
 
-import Qaterial 1.0 as Qaterial
+import "../Qaterial" as Qaterial
 import ModelHelper 0.1
 
 import "../Constants"
@@ -34,7 +34,7 @@ Row
         {
             visible: _headerControlRow.hovered
             anchors.centerIn: parent
-            source: Qaterial.Icons.close
+            source: "qrc:/assets/images/qaterial/close.svg"
             iconSize: parent.width - 2
             color: 'black'
         }
@@ -63,7 +63,7 @@ Row
         {
             anchors.centerIn: parent
             visible: _headerControlRow.hovered
-            source: Qaterial.Icons.windowMinimize
+            source: "qrc:/assets/images/qaterial/window-minimize.svg"
             iconSize: parent.width - 2
             color: 'black'
         }
@@ -89,7 +89,7 @@ Row
         {
             visible: _headerControlRow.hovered
             anchors.centerIn: parent
-            source: window.visibility === ApplicationWindow.Maximized ? Qaterial.Icons.arrowCollapse : Qaterial.Icons.arrowExpand
+            source: window.visibility === ApplicationWindow.Maximized ? "qrc:/assets/images/qaterial/arrow-collapse.svg" : "qrc:/assets/images/qaterial/arrow-expand.svg"
             iconSize: parent.width - 2
             color: 'black'
         }

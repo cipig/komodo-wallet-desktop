@@ -1,8 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
-import Qaterial 1.0 as Qaterial
+import "../Qaterial" as Qaterial
 import QtQuick.Layouts 1.15
-
 import App 1.0
 import Dex.Themes 1.0 as Dex
 import "../Constants"
@@ -15,15 +14,12 @@ Item
 
     property int leftWidth: -1
     property int max_length: 180
-
     property alias field: input_field
     property alias value: input_field.text
     property alias background: _background
-
     property string leftText: ""
     property string rightText: ""
     property string placeholderText: ""
-
     property bool error: false
 
     onErrorChanged:

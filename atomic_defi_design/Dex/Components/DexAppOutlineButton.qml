@@ -1,5 +1,5 @@
 import QtQuick 2.15
-import Qaterial 1.0 as Qaterial
+import "../Qaterial" as Qaterial
 
 import App 1.0
 import Dex.Themes 1.0 as Dex

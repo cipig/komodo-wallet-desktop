@@ -1,7 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
-import Qaterial 1.0 as Qaterial
+import "../Qaterial" as Qaterial
 import Dex.Themes 1.0 as Dex
 import "../Constants"
 
@@ -104,7 +104,7 @@ Item
                 width: 20
                 height: 20
                 color: collapseButMouseArea.containsMouse ? Dex.CurrentTheme.foregroundColor2 : Dex.CurrentTheme.foregroundColor
-                icon: root.collapsed ? Qaterial.Icons.chevronUp : Qaterial.Icons.chevronDown
+                icon: root.collapsed ? "qrc:/assets/images/qaterial/chevron-up.svg" : "qrc:/assets/images/qaterial/chevron-down.svg"
 
                 DefaultMouseArea
                 {

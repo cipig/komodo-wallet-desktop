@@ -1,7 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
-import Qaterial 1.0 as Qaterial
+import "../../../Qaterial" as Qaterial
 import QtGraphicalEffects 1.15
 import bignumberjs 1.0
 import App 1.0
@@ -60,7 +60,7 @@ FloatingBackground
                 visible: !statusText.visible ? clickable ? true : false : false
                 iconSize: 16
                 color: Dex.CurrentTheme.foregroundColor
-                source: Qaterial.Icons.clipboardTextSearchOutline
+                source: "qrc:/assets/images/qaterial/clipboard-text-search-outline.svg"
             }
         }
 
@@ -111,7 +111,7 @@ FloatingBackground
                 {
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.horizontalCenter: parent.horizontalCenter
-                    source: Qaterial.Icons.swapHorizontal
+                    source: "qrc:/assets/images/qaterial/swap-horizontal.svg"
                     color: Dex.CurrentTheme.foregroundColor
                     iconSize: 18
                 }
@@ -262,7 +262,7 @@ FloatingBackground
                     anchors.centerIn: parent
                     iconSize: 16
                     color: Dex.CurrentTheme.warningColor
-                    source: Qaterial.Icons.close
+                    source: "qrc:/assets/images/qaterial/close.svg"
                     scale: parent.visible ? 1 : 0
                 }
             }

@@ -1,8 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
-import Qaterial 1.0 as Qaterial
+import "../Qaterial" as Qaterial
 import QtQuick.Layouts 1.15
-
 import App 1.0
 
 Item {
@@ -70,6 +69,7 @@ Item {
         anchors.leftMargin: 2
         anchors.rightMargin: 2
         spacing: 2
+
         Item {
             visible: leftText !== ""
             Layout.preferredWidth: leftWidth !== -1 ? leftWidth : _title_label.implicitWidth + 2
@@ -86,15 +86,18 @@ Item {
                 font.weight: Font.Medium
             }
         }
+
         Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
+
             Rectangle {
                 anchors.fill: parent
                 anchors.topMargin: 1
                 anchors.bottomMargin: 1
                 radius: _background.radius
                 color: _background.color
+
                 DexTextField {
                     id: input_field
                     onTextChanged: {
@@ -111,6 +114,7 @@ Item {
                     font.pixelSize: 13
                     anchors.fill: parent
                 }
+
                 DexLabel {
                     anchors.verticalCenter: parent.verticalCenter
                     leftPadding: input_field.leftPadding
@@ -122,10 +126,12 @@ Item {
                 }
             }
         }
+
         Item {
             visible: rightText !== ""
             Layout.preferredWidth: _suffix_label.implicitWidth + 2
             Layout.fillHeight: true
+
             DexLabel {
                 id: _suffix_label
                 anchors.centerIn: parent

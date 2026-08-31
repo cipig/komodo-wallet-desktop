@@ -16,9 +16,6 @@ message(STATUS "${PROJECT_NAME} is version ${PROJECT_VERSION}")
 include(cmake_default_options)
 include(ipo_prerequisites)
 
-##! Options
-option(WITH_HOTRELOAD "Enable to use qml Hot reload" OFF)
-
 ##! Antara
 include(antara)
 ##! Calling this macros provided by the sdk will if you are on Apple init the environment for this OS (std::filesystem).
@@ -40,16 +37,10 @@ else ()
             URL https://devbuilds.gleec.com/dev/kdf_a12695e-win-x86-64.zip)
 endif ()
 
-FetchContent_Declare(
-        qmaterial
-        GIT_REPOSITORY https://github.com/OlivierLDff/Qaterial.git
-        GIT_TAG c2f32d23523baabe406a8de6809dc9d41f9a881e
-)
-
 FetchContent_Declare(jl777-coins
         URL https://github.com/cipig/coins/archive/nogeo.zip)
 
-FetchContent_MakeAvailable(kdf jl777-coins qmaterial)
+FetchContent_MakeAvailable(kdf jl777-coins)
 
 ##! Configure our needs.
 if (UNIX)
@@ -63,7 +54,6 @@ else ()
     configure_file(${kdf_SOURCE_DIR}/kdf.exe ${CMAKE_BINARY_DIR}/bin/assets/tools/kdf/${DEX_API}.exe COPYONLY)
 endif ()
 
-
 add_subdirectory(vendor/antara-gaming_sdk/modules)
 
 ##! Osx bundle icon
@@ -76,19 +66,6 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 add_subdirectory(src)
-
-# Adds Qaterial hot reload to main executable
-if (WITH_HOTRELOAD)
-    FetchContent_Declare(
-            qaterial_hotreload
-            GIT_REPOSITORY https://github.com/KomodoPlatform/QaterialHotReload
-            GIT_TAG ecffec6bd01d9a13561689283bc2a6a927957f64
-    )
-    set(QATERIALHOTRELOAD_ENABLE_HOTRELOAD_APP OFF CACHE BOOL "")
-    FetchContent_MakeAvailable(qaterial_hotreload)
-    target_link_libraries(${PROJECT_NAME} PUBLIC Qaterial::HotReload)
-    target_compile_definitions(${PROJECT_NAME} PUBLIC ATOMICDEX_HOT_RELOAD)
-endif ()
 
 add_library(antara_qrcode STATIC)
 target_sources(antara_qrcode PRIVATE vendor/qrcode/QrCode.cpp)

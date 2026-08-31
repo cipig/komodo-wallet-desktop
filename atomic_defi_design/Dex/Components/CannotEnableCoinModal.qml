@@ -1,4 +1,3 @@
-//! Qt Imports
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 
@@ -13,15 +12,18 @@ MultipageModal
     MultipageModalContent
     {
         titleText: qsTr("Failed to enable %1").arg(coin_to_enable_ticker)
+
         DexLabel
         {
             Layout.fillWidth: true
             text: qsTr("Enabling %1 did not succeed. Limit of enabled coins might have been reached.")
                     .arg(coin_to_enable_ticker)
         }
+
         RowLayout
         {
             Layout.fillWidth: true
+
             DefaultButton
             {
                 Layout.fillWidth: true
@@ -32,6 +34,7 @@ MultipageModal
                     close()
                 }
             }
+
             CancelButton
             {
                 Layout.fillWidth: true
@@ -40,5 +43,4 @@ MultipageModal
             }
         }
     }
-
 }

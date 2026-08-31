@@ -2,7 +2,7 @@ import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
-import Qaterial 1.0 as Qaterial
+import "../../../Qaterial" as Qaterial
 import Qt.labs.settings 1.0
 import "../../../Components"
 import "../../../Constants"
@@ -35,7 +35,7 @@ ColumnLayout
             horizontalAlignment: Text.AlignRight
             font.weight: Font.DemiBold
             font.pixelSize: 16
-            font.family: 'lato'
+            font.family: 'Lato'
             text_value: General.getFiatText(total_amount, right_ticker).replace(General.cex_icon, "")
         }
     }
@@ -69,7 +69,7 @@ ColumnLayout
             horizontalAlignment: Text.AlignRight
             font.weight: Font.DemiBold
             font.pixelSize: 16
-            font.family: 'lato'
+            font.family: 'Lato'
             text_value: General.formatCrypto("", total_amount, right_ticker).replace(right_ticker, "")
         }
     }

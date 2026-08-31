@@ -1,7 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
-import Qaterial 1.0 as Qaterial
+import "../Qaterial" as Qaterial
 import "../Constants" as Constants
 import App 1.0
 import Dex.Themes 1.0 as Dex
@@ -110,7 +110,7 @@ RowLayout
             anchors.centerIn: parent
             iconSize: 14
             color: Dex.CurrentTheme.foregroundColor
-            source: Qaterial.Icons.skipPreviousOutline
+            source: "qrc:/assets/images/qaterial/skip-previous-outline.svg"
         }
         enabled: currentValue > 1
 
@@ -160,7 +160,7 @@ RowLayout
             anchors.centerIn: parent
             iconSize: 14
             color: Dex.CurrentTheme.foregroundColor
-            source: Qaterial.Icons.skipNextOutline
+            source: "qrc:/assets/images/qaterial/skip-next-outline.svg"
         }
         enabled: pageSize > 1 && currentValue < pageSize
 

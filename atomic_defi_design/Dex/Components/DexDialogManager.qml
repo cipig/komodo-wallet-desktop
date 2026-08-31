@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
-import Qaterial 1.0 as Qaterial
+import "../Qaterial" as Qaterial
 import QtQuick.Layouts 1.15
 import App 1.0
 
@@ -154,7 +154,7 @@ Popup {
                             Qaterial.ColorIcon {
                                 anchors.centerIn: parent
                                 iconSize: 19
-                                source: Qaterial.Icons.keyVariant
+                                source: "qrc:/assets/images/qaterial/key-variant.svg"
                                 color: DexTheme.backgroundDarkColor2
                             }
 
@@ -163,7 +163,7 @@ Popup {
                             visible: dialog.isPassword
                             opacity: .8
                             icon {
-                                source: _insideField.field.echoMode === TextField.Password ? Qaterial.Icons.eyeOffOutline : Qaterial.Icons.eyeOutline
+                                source: _insideField.field.echoMode === TextField.Password ? "qrc:/assets/images/qaterial/eye-off-outline.svg" : "qrc:/assets/images/qaterial/eye-outline.svg"
                                 color: _insideField.field.focus ? _insideField.background.border.color : DexTheme.accentColor
                             }
                             anchors {

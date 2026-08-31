@@ -4,9 +4,9 @@ import QtQuick.Controls.Universal 2.15
 import QtQuick.Layouts 1.15
 import Qt.labs.settings 1.0
 import ModelHelper 0.1
-import Qaterial 1.0 as Qaterial
 import App 1.0
 import "Components"
+import "Qaterial" as Qaterial
 import Dex.Themes 1.0 as Dex
 
 DexWindow
@@ -22,7 +22,6 @@ DexWindow
 
     title: API.app_name
     visible: true
-
     minimumWidth: General.minimumWidth
     minimumHeight: General.minimumHeight
 
@@ -84,7 +83,7 @@ DexWindow
                     Qaterial.Icon
                     {
                         anchors.verticalCenter: parent.verticalCenter
-                        icon: Qaterial.Icons.logout
+                        icon: "qrc:/assets/images/qaterial/logout.svg"
                         color: Dex.CurrentTheme.foregroundColor
                         size: 11
                     }
@@ -148,7 +147,6 @@ DexWindow
             visible: !_label.visible
             anchors.verticalCenter: parent.verticalCenter
         }
-
     }
 
     Item
@@ -196,7 +194,7 @@ DexWindow
 
                     Qaterial.ColorIcon
                     {
-                        source: Qaterial.Icons.menuDown
+                        source: "qrc:/assets/images/qaterial/menu-down.svg"
                         iconSize: 14
                         visible: _label.visible
                         color: Dex.CurrentTheme.foregroundColor
@@ -216,7 +214,7 @@ DexWindow
 
                     Qaterial.ColorIcon
                     {
-                        source: Qaterial.Icons.account
+                        source: "qrc:/assets/images/qaterial/account.svg"
                         iconSize: 18
                         visible: _label.visible
                         color: _area.containsMouse ? Dex.CurrentTheme.gradientButtonPressedStartColor : Dex.CurrentTheme.foregroundColor
@@ -267,7 +265,7 @@ DexWindow
                 DexLabel
                 {
                     text_value: General.formatFiat("", API.app.portfolio_pg.balance_fiat_all, API.app.settings_pg.current_currency)
-                    font.family: 'lato'
+                    font.family: 'Lato'
                     font.weight: Font.Bold
                     visible: _label.visible
                     privacy: true
@@ -287,7 +285,7 @@ DexWindow
                 color: containsMouse ? Dex.CurrentTheme.gradientButtonPressedStartColor : Dex.CurrentTheme.foregroundColor
                 anchors.verticalCenter: parent.verticalCenter
                 iconSize: 24
-                icon: Qaterial.Icons.bellOutline
+                icon: "qrc:/assets/images/qaterial/bell-outline.svg"
                 visible: _label.visible
                 active: app.notification_modal.opened
 
@@ -341,11 +339,11 @@ DexWindow
                     if (Dex.CurrentTheme.getColorMode() !== Dex.CurrentTheme.ColorMode.None)
                     {
                         if (Dex.CurrentTheme.getColorMode() === Dex.CurrentTheme.ColorMode.Light)
-                            return Qaterial.Icons.moonWaningCrescent;
+                            return "qrc:/assets/images/qaterial/moon-waning-crescent.svg";
                         else if (Dex.CurrentTheme.getColorMode() === Dex.CurrentTheme.ColorMode.Dark)
-                            return Qaterial.Icons.whiteBalanceSunny;
+                            return "qrc:/assets/images/qaterial/white-balance-sunny.svg";
                     }
-                    return Qaterial.Icons.moonWaningCrescent;
+                    return "qrc:/assets/images/qaterial/moon-waning-crescent.svg";
                 }
 
                 onClicked: {

@@ -2,13 +2,12 @@ import QtQuick 2.15
 import "../Components/"
 import App 1.0
 import QtQuick.Layouts 1.15
-import Qaterial 1.0 as Qaterial 
+import "../Qaterial" as Qaterial
 
 RowLayout
 {
     id: control
     anchors.horizontalCenter: parent.horizontalCenter
-
     property bool noBackground: false
     property string title
     property string buttonText
@@ -44,7 +43,7 @@ RowLayout
                 radius: 18
                 padding: 20
                 font: DexTypo.body1
-                iconSource: Qaterial.Icons.logout
+                iconSource: "qrc:/assets/images/qaterial/logout.svg"
                 onClicked: control.clicked()
             }
 

@@ -2,7 +2,7 @@ import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
-import Qaterial 1.0 as Qaterial
+import "../../../Qaterial" as Qaterial
 import "../../../Components"
 import "../../../Constants"
 import App 1.0
@@ -378,7 +378,7 @@ ColumnLayout
                     anchors.centerIn: parent
                     iconSize: 16
                     color: Dex.CurrentTheme.warningColor
-                    source: Qaterial.Icons.close
+                    source: "qrc:/assets/images/qaterial/close.svg"
                 }
             }
         }

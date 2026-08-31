@@ -2,7 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
-import Qaterial 1.0 as Qaterial
+import "../Qaterial" as Qaterial
 
 import Dex.Themes 1.0 as Dex
 import "../Constants"
@@ -129,7 +129,7 @@ ComboBox
             width: 20
             height: 20
             color: Dex.CurrentTheme.comboBoxArrowsColor
-            icon: Qaterial.Icons.chevronUp
+            icon: "qrc:/assets/images/qaterial/chevron-up.svg"
         }
 
         Qaterial.Icon
@@ -137,7 +137,7 @@ ComboBox
             width: 20
             height: 20
             color: Dex.CurrentTheme.comboBoxArrowsColor
-            icon: Qaterial.Icons.chevronDown
+            icon: "qrc:/assets/images/qaterial/chevron-down.svg"
         }
     }
 }

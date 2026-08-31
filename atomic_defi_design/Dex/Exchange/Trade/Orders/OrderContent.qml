@@ -2,7 +2,7 @@ import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
-import Qaterial 1.0 as Qaterial
+import "../../../Qaterial" as Qaterial
 import App 1.0
 import "../../../Components"
 import "../../../Constants"
@@ -73,7 +73,7 @@ RowLayout
         Layout.fillWidth: true
         Layout.alignment: Qt.AlignVCenter
         color: Dex.CurrentTheme.foregroundColor
-        icon: Qaterial.Icons.swapHorizontal
+        icon: "qrc:/assets/images/qaterial/swap-horizontal.svg"
     }
 
     DefaultRectangle

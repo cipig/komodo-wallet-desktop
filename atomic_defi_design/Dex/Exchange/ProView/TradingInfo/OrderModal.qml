@@ -1,7 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
-import Qaterial 1.0 as Qaterial
+import "../../../Qaterial" as Qaterial
 import Dex.Themes 1.0 as Dex
 import "../../../Components"
 import "../../../Constants"
@@ -57,7 +57,7 @@ MultipageModal
                     Layout.preferredHeight: 70
                     Layout.alignment: Qt.AlignVCenter
                     color: Dex.CurrentTheme.foregroundColor
-                    icon: Qaterial.Icons.swapHorizontal
+                    icon: "qrc:/assets/images/qaterial/swap-horizontal.svg"
                 }
 
                 Item { Layout.fillWidth: true }

@@ -1,7 +1,4 @@
-//! Qt Imports.
 import QtQuick 2.15
-
-//! Project Imports
 import App 1.0
 import "../Constants" as Dex
 import Dex.Themes 1.0 as Dex

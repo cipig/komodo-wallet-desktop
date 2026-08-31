@@ -1,7 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
-import Qaterial 1.0 as Qaterial
+import "../../Qaterial" as Qaterial
 import "../../Components"
 import "../../Constants"
 import App 1.0
@@ -94,7 +94,7 @@ SetupPage
 
                 SquareButton
                 {
-                    icon.source: Qaterial.Icons.chevronLeft
+                    icon.source: "qrc:/assets/images/qaterial/chevron-left.svg"
                     Layout.alignment: Qt.AlignVCenter
                     onClicked:
                     {
@@ -169,7 +169,7 @@ SetupPage
                         {
                             anchors.centerIn: parent
                             iconSize: 19
-                            source: Qaterial.Icons.wallet
+                            source: "qrc:/assets/images/qaterial/wallet.svg"
                             color: Dex.CurrentTheme.inputLeftIconColor
                         }
                     }
@@ -181,7 +181,7 @@ SetupPage
                     Layout.fillWidth: true
                     max_length: General.max_pw_length
                     Layout.preferredHeight: 50
-                    leftIcon: Qaterial.Icons.fileKey
+                    leftIcon: "qrc:/assets/images/qaterial/file-key.svg"
                     field.font: DexTypo.body2
                     field.placeholderText: qsTr('Enter seed')
                     field.onAccepted: tryPassLevel1()
@@ -286,7 +286,7 @@ SetupPage
                         padding: 16
                         opacity: enabled ? 1 : .7
                         Layout.preferredHeight: 45
-                        iconSourceRight: Qaterial.Icons.arrowRight
+                        iconSourceRight: "qrc:/assets/images/qaterial/arrow-right.svg"
                     }
                 }
             }
@@ -350,7 +350,7 @@ SetupPage
                         padding: 16
                         opacity: enabled ? 1 : .7
                         Layout.preferredHeight: 45
-                        iconSourceRight: Qaterial.Icons.arrowRight
+                        iconSourceRight: "qrc:/assets/images/qaterial/arrow-right.svg"
                         onClicked: trySubmit()
                     }
                 }

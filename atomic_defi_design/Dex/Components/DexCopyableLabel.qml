@@ -1,12 +1,7 @@
-//! Qt Imports.
 import QtQuick 2.15
-import QtQuick.Controls 2.15 //> TextField
-
-//! 3rdParty Imports.
-import Qaterial 1.0 as Qaterial //> Icon
-
-//! Project Imports.
-import App 1.0 //> DexTheme
+import QtQuick.Controls 2.15
+import "../Qaterial" as Qaterial
+import App 1.0
 
 // DexCopyableLabel is a label which content can be copied to clipboard with the help of a copy icon right to te text.
 // It is not editable by users.
@@ -15,7 +10,6 @@ Item
     id: control
 
     property alias  text: label.text
-
     property string onCopyNotificationTitle
     property string onCopyNotificationMsg
 
@@ -42,8 +36,9 @@ Item
         anchors.left: label.right
         anchors.leftMargin: _leftMargin
         size: 16
-        icon: Qaterial.Icons.contentCopy
+        icon: "qrc:/assets/images/qaterial/content-copy.svg"
         color: copyArea.containsMouse ? DexTheme.accentColor : DexTheme.foregroundColor
+
         DefaultMouseArea
         {
             id: copyArea
@@ -51,9 +46,16 @@ Item
             hoverEnabled: true
             onClicked:
             {
-                Qaterial.Clipboard.text = label.text
+                clipboardHelper.text = label.text
+                clipboardHelper.selectAll()
+                clipboardHelper.copy()
                 app.notifyCopy(onCopyNotificationTitle, onCopyNotificationMsg)
             }
         }
+    }
+
+    TextInput {
+        id: clipboardHelper
+        visible: false
     }
 }

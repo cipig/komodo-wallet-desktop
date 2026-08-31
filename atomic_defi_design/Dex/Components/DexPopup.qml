@@ -1,14 +1,11 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
-
-import Qaterial 1.0 as Qaterial
+import "../Qaterial" as Qaterial
 
 Qaterial.Popup
 {
     id: root
-
     parent: Overlay.overlay
-
     spacing: 8
     padding: 4
 
@@ -45,14 +42,13 @@ Qaterial.Popup
         Rectangle
         {
             anchors.fill: parent
-
             radius: 18
             color: root.backgroundColor
             layer.enabled: true
             layer.effect: Qaterial.ElevationEffect
             {
                 elevation: Qaterial.Style.menu.elevation
-            } // ElevationEffect
+            }
         }
 
         Rectangle
@@ -77,8 +73,8 @@ Qaterial.Popup
             height: 8
             rotation: 45
             color: root.backgroundColor
-        } // Triangle
-    } // Rectangle
+        }
+    }
 
     enter: Transition {
         NumberAnimation {
@@ -96,9 +92,7 @@ Qaterial.Popup
             easing.type: Easing.OutCubic
             duration: 150
         }
-        // NumberAnimation
     }
-    // Transition
 
     exit: Transition {
         NumberAnimation {
@@ -108,7 +102,6 @@ Qaterial.Popup
             easing.type: Easing.OutQuint
             duration: 220
         }
-        // NumberAnimation
 
         NumberAnimation {
             property: "opacity"
@@ -117,8 +110,5 @@ Qaterial.Popup
             easing.type: Easing.OutCubic
             duration: 150
         }
-        // NumberAnimation
     }
-    // Transition
 }
-// Popup
