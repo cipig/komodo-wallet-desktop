@@ -21,7 +21,7 @@ ColumnLayout
     property int           titleTopMargin:      20
     property int           topMarginAfterTitle: 30
     property alias         flickable:           modal_flickable
-    property int           flickMax:            window.height - 100
+    property int           flickMax:            window.height - 240
     property alias         header:              _header.data
     default property alias content:             _innerLayout.data
     property alias         contentSpacing:      _innerLayout.spacing
@@ -63,7 +63,7 @@ ColumnLayout
         Layout.topMargin: root.topMarginAfterTitle
         Layout.fillWidth: true
         Layout.preferredHeight: contentHeight
-        Layout.maximumHeight: flickMax - 100
+        Layout.maximumHeight: flickMax - 200
         contentHeight: _innerLayout.height
 
         ColumnLayout

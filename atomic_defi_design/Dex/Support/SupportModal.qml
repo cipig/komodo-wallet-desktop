@@ -16,7 +16,7 @@ Qaterial.Dialog
 {
     id: support_modal
     width: 950
-    height: 720
+    height: 740
     padding: 10
     topPadding: 20
     bottomPadding: 20

@@ -68,7 +68,7 @@ namespace
         }
         if (coin_type == "Bittensor")
         {
-            return CoinType::TAO;
+            return CoinType::Bittensor;
         }
         if (coin_type == "Optimism")
         {
