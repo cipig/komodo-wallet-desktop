@@ -37,10 +37,16 @@ else ()
             URL https://devbuilds.gleec.com/dev/kdf_a12695e-win-x86-64.zip)
 endif ()
 
+FetchContent_Declare(
+        qmaterial
+        GIT_REPOSITORY https://github.com/OlivierLDff/Qaterial.git
+        GIT_TAG c2f32d23523baabe406a8de6809dc9d41f9a881e
+)
+
 FetchContent_Declare(jl777-coins
         URL https://github.com/cipig/coins/archive/nogeo.zip)
 
-FetchContent_MakeAvailable(kdf jl777-coins)
+FetchContent_MakeAvailable(kdf jl777-coins qmaterial)
 
 ##! Configure our needs.
 if (UNIX)

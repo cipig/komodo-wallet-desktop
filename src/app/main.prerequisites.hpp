@@ -32,6 +32,7 @@
 #include <QtQml>
 #include <QFontDatabase>
 #include <QtWebEngine>
+#include <Qaterial/Qaterial.hpp>
 
 //! Deps
 #include <QSslSocket>
@@ -404,6 +405,10 @@ run_app(int argc, char** argv)
     engine.rootContext()->setContextProperty("qtversion", QString(qVersion()));
     engine.rootContext()->setContextProperty("DexFilesystem", &qml_filesystem);
     SPDLOG_INFO("QML context properties created");
+
+    qaterial::loadQmlResources(false);
+    qaterial::registerQmlTypes("Qaterial", 1, 0);
+    SPDLOG_INFO("Qaterial type created");
 
     engine.addImportPath("qrc:/imports");
     engine.addImportPath("qrc:/Constants");
