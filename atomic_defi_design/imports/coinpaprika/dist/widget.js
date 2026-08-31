@@ -11585,7 +11585,7 @@ class chartClass {
       navigator: {
         enabled: true,
         height: 50,
-        margin: 5
+        margin: 8
       },
       cpEvents: false,
       colors: ["#5085ec", "#1f9809", "#985d65", "#ee983b", "#4c4c4c"],
