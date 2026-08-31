@@ -112,7 +112,7 @@ Item
                     overflow: visible !important;
                   }
                   .highcharts-plot-border {
-                    display: none !important;
+                    stroke: none !important;
                   }
                   .highcharts-range-selector-buttons {
                     display: none !important;
@@ -164,13 +164,13 @@ Item
                       var rangeSelector = document.querySelector('div.cp-widget-select');
                       if (rangeSelector) {
                         rangeSelector.style.top = 'auto';
-                        rangeSelector.style.bottom = '94px';
+                        rangeSelector.style.bottom = '95px';
                         rangeSelector.style.position = 'absolute';
                       }
                       var chartRanges = document.querySelector('div.cp-widget__chart-ranges');
                       if (chartRanges) {
                         chartRanges.style.top = 'auto';
-                        chartRanges.style.bottom = '94px';
+                        chartRanges.style.bottom = '95px';
                         chartRanges.style.position = 'absolute';
                       }
                     }

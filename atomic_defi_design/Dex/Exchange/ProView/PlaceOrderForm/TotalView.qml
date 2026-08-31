@@ -22,11 +22,10 @@ ColumnLayout
             Layout.preferredWidth: 150
             Layout.alignment: Qt.AlignLeft
             color: Dex.CurrentTheme.foregroundColor3
-            text: "Trade Value " + API.app.settings_pg.current_fiat + " " + General.cex_icon
+            text: "Trade Value " + API.app.settings_pg.current_fiat
             font.pixelSize:  14
             font.weight: Font.Normal
             opacity: .6
-            DefaultInfoTrigger { triggerModal: cex_info_modal }
         }
 
         DexLabel

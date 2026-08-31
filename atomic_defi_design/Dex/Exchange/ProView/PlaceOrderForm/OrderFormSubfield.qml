@@ -146,7 +146,6 @@ RowLayout
 
     Item
     {
-
         width: btn_width
         height: parent.height
 
@@ -213,6 +212,5 @@ RowLayout
         id: _fiat_label
         font.pixelSize: pixel_size
         color: Dex.CurrentTheme.foregroundColor2
-        DefaultInfoTrigger { triggerModal: cex_info_modal }
     }
 }

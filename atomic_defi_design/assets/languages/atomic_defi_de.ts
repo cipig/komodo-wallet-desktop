@@ -337,19 +337,6 @@ Beispiel: Kennwort = 1234    Suffix=56    Eingabe beim Login=123456</translation
     </message>
 </context>
 <context>
-    <name>CexInfoModal</name>
-    <message>
-        <location filename="../../Dex/Components/CexInfoModal.qml" line="14"/>
-        <source>Market Data</source>
-        <translation>Marktdaten</translation>
-    </message>
-    <message>
-        <location filename="../../Dex/Components/CexInfoModal.qml" line="20"/>
-        <source>Market data (prices, charts, etc.) marked with the ⓘ icon originates from third-party sources.&lt;br&gt;&lt;br&gt;Data is sourced via &lt;a href=&quot;https://coingecko.com&quot;&gt;CoinGecko&lt;/a&gt;.</source>
-        <translation>Mit dem Symbol ⓘ gekennzeichnete Marktdaten (Kurse, Charts etc.) stammen aus Drittquellen.&lt;br&gt;&lt;br&gt;Die Daten stammen von &lt;a href=&quot;https://coingecko.com&quot;&gt;CoinGecko&lt;/a&gt;.</translation>
-    </message>
-</context>
-<context>
     <name>Chart</name>
     <message>
         <location filename="../../Dex/Exchange/ProView/Chart.qml" line="178"/>

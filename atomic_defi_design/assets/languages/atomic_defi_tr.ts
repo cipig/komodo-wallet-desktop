@@ -336,19 +336,6 @@
     </message>
 </context>
 <context>
-    <name>CexInfoModal</name>
-    <message>
-        <location filename="../../Dex/Components/CexInfoModal.qml" line="14"/>
-        <source>Market Data</source>
-        <translation>Piyasa Verisi</translation>
-    </message>
-    <message>
-        <location filename="../../Dex/Components/CexInfoModal.qml" line="20"/>
-        <source>Market data (prices, charts, etc.) marked with the ⓘ icon originates from third-party sources.&lt;br&gt;&lt;br&gt;Data is sourced via &lt;a href=&quot;https://coingecko.com&quot;&gt;CoinGecko&lt;/a&gt;.</source>
-        <translation>ⓘ simgesiyle işaretlenen piyasa verileri (fiyatlar, grafikler vb.) üçüncü taraf kaynaklardan alınmıştır. .&lt;br&gt;&lt;br&gt;Veriler kaynakları: &lt;a href=&quot;https://coingecko.com&quot;&gt;CoinGecko&lt;/a&gt;.</translation>
-    </message>
-</context>
-<context>
     <name>Chart</name>
     <message>
         <location filename="../../Dex/Exchange/ProView/Chart.qml" line="178"/>

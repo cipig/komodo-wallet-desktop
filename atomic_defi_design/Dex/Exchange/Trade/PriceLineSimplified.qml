@@ -70,9 +70,8 @@ ColumnLayout
             {
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignRight
-                text_value: General.cex_icon + " " + qsTr("CEXchange rate")
+                text_value: qsTr("CEXchange rate")
                 font.pixelSize: fontSize
-                DefaultInfoTrigger { triggerModal: cex_info_modal }
             }
 
             // Price reversed
@@ -153,6 +152,5 @@ ColumnLayout
                 }
             }
         }
-
     }
 }
