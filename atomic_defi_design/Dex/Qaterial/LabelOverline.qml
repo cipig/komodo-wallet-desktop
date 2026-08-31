@@ -26,5 +26,6 @@ Qaterial.Label
 {
   id: root
 
-  font: Qaterial.Style.textTheme.headline6
+  font: Qaterial.Style.textTheme.overline
+  color: enabled ? Qaterial.Style.colorTheme.secondaryText : Qaterial.Style.colorTheme.disabledText
 }

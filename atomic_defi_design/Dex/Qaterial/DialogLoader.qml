@@ -9,7 +9,7 @@ import QtQuick.Controls 2.14
 import QtQml 2.12
 import Qt.labs.platform 1.1 as QLab
 // Qaterial
-import "../Qaterial" as Qaterial
+import Qaterial 1.0 as Qaterial
 
 Item
 {
@@ -58,7 +58,7 @@ Item
 
         if(root.settings && root.settings.acceptedCallback)
         {
-          Qaterial.Logger.warn(
+          console.warn(
             "You are using deprecated 'acceptedCallback'. You should consider moving to 'onAccepted'")
           root.settings.acceptedCallback()
         }
@@ -71,7 +71,7 @@ Item
 
         if(root.settings && root.settings.appliedCallback)
         {
-          Qaterial.Logger.warn(
+          console.warn(
             "You are using deprecated 'appliedCallback'. You should consider moving to 'onApplied'")
           root.settings.appliedCallback()
         }
@@ -84,7 +84,7 @@ Item
 
         if(root.settings && root.settings.helpRequestedCallback)
         {
-          Qaterial.Logger.warn(
+          console.warn(
             "You are using deprecated 'helpRequestedCallback'. You should consider moving to 'onHelpRequested'")
           root.settings.helpRequestedCallback()
         }
@@ -97,7 +97,7 @@ Item
 
         if(root.settings && root.settings.rejectedCallback)
         {
-          Qaterial.Logger.warn(
+          console.warn(
             "You are using deprecated 'rejectedCallback'. You should consider moving to 'onRejected'")
           root.settings.rejectedCallback()
         }
@@ -140,7 +140,7 @@ Item
 
         if(root.settings && root.settings.acceptedCallback)
         {
-          Qaterial.Logger.warn(
+          console.warn(
             "You are using deprecated 'acceptedCallback'. You should consider moving to 'onAccepted'")
           root.settings.acceptedCallback(text, acceptableInput && !error)
         }
@@ -153,7 +153,7 @@ Item
 
         if(root.settings && root.settings.appliedCallback)
         {
-          Qaterial.Logger.warn(
+          console.warn(
             "You are using deprecated 'appliedCallback'. You should consider moving to 'onApplied'")
           root.settings.appliedCallback()
         }
@@ -166,7 +166,7 @@ Item
 
         if(root.settings && root.settings.helpRequestedCallback)
         {
-          Qaterial.Logger.warn(
+          console.warn(
             "You are using deprecated 'helpRequestedCallback'. You should consider moving to 'onHelpRequested'")
           root.settings.helpRequestedCallback()
         }
@@ -179,7 +179,7 @@ Item
 
         if(root.settings && root.settings.rejectedCallback)
         {
-          Qaterial.Logger.warn(
+          console.warn(
             "You are using deprecated 'rejectedCallback'. You should consider moving to 'onRejected'")
           root.settings.rejectedCallback()
         }
@@ -203,7 +203,7 @@ Item
 
         if(root.settings && root.settings.acceptedCallback)
         {
-          Qaterial.Logger.warn(
+          console.warn(
             "You are using deprecated 'acceptedCallback'. You should consider moving to 'onAccepted'")
           root.settings.acceptedCallback()
         }
@@ -216,7 +216,7 @@ Item
 
         if(root.settings && root.settings.appliedCallback)
         {
-          Qaterial.Logger.warn(
+          console.warn(
             "You are using deprecated 'appliedCallback'. You should consider moving to 'onApplied'")
           root.settings.appliedCallback()
         }
@@ -229,7 +229,7 @@ Item
 
         if(root.settings && root.settings.helpRequestedCallback)
         {
-          Qaterial.Logger.warn(
+          console.warn(
             "You are using deprecated 'helpRequestedCallback'. You should consider moving to 'onHelpRequested'")
           root.settings.helpRequestedCallback()
         }
@@ -242,7 +242,7 @@ Item
 
         if(root.settings && root.settings.rejectedCallback)
         {
-          Qaterial.Logger.warn(
+          console.warn(
             "You are using deprecated 'rejectedCallback'. You should consider moving to 'onRejected'")
           root.settings.rejectedCallback()
         }
@@ -449,7 +449,7 @@ Item
       }
       else
       {
-        Qaterial.Logger.warn(`${settings.context} isn't an instance of QtObject. It can't be used as a dialog context.`)
+        console.warn(`${settings.context} isn't an instance of QtObject. It can't be used as a dialog context.`)
         root.context = null
       }
     }
@@ -517,7 +517,7 @@ Item
 
   function openWithSettings(settings)
   {
-    Qaterial.Logger.warn("'DialogLoader.openWithSettings' is deprecated, consider moving to 'showDialog'")
+    console.warn("'DialogLoader.openWithSettings' is deprecated, consider moving to 'showDialog'")
     showDialog(settings)
   }
 

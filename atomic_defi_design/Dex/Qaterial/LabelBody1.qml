@@ -26,5 +26,5 @@ Qaterial.Label
 {
   id: root
 
-  font: Qaterial.Style.textTheme.headline6
+  font: Qaterial.Style.textTheme.body1
 }

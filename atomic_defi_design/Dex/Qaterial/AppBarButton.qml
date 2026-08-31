@@ -4,7 +4,7 @@
  */
 
 // Qaterial
-import "../Qaterial" as Qaterial
+import Qaterial 1.0 as Qaterial
 
 Qaterial.RoundButton
 {

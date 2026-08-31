@@ -9,7 +9,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Templates 2.12 as T
 
 // Qaterial
-import "../Qaterial" as Qaterial
+import Qaterial 1.0 as Qaterial
 
 T.Popup
 {

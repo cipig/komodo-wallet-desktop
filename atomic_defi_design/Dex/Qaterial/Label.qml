@@ -9,7 +9,7 @@ import QtQuick.Templates 2.0 as T
 import QtQuick.Controls 2.0
 
 // Qaterial
-import "../Qaterial" as Qaterial
+import Qaterial 1.0 as Qaterial
 
 T.Label
 {

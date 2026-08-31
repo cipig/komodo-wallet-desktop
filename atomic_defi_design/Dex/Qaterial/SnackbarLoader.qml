@@ -8,7 +8,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 
 // Qaterial
-import "../Qaterial" as Qaterial
+import Qaterial 1.0 as Qaterial
 
 /**
  * @brief Manager that creates snack bar dynamically
