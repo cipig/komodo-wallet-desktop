@@ -144,16 +144,79 @@ Item
         {
             id: webEngineView
             backgroundColor: "transparent"
-            // disable caching for better testing
-            //profile: WebEngineProfile {
-            //    storageName: "dev_profile"
-            //    offTheRecord: true
-            //    httpCacheType: WebEngineProfile.NoCache
-            //}
+
             settings.javascriptEnabled: true
             settings.localStorageEnabled: true
             settings.localContentCanAccessRemoteUrls: true
             settings.errorPageEnabled: false
+
+            profile: WebEngineProfile {
+                storageName: "coinpaprika_resilient_profile"
+                httpCacheType: WebEngineProfile.DiskHttpCache
+            }
+
+            userScripts: [
+                WebEngineScript {
+                    name: "RegisterCacheWorker"
+                    injectionPoint: WebEngineScript.DocumentReady
+                    worldId: WebEngineScript.MainWorld
+                    sourceCode: "
+                        if ('serviceWorker' in navigator) {
+                            var workerCode = [
+                                \"const CACHE_NAME = 'coinpaprika-resilient-cache-v1';\",
+                                \"const TIMEOUT_MS = 2000;\",
+                                \"self.addEventListener('install', event => { self.skipWaiting(); });\",
+                                \"self.addEventListener('activate', event => {\",
+                                \"    event.waitUntil(\",
+                                \"        caches.keys().then(cacheNames => {\",
+                                \"            return Promise.all(\",
+                                \"                cacheNames.map(cache => {\",
+                                \"                    if (cache !== CACHE_NAME) {\",
+                                \"                        console.log('[Worker] Purging old cache:', cache);\",
+                                \"                        return caches.delete(cache);\",
+                                \"                    }\",
+                                \"                })\",
+                                \"            );\",
+                                \"        }).then(() => clients.claim())\",
+                                \"    );\",
+                                \"});\",
+                                \"self.addEventListener('fetch', event => {\",
+                                \"    if (event.request.url.includes('coinpaprika.com') || event.request.url.includes('graphsv2')) {\",
+                                \"        event.respondWith(\",
+                                \"            caches.open(CACHE_NAME).then(cache => {\",
+                                \"                return new Promise((resolve, reject) => {\",
+                                \"                    let timeoutId = setTimeout(async () => {\",
+                                \"                        const cachedResponse = await cache.match(event.request);\",
+                                \"                        if (cachedResponse) {\",
+                                \"                            resolve(cachedResponse);\",
+                                \"                            fetch(event.request).then(res => cache.put(event.request, res)).catch(() => {});\",
+                                \"                        }\",
+                                \"                    }, TIMEOUT_MS);\",
+                                \"                    fetch(event.request).then(res => {\",
+                                \"                        clearTimeout(timeoutId);\",
+                                \"                        cache.put(event.request, res.clone());\",
+                                \"                        resolve(res);\",
+                                \"                    }).catch(async (err) => {\",
+                                \"                        clearTimeout(timeoutId);\",
+                                \"                        const cachedResponse = await cache.match(event.request);\",
+                                \"                        cachedResponse ? resolve(cachedResponse) : reject(err);\",
+                                \"                    });\",
+                                \"                });\",
+                                \"            })\",
+                                \"        );\",
+                                \"    }\",
+                                \"});\"
+                            ].join('\\n');
+
+                            var blob = new Blob([workerCode], {type: 'application/javascript'});
+                            navigator.serviceWorker.register(URL.createObjectURL(blob))
+                            .then(function(reg) { console.log('Service Worker Active on Origin:', reg.scope); })
+                            .catch(function(err) { console.log('Service Worker Failed:', err); });
+                        }
+                    "
+                }
+            ]
+
             onJavaScriptConsoleMessage: function(level, message, lineNumber, sourceID)
             {
                 console.log("JS:", message, "line:", lineNumber, "source:", sourceID)
