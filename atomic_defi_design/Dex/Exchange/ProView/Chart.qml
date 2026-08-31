@@ -112,7 +112,7 @@ Item
                     overflow: visible !important;
                   }
                   .highcharts-plot-border {
-                    max-height: 290px !important;
+                    display: none !important;
                   }
                   .highcharts-range-selector-buttons {
                     display: none !important;
@@ -137,6 +137,7 @@ Item
                   }
                   div.coinpaprika-currency-widget > div.cp-widget__footer a {
                     pointer-events: none !important;
+                    cursor: default !important;
                   }
                 </style>
                 <div class="coinpaprika-currency-widget ${night_mode}"
@@ -173,7 +174,7 @@ Item
                         chartRanges.style.position = 'absolute';
                       }
                     }
-                    setTimeout(updatePositions, 500);
+                    setTimeout(updatePositions, 400);
                     window.addEventListener('resize', updatePositions);
                   });
                 </script>

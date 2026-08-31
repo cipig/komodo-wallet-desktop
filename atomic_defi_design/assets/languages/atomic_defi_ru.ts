@@ -3229,11 +3229,6 @@ They will be removed from the orderbook until you log in again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../Dex/Settings/SettingModal.qml" line="574"/>
-        <source>Disable 2FA?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../Dex/Settings/SettingModal.qml" line="575"/>
         <source>Enter your wallet password to confirm</source>
         <translation type="unfinished"></translation>
@@ -3242,16 +3237,6 @@ They will be removed from the orderbook until you log in again.</source>
         <location filename="../../Dex/Settings/SettingModal.qml" line="581"/>
         <source>Type password</source>
         <translation type="unfinished">Введите пароль</translation>
-    </message>
-    <message>
-        <location filename="../../Dex/Settings/SettingModal.qml" line="594"/>
-        <source>2FA status</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../Dex/Settings/SettingModal.qml" line="595"/>
-        <source>2FA disabled successfully</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../Dex/Settings/SettingModal.qml" line="596"/>
@@ -3323,11 +3308,6 @@ They will be removed from the orderbook until you log in again.</source>
         <location filename="../../Dex/Settings/SettingModal.qml" line="457"/>
         <source>Theme</source>
         <translation>Тема</translation>
-    </message>
-    <message>
-        <location filename="../../Dex/Settings/SettingModal.qml" line="558"/>
-        <source>Ask system&apos;s password before sending coins ? (2FA)</source>
-        <translation>Спрашивать системный пароль перед отправкой монет? (2FA)</translation>
     </message>
     <message>
         <location filename="../../Dex/Settings/SettingModal.qml" line="707"/>

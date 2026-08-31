@@ -299,7 +299,6 @@ handle_settings(QSettings& settings)
     create_settings_functor("AutomaticUpdateOrderBot", QVariant(false));
     create_settings_functor("AvailableLang", QStringList{"en", "es", "fr", "de", "tr", "ru"});
     create_settings_functor("CurrentLang", QString("en"));
-    create_settings_functor("2FA", 0);
     create_settings_functor("PirateSyncDate", timestamp);
     create_settings_functor("UseSyncDate", false);
     create_settings_functor("DefaultTradingMode", TradingMode::Pro);

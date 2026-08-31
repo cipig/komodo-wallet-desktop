@@ -503,89 +503,6 @@ Qaterial.Dialog
                                 {}
                             }
 
-                            // Enabled 2FA option. (Disabled on Linux since the feature is not available on this platform yet)
-                            RowLayout
-                            {
-                                enabled: Qt.platform.os !== "linux" // Disable for Linux.
-                                visible: enabled
-                                width: parent.width - 30
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                height: 60
-
-                                DexLabel
-                                {
-                                    Layout.fillWidth: true
-                                    Layout.alignment: Qt.AlignVCenter
-                                    font: DexTypo.subtitle1
-                                    text: qsTr("Ask system's password before sending coins ? (2FA)")
-                                }
-
-                                DexSwitch
-                                {
-                                    checked: parseInt(atomic_settings2.value("2FA")) === 1
-                                    onCheckedChanged:
-                                    {
-                                        if (checked) {
-                                            atomic_settings2.setValue("2FA", 1)
-                                            atomic_settings2.sync()
-                                        }
-                                        else {
-                                            var wallet_name = API.app.wallet_mgr.wallet_default_name
-                                            let dialog = app.getText(
-                                            {
-                                                "title": qsTr("Disable 2FA?"),
-                                                text: qsTr("Enter your wallet password to confirm"),
-                                                standardButtons: Dialog.Yes | Dialog.Cancel,
-                                                closePolicy: Popup.NoAutoClose,
-                                                warning: true,
-                                                iconColor: Dex.CurrentTheme.warningColor,
-                                                isPassword: true,
-                                                placeholderText: qsTr("Type password"),
-                                                yesButtonText: qsTr("Confirm"),
-                                                cancelButtonText: qsTr("Cancel"),
-                                                onRejected: function()
-                                                {
-                                                    checked = true
-                                                },
-                                                onAccepted: function(text)
-                                                {
-                                                    if (API.app.wallet_mgr.confirm_password(wallet_name, text))
-                                                    {
-                                                        app.showDialog(
-                                                        {
-                                                            title: qsTr("2FA status"),
-                                                            text: qsTr("2FA disabled successfully"),
-                                                            yesButtonText: qsTr("Ok"),
-                                                            titleBold: true,
-                                                            showCancelBtn: false,
-                                                            standardButtons: Dialog.Ok
-                                                        })
-                                                        atomic_settings2.setValue("2FA", 0)
-                                                        atomic_settings2.sync()
-                                                    }
-                                                    else
-                                                    {
-                                                        app.showDialog(
-                                                        {
-                                                            title: qsTr("Wrong password!"),
-                                                            text: "%1 ".arg(wallet_name) + qsTr("Wallet password is incorrect"),
-                                                            warning: true,
-                                                            standardButtons: Dialog.Ok,
-                                                            titleBold: true,
-                                                            showCancelBtn: false,
-                                                            yesButtonText: qsTr("Ok"),
-                                                        })
-                                                        checked = true
-                                                    }
-                                                    dialog.close()
-                                                    dialog.destroy()
-                                                }
-                                            });
-                                        }
-                                    }
-                                }
-                            }
-
                             SettingsButton
                             {
                                 width: parent.width - 30
@@ -628,7 +545,6 @@ Qaterial.Dialog
                                     onCheckedChanged: API.app.settings_pg.static_rpcpass_enabled = checked
                                 }
                             }
-
                         }
                     }
 

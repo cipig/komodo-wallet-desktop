@@ -2487,28 +2487,12 @@ They will be removed from the orderbook until you log in again.</source>
         <source>Confirm</source>
     </message>
     <message>
-        <location filename="../../Dex/Settings/SettingModal.qml" line="444"/>
-        <source>Ask system&apos;s password before sending coins ? (2FA)</source>
-    </message>
-    <message>
-        <location filename="../../Dex/Settings/SettingModal.qml" line="460"/>
-        <source>Disable 2FA?</source>
-    </message>
-    <message>
         <location filename="../../Dex/Settings/SettingModal.qml" line="461"/>
         <source>Enter your wallet password to confirm</source>
     </message>
     <message>
         <location filename="../../Dex/Settings/SettingModal.qml" line="467"/>
         <source>Type password</source>
-    </message>
-    <message>
-        <location filename="../../Dex/Settings/SettingModal.qml" line="480"/>
-        <source>2FA status</source>
-    </message>
-    <message>
-        <location filename="../../Dex/Settings/SettingModal.qml" line="481"/>
-        <source>2FA disabled successfully</source>
     </message>
     <message>
         <location filename="../../Dex/Settings/SettingModal.qml" line="482"/>

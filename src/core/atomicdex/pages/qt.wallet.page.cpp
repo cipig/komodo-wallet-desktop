@@ -7,7 +7,6 @@
 //! Deps
 #include <QrCode.hpp>
 #include <antara/app/net/http.code.hpp>
-#include <antara/gaming/core/security.authentification.hpp>
 
 //! Project Headers
 #include "atomicdex/api/faucet/faucet.hpp"
@@ -843,20 +842,7 @@ namespace atomic_dex
     void
     wallet_page::broadcast(const QString& tx_hex, bool is_claiming, bool is_max, const QString& amount)
     {
-#if defined(__APPLE__) || defined(WIN32) || defined(_WIN32)
-        QSettings& settings = this->entity_registry_.ctx<QSettings>();
-        if (settings.value("2FA").toBool())
-        {
-            antara::gaming::core::evaluate_authentication(
-                "Password to send funds is required", [=](bool is_auth) { broadcast_on_auth_finished(is_auth, tx_hex, is_claiming, is_max, amount); });
-        }
-        else
-        {
-            broadcast_on_auth_finished(true, tx_hex, is_claiming, is_max, amount);
-        }
-#else
         broadcast_on_auth_finished(true, tx_hex, is_claiming, is_max, amount);
-#endif
     }
 
     void

@@ -3256,16 +3256,6 @@ Se eliminarán del libro de pedidos hasta que vuelva a iniciar sesión.</transla
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../Dex/Settings/SettingModal.qml" line="558"/>
-        <source>Ask system&apos;s password before sending coins ? (2FA)</source>
-        <translation>¿Preguntar la contraseña del sistema antes de enviar monedas? (2FA)</translation>
-    </message>
-    <message>
-        <location filename="../../Dex/Settings/SettingModal.qml" line="574"/>
-        <source>Disable 2FA?</source>
-        <translation>¿Deshabilitar 2FA?</translation>
-    </message>
-    <message>
         <location filename="../../Dex/Settings/SettingModal.qml" line="575"/>
         <source>Enter your wallet password to confirm</source>
         <translation>Ingrese la contraseña de su billetera para confirmar</translation>
@@ -3274,16 +3264,6 @@ Se eliminarán del libro de pedidos hasta que vuelva a iniciar sesión.</transla
         <location filename="../../Dex/Settings/SettingModal.qml" line="581"/>
         <source>Type password</source>
         <translation>Escriba la contraseña</translation>
-    </message>
-    <message>
-        <location filename="../../Dex/Settings/SettingModal.qml" line="594"/>
-        <source>2FA status</source>
-        <translation>Estado 2FA</translation>
-    </message>
-    <message>
-        <location filename="../../Dex/Settings/SettingModal.qml" line="595"/>
-        <source>2FA disabled successfully</source>
-        <translation>2FA deshabilitado correctamente</translation>
     </message>
     <message>
         <location filename="../../Dex/Settings/SettingModal.qml" line="596"/>
