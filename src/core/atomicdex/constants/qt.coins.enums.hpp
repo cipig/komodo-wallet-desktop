@@ -56,10 +56,11 @@ namespace atomic_dex
             GRC20           = 22,
             Gnosis          = 23,
             SIA             = 24,
-            Disabled        = 25,
-            Invalid         = 26,
-            All             = 27,
-            Size            = 28
+            Bittensor       = 25,
+            Disabled        = 26,
+            Invalid         = 27,
+            All             = 28,
+            Size            = 29
         };
 
         Q_ENUM(CoinTypeEnum)

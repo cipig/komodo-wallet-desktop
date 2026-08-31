@@ -35,7 +35,7 @@ ColumnLayout
             font.weight: Font.DemiBold
             font.pixelSize: 16
             font.family: 'Lato'
-            text_value: General.getFiatText(total_amount, right_ticker).replace(General.cex_icon, "")
+            text_value: General.getFiatText(total_amount, right_ticker)
         }
     }
 

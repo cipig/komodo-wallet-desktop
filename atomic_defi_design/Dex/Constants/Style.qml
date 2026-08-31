@@ -203,6 +203,7 @@ QtObject {
             case 'Arbitrum':          return dark_theme ? colorCoinDark["ETH-ARB20"] : colorCoin["ETH-ARB20"]
             case 'Base':              return dark_theme ? colorCoinDark["ETH-BASE"] : colorCoin["ETH-BASE"]
             case 'Gnosis':            return dark_theme ? colorCoinDark["XDAI"] : colorCoin["XDAI"]
+            case 'Bittensor':         return dark_theme ? colorCoinDark["TAO"] : colorCoin["TAO"]
             case 'ERC-20':            return dark_theme ? colorCoinDark["ETH"] : colorCoin["ETH"]
             case 'GRC-20':            return dark_theme ? colorCoinDark["GLEEC"] : colorCoin["GLEEC"]
             case 'TRC-20':            return dark_theme ? colorCoinDark["TRX"] : colorCoin["TRX"]
@@ -247,6 +248,7 @@ QtObject {
             case 'Arbitrum':          return dark_theme ? colorCoinDark["ETH-ARB20"] : colorCoin["ETH-ARB20"]
             case 'Base':              return dark_theme ? colorCoinDark["ETH-BASE"] : colorCoin["ETH-BASE"]
             case 'Gnosis':            return dark_theme ? colorCoinDark["XDAI"] : colorCoin["XDAI"]
+            case 'Bittensor':         return dark_theme ? colorCoinDark["TAO"] : colorCoin["TAO"]
             case 'ERC-20':            return dark_theme ? colorCoinDark["ETH"] : colorCoin["ETH"]
             case 'GRC-20':            return dark_theme ? colorCoinDark["GLEEC"] : colorCoin["GLEEC"]
             case 'TRC-20':            return dark_theme ? colorCoinDark["TRX"] : colorCoin["TRX"]
@@ -303,6 +305,7 @@ QtObject {
                                           "POL": "#804EE1",
                                           "ONE": "#00BEEE",
                                           "SBCH": "#74dd54",
+                                          "TAO": "#000000",
                                           "TRX": "#EF002F",
                                           "XDAI": "#00bad3",
                                           "UTXO": "#349d5f",
@@ -331,6 +334,7 @@ QtObject {
                                           "POL": "#804EE1",
                                           "ONE": "#00BEEE",
                                           "SBCH": "#74dd54",
+                                          "TAO": "#000000",
                                           "TRX": "#EF002F",
                                           "XDAI": "#00bad3",
                                           "UTXO": "#349d5f",

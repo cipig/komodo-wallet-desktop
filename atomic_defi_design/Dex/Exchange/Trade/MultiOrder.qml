@@ -5,10 +5,10 @@ import "../../Components"
 import "../../Constants"
 
 InnerBackground {
+
     DefaultFlickable {
         id: list
         anchors.fill: parent
-
         contentWidth: width
         contentHeight: column.height
 
@@ -24,12 +24,9 @@ InnerBackground {
                     height: 60
 
                     readonly property bool is_parent_coin: model.ticker === rel_ticker
-
                     readonly property string base: sell_mode ? left_ticker : model.ticker
                     readonly property string rel: sell_mode ? model.ticker : left_ticker
-
                     readonly property string price: model.multi_ticker_price
-
                     readonly property double volume: model.multi_ticker_receive_amount
 
                     function resetData() {
@@ -80,7 +77,6 @@ InnerBackground {
                             return
                         }
 
-
                         let params = getData()
                         params.base = left_ticker
                         params.rel = model.ticker
@@ -92,9 +88,7 @@ InnerBackground {
                         params.rel_nota = ""
                         params.rel_confs = ""
                         params.trade_info = model.multi_ticker_fees_info
-
                         params.rel_volume = "" + multi_order_line.volume
-
                         setData(params)
                     }
 
@@ -158,7 +152,6 @@ InnerBackground {
                             if(model.multi_ticker_price !== field.text)
                                 model.multi_ticker_price = field.text
                         }
-
                         field.text: price
                         field.enabled: !is_parent_coin
                     }
@@ -173,7 +166,6 @@ InnerBackground {
                         checked: is_parent_coin
                         onCheckedChanged: {
                             model.is_multi_ticker_currently_enabled = checked
-
                             if(!checked) resetData()
                         }
                     }

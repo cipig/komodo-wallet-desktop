@@ -66,6 +66,10 @@ namespace
         {
             return CoinType::PLG20;
         }
+        if (coin_type == "Bittensor")
+        {
+            return CoinType::TAO;
+        }
         if (coin_type == "Optimism")
         {
             return CoinType::Optimism;
@@ -313,6 +317,11 @@ namespace atomic_dex
         case CoinType::PLG20:
             cfg.has_parent_fees_ticker = true;
             cfg.fees_ticker            = cfg.is_testnet.value_or(false) ? "POLTEST" : "POL";
+            cfg.is_erc_family          = true;
+            break;
+        case CoinType::Bittensor:
+            cfg.has_parent_fees_ticker = true;
+            cfg.fees_ticker            = "TAO";
             cfg.is_erc_family          = true;
             break;
         case CoinType::Optimism:

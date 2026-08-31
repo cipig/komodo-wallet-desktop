@@ -111,7 +111,13 @@ Item
                     max-height: 405px !important;
                     overflow: visible !important;
                   }
-                  .highcharts-plot-border {
+                  .highcharts-grid,
+                  .highcharts-xaxis-grid,
+                  .highcharts-yaxis-grid {
+                    stroke: none !important;
+                  }
+                  .highcharts-plot-background {
+                    fill: none !important;
                     stroke: none !important;
                   }
                   .highcharts-range-selector-buttons {

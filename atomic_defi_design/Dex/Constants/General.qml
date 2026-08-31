@@ -227,6 +227,8 @@ QtObject {
                     return "https://basescan.org/token/" + coinContractAddress(ticker)
                 case "XDAI":
                     return "https://gnosisscan.io/token/" + coinContractAddress(ticker)
+                case "TAO":
+                    return "https://evm.tao.app/token/" + coinContractAddress(ticker)
                 case "ONE":
                     return "https://explorer.harmony.one/address/" + coinContractAddress(ticker)
                 case "MOVR":
@@ -772,10 +774,11 @@ QtObject {
             || current_ticker_infos.type == "Gnosis"
             || current_ticker_infos.type == "Base"
             || current_ticker_infos.type == "Arbitrum"
+            || current_ticker_infos.type == "Bittensor"
     }
 
     function isParentCoin(ticker) {
-        return ["ETH", "ETH-ARB20", "ETH-BASE", "POL", "AVAX", "QTUM", "BNB", "ONE", "KCS", "TRX", "GLEEC", "XDAI"].includes(ticker)
+        return ["ETH", "ETH-ARB20", "ETH-BASE", "POL", "AVAX", "QTUM", "BNB", "ONE", "KCS", "TRX", "GLEEC", "XDAI", "TAO"].includes(ticker)
     }
 
     function getFeesTicker(coin_info) {
@@ -793,7 +796,7 @@ QtObject {
         let fiat_from_amount = API.app.get_fiat_from_amount(ticker, v)
         let current_fiat = API.app.settings_pg.current_fiat
         let formatted_fiat = General.formatFiat('', v === '' ? 0 : fiat_from_amount, current_fiat)
-        return formatted_fiat + (has_info_icon ? " " +  General.cex_icon : "")
+        return formatted_fiat + (has_info_icon ? " " : "")
     }
 
     function hasParentCoinFees(trade_info) {

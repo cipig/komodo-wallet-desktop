@@ -2282,6 +2282,9 @@ namespace atomic_dex
             case CoinTypeGadget::Gnosis:
                 out = construct_url_functor("XDAI", "XDAI", "xdai_tx_history", "gno_tx_history", ticker, address);
                 break;
+            case CoinTypeGadget::Bittensor:
+                out = construct_url_functor("TAO", "TAO", "tao_tx_history", "tao_tx_history", ticker, address);
+                break;
             case CoinTypeGadget::Optimism:
                 out = construct_url_functor("ETH-OPT20", "ETHK-OPT20", "opt_tx_history", "opt20_tx_history", ticker, address);
                 break;
