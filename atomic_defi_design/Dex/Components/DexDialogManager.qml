@@ -159,6 +159,7 @@ Popup {
                             }
 
                         }
+
                         Qaterial.AppBarButton {
                             visible: dialog.isPassword
                             opacity: .8
