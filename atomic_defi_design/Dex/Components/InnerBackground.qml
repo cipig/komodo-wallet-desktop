@@ -1,6 +1,5 @@
 import QtQuick 2.15
 import QtGraphicalEffects 1.15
-
 import Dex.Themes 1.0 as Dex
 
 DefaultRectangle
@@ -16,9 +15,7 @@ DefaultRectangle
     Loader
     {
         id: _innerSpace
-
         anchors.centerIn: parent
-
         layer.enabled: true
 
         layer.effect: OpacityMask

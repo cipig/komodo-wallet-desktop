@@ -1,7 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
-import QtQuick.Controls.impl 2.15
 import "../Qaterial" as Qaterial
 import "../Constants" as Constants
 import App 1.0
@@ -74,11 +73,9 @@ ComboBox
     {
         id: combo_popup
         readonly property double max_height: 450
-
         width: control.width
         implicitHeight: Math.min(contentLayout.implicitHeight + padding * 2, max_height)
         height: Math.min(contentItem.implicitHeight, max_height) + 20
-
         padding: 1
 
         contentItem: ColumnLayout
@@ -160,7 +157,6 @@ ComboBox
                     anchors.bottomMargin: 10
                     anchors.rightMargin: 2
                     clip: true
-
                     visibleBackground: true
 
                     highlight: DefaultRectangle
@@ -172,6 +168,7 @@ ComboBox
                     {
                         width: popup_list_view.width
                         highlighted: control.highlightedIndex === index
+
                         contentItem: DexLabel
                         {
                             text_value: "<b><font color='" + Style.getCoinColor(ticker) + "'>" + ticker + "</font></b>" + "    %1".arg(General.coinName(ticker)) 
@@ -197,7 +194,6 @@ ComboBox
                     }
                 }
             }
-
         }
 
         background: DefaultRectangle

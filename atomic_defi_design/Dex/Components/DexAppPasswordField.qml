@@ -1,6 +1,5 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
-import QtQuick.Window 2.15
 import "../Qaterial" as Qaterial
 import App 1.0
 import Dex.Themes 1.0 as Dex
@@ -41,8 +40,8 @@ DexAppTextField
         radius: 18
         color: Dex.CurrentTheme.inputLeftIconBackgroundColor
         border.width: _inputPassword.focus ? 2 : 0
-
         anchors.verticalCenter: parent.verticalCenter
+
         Qaterial.ColorIcon
         {
             anchors.centerIn: parent

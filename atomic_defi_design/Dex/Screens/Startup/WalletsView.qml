@@ -2,7 +2,6 @@ import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
-import QtQuick.Window 2.15
 import "../../Qaterial" as Qaterial
 import "../../Components"
 import "../../Constants"
@@ -100,7 +99,6 @@ SetupPage
                 Layout.alignment: Qt.AlignHCenter
             }
 
-
             // Wallets List
             DefaultRectangle
             {
@@ -129,7 +127,6 @@ SetupPage
 
                     Item { Layout.fillWidth: true }
                 }
-
 
                 DefaultListView
                 {
@@ -197,7 +194,6 @@ SetupPage
                             {
                                 anchors.left: parent.left
                                 anchors.leftMargin: 40
-
                                 text_value: model.modelData
                                 anchors.verticalCenter: parent.verticalCenter
                                 font.pixelSize: Style.textSizeSmall2

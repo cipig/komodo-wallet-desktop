@@ -1,20 +1,15 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
-
-import QtGraphicalEffects 1.15
 import "../Components"
 import "../Constants"
 import "../Screens"
 import App 1.0
 
-
 Grid
 {
     Layout.alignment: Qt.AlignVCenter
-
     clip: true
-
     columns: 8
     spacing: 10
 

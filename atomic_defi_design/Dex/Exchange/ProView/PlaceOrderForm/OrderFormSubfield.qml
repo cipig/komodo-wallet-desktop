@@ -1,7 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
-import QtGraphicalEffects 1.15
 import "../../../Constants" as Dex
 import "../../../Components"
 import App 1.0
@@ -171,7 +170,6 @@ RowLayout
         {
             id: _right_tooltip
             visible: _right_btn.containsMouse && right_tooltip_text != ""
-
 
             contentItem: FloatingBackground
             {

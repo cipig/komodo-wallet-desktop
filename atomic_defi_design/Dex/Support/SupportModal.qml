@@ -2,8 +2,6 @@ import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
-import QtQml 2.15
-import QtQuick.Window 2.15
 import "../Qaterial" as Qaterial
 import "../Components"
 import "../Constants"
@@ -57,6 +55,7 @@ Qaterial.Dialog
             Layout.topMargin: 20
             Layout.bottomMargin: 20
             Layout.leftMargin: 42
+
             DexLabel
             {
                 id: faq_label
@@ -70,7 +69,6 @@ Qaterial.Dialog
         DefaultFlickable
         {
             id: faq_flickable
-
             width: support_modal.width - 100
             height: support_modal.height - 220
             contentWidth: width - 20
