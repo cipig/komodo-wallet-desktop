@@ -708,6 +708,7 @@ namespace atomic_dex::kdf
         catch (const std::exception& error)
         {
             SPDLOG_ERROR("exception in async_process_rpc_get for rpc_command {}, url {}, endpoint {}: {}", rpc_command, url, TO_STD_STR(client->base_uri().to_string()), error.what());
+            throw;
         }
     }
 
