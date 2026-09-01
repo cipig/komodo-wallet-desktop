@@ -2335,79 +2335,80 @@ namespace atomic_dex
         std::string url = retrieve_api_functor(ticker, address(ticker, ec));
         kdf::async_process_rpc_get(kdf::g_etherscan_proxy_http_client, "tx_history", url)
             .then(
-                [this, ticker](const web::http::http_response& resp)
+                [this, ticker](async::task<web::http::http_response> previous_task)
                 {
-                    auto answer = m_kdf_client.rpc_process_answer<kdf::tx_history_answer>(resp, "tx_history");
-
-                    if (answer.rpc_result_code != 200)
+                    try
                     {
-                        // SPDLOG_ERROR("answer.rpc_result_code is {} in kdf::async_process_rpc_get with answer.raw_result: {}", answer.rpc_result_code, answer.raw_result);
-                        // answer.rpc_result_code is -1 in kdf::async_process_rpc_get with answer.raw_result: [json.exception.parse_error.101] parse error at line 1, column 1: syntax error while parsing value - invalid literal; last read: 'N'
-                        this->dispatcher_.trigger<tx_fetch_finished>(true, ticker);
-                    }
-                    else if (answer.rpc_result_code not_eq -1 and answer.result.has_value())
-                    {
-                        t_tx_state state;
-                        state.state             = "Finished";
-                        state.current_block     = 0;
-                        state.blocks_left       = 0;
-                        state.transactions_left = 0;
+                        auto answer = m_kdf_client.rpc_process_answer<kdf::tx_history_answer>(previous_task.get(), "tx_history");
 
-                        if (answer.result.value().sync_status.additional_info.has_value())
+                        if (answer.rpc_result_code != 200)
                         {
-                            if (answer.result.value().sync_status.additional_info.value().erc_infos.has_value())
-                            {
-                                state.blocks_left = answer.result.value().sync_status.additional_info.value().erc_infos.value().blocks_left;
-                            }
-                            if (answer.result.value().sync_status.additional_info.value().regular_infos.has_value())
-                            {
-                                state.transactions_left = answer.result.value().sync_status.additional_info.value().regular_infos.value().transactions_left;
-                            }
+                            // SPDLOG_ERROR("answer.rpc_result_code is {} in kdf::async_process_rpc_get with answer.raw_result: {}", answer.rpc_result_code, answer.raw_result);
+                            // answer.rpc_result_code is -1 in kdf::async_process_rpc_get with answer.raw_result: [json.exception.parse_error.101] parse error at line 1, column 1: syntax error while parsing value - invalid literal; last read: 'N'
+                            this->dispatcher_.trigger<tx_fetch_finished>(true, ticker);
                         }
+                        else if (answer.rpc_result_code not_eq -1 and answer.result.has_value())
+                        {
+                            t_tx_state state;
+                            state.state             = "Finished";
+                            state.current_block     = 0;
+                            state.blocks_left       = 0;
+                            state.transactions_left = 0;
 
-                        t_transactions out;
-                        out.reserve(answer.result.value().transactions.size());
-
-                        const auto& transactions = answer.result.value().transactions;
-                        std::for_each(
-                            rbegin(transactions), rend(transactions),
-                            [&out, this](auto&& current)
+                            if (answer.result.value().sync_status.additional_info.has_value())
                             {
-                                tx_infos current_info{
-                                    .am_i_sender       = current.my_balance_change[0] == '-',
-                                    .confirmations     = current.confirmations.has_value() ? current.confirmations.value() : 0,
-                                    .from              = current.from,
-                                    .to                = current.to,
-                                    .date              = current.timestamp_as_date,
-                                    .timestamp         = current.timestamp,
-                                    .tx_hash           = current.tx_hash,
-                                    .fees              = current.fee_details.normal_fees.has_value() ? current.fee_details.normal_fees.value().amount
-                                                                                                     : current.fee_details.qrc_fees.has_value()
-                                                                                                     ? current.fee_details.qrc_fees.value().miner_fee
-                                                                                                     : current.fee_details.erc_fees.value().total_fee,
-                                    .my_balance_change = current.my_balance_change,
-                                    .total_amount      = current.total_amount,
-                                    .block_height      = current.block_height,
-                                    .ec                = dextop_error::success,
-                                };
+                                if (answer.result.value().sync_status.additional_info.value().erc_infos.has_value())
+                                {
+                                    state.blocks_left = answer.result.value().sync_status.additional_info.value().erc_infos.value().blocks_left;
+                                }
+                                if (answer.result.value().sync_status.additional_info.value().regular_infos.has_value())
+                                {
+                                    state.transactions_left = answer.result.value().sync_status.additional_info.value().regular_infos.value().transactions_left;
+                                }
+                            }
 
-                                const auto& wallet_manager    = this->m_system_manager.get_system<qt_wallet_manager>();
-                                current_info.transaction_note = wallet_manager.retrieve_transactions_notes(current_info.tx_hash);
-                                out.push_back(std::move(current_info));
-                            });
+                            t_transactions out;
+                            out.reserve(answer.result.value().transactions.size());
 
-                        //! History
-                        m_tx_informations->insert_or_assign(ticker, std::make_pair(out, state));
+                            const auto& transactions = answer.result.value().transactions;
+                            std::for_each(
+                                rbegin(transactions), rend(transactions),
+                                [&out, this](auto&& current)
+                                {
+                                    tx_infos current_info{
+                                        .am_i_sender       = current.my_balance_change[0] == '-',
+                                        .confirmations     = current.confirmations.has_value() ? current.confirmations.value() : 0,
+                                        .from              = current.from,
+                                        .to                = current.to,
+                                        .date              = current.timestamp_as_date,
+                                        .timestamp         = current.timestamp,
+                                        .tx_hash           = current.tx_hash,
+                                        .fees              = current.fee_details.normal_fees.has_value() ? current.fee_details.normal_fees.value().amount
+                                                                                                         : current.fee_details.qrc_fees.has_value()
+                                                                                                         ? current.fee_details.qrc_fees.value().miner_fee
+                                                                                                         : current.fee_details.erc_fees.value().total_fee,
+                                        .my_balance_change = current.my_balance_change,
+                                        .total_amount      = current.total_amount,
+                                        .block_height      = current.block_height,
+                                        .ec                = dextop_error::success,
+                                    };
 
-                        //! Dispatch
-                        this->dispatcher_.trigger<tx_fetch_finished>(false, ticker);
+                                    const auto& wallet_manager    = this->m_system_manager.get_system<qt_wallet_manager>();
+                                    current_info.transaction_note = wallet_manager.retrieve_transactions_notes(current_info.tx_hash);
+                                    out.push_back(std::move(current_info));
+                                });
+
+                            //! History
+                            m_tx_informations->insert_or_assign(ticker, std::make_pair(out, state));
+
+                            //! Dispatch
+                            this->dispatcher_.trigger<tx_fetch_finished>(false, ticker);
+                        }
                     }
-                })
-
-            .then(
-                [this](pplx::task<void> previous_task)
-                {
-                    this->handle_exception_pplx_task(previous_task, "process_tx_tokenscan", {});
+                    catch (...)
+                    {
+                        this->handle_exception_async_task(std::current_exception(), "process_tx_tokenscan", {});
+                    }
                 });
     }
 
@@ -2738,19 +2739,4 @@ namespace atomic_dex
         }
     }
 
-    void
-    kdf_service::handle_exception_pplx_task(pplx::task<void> previous_task, const std::string& from, nlohmann::json request)
-    {
-        try
-        {
-            previous_task.wait();
-        }
-        catch (const std::exception& e)
-        {
-            for (auto&& cur: request) cur["userpass"] = "";
-            SPDLOG_ERROR("exception in kdf_service::handle_exception_pplx_task from {} with request {} and error: {}", from, request.dump(4), e.what());
-            //this->dispatcher_.trigger<fatal_notification>("connection dropped");
-            using namespace std::chrono; std::this_thread::sleep_for(std::chrono::milliseconds(300));
-        }
-    }
 } // namespace atomic_dex

@@ -29,17 +29,19 @@ namespace
 
 namespace atomic_dex::faucet::api
 {
-    pplx::task<web::http::http_response>
+    async::task<web::http::http_response>
     claim(const claim_request& claim_req)
     {
-        web::http::http_request http_request;
-        web::uri_builder        uri_builder;
+        return async::spawn([claim_req]() {
+            web::http::http_request http_request;
+            web::uri_builder        uri_builder;
 
-        uri_builder.append_path(FROM_STD_STR(claim_req.coin_name));
-        uri_builder.append_path(FROM_STD_STR(claim_req.wallet_address));
-        http_request.set_request_uri(uri_builder.to_uri());
-        http_request.set_method(web::http::methods::GET);
-        return g_faucet_api_client->request(http_request);
+            uri_builder.append_path(FROM_STD_STR(claim_req.coin_name));
+            uri_builder.append_path(FROM_STD_STR(claim_req.wallet_address));
+            http_request.set_request_uri(uri_builder.to_uri());
+            http_request.set_method(web::http::methods::GET);
+            return g_faucet_api_client->request(http_request).get();
+        });
     }
 
     claim_result

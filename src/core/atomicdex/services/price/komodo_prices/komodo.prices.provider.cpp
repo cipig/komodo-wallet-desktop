@@ -30,35 +30,30 @@ namespace atomic_dex
     void
     komodo_prices_provider::process_update(bool fallback)
     {
-        auto answer_functor = [this, fallback](web::http::http_response resp)
-        {
-            std::string body = TO_STD_STR(resp.extract_string(true).get());
-            if (resp.status_code() == 200)
-            {
-                nlohmann::json    j = nlohmann::json::parse(body);
-                t_market_registry answer;
-                answer = j.get<t_market_registry>();
-                {
-                    std::unique_lock lock(m_market_mutex);
-                    m_market_registry = std::move(answer);
-                }
-            }
-            else
-            {
-                SPDLOG_ERROR("resp.status_code is {} in komodo_prices_provider::process_update and body: {}", resp.status_code(), body);
-                if (!fallback)
-                {
-                    process_update(true);
-                }
-            }
-            dispatcher_.trigger<fiat_rate_updated>("");
-        };
-
-        auto error_functor = [this, fallback](pplx::task<void> previous_task)
-        {
+        atomic_dex::komodo_prices::api::async_market_infos(fallback).then([this, fallback](async::task<web::http::http_response> previous_task) {
             try
             {
-                previous_task.wait();
+                auto resp        = previous_task.get();
+                auto body = TO_STD_STR(resp.extract_string(true).get());
+                if (resp.status_code() == 200)
+                {
+                    nlohmann::json    j = nlohmann::json::parse(body);
+                    t_market_registry answer;
+                    answer = j.get<t_market_registry>();
+                    {
+                        std::unique_lock lock(m_market_mutex);
+                        m_market_registry = std::move(answer);
+                    }
+                }
+                else
+                {
+                    SPDLOG_ERROR("resp.status_code is {} in komodo_prices_provider::process_update and body: {}", resp.status_code(), body);
+                    if (!fallback)
+                    {
+                        process_update(true);
+                    }
+                }
+                dispatcher_.trigger<fiat_rate_updated>("");
             }
             catch (const std::exception& e)
             {
@@ -68,10 +63,8 @@ namespace atomic_dex
                     process_update(true);
                 }
                 dispatcher_.trigger<fiat_rate_updated>("");
-            };
-        };
-
-        atomic_dex::komodo_prices::api::async_market_infos(fallback).then(answer_functor).then(error_functor);
+            }
+        });
     }
 } // namespace atomic_dex
 

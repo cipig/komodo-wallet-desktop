@@ -692,24 +692,26 @@ namespace atomic_dex::kdf
         return access_rpc_password();
     }
 
-    pplx::task<web::http::http_response>
+    async::task<web::http::http_response>
     async_process_rpc_get(t_http_client_ptr& client, const std::string rpc_command, const std::string& url)
     {
-        try
-        {
-            web::http::http_request req;
-            req.set_method(web::http::methods::GET);
-            if (not url.empty())
+        return async::spawn([&client, rpc_command, url]() {
+            try
             {
-                req.set_request_uri(FROM_STD_STR(url));
+                web::http::http_request req;
+                req.set_method(web::http::methods::GET);
+                if (not url.empty())
+                {
+                    req.set_request_uri(FROM_STD_STR(url));
+                }
+                return client->request(req).get();
             }
-            return client->request(req);
-        }
-        catch (const std::exception& error)
-        {
-            SPDLOG_ERROR("exception in async_process_rpc_get for rpc_command {}, url {}, endpoint {}: {}", rpc_command, url, TO_STD_STR(client->base_uri().to_string()), error.what());
-            throw;
-        }
+            catch (const std::exception& error)
+            {
+                SPDLOG_ERROR("exception in async_process_rpc_get for rpc_command {}, url {}, endpoint {}: {}", rpc_command, url, TO_STD_STR(client->base_uri().to_string()), error.what());
+                throw;
+            }
+        });
     }
 
     template <typename RpcReturnType>

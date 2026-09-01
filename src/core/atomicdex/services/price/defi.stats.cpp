@@ -47,22 +47,24 @@ namespace
     t_http_client_ptr g_defi_stats_client = std::make_unique<web::http::client::http_client>(FROM_STD_STR("https://defistats.gleec.com/"), g_defi_stats_cfg);
     pplx::cancellation_token_source d_token_source;
 
-    pplx::task<web::http::http_response>
+    async::task<web::http::http_response>
     async_fetch_defi_stats_volumes()
     {
-        try
-        {
-            web::http::http_request req;
-            req.set_method(web::http::methods::GET);
-            req.set_request_uri(FROM_STD_STR("api/v3/pairs/volumes_24hr"));
-            //SPDLOG_INFO("defi_stats req: {}", TO_STD_STR(req.to_string()));
-            return g_defi_stats_client->request(req, d_token_source.get_token());
-        }
-        catch (const std::exception& error)
-        {
-            SPDLOG_ERROR("exception in async_fetch_defi_stats_volumes: {}", error.what());
-            throw;
-        }
+        return async::spawn([]() {
+            try
+            {
+                web::http::http_request req;
+                req.set_method(web::http::methods::GET);
+                req.set_request_uri(FROM_STD_STR("api/v3/pairs/volumes_24hr"));
+                //SPDLOG_INFO("defi_stats req: {}", TO_STD_STR(req.to_string()));
+                return g_defi_stats_client->request(req, d_token_source.get_token()).get();
+            }
+            catch (const std::exception& error)
+            {
+                SPDLOG_ERROR("exception in async_fetch_defi_stats_volumes: {}", error.what());
+                throw;
+            }
+        });
     }
 
     nlohmann::json
@@ -108,24 +110,20 @@ namespace atomic_dex
     void
     global_defi_stats_service::process_update()
     {
-        auto error_functor = [](pplx::task<void> previous_task)
-        {
-            try
-            {
-                previous_task.wait();
-            }
-            catch (const std::exception& e)
-            {
-                SPDLOG_ERROR("exception in global_defi_stats_service::process_update: {}", e.what());
-            };
-        };
         async_fetch_defi_stats_volumes()
             .then(
-                [this](web::http::http_response resp)
+                [this](async::task<web::http::http_response> previous_task)
                 {
-                    this->m_defi_stats_volumes = process_fetch_defi_stats_volumes_answer(resp);
+                    try
+                    {
+                        this->m_defi_stats_volumes = process_fetch_defi_stats_volumes_answer(previous_task.get());
+                    }
+                    catch (const std::exception& e)
+                    {
+                        SPDLOG_ERROR("exception in global_defi_stats_service::process_update: {}", e.what());
+                    }
                 })
-            .then(error_functor);
+            ;
     }
 
     std::string
