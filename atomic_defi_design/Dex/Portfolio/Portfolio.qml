@@ -1,7 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
-import QtWebEngine 1.10
 import "../Qaterial" as Qaterial
 import ModelHelper 0.1
 import "../Components"
@@ -9,7 +8,6 @@ import "../Constants" as Constants
 import App 1.0
 import Dex.Themes 1.0 as Dex
 
-// Portfolio
 Item {
     id: portfolio
     Layout.fillWidth: true

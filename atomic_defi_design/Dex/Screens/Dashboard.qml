@@ -1,7 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
-import QtGraphicalEffects 1.15
 import QtWebEngine 1.10
 import "../Components"
 import "../Constants"
@@ -149,11 +148,6 @@ Item
             settings.localStorageEnabled: true
             settings.localContentCanAccessRemoteUrls: true
             settings.errorPageEnabled: false
-
-            profile: WebEngineProfile {
-                storageName: "coinpaprika_resilient_profile"
-                httpCacheType: WebEngineProfile.DiskHttpCache
-            }
 
             onJavaScriptConsoleMessage: function(level, message, lineNumber, sourceID)
             {

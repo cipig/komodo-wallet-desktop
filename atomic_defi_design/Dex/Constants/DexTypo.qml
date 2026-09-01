@@ -1,29 +1,11 @@
 pragma Singleton
 
 import QtQuick 2.15
-import QtQuick.Layouts 1.15
-import QtQuick.Controls 2.15
-import QtQuick.Window 2.15
 
 QtObject {
     id: _font
 
     property real fontDensity: 1.0
-
-    property real languageDensity: {
-        switch (General.getLanguage()) {
-            case "en":
-                return 0.99999
-            case "fr":
-                return 0.99999
-            case "tr":
-                return 0.99999
-            case "ru":
-                return 0.99999
-            default:
-                return 0.99999
-        }
-    }
     property string fontFamily: "Ubuntu"
 
     property font head1: Qt.font({
@@ -162,13 +144,13 @@ QtObject {
         italic: true
     })
     property font inputFieldFont: Qt.font({
-        pixelSize: (16 * DexTypo.fontDensity) * (Screen.pixelDensity / 160),
+        pixelSize: 16 * fontDensity,
         letterSpacing: 0.5,
-        family: DexTypo.fontFamily,
+        family: fontFamily,
         weight: Font.Normal
     })
     property font inputFieldSuffixFont: Qt.font({
-        pixelSize: (14 * DexTypo.fontDensity) * (Screen.pixelDensity / 140),
+        pixelSize: 16 * fontDensity,
         letterSpacing: 0.1,
         family: fontFamily,
         weight: Font.Medium

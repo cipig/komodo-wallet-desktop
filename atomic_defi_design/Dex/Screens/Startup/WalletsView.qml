@@ -11,7 +11,6 @@ import Dex.Themes 1.0 as Dex
 
 SetupPage
 {
-    // Override
     id: _setup
     property var wallets: API.app.wallet_mgr.get_wallets()
     readonly property int wallet_count: API.app.wallet_mgr.get_wallets().length
@@ -32,6 +31,7 @@ SetupPage
         RowLayout
         {
             Layout.fillWidth: true
+
             DexLabel
             {
                 font: DexTypo.head6
@@ -103,9 +103,7 @@ SetupPage
             DefaultRectangle
             {
                 id: wallet_list_bg
-
                 readonly property int row_height: 40
-
                 width: content_column.width
                 Layout.minimumHeight: row_height
                 Layout.preferredHeight: (row_height * Math.min(wallet_count, 4)) + 20
@@ -209,6 +207,7 @@ SetupPage
                             anchors.rightMargin: 10
                             height: parent.height
                             width: 30
+
                             Qaterial.ColorIcon
                             {
                                 visible: mouse_area.containsMouse || _deleteArea.containsMouse

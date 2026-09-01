@@ -108,7 +108,6 @@ SetupPage
         // While there remain elements to shuffle...
         while (0 !== currentIndex)
         {
-
             // Pick a remaining element...
             randomIndex = Math.floor(Math.random() * currentIndex);
             currentIndex--;
@@ -162,6 +161,7 @@ SetupPage
         width: column_layout.width + 50
         height: column_layout.height + 60
         radius: 18
+
         function reset()
         {
             new_user.reset()
@@ -265,7 +265,6 @@ SetupPage
                     }
                     Layout.alignment: Qt.AlignVCenter
                 }
-
             }
 
             Item
@@ -514,10 +513,8 @@ SetupPage
                     Column
                     {
                         id: warning_texts_2
-
                         anchors.centerIn: parent
                         width: parent.width
-
                         spacing: 5
 
                         DexLabel
@@ -546,16 +543,19 @@ SetupPage
                 {
                     Layout.fillWidth: true
                     spacing: 5
+
                     Item
                     {
                         width: parent.width - 10
                         height: _insideFlow2.height
+
                         Grid
                         {
                             id: _insideFlow2
                             width: parent.width
                             spacing: 10
                             horizontalItemAlignment: Grid.AlignHCenter
+
                             Repeater
                             {
                                 id: mmo
@@ -619,7 +619,6 @@ SetupPage
                             font: DexTypo.body1
                             text: current_word_idx + 1
                         }
-
                     }
                 }
 
@@ -660,6 +659,7 @@ SetupPage
                 {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 20
+
                     DexLabel
                     {
                         text_value: guess_text_error
@@ -675,7 +675,6 @@ SetupPage
             {
                 visible: currentStep === 2
                 enabled: visible
-
                 Layout.preferredWidth: 450
                 spacing: Style.rowSpacing
 

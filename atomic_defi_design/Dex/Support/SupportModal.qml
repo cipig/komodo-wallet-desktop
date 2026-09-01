@@ -1,7 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
-import QtGraphicalEffects 1.15
 import "../Qaterial" as Qaterial
 import "../Components"
 import "../Constants"
@@ -45,6 +44,7 @@ Qaterial.Dialog
     {
         id: support_layout
         width: support_modal.width - 100
+        // TODO: likely a bug, replace with anchors.horizontalCenter: parent.horizontalCenter
         Layout.alignment: Qt.AlignHCenter
 
         RowLayout
