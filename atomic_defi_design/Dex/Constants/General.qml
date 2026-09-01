@@ -25,28 +25,12 @@ QtObject {
 
     function coinIcon(ticker)
     {
-        if (ticker.toLowerCase() == "smart chain")
-        {
-            return coin_icons_path + "smart_chain.png"
-        }
-        if (ticker.toLowerCase() == "avx")
-        {
-            return coin_icons_path + "avax.png"
-        }
         if (ticker === "" || ticker === "All" || ticker===undefined)
         {
             return ""
         }
         else
         {
-            if (['THC-BEP20'].indexOf(ticker) >= 0)
-            {
-                return coin_icons_path + ticker.toString().toLowerCase().replace('-', '_') + ".png"
-            }
-            if (['Smart Chain'].indexOf(ticker) >= 0)
-            {
-                return coin_icons_path + ticker.toString().toLowerCase().replace(' ', '_') + ".png"
-            }
             const coin_info = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(ticker)
             let icon = atomic_qt_utilities.retrieve_main_ticker(ticker.toString()).toLowerCase() + ".png"
             return coin_icons_path + icon
@@ -873,6 +857,7 @@ QtObject {
                     getFiatText(trade_info.trading_fee, trade_info.trading_fee_ticker, has_info_icon)
                  +")")
     }
+
     function minimumtradingFeeText(trade_info, base_ticker, has_info_icon=true) {
         if(!trade_info || !trade_info.trading_fee) return ""
 

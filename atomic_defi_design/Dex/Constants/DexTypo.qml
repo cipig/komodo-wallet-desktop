@@ -150,7 +150,7 @@ QtObject {
         weight: Font.Normal
     })
     property font inputFieldSuffixFont: Qt.font({
-        pixelSize: 16 * fontDensity,
+        pixelSize: 14 * fontDensity,
         letterSpacing: 0.1,
         family: fontFamily,
         weight: Font.Medium

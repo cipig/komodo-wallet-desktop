@@ -110,9 +110,6 @@ ColumnLayout {
                     Item {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        Component.onCompleted: {
-                            console.log("Item below Chart height = " + height)
-                        }
                     }
 
                     PriceLineSimplified {
