@@ -164,7 +164,7 @@ namespace atomic_dex
 
        //! Refresh the current info (internally call process_balance and process_tx)
        void fetch_infos_thread();
-       pplx::task<void> batch_balance_and_tx(bool is_a_reset, std::vector<std::string> tickers = {}, bool is_during_enabling = false, bool only_tx = false);
+       async::task<void> batch_balance_and_tx(bool is_a_reset, std::vector<std::string> tickers = {}, bool is_during_enabling = false, bool only_tx = false);
 
        // Coins enabling functions
        bool enable_default_coins(); // Enables required coins + coins enabled in the config

@@ -764,23 +764,22 @@ namespace atomic_dex
             this->set_recover_fund_busy(false);
         };
 
-        auto error_functor = [this](pplx::task<void> previous_task)
-        {
-            try
+        kdf_system.get_kdf_client().real_async_rpc_batch_standalone(batch).then(
+            [this, answer_functor](async::task<web::http::http_response> previous_task)
             {
-                previous_task.wait();
-            }
-            catch (const std::exception& e)
-            {
-                SPDLOG_ERROR("exception in orders_model::recover_fund(QString uuid): {}", e.what());
-                nlohmann::json j_out = nlohmann::json::object();
-                j_out["is_valid"]    = false;
-                j_out["error"]       = e.what();
-                this->set_recover_fund_data(nlohmann_json_object_to_qt_json_object(j_out));
-                this->set_recover_fund_busy(false);
-            }
-        };
-
-        kdf_system.get_kdf_client().async_rpc_batch_standalone(batch).then(answer_functor).then(error_functor);
+                try
+                {
+                    answer_functor(previous_task.get());
+                }
+                catch (const std::exception& e)
+                {
+                    SPDLOG_ERROR("exception in orders_model::recover_fund(QString uuid): {}", e.what());
+                    nlohmann::json j_out = nlohmann::json::object();
+                    j_out["is_valid"]    = false;
+                    j_out["error"]       = e.what();
+                    this->set_recover_fund_data(nlohmann_json_object_to_qt_json_object(j_out));
+                    this->set_recover_fund_busy(false);
+                }
+            });
     }
 } // namespace atomic_dex

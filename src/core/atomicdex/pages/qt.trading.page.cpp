@@ -204,14 +204,13 @@ namespace atomic_dex
 
         //! Async call
         kdf_system.get_kdf_client()
-            .async_rpc_batch_standalone(batch)
-            .then(answer_functor)
+            .real_async_rpc_batch_standalone(batch)
             .then(
-                [this]([[maybe_unused]] pplx::task<void> previous_task)
+                [this, answer_functor](async::task<web::http::http_response> previous_task)
                 {
                     try
                     {
-                        previous_task.wait();
+                        answer_functor(previous_task.get());
                     }
                     catch (const std::exception& e)
                     {
@@ -348,14 +347,13 @@ namespace atomic_dex
 
         //! Async call
         kdf_system.get_kdf_client()
-            .async_rpc_batch_standalone(batch)
-            .then(answer_functor)
+            .real_async_rpc_batch_standalone(batch)
             .then(
-                [this]([[maybe_unused]] pplx::task<void> previous_task)
+                [this, answer_functor](async::task<web::http::http_response> previous_task)
                 {
                     try
                     {
-                        previous_task.wait();
+                        answer_functor(previous_task.get());
                     }
                     catch (const std::exception& e)
                     {
@@ -507,14 +505,13 @@ namespace atomic_dex
 
         //! Async call
         kdf_system.get_kdf_client()
-            .async_rpc_batch_standalone(batch)
-            .then(answer_functor)
+            .real_async_rpc_batch_standalone(batch)
             .then(
-                [this]([[maybe_unused]] pplx::task<void> previous_task)
+                [this, answer_functor](async::task<web::http::http_response> previous_task)
                 {
                     try
                     {
-                        previous_task.wait();
+                        answer_functor(previous_task.get());
                     }
                     catch (const std::exception& e)
                     {
@@ -1382,7 +1379,18 @@ namespace atomic_dex
             this->set_preimage_busy(false);
         };
 
-        kdf.get_kdf_client().async_rpc_batch_standalone(batch).then(answer_functor).then(&handle_exception_pplx_task);
+        kdf.get_kdf_client().real_async_rpc_batch_standalone(batch).then(
+            [answer_functor](async::task<web::http::http_response> previous_task)
+            {
+                try
+                {
+                    answer_functor(previous_task.get());
+                }
+                catch (...)
+                {
+                    handle_exception_async_task(std::current_exception());
+                }
+            });
     }
 
     void

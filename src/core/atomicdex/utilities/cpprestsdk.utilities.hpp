@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <exception>
+
 #include <nlohmann/json_fwd.hpp>
 #include <cpprest/http_client.h>
 
@@ -36,4 +38,5 @@ using t_http_client     = web::http::client::http_client;
 using t_http_request    = web::http::http_request;
 
 t_http_request create_json_post_request(nlohmann::json&& json_data);
+void handle_exception_async_task(std::exception_ptr exception);
 void handle_exception_pplx_task(pplx::task<void> previous_task);

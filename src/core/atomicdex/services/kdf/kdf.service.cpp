@@ -385,8 +385,7 @@ namespace atomic_dex
             nlohmann::json batch        = nlohmann::json::array();
             batch.push_back(stop_request);
             SPDLOG_INFO("processing kdf stop batch request");
-            pplx::task<web::http::http_response> resp_task = m_kdf_client.async_rpc_batch_standalone(batch);
-            web::http::http_response             resp      = resp_task.get();
+            web::http::http_response resp = m_kdf_client.real_async_rpc_batch_standalone(batch).get();
             SPDLOG_INFO("kdf stop batch answer received");
             auto answers = kdf::basic_batch_answer(resp);
             if (answers[0].contains("result"))
@@ -738,9 +737,17 @@ namespace atomic_dex
             kdf::to_json(j, request);
             batch_array.push_back(j);
         }
-        m_kdf_client.async_rpc_batch_standalone(batch_array)
-            .then(callback)
-            .then([this, batch_array](pplx::task<void> previous_task) { this->handle_exception_pplx_task(previous_task, "enable_common_coins", batch_array); });
+        m_kdf_client.real_async_rpc_batch_standalone(batch_array)
+            .then([this, batch = batch_array, callback](async::task<web::http::http_response> previous_task) mutable {
+                try
+                {
+                    callback(previous_task.get());
+                }
+                catch (...)
+                {
+                    this->handle_exception_async_task(std::current_exception(), "enable_common_coins", batch);
+                }
+            });
     }
 
     void kdf_service::enable_utxo_qrc20_coin(coin_config_t coin_config)
@@ -844,9 +851,17 @@ namespace atomic_dex
             kdf::to_json(j, request);
             batch_array.push_back(j);
         }
-        m_kdf_client.async_rpc_batch_standalone(batch_array)
-            .then(callback)
-            .then([this, batch_array](pplx::task<void> previous_task) { this->handle_exception_pplx_task(previous_task, "enable_qrc_family_coins", batch_array); });
+        m_kdf_client.real_async_rpc_batch_standalone(batch_array)
+            .then([this, batch = batch_array, callback](async::task<web::http::http_response> previous_task) mutable {
+                try
+                {
+                    callback(previous_task.get());
+                }
+                catch (...)
+                {
+                    this->handle_exception_async_task(std::current_exception(), "enable_qrc_family_coins", batch);
+                }
+            });
     }
 
     void kdf_service::enable_erc20_coin(coin_config_t coin_config, std::string parent_ticker)
@@ -1198,19 +1213,19 @@ namespace atomic_dex
         update_coin_status(this->m_current_wallet_name, tickers, false, m_coins_informations, m_coin_cfg_mutex);
     }
 
-    pplx::task<void>
+    async::task<void>
     kdf_service::batch_balance_and_tx(bool is_a_reset, std::vector<std::string> tickers, bool is_during_enabling, bool only_tx)
     {
         (void)tickers;
         (void)is_during_enabling;
         auto&& [batch_array, tickers_idx, tokens_to_fetch] = prepare_batch_balance_and_tx(only_tx);
-        return m_kdf_client.async_rpc_batch_standalone(batch_array)
+        return m_kdf_client.real_async_rpc_batch_standalone(batch_array)
             .then(
-                [this, tokens_to_fetch = tokens_to_fetch, is_a_reset, tickers, batch_array = batch_array](web::http::http_response resp)
+                [this, tokens_to_fetch = tokens_to_fetch, is_a_reset, tickers, batch_array = batch_array](async::task<web::http::http_response> previous_task)
                 {
                     try
                     {
-                        auto answers = kdf::basic_batch_answer(resp);
+                        auto answers = kdf::basic_batch_answer(previous_task.get());
                         if (not answers.contains("error"))
                         {
                             for (auto i = 0ul; i < answers.size(); i++)
@@ -1218,7 +1233,7 @@ namespace atomic_dex
                                 auto&       answer = answers[i];
                                 std::string ticker;
                                 // SPDLOG_DEBUG("batch_balance_and_tx answer: {}", answer.dump(4));
-                                
+
                                 if (batch_array[i].contains("mmrpc") && batch_array[i].at("mmrpc") == "2.0")
                                 {
                                     if (batch_array[i].at("params").contains("coin"))
@@ -1234,7 +1249,7 @@ namespace atomic_dex
                                 {
                                     ticker = batch_array[i].at("coin");
                                 }
-                                
+
                                 if (answer.contains("balance"))
                                 {
                                     this->process_balance_answer(answer);
@@ -1263,10 +1278,9 @@ namespace atomic_dex
                     {
                         SPDLOG_ERROR("exception in kdf_service::batch_balance_and_tx: {}", error.what());
                         this->dispatcher_.trigger<tx_fetch_finished>(true);
+                        this->handle_exception_async_task(std::current_exception(), "batch_balance_and_tx", batch_array);
                     }
-                })
-            .then([this, batch = batch_array](pplx::task<void> previous_task)
-                  { this->handle_exception_pplx_task(previous_task, "batch_balance_and_tx", batch); });
+                });
     }
 
     bool 
@@ -1469,13 +1483,13 @@ namespace atomic_dex
 
         auto answer_functor = [this](coin_config_t coin_info, nlohmann::json batch, std::vector<std::string> tickers)
         {
-            m_kdf_client.async_rpc_batch_standalone(batch)
+            m_kdf_client.real_async_rpc_batch_standalone(batch)
                 .then(
-                    [this, coin_info, tickers](web::http::http_response resp) mutable
+                    [this, coin_info, tickers, batch](async::task<web::http::http_response> previous_task) mutable
                     {
                         try
                         {
-                            auto answers                 = kdf::basic_batch_answer(resp);
+                            auto answers                 = kdf::basic_batch_answer(previous_task.get());
                             auto& settings_system  = m_system_manager.get_system<settings_page>();
 
                             if (answers.count("error") == 0)
@@ -1535,8 +1549,7 @@ namespace atomic_dex
                                                 std::string event = "none";
 
                                                 do {
-                                                    pplx::task<web::http::http_response> z_resp_task = m_kdf_client.async_rpc_batch_standalone(z_batch_array);
-                                                    web::http::http_response             z_resp      = z_resp_task.get();
+                                                    web::http::http_response             z_resp      = m_kdf_client.real_async_rpc_batch_standalone(z_batch_array).get();
                                                     auto                                 z_answers   = kdf::basic_batch_answer(z_resp);
                                                     z_error                                          = z_answers;
 
@@ -1684,15 +1697,9 @@ namespace atomic_dex
                         catch (const std::exception& error)
                         {
                             SPDLOG_ERROR("exception caught in batch_enable_coins, update_coin_status to false: {}", error.what());
+                            this->handle_exception_async_task(std::current_exception(), "batch_enable_coins", batch);
                             update_coin_status(this->m_current_wallet_name, tickers, false, m_coins_informations, m_coin_cfg_mutex);
                         }
-                    })
-                .then(
-                    [this, tickers, batch](pplx::task<void> previous_task)
-                    {
-                        this->handle_exception_pplx_task(previous_task, "batch_enable_coins", batch);
-                        SPDLOG_DEBUG("update_coin_status of {} to false", fmt::join(tickers, ", "));
-                        update_coin_status(this->m_current_wallet_name, tickers, false, m_coins_informations, m_coin_cfg_mutex);
                     });
         };
 
@@ -1894,9 +1901,17 @@ namespace atomic_dex
             }
         };
 
-        m_kdf_client.async_rpc_batch_standalone(batch)
-            .then(answer_functor)
-            .then([this, batch](pplx::task<void> previous_task) { this->handle_exception_pplx_task(previous_task, "process_orderbook_extras", batch); });
+        m_kdf_client.real_async_rpc_batch_standalone(batch)
+            .then([this, batch, answer_functor](async::task<web::http::http_response> previous_task) {
+                try
+                {
+                    answer_functor(previous_task.get());
+                }
+                catch (...)
+                {
+                    this->handle_exception_async_task(std::current_exception(), "process_orderbook_extras", batch);
+                }
+            });
     }
 
     void kdf_service::fetch_current_orderbook_thread(bool is_a_reset)
@@ -2222,9 +2237,17 @@ namespace atomic_dex
             this->dispatcher_.trigger<process_swaps_and_orders_finished>(after_manual_reset);
         };
 
-        m_kdf_client.async_rpc_batch_standalone(batch)
-            .then(answer_functor)
-            .then([this, batch](pplx::task<void> previous_task) { this->handle_exception_pplx_task(previous_task, "batch_fetch_orders_and_swap", batch); });
+        m_kdf_client.real_async_rpc_batch_standalone(batch)
+            .then([this, batch, answer_functor](async::task<web::http::http_response> previous_task) {
+                try
+                {
+                    answer_functor(previous_task.get());
+                }
+                catch (...)
+                {
+                    this->handle_exception_async_task(std::current_exception(), "batch_fetch_orders_and_swap", batch);
+                }
+            });
     }
 
     void kdf_service::process_tx_tokenscan(const std::string& ticker, [[maybe_unused]] bool is_a_reset)
