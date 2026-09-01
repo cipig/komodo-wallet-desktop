@@ -31,13 +31,15 @@ namespace
     t_http_client_ptr g_openrates_client = std::make_unique<web::http::client::http_client>(FROM_STD_STR("https://api.frankfurter.dev"), g_openrates_cfg);
     pplx::cancellation_token_source g_token_source;
 
-    pplx::task<web::http::http_response>
+    async::task<web::http::http_response>
     async_fetch_fiat_rates()
     {
-        web::http::http_request req;
-        req.set_method(web::http::methods::GET);
-        req.set_request_uri(FROM_STD_STR("v1/latest?base=USD"));
-        return g_openrates_client->request(req, g_token_source.get_token());
+        return async::spawn([]() {
+            web::http::http_request req;
+            req.set_method(web::http::methods::GET);
+            req.set_request_uri(FROM_STD_STR("v1/latest?base=USD"));
+            return g_openrates_client->request(req, g_token_source.get_token()).get();
+        });
     }
 
     nlohmann::json
@@ -356,24 +358,20 @@ namespace atomic_dex
     void
     global_price_service::on_force_update_providers(const force_update_providers&)
     {
-        auto error_functor = [](pplx::task<void> previous_task)
-        {
-            try
-            {
-                previous_task.wait();
-            }
-            catch (const std::exception& e)
-            {
-                SPDLOG_ERROR("exception in global_price_service::on_force_update_providers: {}", e.what());
-            };
-        };
         async_fetch_fiat_rates()
             .then(
-                [this](web::http::http_response resp)
+                [this](async::task<web::http::http_response> previous_task)
                 {
-                    this->m_other_fiats_rates = process_fetch_fiat_answer(resp);
+                    try
+                    {
+                        this->m_other_fiats_rates = process_fetch_fiat_answer(previous_task.get());
+                    }
+                    catch (const std::exception& e)
+                    {
+                        SPDLOG_ERROR("exception in global_price_service::on_force_update_providers: {}", e.what());
+                    }
                 })
-            .then(error_functor);
+            ;
     }
 
     std::string

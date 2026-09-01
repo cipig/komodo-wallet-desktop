@@ -16,7 +16,7 @@
 
 #include <nlohmann/json.hpp>
 #include "atomicdex/services/sync/timesync.checker.service.hpp"
-#include "atomicdex/utilities/cpprestsdk.utilities.hpp"
+#include "atomicdex/utilities/http.utilities.hpp"
 
 namespace
 {
@@ -31,21 +31,23 @@ namespace
     t_http_client_ptr g_timesync_client = std::make_unique<web::http::client::http_client>(FROM_STD_STR(g_timesync_endpoint), g_timesync_cfg);
     pplx::cancellation_token_source g_synctoken_source;
 
-    pplx::task<web::http::http_response>
+    async::task<web::http::http_response>
     async_fetch_timesync()
     {
-        try
-        {
-            web::http::http_request req;
-            req.set_method(web::http::methods::GET);
-            req.set_request_uri(FROM_STD_STR("developer/api/timezone/UTC"));
-            return g_timesync_client->request(req, g_synctoken_source.get_token());
-        }
-        catch (const std::exception& error)
-        {
-            SPDLOG_ERROR("exception in async_fetch_timesync: {}", error.what());
-            throw;
-        }
+        return async::spawn([]() {
+            try
+            {
+                web::http::http_request req;
+                req.set_method(web::http::methods::GET);
+                req.set_request_uri(FROM_STD_STR("developer/api/timezone/UTC"));
+                return g_timesync_client->request(req, g_synctoken_source.get_token()).get();
+            }
+            catch (const std::exception& error)
+            {
+                SPDLOG_ERROR("exception in async_fetch_timesync: {}", error.what());
+                throw;
+            }
+        });
     }
 
     bool get_timesync_info_rpc(web::http::http_response resp_http)
@@ -111,17 +113,23 @@ namespace atomic_dex
         is_timesync_fetching = true;
         emit isTimesyncFetchingChanged();
         async_fetch_timesync()
-            .then([this](web::http::http_response resp) {
-                bool is_timesync_ok = get_timesync_info_rpc(resp);
-                SPDLOG_INFO("System time is in sync: {}", is_timesync_ok);
-                
-                if (is_timesync_ok != *m_timesync_status)
+            .then([this](async::task<web::http::http_response> previous_task) {
+                try
                 {
-                    this->m_timesync_status = is_timesync_ok;
-                    emit timesyncInfoChanged();
+                    bool is_timesync_ok = get_timesync_info_rpc(previous_task.get());
+                    SPDLOG_INFO("System time is in sync: {}", is_timesync_ok);
+
+                    if (is_timesync_ok != *m_timesync_status)
+                    {
+                        this->m_timesync_status = is_timesync_ok;
+                        emit timesyncInfoChanged();
+                    }
                 }
-            })
-            .then(&handle_exception_pplx_task);
+                catch (...)
+                {
+                    handle_exception_async_task(std::current_exception());
+                }
+            });
         is_timesync_fetching = false;
         emit isTimesyncFetchingChanged();
     }

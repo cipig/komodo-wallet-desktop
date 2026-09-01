@@ -29,7 +29,7 @@
 #include "atomicdex/api/kdf/kdf.constants.hpp"
 #include "atomicdex/constants/qt.coins.enums.hpp"
 #include "atomicdex/data/dex/qt.orders.data.hpp"
-#include "atomicdex/utilities/cpprestsdk.utilities.hpp"
+#include "atomicdex/utilities/http.utilities.hpp"
 
 namespace ag = antara::gaming;
 
@@ -232,7 +232,7 @@ namespace atomic_dex::kdf
     template <typename RpcReturnType>
     RpcReturnType rpc_process_answer_batch(nlohmann::json& json_answer, const std::string& rpc_command) ;
 
-    pplx::task<web::http::http_response> async_process_rpc_get(t_http_client_ptr& client, const std::string rpc_command, const std::string& url);
+    async::task<web::http::http_response> async_process_rpc_get(t_http_client_ptr& client, const std::string rpc_command, const std::string& url);
 
     nlohmann::json template_request(std::string method_name, bool is_protocol_v2 = false);
 

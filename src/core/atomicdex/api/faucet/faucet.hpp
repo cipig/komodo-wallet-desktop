@@ -20,7 +20,7 @@
 #include <string>
 
 //! Project Headers
-#include "atomicdex/utilities/cpprestsdk.utilities.hpp"
+#include "atomicdex/utilities/http.utilities.hpp"
 
 namespace atomic_dex::faucet::api
 {
@@ -30,7 +30,7 @@ namespace atomic_dex::faucet::api
         std::string wallet_address;
     };
     
-    pplx::task<web::http::http_response>
+    async::task<web::http::http_response>
     claim(const claim_request& claim_request);
     
     struct claim_result

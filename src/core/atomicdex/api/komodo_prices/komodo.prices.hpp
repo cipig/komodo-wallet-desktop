@@ -3,7 +3,7 @@
 #include <entt/core/attribute.h>
 #include <nlohmann/json.hpp>
 
-#include "atomicdex/utilities/cpprestsdk.utilities.hpp"
+#include "atomicdex/utilities/http.utilities.hpp"
 
 namespace atomic_dex::komodo_prices::api
 {
@@ -40,5 +40,5 @@ namespace atomic_dex::komodo_prices::api
 
 namespace atomic_dex::komodo_prices::api
 {
-    ENTT_API pplx::task<web::http::http_response> async_market_infos(bool fallback = false);
+    ENTT_API async::task<web::http::http_response> async_market_infos(bool fallback = false);
 }

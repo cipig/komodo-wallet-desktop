@@ -980,14 +980,20 @@ namespace atomic_dex
         this->set_claiming_faucet_is_busy(true);
         faucet::api::claim(claim_request)
             .then(
-                [this](web::http::http_response resp)
+                [this](async::task<web::http::http_response> previous_task)
                 {
-                    auto claim_result = faucet::api::get_claim_result(resp);
-                    this->set_rpc_claiming_faucet_data(
-                        QJsonObject({{"message", QString::fromStdString(claim_result.message)}, {"status", QString::fromStdString(claim_result.status)}}));
+                    try
+                    {
+                        auto claim_result = faucet::api::get_claim_result(previous_task.get());
+                        this->set_rpc_claiming_faucet_data(
+                            QJsonObject({{"message", QString::fromStdString(claim_result.message)}, {"status", QString::fromStdString(claim_result.status)}}));
+                    }
+                    catch (...)
+                    {
+                        handle_exception_async_task(std::current_exception());
+                    }
                     this->set_claiming_faucet_is_busy(false);
-                })
-            .then(&handle_exception_pplx_task);
+                });
     }
 
     transactions_model*
