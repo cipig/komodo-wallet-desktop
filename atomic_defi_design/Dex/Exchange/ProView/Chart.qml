@@ -111,12 +111,6 @@ Item
                     max-height: 405px !important;
                     overflow: visible !important;
                   }
-                  svg.highcharts-root rect {
-                    stroke: none !important;
-                  }
-                  svg.highcharts-root line {
-                    stroke: none !important;
-                  }
                   .highcharts-range-selector-buttons {
                     display: none !important;
                   }
@@ -139,8 +133,8 @@ Item
                     pointer-events: auto !important;
                   }
                   div.coinpaprika-currency-widget > div.cp-widget__footer a {
-                    pointer-events: none !important;
                     cursor: default !important;
+                    pointer-events: none !important;
                   }
                 </style>
                 <div class="coinpaprika-currency-widget ${night_mode}"

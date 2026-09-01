@@ -47,6 +47,7 @@
 #include "atomicdex/utilities/qt.utilities.hpp"
 #include "atomicdex/filesystem.qml.hpp"
 #include "atomicdex/utilities/log.prerequisites.hpp"
+#include "atomicdex/utilities/customrequestinterceptor.h"
 
 #ifdef __APPLE__
 #    include "atomicdex/platform/osx/manager.hpp"
@@ -369,6 +370,10 @@ run_app(int argc, char** argv)
     app->setOrganizationName("KomodoPlatform");
     app->setOrganizationDomain("com");
     QQmlApplicationEngine engine;
+
+    SPDLOG_INFO("Registering WebEngine network request cache interceptor");
+    CustomRequestInterceptor *interceptor = new CustomRequestInterceptor(app.get());
+    QWebEngineProfile::defaultProfile()->setUrlRequestInterceptor(interceptor);
 
     atomic_app.set_qt_app(app, &engine);
     SPDLOG_INFO("post set_qt_app");
