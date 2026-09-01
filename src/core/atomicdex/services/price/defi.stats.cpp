@@ -43,9 +43,7 @@ namespace
             return cfg;
         }()
     };
-
     t_http_client_ptr g_defi_stats_client = std::make_unique<web::http::client::http_client>(FROM_STD_STR("https://defistats.gleec.com/"), g_defi_stats_cfg);
-    pplx::cancellation_token_source d_token_source;
 
     async::task<web::http::http_response>
     async_fetch_defi_stats_volumes()
@@ -57,7 +55,7 @@ namespace
                 req.set_method(web::http::methods::GET);
                 req.set_request_uri(FROM_STD_STR("api/v3/pairs/volumes_24hr"));
                 //SPDLOG_INFO("defi_stats req: {}", TO_STD_STR(req.to_string()));
-                return g_defi_stats_client->request(req, d_token_source.get_token()).get();
+                return g_defi_stats_client->request(req).get();
             }
             catch (const std::exception& error)
             {

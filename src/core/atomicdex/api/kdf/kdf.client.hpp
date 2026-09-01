@@ -18,14 +18,9 @@ namespace atomic_dex::kdf
 {
     class ENTT_API kdf_client
     {
-        pplx::cancellation_token_source m_token_source;
-
       public:
         kdf_client()  = default;
         ~kdf_client() = default;
-
-        //! Create the client
-        void stop();
 
         //! API
         async::task<web::http::http_response> real_async_rpc_batch_standalone(nlohmann::json batch_array);

@@ -47,7 +47,6 @@ namespace atomic_dex
 
         //! Public override
         void update()  final;
-        void stop();
 
         //! Public API
         std::string get_price_as_currency_from_tx(const std::string& currency, const std::string& ticker, const tx_infos& tx) const ;
