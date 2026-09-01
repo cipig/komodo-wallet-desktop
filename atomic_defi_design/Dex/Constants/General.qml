@@ -1,4 +1,6 @@
 pragma Singleton
+
+import bignumberjs 1.0
 import QtQuick 2.15
 import AtomicDEX.TradingError 1.0
 import AtomicDEX.MarketMode 1.0

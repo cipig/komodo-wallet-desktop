@@ -3,7 +3,6 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
 import Qt.labs.settings 1.0
-import Qt.labs.platform 1.1
 import "Qaterial" as Qaterial
 import "Screens"
 import "Constants"
@@ -277,6 +276,7 @@ DefaultRectangle
             RowLayout
             {
                 anchors.fill: parent
+
                 Item
                 {
                     Layout.fillHeight: true
@@ -304,6 +304,7 @@ DefaultRectangle
                         }
                     }
                 }
+
                 Item
                 {
                     Layout.fillWidth: true
