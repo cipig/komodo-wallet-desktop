@@ -32,6 +32,7 @@
 #include <QtQml>
 #include <QFontDatabase>
 #include <QtWebEngine>
+#include <QWebEngineProfile>
 #include <Qaterial/Qaterial.hpp>
 
 //! Deps
