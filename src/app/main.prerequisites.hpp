@@ -372,9 +372,13 @@ run_app(int argc, char** argv)
     app->setOrganizationDomain("com");
     QQmlApplicationEngine engine;
 
-    SPDLOG_INFO("Registering WebEngine network request cache interceptor");
+    SPDLOG_INFO("Registering WebEngine network request cache interceptor and configuring storage caps.");
     CustomRequestInterceptor *interceptor = new CustomRequestInterceptor(app.get());
-    QWebEngineProfile::defaultProfile()->setUrlRequestInterceptor(interceptor);
+    QWebEngineProfile* defaultProfile = QWebEngineProfile::defaultProfile();
+    defaultProfile->setUrlRequestInterceptor(interceptor);
+    defaultProfile->setHttpCacheType(QWebEngineProfile::DiskHttpCache);
+    int maxCacheSizeInBytes = 10 * 1024 * 1024;
+    defaultProfile->setHttpCacheMaximumSize(maxCacheSizeInBytes);
 
     atomic_app.set_qt_app(app, &engine);
     SPDLOG_INFO("post set_qt_app");
