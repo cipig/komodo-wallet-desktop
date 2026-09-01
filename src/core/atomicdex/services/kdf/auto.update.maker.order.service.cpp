@@ -102,17 +102,24 @@ namespace atomic_dex
             SPDLOG_INFO("request: {}", update_maker_order_json.dump(1));
             auto& kdf = this->m_system_manager.get_system<kdf_service>();
             kdf.get_kdf_client()
-                .async_rpc_batch_standalone(batch)
+                .real_async_rpc_batch_standalone(batch)
                 .then(
-                    []([[maybe_unused]] web::http::http_response resp)
+                    []([[maybe_unused]] async::task<web::http::http_response> previous_task)
                     {
-                        if (resp.status_code() != 200)
+                        try
                         {
-                            std::string body = TO_STD_STR(resp.extract_string(true).get());
-                            SPDLOG_ERROR("An error occured during update_maker_order (code: {}): {}", resp.status_code(), body);
+                            auto resp = previous_task.get();
+                            if (resp.status_code() != 200)
+                            {
+                                std::string body = TO_STD_STR(resp.extract_string(true).get());
+                                SPDLOG_ERROR("An error occured during update_maker_order (code: {}): {}", resp.status_code(), body);
+                            }
                         }
-                    })
-                .then(&handle_exception_pplx_task);
+                        catch (...)
+                        {
+                            handle_exception_async_task(std::current_exception());
+                        }
+                    });
         }
     }
 

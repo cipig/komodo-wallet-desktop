@@ -61,13 +61,20 @@ namespace atomic_dex
         batch.push_back(cancel_request);
         auto& kdf_system = m_system_mgr.get_system<kdf_service>();
         kdf_system.get_kdf_client()
-            .async_rpc_batch_standalone(batch)
-            .then([this]([[maybe_unused]] web::http::http_response resp) {
-                auto& kdf_system = m_system_mgr.get_system<kdf_service>();
-                kdf_system.batch_fetch_orders_and_swap();
-                kdf_system.process_orderbook(false);
-            })
-            .then(&handle_exception_pplx_task);
+            .real_async_rpc_batch_standalone(batch)
+            .then([this](async::task<web::http::http_response> previous_task) {
+                try
+                {
+                    previous_task.get();
+                    auto& kdf_system = m_system_mgr.get_system<kdf_service>();
+                    kdf_system.batch_fetch_orders_and_swap();
+                    kdf_system.process_orderbook(false);
+                }
+                catch (...)
+                {
+                    handle_exception_async_task(std::current_exception());
+                }
+            });
     }
 } // namespace atomic_dex
 
@@ -90,13 +97,20 @@ namespace atomic_dex
 
         auto& kdf_system = m_system_mgr.get_system<kdf_service>();
         kdf_system.get_kdf_client()
-            .async_rpc_batch_standalone(batch)
-            .then([this]([[maybe_unused]] web::http::http_response resp) {
-                auto& kdf_system = m_system_mgr.get_system<kdf_service>();
-                kdf_system.batch_fetch_orders_and_swap();
-                kdf_system.process_orderbook(false);
-            })
-            .then(&handle_exception_pplx_task);
+            .real_async_rpc_batch_standalone(batch)
+            .then([this](async::task<web::http::http_response> previous_task) {
+                try
+                {
+                    previous_task.get();
+                    auto& kdf_system = m_system_mgr.get_system<kdf_service>();
+                    kdf_system.batch_fetch_orders_and_swap();
+                    kdf_system.process_orderbook(false);
+                }
+                catch (...)
+                {
+                    handle_exception_async_task(std::current_exception());
+                }
+            });
     }
 
     void

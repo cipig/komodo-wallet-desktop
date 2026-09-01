@@ -581,8 +581,7 @@ namespace atomic_dex
                             z_batch_array.push_back(j);
 
                             do {
-                                pplx::task<web::http::http_response> z_resp_task = kdf_system.get_kdf_client().async_rpc_batch_standalone(z_batch_array);
-                                web::http::http_response             z_resp      = z_resp_task.get();
+                                web::http::http_response             z_resp      = kdf_system.get_kdf_client().real_async_rpc_batch_standalone(z_batch_array).get();
                                 auto                                 z_answers   = kdf::basic_batch_answer(z_resp);
                                 z_error = z_answers;
                                 z_status = QString::fromStdString(z_answers[0].at("result").at("status").get<std::string>());
@@ -677,23 +676,22 @@ namespace atomic_dex
                 this->set_send_busy(false);
             };
 
-            auto error_functor = [this](pplx::task<void> previous_task)
-            {
-                try
-                {
-                    previous_task.wait();
-                }
-                catch (const std::exception& e)
-                {
-                    SPDLOG_ERROR("exception caught in send: {}", e.what());
-                    auto error_json = QJsonObject({{"error_code", 500}, {"error_message", QString::fromStdString(e.what())}});
-                    this->set_rpc_send_data(error_json);
-                    this->set_send_busy(false);
-                }
-            };
-
             //! Process
-            kdf_system.get_kdf_client().async_rpc_batch_standalone(batch).then(answer_functor).then(error_functor);
+            kdf_system.get_kdf_client().real_async_rpc_batch_standalone(batch).then(
+                [this, answer_functor](async::task<web::http::http_response> previous_task)
+                {
+                    try
+                    {
+                        answer_functor(previous_task.get());
+                    }
+                    catch (const std::exception& e)
+                    {
+                        SPDLOG_ERROR("exception caught in send: {}", e.what());
+                        auto error_json = QJsonObject({{"error_code", 500}, {"error_message", QString::fromStdString(e.what())}});
+                        this->set_rpc_send_data(error_json);
+                        this->set_send_busy(false);
+                    }
+                });
 
         }
         else
@@ -819,23 +817,22 @@ namespace atomic_dex
                 this->set_send_busy(false);
             };
 
-            auto error_functor = [this](pplx::task<void> previous_task)
-            {
-                try
-                {
-                    previous_task.wait();
-                }
-                catch (const std::exception& e)
-                {
-                    SPDLOG_ERROR("exception caught in send: {}", e.what());
-                    auto error_json = QJsonObject({{"error_code", 500}, {"error_message", QString::fromStdString(e.what())}});
-                    this->set_rpc_send_data(error_json);
-                    this->set_send_busy(false);
-                }
-            };
-
             //! Process
-            kdf_system.get_kdf_client().async_rpc_batch_standalone(batch).then(answer_functor).then(error_functor);
+            kdf_system.get_kdf_client().real_async_rpc_batch_standalone(batch).then(
+                [this, answer_functor](async::task<web::http::http_response> previous_task)
+                {
+                    try
+                    {
+                        answer_functor(previous_task.get());
+                    }
+                    catch (const std::exception& e)
+                    {
+                        SPDLOG_ERROR("exception caught in send: {}", e.what());
+                        auto error_json = QJsonObject({{"error_code", 500}, {"error_message", QString::fromStdString(e.what())}});
+                        this->set_rpc_send_data(error_json);
+                        this->set_send_busy(false);
+                    }
+                });
         }
     }
 
@@ -901,21 +898,20 @@ namespace atomic_dex
             this->set_broadcast_busy(false);
         };
 
-        auto error_functor = [this](pplx::task<void> previous_task)
-        {
-            try
+        kdf_system.get_kdf_client().real_async_rpc_batch_standalone(batch).then(
+            [this, answer_functor](async::task<web::http::http_response> previous_task)
             {
-                previous_task.wait();
-            }
-            catch (const std::exception& e)
-            {
-                SPDLOG_ERROR("exception caught in broadcast finished: {}", e.what());
-                this->set_rpc_broadcast_data(QString::fromStdString(e.what()));
-                this->set_broadcast_busy(false);
-            }
-        };
-
-        kdf_system.get_kdf_client().async_rpc_batch_standalone(batch).then(answer_functor).then(error_functor);
+                try
+                {
+                    answer_functor(previous_task.get());
+                }
+                catch (const std::exception& e)
+                {
+                    SPDLOG_ERROR("exception caught in broadcast finished: {}", e.what());
+                    this->set_rpc_broadcast_data(QString::fromStdString(e.what()));
+                    this->set_broadcast_busy(false);
+                }
+            });
     }
 
     void
@@ -955,22 +951,21 @@ namespace atomic_dex
             this->set_claiming_is_busy(false);
         };
 
-        auto error_functor = [this](pplx::task<void> previous_task)
-        {
-            try
+        kdf_system.get_kdf_client().real_async_rpc_batch_standalone(batch).then(
+            [this, answer_functor](async::task<web::http::http_response> previous_task)
             {
-                previous_task.wait();
-            }
-            catch (const std::exception& e)
-            {
-                SPDLOG_ERROR("exception caught in claim_rewards: {}", e.what());
-                auto error_json = QJsonObject({{"error_code", 500}, {"error_message", QString::fromStdString(e.what())}});
-                this->set_rpc_claiming_data(error_json);
-                this->set_claiming_is_busy(false);
-            }
-        };
-
-        kdf_system.get_kdf_client().async_rpc_batch_standalone(batch).then(answer_functor).then(error_functor);
+                try
+                {
+                    answer_functor(previous_task.get());
+                }
+                catch (const std::exception& e)
+                {
+                    SPDLOG_ERROR("exception caught in claim_rewards: {}", e.what());
+                    auto error_json = QJsonObject({{"error_code", 500}, {"error_message", QString::fromStdString(e.what())}});
+                    this->set_rpc_claiming_data(error_json);
+                    this->set_claiming_is_busy(false);
+                }
+            });
     }
 
     void
@@ -1119,7 +1114,18 @@ namespace atomic_dex
                 this->set_validate_address_data(nlohmann_json_object_to_qt_json_object(j_out));
                 this->set_validate_address_busy(false);
             };
-            kdf_system.get_kdf_client().async_rpc_batch_standalone(batch).then(answer_functor).then(&handle_exception_pplx_task);
+            kdf_system.get_kdf_client().real_async_rpc_batch_standalone(batch).then(
+                [answer_functor](async::task<web::http::http_response> previous_task)
+                {
+                    try
+                    {
+                        answer_functor(previous_task.get());
+                    }
+                    catch (...)
+                    {
+                        handle_exception_async_task(std::current_exception());
+                    }
+                });
         }
     }
 
@@ -1164,7 +1170,18 @@ namespace atomic_dex
                 }
                 this->set_convert_address_busy(false);
             };
-            kdf_system.get_kdf_client().async_rpc_batch_standalone(batch).then(answer_functor).then(&handle_exception_pplx_task);
+            kdf_system.get_kdf_client().real_async_rpc_batch_standalone(batch).then(
+                [answer_functor](async::task<web::http::http_response> previous_task)
+                {
+                    try
+                    {
+                        answer_functor(previous_task.get());
+                    }
+                    catch (...)
+                    {
+                        handle_exception_async_task(std::current_exception());
+                    }
+                });
         }
     }
 

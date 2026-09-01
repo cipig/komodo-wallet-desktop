@@ -33,6 +33,19 @@ create_json_post_request(nlohmann::json&& json_data)
 }
 
 void
+handle_exception_async_task(std::exception_ptr exception)
+{
+    try
+    {
+        std::rethrow_exception(exception);
+    }
+    catch (const std::exception& e)
+    {
+        SPDLOG_ERROR("exception in handle_exception_async_task: {}", e.what());
+    }
+}
+
+void
 handle_exception_pplx_task(pplx::task<void> previous_task)
 {
     try

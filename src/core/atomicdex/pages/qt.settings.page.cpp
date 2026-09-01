@@ -487,7 +487,18 @@ namespace atomic_dex
                 }
                 this->set_fetching_priv_key_busy(false);
             };
-            kdf_system.get_kdf_client().async_rpc_batch_standalone(batch).then(answer_functor);
+            kdf_system.get_kdf_client().real_async_rpc_batch_standalone(batch).then(
+                [answer_functor](async::task<web::http::http_response> previous_task)
+                {
+                    try
+                    {
+                        answer_functor(previous_task.get());
+                    }
+                    catch (...)
+                    {
+                        handle_exception_async_task(std::current_exception());
+                    }
+                });
         }
         return {QString::fromStdString(seed), QString::fromStdString(kdf::get_rpc_password())};
     }
