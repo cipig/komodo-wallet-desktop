@@ -14,7 +14,6 @@ Item
     }
 
     property var    currentPage
-
     property var    _availablePages: [ _walletsView, _newWallet, _importWallet, _login, _logging ]
     property string _selectedWalletName
 

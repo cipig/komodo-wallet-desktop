@@ -213,7 +213,6 @@ SetupPage
         {
             id: column_layout
             spacing: Style.rowSpacing
-
             anchors.centerIn: parent
 
             RowLayout
@@ -339,10 +338,8 @@ SetupPage
                     Column
                     {
                         id: warning_texts
-
                         anchors.centerIn: parent
                         width: parent.width
-
                         spacing: 10
 
                         DexLabel
@@ -377,6 +374,7 @@ SetupPage
                 {
                     Layout.fillWidth: true
                     spacing: 5
+
                     RowLayout
                     {
                         width: parent.width
@@ -408,15 +406,18 @@ SetupPage
                             }
                         }
                     }
+
                     Item
                     {
                         width: parent.width
                         height: _insideFlow.height
+
                         Grid
                         {
                             id: _insideFlow
                             width: parent.width
                             spacing: 10
+
                             Repeater
                             {
                                 model: current_mnemonic.split(" ")

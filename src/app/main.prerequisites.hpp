@@ -319,6 +319,8 @@ run_app(int argc, char** argv)
     qputenv("QT_QPA_PLATFORM", "xcb");
 #endif
 
+    qputenv("QTWEBENGINE_CHROMIUM_FLAGS", "--disable-web-security");
+
 #if defined(Q_OS_MACOS)
     // https://bugreports.qt.io/browse/QTBUG-89379
     qputenv("QT_ENABLE_GLYPH_CACHE_WORKAROUND", "1");
