@@ -542,7 +542,6 @@ MultipageModal
                     }
                 }
             }
-
         }
 
         // Memo

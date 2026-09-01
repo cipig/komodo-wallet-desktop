@@ -1,9 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import "../Qaterial" as Qaterial
-import QtQuick.Controls.Universal 2.15
 import QtQuick.Layouts 1.15
-
 import App 1.0
 import Dex.Themes 1.0 as Dex
 
@@ -38,6 +36,7 @@ Item
         }
         DexMacosHeaderControl { anchors.verticalCenter: parent.verticalCenter }
     }
+
     Item
     {
         id: _left_resize

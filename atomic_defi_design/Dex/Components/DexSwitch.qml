@@ -1,10 +1,6 @@
-//! Qt Imports.
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
-import QtQuick.Controls.Universal 2.15
-
-//! Projects Imports.
 import "../Constants"
 import App 1.0
 import Dex.Themes 1.0 as Dex
@@ -105,7 +101,6 @@ Switch
         Layout.preferredHeight: control.height
         Layout.alignment: Qt.AlignVCenter
         anchors.verticalCenter: control.verticalCenter
-
         visible: _label.text != ''
 
         DexLabel

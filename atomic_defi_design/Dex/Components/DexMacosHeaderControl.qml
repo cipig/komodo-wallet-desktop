@@ -1,11 +1,8 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
-import QtQuick.Controls.Universal 2.15
 import QtQuick.Layouts 1.15
-
 import "../Qaterial" as Qaterial
 import ModelHelper 0.1
-
 import "../Constants"
 
 Row
@@ -106,6 +103,4 @@ Row
             }
         }
     }
-
-
 }

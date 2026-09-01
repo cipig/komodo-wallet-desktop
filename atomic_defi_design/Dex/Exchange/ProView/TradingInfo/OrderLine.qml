@@ -64,7 +64,6 @@ FloatingBackground
             }
         }
 
-
         ColumnLayout
         {
             Layout.fillHeight: true

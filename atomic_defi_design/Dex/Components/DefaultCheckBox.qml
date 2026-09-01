@@ -1,11 +1,7 @@
-//! Qt Imports.
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
-import QtQuick.Controls.Universal 2.15
 import "../Constants"
-
-//! Project Imports.
 import App 1.0
 import Dex.Themes 1.0 as Dex
 
@@ -27,7 +23,6 @@ CheckBox
     {
         id: _indicator
         anchors.verticalCenter: control.verticalCenter
-
         implicitWidth: 20
         implicitHeight: 20
         radius: 4

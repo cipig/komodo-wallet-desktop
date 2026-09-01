@@ -377,8 +377,9 @@ run_app(int argc, char** argv)
     QWebEngineProfile* defaultProfile = QWebEngineProfile::defaultProfile();
     defaultProfile->setUrlRequestInterceptor(interceptor);
     defaultProfile->setHttpCacheType(QWebEngineProfile::DiskHttpCache);
-    int maxCacheSizeInBytes = 10 * 1024 * 1024;
-    defaultProfile->setHttpCacheMaximumSize(maxCacheSizeInBytes);
+    defaultProfile->setHttpCacheMaximumSize(10 * 1024 * 1024); // 10 MB
+    SPDLOG_INFO("WebEngine Persistent Storage Path: {}", defaultProfile->persistentStoragePath().toStdString());
+    SPDLOG_INFO("WebEngine Network Cache Path: {}", defaultProfile->cachePath().toStdString());
 
     atomic_app.set_qt_app(app, &engine);
     SPDLOG_INFO("post set_qt_app");

@@ -5,7 +5,6 @@ import QtGraphicalEffects 1.15
 import Qt.labs.settings 1.0
 import QtQml 2.15
 import QtQuick.Window 2.15
-import QtQuick.Controls.Universal 2.15
 import "../Qaterial" as Qaterial
 import ModelHelper 0.1
 import "../Components"
