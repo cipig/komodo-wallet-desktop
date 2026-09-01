@@ -88,6 +88,7 @@ namespace atomic_dex::komodo_prices::api
         catch (const std::exception& error)
         {
             SPDLOG_ERROR("exception in async_market_infos: {}", error.what());
+            throw;
         }
     }
 } // namespace atomic_dex::komodo_prices::api

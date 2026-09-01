@@ -44,6 +44,7 @@ namespace
         catch (const std::exception& error)
         {
             SPDLOG_ERROR("exception in async_fetch_timesync: {}", error.what());
+            throw;
         }
     }
 

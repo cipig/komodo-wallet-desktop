@@ -1463,6 +1463,8 @@ namespace atomic_dex
                 //SPDLOG_INFO("Enable task request: {}", batch.dump(4));
                 return {batch, {coin_info.ticker}};
             }
+
+            return {nlohmann::json::array(), {}};
         };
 
         auto answer_functor = [this](coin_config_t coin_info, nlohmann::json batch, std::vector<std::string> tickers)
