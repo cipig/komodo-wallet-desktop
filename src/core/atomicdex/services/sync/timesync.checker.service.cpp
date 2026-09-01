@@ -29,7 +29,6 @@ namespace
                                                               return cfg;
                                                           }()};
     t_http_client_ptr g_timesync_client = std::make_unique<web::http::client::http_client>(FROM_STD_STR(g_timesync_endpoint), g_timesync_cfg);
-    pplx::cancellation_token_source g_synctoken_source;
 
     async::task<web::http::http_response>
     async_fetch_timesync()
@@ -40,7 +39,7 @@ namespace
                 web::http::http_request req;
                 req.set_method(web::http::methods::GET);
                 req.set_request_uri(FROM_STD_STR("developer/api/timezone/UTC"));
-                return g_timesync_client->request(req, g_synctoken_source.get_token()).get();
+                return g_timesync_client->request(req).get();
             }
             catch (const std::exception& error)
             {

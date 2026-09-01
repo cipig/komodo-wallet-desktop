@@ -169,7 +169,7 @@ namespace atomic_dex::kdf
                 web::http::http_request request;
                 request.set_method(web::http::methods::POST);
                 request.set_body(batch_array.dump());
-                auto resp = generate_client().request(request, m_token_source.get_token());
+                auto resp = generate_client().request(request);
                 return resp.get();
             }
             catch (const std::exception& error)
@@ -202,7 +202,7 @@ namespace atomic_dex::kdf
     {
         auto http_request = make_request<Rpc>(request);
         generate_client()
-            .request(http_request, m_token_source.get_token())
+            .request(http_request)
             .then([on_rpc_processed, request](const web::http::http_response& resp)
             {
                 try
@@ -218,12 +218,6 @@ namespace atomic_dex::kdf
                     SPDLOG_ERROR("exception in kdf_client::process_rpc_async: {}", ex.what());
                 }
             });
-    }
-
-    void
-    kdf_client::stop()
-    {
-        m_token_source.cancel();
     }
 
     template <typename TRequest, typename TAnswer>

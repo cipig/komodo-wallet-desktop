@@ -395,7 +395,6 @@ namespace atomic_dex
             }
         }
         m_kdf_running = false;
-        m_kdf_client.stop();
 
         if (!kdf_stopped)
         {
