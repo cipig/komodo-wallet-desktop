@@ -21,33 +21,33 @@
 
 namespace
 {
-    web::http::client::http_client_config g_openrates_cfg{[]()
+    atomic_dex::http::client_config g_openrates_cfg{[]()
                                                           {
-                                                              web::http::client::http_client_config cfg;
+                                                              atomic_dex::http::client_config cfg;
                                                               cfg.set_validate_certificates(false);
                                                               cfg.set_timeout(std::chrono::seconds(5));
                                                               return cfg;
                                                           }()};
-    t_http_client_ptr g_openrates_client = std::make_unique<web::http::client::http_client>(FROM_STD_STR("https://api.frankfurter.dev"), g_openrates_cfg);
+    t_http_client_ptr g_openrates_client = std::make_unique<t_http_client>(("https://api.frankfurter.dev"), g_openrates_cfg);
 
-    async::task<web::http::http_response>
+    async::task<t_http_response>
     async_fetch_fiat_rates()
     {
         return async::spawn([]() {
-            web::http::http_request req;
-            req.set_method(web::http::methods::GET);
-            req.set_request_uri(FROM_STD_STR("v1/latest?base=USD"));
+            t_http_request req;
+            req.set_method(http_method::GET);
+            req.set_request_uri(("v1/latest?base=USD"));
             return g_openrates_client->request(req).get();
         });
     }
 
     nlohmann::json
-    process_fetch_fiat_answer(web::http::http_response resp)
+    process_fetch_fiat_answer(t_http_response resp)
     {
         nlohmann::json answer;
         if (resp.status_code() == 200)
         {
-            answer = nlohmann::json::parse(TO_STD_STR(resp.extract_string(true).get()));
+            answer = nlohmann::json::parse((resp.extract_string(true).get()));
             return answer;
         }
         SPDLOG_WARN("unable to fetch last open rates");
@@ -353,7 +353,7 @@ namespace atomic_dex
     {
         async_fetch_fiat_rates()
             .then(
-                [this](async::task<web::http::http_response> previous_task)
+                [this](async::task<t_http_response> previous_task)
                 {
                     try
                     {

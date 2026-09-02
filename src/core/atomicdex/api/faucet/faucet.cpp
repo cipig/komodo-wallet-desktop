@@ -15,8 +15,9 @@
  ******************************************************************************/
 
 // Deps Headers
-#include <nlohmann/json.hpp>
 #include <antara/app/net/http.code.hpp>
+#include <cpr/cpr.h>
+#include <nlohmann/json.hpp>
 
 // Project Headers
 #include "atomicdex/api/faucet/faucet.hpp"
@@ -24,33 +25,29 @@
 namespace
 {
     constexpr const char* g_faucet_api_endpoint = "https://faucet.gleec.com/faucet/";
-    const auto            g_faucet_api_client   = std::make_unique<web::http::client::http_client>(FROM_STD_STR(g_faucet_api_endpoint));
+    const auto            g_faucet_api_client   = std::make_unique<t_http_client>((g_faucet_api_endpoint));
 } // namespace
 
 namespace atomic_dex::faucet::api
 {
-    async::task<web::http::http_response>
+    async::task<t_http_response>
     claim(const claim_request& claim_req)
     {
         return async::spawn([claim_req]() {
-            web::http::http_request http_request;
-            web::uri_builder        uri_builder;
-
-            uri_builder.append_path(FROM_STD_STR(claim_req.coin_name));
-            uri_builder.append_path(FROM_STD_STR(claim_req.wallet_address));
-            http_request.set_request_uri(uri_builder.to_uri());
-            http_request.set_method(web::http::methods::GET);
+            t_http_request http_request;
+            http_request.set_request_uri(cpr::util::urlEncode(claim_req.coin_name) + "/" + cpr::util::urlEncode(claim_req.wallet_address));
+            http_request.set_method(http_method::GET);
             return g_faucet_api_client->request(http_request).get();
         });
     }
 
     claim_result
-    get_claim_result(const web::http::http_response& claim_response)
+    get_claim_result(const t_http_response& claim_response)
     {
-        const std::string resp_body = TO_STD_STR(claim_response.extract_string(true).get());
+        const std::string resp_body = (claim_response.extract_string(true).get());
 
         //! request success.
-        if (claim_response.status_code() == static_cast<web::http::status_code>(antara::app::http_code::ok))
+        if (claim_response.status_code() == static_cast<int>(antara::app::http_code::ok))
         {
             auto resp_body_json = nlohmann::json::parse(resp_body);
 

@@ -80,7 +80,7 @@ namespace atomic_dex
         batch.push_back(my_recent_swaps);
         // SPDLOG_INFO("my_recent_swaps req: {}", my_recent_swaps.dump(4));
 
-        auto answer_functor = [csv_path](web::http::http_response resp) {
+        auto answer_functor = [csv_path](t_http_response resp) {
             auto       answers     = kdf::basic_batch_answer(resp);
             const auto swap_answer = kdf::rpc_process_answer_batch<t_my_recent_swaps_answer>(answers[0], "my_recent_swaps");
             if (swap_answer.result.has_value())
@@ -124,7 +124,7 @@ namespace atomic_dex
         };
 
         kdf.get_kdf_client().real_async_rpc_batch_standalone(batch).then(
-            [answer_functor](async::task<web::http::http_response> previous_task)
+            [answer_functor](async::task<t_http_response> previous_task)
             {
                 try
                 {

@@ -97,7 +97,7 @@ Check out Komodo Wallet mobile, available for [Android and iOS](https://atomicde
 | spdlog        | 1.8.5      | Fast C++ logging library.                                                                                                                       | Logging             |
 | openssl       | 1.1.1h     | TLS/SSL and crypto library                                                                                                                      | Network/Crypto      |
 | entt          | 3.5.1      | Gaming meets modern C++ - a fast and reliable entity component system (ECS) and much more                                                       | Architecture        |
-| cpprestsdk    | 2.10.15-1  | The C++ REST SDK is a Microsoft project for cloud-based client-server  communication in native code using a modern asynchronous C++ API design. | HTTP                |
+| cpr           | latest via vcpkg | C++ Requests is a libcurl-based HTTP client library used for outbound HTTP/HTTPS calls.                                                     | HTTP                |
 | taskflow      | 2.2.0      | Parallel and Heterogeneous Task Programming in Modern C++                                                                                       | Threading           |
 | qt            | 5.15.2     | Qt is a cross-platform application development framework for desktop, embedded and mobile.                                                      | GUI                 |
 

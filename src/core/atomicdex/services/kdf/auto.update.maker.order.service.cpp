@@ -104,14 +104,14 @@ namespace atomic_dex
             kdf.get_kdf_client()
                 .real_async_rpc_batch_standalone(batch)
                 .then(
-                    []([[maybe_unused]] async::task<web::http::http_response> previous_task)
+                    []([[maybe_unused]] async::task<t_http_response> previous_task)
                     {
                         try
                         {
                             auto resp = previous_task.get();
                             if (resp.status_code() != 200)
                             {
-                                std::string body = TO_STD_STR(resp.extract_string(true).get());
+                                std::string body = (resp.extract_string(true).get());
                                 SPDLOG_ERROR("An error occured during update_maker_order (code: {}): {}", resp.status_code(), body);
                             }
                         }

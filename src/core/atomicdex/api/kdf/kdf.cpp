@@ -587,20 +587,20 @@ namespace atomic_dex::kdf
         nlohmann::json json_data = template_request("version");
         try
         {
-            auto                    client = std::make_unique<web::http::client::http_client>(FROM_STD_STR(atomic_dex::g_dex_rpc));
-            web::http::http_request request;
-            request.set_method(web::http::methods::POST);
+            auto                    client = std::make_unique<t_http_client>((atomic_dex::g_dex_rpc));
+            t_http_request request;
+            request.set_method(http_method::POST);
             request.set_body(json_data.dump());
-            web::http::http_response resp = client->request(request).get();
+            t_http_response resp = client->request(request).get();
             if (resp.status_code() == 200)
             {
-                std::string    body      = TO_STD_STR(resp.extract_string(true).get());
+                std::string    body      = (resp.extract_string(true).get());
                 nlohmann::json body_json = nlohmann::json::parse(body);
                 return body_json.at("result").get<std::string>();
             }
             return "error occured during rpc_version";
         }
-        catch (const web::http::http_exception& exception)
+        catch (const std::exception& exception)
         {
             SPDLOG_ERROR("exception in rpc_version: {}", exception.what());
             return "error occured during rpc_version";
@@ -614,20 +614,20 @@ namespace atomic_dex::kdf
         nlohmann::json json_data = template_request("get_my_peer_id");
         try
         {
-            auto                    client = std::make_unique<web::http::client::http_client>(FROM_STD_STR(atomic_dex::g_dex_rpc));
-            web::http::http_request request;
-            request.set_method(web::http::methods::POST);
+            auto                    client = std::make_unique<t_http_client>((atomic_dex::g_dex_rpc));
+            t_http_request request;
+            request.set_method(http_method::POST);
             request.set_body(json_data.dump());
-            web::http::http_response resp = client->request(request).get();
+            t_http_response resp = client->request(request).get();
             if (resp.status_code() == 200)
             {
-                std::string    body      = TO_STD_STR(resp.extract_string(true).get());
+                std::string    body      = (resp.extract_string(true).get());
                 nlohmann::json body_json = nlohmann::json::parse(body);
                 return body_json.at("result").get<std::string>();
             }
             return "error occured during rpc_version";
         }
-        catch (const web::http::http_exception& exception)
+        catch (const std::exception& exception)
         {
             SPDLOG_ERROR("exception in peer_id: {}", exception.what());
             return "error occured during rpc_version";
@@ -657,12 +657,12 @@ namespace atomic_dex::kdf
     }
 
     nlohmann::json
-    basic_batch_answer(const web::http::http_response& resp)
+    basic_batch_answer(const t_http_response& resp)
     {
         nlohmann::json answer;
         try
         {
-            std::string    body = TO_STD_STR(resp.extract_string(true).get());
+            std::string    body = (resp.extract_string(true).get());
             answer = nlohmann::json::parse(body);
         }
         catch (const nlohmann::detail::parse_error& err)
@@ -692,23 +692,23 @@ namespace atomic_dex::kdf
         return access_rpc_password();
     }
 
-    async::task<web::http::http_response>
+    async::task<t_http_response>
     async_process_rpc_get(t_http_client_ptr& client, const std::string rpc_command, const std::string& url)
     {
         return async::spawn([&client, rpc_command, url]() {
             try
             {
-                web::http::http_request req;
-                req.set_method(web::http::methods::GET);
+                t_http_request req;
+                req.set_method(http_method::GET);
                 if (not url.empty())
                 {
-                    req.set_request_uri(FROM_STD_STR(url));
+                    req.set_request_uri((url));
                 }
                 return client->request(req).get();
             }
             catch (const std::exception& error)
             {
-                SPDLOG_ERROR("exception in async_process_rpc_get for rpc_command {}, url {}, endpoint {}: {}", rpc_command, url, TO_STD_STR(client->base_uri().to_string()), error.what());
+                SPDLOG_ERROR("exception in async_process_rpc_get for rpc_command {}, url {}, endpoint {}: {}", rpc_command, url, client->base_url(), error.what());
                 throw;
             }
         });

@@ -461,9 +461,9 @@ namespace atomic_dex
                 batch.push_back(req_json);
             }
             auto&      kdf_system     = m_system_manager.get_system<kdf_service>();
-            const auto answer_functor = [this](web::http::http_response resp)
+            const auto answer_functor = [this](t_http_response resp)
             {
-                std::string body = TO_STD_STR(resp.extract_string(true).get());
+                std::string body = (resp.extract_string(true).get());
                 if (resp.status_code() == 200)
                 {
                     //!
@@ -488,7 +488,7 @@ namespace atomic_dex
                 this->set_fetching_priv_key_busy(false);
             };
             kdf_system.get_kdf_client().real_async_rpc_batch_standalone(batch).then(
-                [answer_functor](async::task<web::http::http_response> previous_task)
+                [answer_functor](async::task<t_http_response> previous_task)
                 {
                     try
                     {

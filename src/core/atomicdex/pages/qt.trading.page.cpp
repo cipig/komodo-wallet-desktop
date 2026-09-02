@@ -172,10 +172,10 @@ namespace atomic_dex
 
         //! Answer
         SPDLOG_DEBUG("setprice_request is : {}", setprice_request.dump(4));
-        auto answer_functor = [this](const web::http::http_response& resp)
+        auto answer_functor = [this](const t_http_response& resp)
         {
-            std::string body = TO_STD_STR(resp.extract_string(true).get());
-            if (resp.status_code() == web::http::status_codes::OK)
+            std::string body = (resp.extract_string(true).get());
+            if (resp.status_code() == http_status_codes::ok)
             {
                 if (body.find("error") == std::string::npos)
                 {
@@ -206,7 +206,7 @@ namespace atomic_dex
         kdf_system.get_kdf_client()
             .real_async_rpc_batch_standalone(batch)
             .then(
-                [this, answer_functor](async::task<web::http::http_response> previous_task)
+                [this, answer_functor](async::task<t_http_response> previous_task)
                 {
                     try
                     {
@@ -215,7 +215,7 @@ namespace atomic_dex
                     catch (const std::exception& e)
                     {
                         SPDLOG_ERROR("exception in trading_page::place_setprice_order: {}", e.what());
-                        auto error_json = QJsonObject({{"error_code", web::http::status_codes::InternalError}, {"error_message", e.what()}});
+                        auto error_json = QJsonObject({{"error_code", http_status_codes::internal_error}, {"error_message", e.what()}});
                         this->set_buy_sell_last_rpc_data(error_json);
                         this->set_buy_sell_rpc_busy(false);
                         this->clear_forms("place_setprice_order");
@@ -315,10 +315,10 @@ namespace atomic_dex
 
         //! Answer
         //SPDLOG_DEBUG("buy_request is : {}", buy_request.dump(4));
-        auto answer_functor = [this](const web::http::http_response& resp)
+        auto answer_functor = [this](const t_http_response& resp)
         {
-            std::string body = TO_STD_STR(resp.extract_string(true).get());
-            if (resp.status_code() == web::http::status_codes::OK)
+            std::string body = (resp.extract_string(true).get());
+            if (resp.status_code() == http_status_codes::ok)
             {
                 if (body.find("error") == std::string::npos)
                 {
@@ -349,7 +349,7 @@ namespace atomic_dex
         kdf_system.get_kdf_client()
             .real_async_rpc_batch_standalone(batch)
             .then(
-                [this, answer_functor](async::task<web::http::http_response> previous_task)
+                [this, answer_functor](async::task<t_http_response> previous_task)
                 {
                     try
                     {
@@ -358,7 +358,7 @@ namespace atomic_dex
                     catch (const std::exception& e)
                     {
                         SPDLOG_ERROR("exception in trading_page::place_buy_order: {}", e.what());
-                        auto error_json = QJsonObject({{"error_code", web::http::status_codes::InternalError}, {"error_message", e.what()}});
+                        auto error_json = QJsonObject({{"error_code", http_status_codes::internal_error}, {"error_message", e.what()}});
                         this->set_buy_sell_last_rpc_data(error_json);
                         this->set_buy_sell_rpc_busy(false);
                         this->clear_forms("place_buy_order");
@@ -474,9 +474,9 @@ namespace atomic_dex
         //SPDLOG_DEBUG("sell request: {}", sell_request.dump(4));
 
         //! Answer
-        auto answer_functor = [this](web::http::http_response resp)
+        auto answer_functor = [this](t_http_response resp)
         {
-            std::string body = TO_STD_STR(resp.extract_string(true).get());
+            std::string body = (resp.extract_string(true).get());
             if (resp.status_code() == 200)
             {
                 if (body.find("error") == std::string::npos)
@@ -507,7 +507,7 @@ namespace atomic_dex
         kdf_system.get_kdf_client()
             .real_async_rpc_batch_standalone(batch)
             .then(
-                [this, answer_functor](async::task<web::http::http_response> previous_task)
+                [this, answer_functor](async::task<t_http_response> previous_task)
                 {
                     try
                     {
@@ -1322,11 +1322,11 @@ namespace atomic_dex
         // SPDLOG_DEBUG("trade_preimage request: {}", preimage_request.dump(4));
 
         this->set_preimage_busy(true);
-        auto answer_functor = [this, &kdf](web::http::http_response resp)
+        auto answer_functor = [this, &kdf](t_http_response resp)
         {
-            std::string body = TO_STD_STR(resp.extract_string(true).get());
+            std::string body = (resp.extract_string(true).get());
             // SPDLOG_INFO("[determine_fees] trade_preimage answer received: {}", body);
-            if (resp.status_code() == web::http::status_codes::OK)
+            if (resp.status_code() == http_status_codes::ok)
             {
                 auto           answers               = nlohmann::json::parse(body);
                 nlohmann::json answer                = answers[0];
@@ -1380,7 +1380,7 @@ namespace atomic_dex
         };
 
         kdf.get_kdf_client().real_async_rpc_batch_standalone(batch).then(
-            [answer_functor](async::task<web::http::http_response> previous_task)
+            [answer_functor](async::task<t_http_response> previous_task)
             {
                 try
                 {

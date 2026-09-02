@@ -36,12 +36,12 @@ namespace ag = antara::gaming;
 namespace atomic_dex::kdf
 {
     inline constexpr const char*                           g_etherscan_proxy_endpoint = "https://etherscan.gleec.com/";
-    inline std::unique_ptr<web::http::client::http_client> g_etherscan_proxy_http_client{
-        std::make_unique<web::http::client::http_client>(FROM_STD_STR(g_etherscan_proxy_endpoint))};
-    inline std::unique_ptr<web::http::client::http_client> g_qtum_proxy_http_client{
-        std::make_unique<web::http::client::http_client>(FROM_STD_STR(::atomic_dex::g_qtum_infos_endpoint))};
+    inline t_http_client_ptr g_etherscan_proxy_http_client{
+        std::make_unique<t_http_client>((g_etherscan_proxy_endpoint))};
+    inline t_http_client_ptr g_qtum_proxy_http_client{
+        std::make_unique<t_http_client>((::atomic_dex::g_qtum_infos_endpoint))};
 
-    nlohmann::json basic_batch_answer(const web::http::http_response& resp);
+    nlohmann::json basic_batch_answer(const t_http_response& resp);
 
     std::string rpc_version();
     std::string peer_id();
@@ -232,7 +232,7 @@ namespace atomic_dex::kdf
     template <typename RpcReturnType>
     RpcReturnType rpc_process_answer_batch(nlohmann::json& json_answer, const std::string& rpc_command) ;
 
-    async::task<web::http::http_response> async_process_rpc_get(t_http_client_ptr& client, const std::string rpc_command, const std::string& url);
+    async::task<t_http_response> async_process_rpc_get(t_http_client_ptr& client, const std::string rpc_command, const std::string& url);
 
     nlohmann::json template_request(std::string method_name, bool is_protocol_v2 = false);
 

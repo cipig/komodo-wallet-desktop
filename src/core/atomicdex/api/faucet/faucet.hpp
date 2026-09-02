@@ -30,7 +30,7 @@ namespace atomic_dex::faucet::api
         std::string wallet_address;
     };
     
-    async::task<web::http::http_response>
+    async::task<t_http_response>
     claim(const claim_request& claim_request);
     
     struct claim_result
@@ -41,5 +41,5 @@ namespace atomic_dex::faucet::api
     
     [[nodiscard]]
     claim_result
-    get_claim_result(const web::http::http_response& claim_response);
+    get_claim_result(const t_http_response& claim_response);
 }

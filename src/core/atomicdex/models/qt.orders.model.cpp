@@ -719,14 +719,14 @@ namespace atomic_dex
         // json_data["userpass"] = "*****";
         // SPDLOG_DEBUG("recover_funds_of_swap request: {}", json_data.dump(-1));
 
-        auto answer_functor = [this](web::http::http_response resp)
+        auto answer_functor = [this](t_http_response resp)
         {
             nlohmann::json j_out = nlohmann::json::object();
-            std::string    body  = TO_STD_STR(resp.extract_string(true).get());
+            std::string    body  = (resp.extract_string(true).get());
 
             SPDLOG_DEBUG("recover_funds_of_swap answer received: {}", body);
 
-            if (resp.status_code() == web::http::status_codes::OK)
+            if (resp.status_code() == http_status_codes::ok)
             {
                 auto answers        = nlohmann::json::parse(body);
                 auto recover_answer = kdf::rpc_process_answer_batch<t_recover_funds_of_swap_answer>(answers[0], "recover_funds_of_swap");
@@ -750,7 +750,7 @@ namespace atomic_dex
                     j_out["error"]    = recover_answer.raw_result;
                 }
             }
-            else if (resp.status_code() == web::http::status_codes::RequestTimeout)
+            else if (resp.status_code() == http_status_codes::request_timeout)
             {
                 j_out["is_valid"] = false;
                 j_out["error"]    = "Request to kdf timeout - skipping";
@@ -765,7 +765,7 @@ namespace atomic_dex
         };
 
         kdf_system.get_kdf_client().real_async_rpc_batch_standalone(batch).then(
-            [this, answer_functor](async::task<web::http::http_response> previous_task)
+            [this, answer_functor](async::task<t_http_response> previous_task)
             {
                 try
                 {

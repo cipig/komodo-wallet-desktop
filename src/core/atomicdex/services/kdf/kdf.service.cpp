@@ -385,7 +385,7 @@ namespace atomic_dex
             nlohmann::json batch        = nlohmann::json::array();
             batch.push_back(stop_request);
             SPDLOG_INFO("processing kdf stop batch request");
-            web::http::http_response resp = m_kdf_client.real_async_rpc_batch_standalone(batch).get();
+            t_http_response resp = m_kdf_client.real_async_rpc_batch_standalone(batch).get();
             SPDLOG_INFO("kdf stop batch answer received");
             auto answers = kdf::basic_batch_answer(resp);
             if (answers[0].contains("result"))
@@ -649,7 +649,7 @@ namespace atomic_dex
     void kdf_service::enable_erc_family_coins(const t_coins& coins)
     {
         nlohmann::json batch_array = nlohmann::json::array();
-        auto callback = [this, coins](const web::http::http_response& resp)
+        auto callback = [this, coins](const t_http_response& resp)
         {
             try
             {
@@ -737,7 +737,7 @@ namespace atomic_dex
             batch_array.push_back(j);
         }
         m_kdf_client.real_async_rpc_batch_standalone(batch_array)
-            .then([this, batch = batch_array, callback](async::task<web::http::http_response> previous_task) mutable {
+            .then([this, batch = batch_array, callback](async::task<t_http_response> previous_task) mutable {
                 try
                 {
                     callback(previous_task.get());
@@ -757,7 +757,7 @@ namespace atomic_dex
     void kdf_service::enable_utxo_qrc20_coins(const t_coins& coins)
     {
         auto batch_array = nlohmann::json::array();
-        auto callback = [this, coins](const web::http::http_response& resp)
+        auto callback = [this, coins](const t_http_response& resp)
         {
             try
             {
@@ -851,7 +851,7 @@ namespace atomic_dex
             batch_array.push_back(j);
         }
         m_kdf_client.real_async_rpc_batch_standalone(batch_array)
-            .then([this, batch = batch_array, callback](async::task<web::http::http_response> previous_task) mutable {
+            .then([this, batch = batch_array, callback](async::task<t_http_response> previous_task) mutable {
                 try
                 {
                     callback(previous_task.get());
@@ -1220,7 +1220,7 @@ namespace atomic_dex
         auto&& [batch_array, tickers_idx, tokens_to_fetch] = prepare_batch_balance_and_tx(only_tx);
         return m_kdf_client.real_async_rpc_batch_standalone(batch_array)
             .then(
-                [this, tokens_to_fetch = tokens_to_fetch, is_a_reset, tickers, batch_array = batch_array](async::task<web::http::http_response> previous_task)
+                [this, tokens_to_fetch = tokens_to_fetch, is_a_reset, tickers, batch_array = batch_array](async::task<t_http_response> previous_task)
                 {
                     try
                     {
@@ -1484,7 +1484,7 @@ namespace atomic_dex
         {
             m_kdf_client.real_async_rpc_batch_standalone(batch)
                 .then(
-                    [this, coin_info, tickers, batch](async::task<web::http::http_response> previous_task) mutable
+                    [this, coin_info, tickers, batch](async::task<t_http_response> previous_task) mutable
                     {
                         try
                         {
@@ -1548,7 +1548,7 @@ namespace atomic_dex
                                                 std::string event = "none";
 
                                                 do {
-                                                    web::http::http_response             z_resp      = m_kdf_client.real_async_rpc_batch_standalone(z_batch_array).get();
+                                                    t_http_response             z_resp      = m_kdf_client.real_async_rpc_batch_standalone(z_batch_array).get();
                                                     auto                                 z_answers   = kdf::basic_batch_answer(z_resp);
                                                     z_error                                          = z_answers;
 
@@ -1846,7 +1846,7 @@ namespace atomic_dex
             return;
         }
 
-        auto answer_functor = [this, is_a_reset](web::http::http_response resp)
+        auto answer_functor = [this, is_a_reset](t_http_response resp)
         {
             auto answer        = kdf::basic_batch_answer(resp);
             if (answer.is_array())
@@ -1901,7 +1901,7 @@ namespace atomic_dex
         };
 
         m_kdf_client.real_async_rpc_batch_standalone(batch)
-            .then([this, batch, answer_functor](async::task<web::http::http_response> previous_task) {
+            .then([this, batch, answer_functor](async::task<t_http_response> previous_task) {
                 try
                 {
                     answer_functor(previous_task.get());
@@ -1942,7 +1942,7 @@ namespace atomic_dex
         kdf::to_json(j, balance_request);
         batch_array.push_back(j);
 
-        auto answer_functor = [this](web::http::http_response resp)
+        auto answer_functor = [this](t_http_response resp)
         {
             try
             {
@@ -1959,7 +1959,7 @@ namespace atomic_dex
         };
 
         m_kdf_client.real_async_rpc_batch_standalone(batch_array)
-            .then([this, batch = batch_array, answer_functor](web::http::http_response resp) {
+            .then([this, batch = batch_array, answer_functor](t_http_response resp) {
                 try
                 {
                     answer_functor(resp);
@@ -2183,7 +2183,7 @@ namespace atomic_dex
         batch.push_back(active_swaps);
         //SPDLOG_DEBUG("active_swaps req: {}", active_swaps.dump(4));
 
-        auto answer_functor = [this, limit, filter_infos, after_manual_reset](web::http::http_response resp)
+        auto answer_functor = [this, limit, filter_infos, after_manual_reset](t_http_response resp)
         {
             //! Parsing Resp
             orders_and_swaps result;
@@ -2237,7 +2237,7 @@ namespace atomic_dex
         };
 
         m_kdf_client.real_async_rpc_batch_standalone(batch)
-            .then([this, batch, answer_functor](async::task<web::http::http_response> previous_task) {
+            .then([this, batch, answer_functor](async::task<t_http_response> previous_task) {
                 try
                 {
                     answer_functor(previous_task.get());
@@ -2334,7 +2334,7 @@ namespace atomic_dex
         std::string url = retrieve_api_functor(ticker, address(ticker, ec));
         kdf::async_process_rpc_get(kdf::g_etherscan_proxy_http_client, "tx_history", url)
             .then(
-                [this, ticker](async::task<web::http::http_response> previous_task)
+                [this, ticker](async::task<t_http_response> previous_task)
                 {
                     try
                     {
