@@ -18,6 +18,7 @@
 #include <QJsonDocument>
 #include <algorithm>
 #include <nlohmann/json.hpp>
+#include <antara/gaming/core/real.path.hpp>
 #include "atomicdex/config/app.cfg.hpp"
 #include "atomicdex/utilities/global.utilities.hpp"
 #include "atomicdex/utilities/qt.utilities.hpp"

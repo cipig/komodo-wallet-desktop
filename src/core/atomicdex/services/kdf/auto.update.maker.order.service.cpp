@@ -102,7 +102,7 @@ namespace atomic_dex
             SPDLOG_INFO("request: {}", update_maker_order_json.dump(1));
             auto& kdf = this->m_system_manager.get_system<kdf_service>();
             kdf.get_kdf_client()
-                .real_async_rpc_batch_standalone(batch)
+                .async_rpc_batch_standalone(batch)
                 .then(
                     []([[maybe_unused]] async::task<t_http_response> previous_task)
                     {

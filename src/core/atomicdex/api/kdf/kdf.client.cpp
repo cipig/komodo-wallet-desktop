@@ -159,7 +159,7 @@ namespace atomic_dex::kdf
     }
 
     async::task<t_http_response>
-    kdf_client::real_async_rpc_batch_standalone(nlohmann::json batch_array)
+    kdf_client::async_rpc_batch_standalone(nlohmann::json batch_array)
     {
         return async::spawn([batch_array]() {
             try
@@ -172,7 +172,7 @@ namespace atomic_dex::kdf
             }
             catch (const std::exception& error)
             {
-                SPDLOG_ERROR("exception in kdf_client::real_async_rpc_batch_standalone: {}", error.what());
+                SPDLOG_ERROR("exception in kdf_client::async_rpc_batch_standalone: {}", error.what());
                 throw;
             }
         });

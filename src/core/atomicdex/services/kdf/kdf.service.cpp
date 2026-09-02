@@ -384,7 +384,7 @@ namespace atomic_dex
             nlohmann::json batch        = nlohmann::json::array();
             batch.push_back(stop_request);
             SPDLOG_INFO("processing kdf stop batch request");
-            t_http_response resp = m_kdf_client.real_async_rpc_batch_standalone(batch).get();
+            t_http_response resp = m_kdf_client.async_rpc_batch_standalone(batch).get();
             SPDLOG_INFO("kdf stop batch answer received");
             auto answers = kdf::basic_batch_answer(resp);
             if (answers[0].contains("result"))
@@ -735,7 +735,7 @@ namespace atomic_dex
             kdf::to_json(j, request);
             batch_array.push_back(j);
         }
-        m_kdf_client.real_async_rpc_batch_standalone(batch_array)
+        m_kdf_client.async_rpc_batch_standalone(batch_array)
             .then([this, batch = batch_array, callback](async::task<t_http_response> previous_task) mutable {
                 try
                 {
@@ -849,7 +849,7 @@ namespace atomic_dex
             kdf::to_json(j, request);
             batch_array.push_back(j);
         }
-        m_kdf_client.real_async_rpc_batch_standalone(batch_array)
+        m_kdf_client.async_rpc_batch_standalone(batch_array)
             .then([this, batch = batch_array, callback](async::task<t_http_response> previous_task) mutable {
                 try
                 {
@@ -1217,7 +1217,7 @@ namespace atomic_dex
         (void)tickers;
         (void)is_during_enabling;
         auto&& [batch_array, tickers_idx, tokens_to_fetch] = prepare_batch_balance_and_tx(only_tx);
-        return m_kdf_client.real_async_rpc_batch_standalone(batch_array)
+        return m_kdf_client.async_rpc_batch_standalone(batch_array)
             .then(
                 [this, tokens_to_fetch = tokens_to_fetch, is_a_reset, tickers, batch_array = batch_array](async::task<t_http_response> previous_task)
                 {
@@ -1481,7 +1481,7 @@ namespace atomic_dex
 
         auto answer_functor = [this](coin_config_t coin_info, nlohmann::json batch, std::vector<std::string> tickers)
         {
-            m_kdf_client.real_async_rpc_batch_standalone(batch)
+            m_kdf_client.async_rpc_batch_standalone(batch)
                 .then(
                     [this, coin_info, tickers, batch](async::task<t_http_response> previous_task) mutable
                     {
@@ -1547,7 +1547,7 @@ namespace atomic_dex
                                                 std::string event = "none";
 
                                                 do {
-                                                    t_http_response             z_resp      = m_kdf_client.real_async_rpc_batch_standalone(z_batch_array).get();
+                                                    t_http_response             z_resp      = m_kdf_client.async_rpc_batch_standalone(z_batch_array).get();
                                                     auto                                 z_answers   = kdf::basic_batch_answer(z_resp);
                                                     z_error                                          = z_answers;
 
@@ -1899,7 +1899,7 @@ namespace atomic_dex
             }
         };
 
-        m_kdf_client.real_async_rpc_batch_standalone(batch)
+        m_kdf_client.async_rpc_batch_standalone(batch)
             .then([this, batch, answer_functor](async::task<t_http_response> previous_task) {
                 try
                 {
@@ -1957,7 +1957,7 @@ namespace atomic_dex
             }
         };
 
-        m_kdf_client.real_async_rpc_batch_standalone(batch_array)
+        m_kdf_client.async_rpc_batch_standalone(batch_array)
             .then([this, batch = batch_array, answer_functor](t_http_response resp) {
                 try
                 {
@@ -2235,7 +2235,7 @@ namespace atomic_dex
             this->dispatcher_.trigger<process_swaps_and_orders_finished>(after_manual_reset);
         };
 
-        m_kdf_client.real_async_rpc_batch_standalone(batch)
+        m_kdf_client.async_rpc_batch_standalone(batch)
             .then([this, batch, answer_functor](async::task<t_http_response> previous_task) {
                 try
                 {

@@ -123,7 +123,7 @@ namespace atomic_dex
             }
         };
 
-        kdf.get_kdf_client().real_async_rpc_batch_standalone(batch).then(
+        kdf.get_kdf_client().async_rpc_batch_standalone(batch).then(
             [answer_functor](async::task<t_http_response> previous_task)
             {
                 try

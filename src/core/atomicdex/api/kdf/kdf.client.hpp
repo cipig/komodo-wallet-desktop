@@ -23,7 +23,7 @@ namespace atomic_dex::kdf
         ~kdf_client() = default;
 
         //! API
-        async::task<t_http_response> real_async_rpc_batch_standalone(nlohmann::json batch_array);
+        async::task<t_http_response> async_rpc_batch_standalone(nlohmann::json batch_array);
 
         template <rpc Rpc>
         void process_rpc_async(const std::function<void(Rpc)>& on_rpc_processed);
