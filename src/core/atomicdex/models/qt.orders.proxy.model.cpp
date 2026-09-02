@@ -14,13 +14,9 @@
  *                                                                            *
  ******************************************************************************/
 
-//! Qt
+#include <fstream>
 #include <QDebug>
-
-//! Boost
 #include <boost/algorithm/string.hpp>
-
-//! Project
 #include "atomicdex/models/qt.orders.model.hpp"
 #include "atomicdex/models/qt.orders.proxy.model.hpp"
 #include "atomicdex/pages/qt.trading.page.hpp"
