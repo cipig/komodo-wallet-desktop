@@ -15,10 +15,8 @@
  ******************************************************************************/
 
 //! Dependencies Headers
-#include <range/v3/action/remove_if.hpp>   ///< ranges::actions::remove_if
-#include <range/v3/algorithm/for_each.hpp> ///< ranges::for_each
-#include <range/v3/numeric/accumulate.hpp> ///< ranges::accumulate
-#include <range/v3/view/filter.hpp>        ///< ranges::views::filter
+#include <algorithm>
+#include <numeric>
 
 //! SDK Headers
 #include "antara/gaming/ecs/system.manager.hpp"
@@ -35,11 +33,16 @@ namespace antara::gaming::ecs
     void
     system_manager::sweep_systems_() 
     {
-        using namespace ranges::actions;
-        ranges::for_each(systems_, [](auto&& vec_system) {
-            remove_if(vec_system, &base_system::is_marked);
-        });
+        for (auto& vec_system : systems_)
+        {
+            vec_system.erase(
+                std::remove_if(vec_system.begin(), vec_system.end(), [](const auto& sys) {
+                    return sys->is_marked();
+                }),
+                vec_system.end());
+        }
         need_to_sweep_systems_ = false;
+
     }
 } // namespace antara::gaming::ecs
 
@@ -60,10 +63,11 @@ namespace antara::gaming::ecs
     std::size_t
     system_manager::nb_systems() const 
     {
-        using namespace ranges;
-        return accumulate(systems_, 0ull, [](size_t accumulator, auto&& vec) {
-            return accumulator + vec.size();
-        });
+        return std::accumulate(
+            systems_.begin(), systems_.end(), std::size_t{0},
+            [](std::size_t accumulator, const auto& vec) {
+                return accumulator + vec.size();
+            });
     }
 
     void
@@ -123,11 +127,15 @@ namespace antara::gaming::ecs
     system_manager::update_systems(system_type system_type_to_update) 
     {
         std::size_t nb_systems_updated = 0ull;
-        for (auto&& current_sys: systems_[system_type_to_update] | ranges::views::filter(&base_system::is_enabled))
+        for (auto&& current_sys : systems_[system_type_to_update])
         {
-            current_sys->update();
-            nb_systems_updated += 1;
+            if (current_sys->is_enabled())
+            {
+                current_sys->update();
+                nb_systems_updated += 1;
+            }
         }
+
         return nb_systems_updated;
     }
 

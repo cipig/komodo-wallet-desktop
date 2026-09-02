@@ -308,7 +308,6 @@ namespace atomic_dex
                 {
                     set_current_currency(QString::fromStdString(m_config.possible_currencies[0]));
                 }
-
             }
         }
     }

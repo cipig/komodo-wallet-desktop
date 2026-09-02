@@ -63,7 +63,7 @@ namespace
         const t_float_50 amount_f(amount);
         const t_float_50 current_price_f(price);
         const t_float_50 final_price       = amount_f * current_price_f;
-        std::size_t      default_precision = atomic_dex::is_this_currency_a_fiat(cfg, currency) ? 2 : 8;
+        std::size_t      default_precision = atomic_dex::is_this_currency_a_fiat(cfg, currency) ? 4 : 8;
         std::string      result;
 
         if (auto final_price_str = final_price.str(default_precision, std::ios_base::fixed); final_price_str == "0.00" && final_price > 0.00000000)
@@ -156,7 +156,7 @@ namespace atomic_dex
 
             if (adjusted)
             {
-                std::size_t default_precision = is_this_currency_a_fiat(m_cfg, fiat) ? 2 : 8;
+                std::size_t default_precision = is_this_currency_a_fiat(m_cfg, fiat) ? 4 : 8;
 
                 t_float_50 current_price_f(current_price);
                 if (is_this_currency_a_fiat(m_cfg, fiat))
@@ -224,7 +224,7 @@ namespace atomic_dex
                 }
             }
 
-            std::size_t default_precision = is_this_currency_a_fiat(m_cfg, fiat) ? 2 : 8;
+            std::size_t default_precision = is_this_currency_a_fiat(m_cfg, fiat) ? 4 : 8;
             ss.precision(default_precision);
             ss << std::fixed << final_price_f;
             std::string result = ss.str();

@@ -34,8 +34,6 @@
 //! Dependencies Headers
 #include <entt/entity/registry.hpp>       ///< entt::registry
 #include <entt/signal/dispatcher.hpp>     ///< entt::dispatcher
-#include <range/v3/algorithm/any_of.hpp>  ///< ranges::any_of
-#include <range/v3/algorithm/find_if.hpp> ///< ranges::find_if
 #include <tl/expected.hpp>                ///< tl::expected
 
 //! SDK Headers

@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <algorithm>
+
 #include "system.manager.hpp"
 
 namespace antara::gaming::ecs
@@ -25,8 +27,6 @@ namespace antara::gaming::ecs
     bool
     system_manager::prioritize_system() 
     {
-        using namespace ranges;
-
         if (not has_systems<SystemToSwap, SystemB>())
             return false;
         if (SystemToSwap::get_system_type() != SystemB::get_system_type())
@@ -35,9 +35,9 @@ namespace antara::gaming::ecs
         auto   sys_type          = SystemToSwap::get_system_type();
         auto&& sys_collection    = systems_[sys_type];
         auto   name              = SystemToSwap::get_class_name();
-        auto   it_system_to_swap = find_if(sys_collection, [&name](auto&& sys) { return sys->get_name() == name; });
+        auto   it_system_to_swap = std::find_if(sys_collection.begin(), sys_collection.end(), [&name](auto&& sys) { return sys->get_name() == name; });
         name                     = SystemB::get_class_name();
-        auto it_system_b         = find_if(sys_collection, [&name](auto&& sys) { return sys->get_name() == name; });
+        auto it_system_b         = std::find_if(sys_collection.begin(), sys_collection.end(), [&name](auto&& sys) { return sys->get_name() == name; });
 
         if (it_system_to_swap != systems_[sys_type].end() && it_system_b != systems_[sys_type].end())
         {
@@ -123,7 +123,7 @@ namespace antara::gaming::ecs
     system_manager::has_system() const 
     {
         constexpr const auto sys_type = TSystem::get_system_type();
-        return ranges::any_of(systems_[sys_type], [](auto&& ptr) {
+        return std::any_of(systems_[sys_type].begin(), systems_[sys_type].end(), [](auto&& ptr) {
             if (ptr == nullptr)
                 return false;
             return ptr->get_name() == TSystem::get_class_name();
@@ -206,7 +206,7 @@ namespace antara::gaming::ecs
         }
 
         constexpr const auto sys_type = TSystem::get_system_type();
-        auto                 it       = ranges::find_if(systems_[sys_type], [](auto&& ptr) {
+        auto                 it       = std::find_if(systems_[sys_type].begin(), systems_[sys_type].end(), [](auto&& ptr) {
             if (ptr == nullptr)
             {
                 return false;
@@ -232,7 +232,7 @@ namespace antara::gaming::ecs
         }
 
         constexpr const auto sys_type = TSystem::get_system_type();
-        auto                 it       = ranges::find_if(systems_[sys_type], [](auto&& ptr) { return ptr->get_name() == TSystem::get_class_name(); });
+        auto                 it       = std::find_if(systems_[sys_type].begin(), systems_[sys_type].end(), [](auto&& ptr) { return ptr->get_name() == TSystem::get_class_name(); });
         if (it != systems_[sys_type].end())
         {
             const auto& system = static_cast<const TSystem&>(*(*it));

@@ -8,7 +8,6 @@
     "boost-lockfree",
     "openssl",
     "nlohmann-json",
-    "range-v3",
     "libsodium",
     "fmt",
     "spdlog",

@@ -1,15 +1,9 @@
 #pragma once
 
-//! Qt
 #include <QFile>
 #include <QJsonDocument>
-
-//! Deps
-#include <antara/gaming/core/real.path.hpp>
 #include <nlohmann/json.hpp>
 #include <optional>
-
-//! Project
 #include "atomicdex/api/kdf/kdf.constants.hpp"
 #include "atomicdex/utilities/global.utilities.hpp"
 #include "atomicdex/utilities/qt.utilities.hpp"

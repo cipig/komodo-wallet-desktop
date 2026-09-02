@@ -10,7 +10,6 @@ target_link_libraries(antara_ecs_shared_sources PUBLIC
         antara::entt
         strong_type::strong_type
         tl::expected
-        range-v3::range-v3
         antara::default_settings
         antara::timer
         antara::event
