@@ -18,7 +18,7 @@ namespace atomic_dex::http
         return {value.data(), value.size()};
     }
 
-    enum class method
+    enum class verb
     {
         get,
         post
@@ -26,8 +26,8 @@ namespace atomic_dex::http
 
     namespace methods
     {
-        inline constexpr method GET  = method::get;
-        inline constexpr method POST = method::post;
+        inline constexpr verb GET  = verb::get;
+        inline constexpr verb POST = verb::post;
     } // namespace methods
 
     namespace status_codes
@@ -53,21 +53,21 @@ namespace atomic_dex::http
     {
       public:
         request() = default;
-        explicit request(method request_method);
+        explicit request(verb request_method);
 
-        void set_method(method request_method);
+        void set_method(verb request_method);
         void set_request_uri(std::string uri);
         void set_body(std::string body);
 
         http_headers_t&       headers();
         const http_headers_t& headers() const;
 
-        [[nodiscard]] method             method() const;
+        [[nodiscard]] verb               method() const;
         [[nodiscard]] const std::string& request_uri() const;
         [[nodiscard]] const std::string& body() const;
 
       private:
-        http::method  m_method{methods::GET};
+        http::verb   m_method{methods::GET};
         std::string  m_request_uri;
         std::string  m_body;
         http_headers_t m_headers;
@@ -121,7 +121,7 @@ using t_http_client_ptr = std::unique_ptr<atomic_dex::http::client>;
 using t_http_client     = atomic_dex::http::client;
 using t_http_request    = atomic_dex::http::request;
 using t_http_response   = atomic_dex::http::response;
-using t_http_method     = atomic_dex::http::method;
+using t_http_method     = atomic_dex::http::verb;
 namespace http_method       = atomic_dex::http::methods;
 namespace http_status_codes = atomic_dex::http::status_codes;
 

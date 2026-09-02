@@ -50,10 +50,10 @@ namespace atomic_dex::http
         return m_values;
     }
 
-    request::request(method request_method) : m_method(request_method) {}
+    request::request(verb request_method) : m_method(request_method) {}
 
     void
-    request::set_method(method request_method)
+    request::set_method(verb request_method)
     {
         m_method = request_method;
     }
@@ -82,7 +82,7 @@ namespace atomic_dex::http
         return m_headers;
     }
 
-    method
+    verb
     request::method() const
     {
         return m_method;
@@ -161,10 +161,10 @@ namespace atomic_dex::http
 
             switch (req.method())
             {
-            case method::post:
+            case verb::post:
                 cpr_response = cpr::Post(cpr::Url{url}, cpr_headers, cpr::Body{req.body()}, verify_ssl, timeout);
                 break;
-            case method::get:
+            case verb::get:
                 cpr_response = cpr::Get(cpr::Url{url}, cpr_headers, verify_ssl, timeout);
                 break;
             }
