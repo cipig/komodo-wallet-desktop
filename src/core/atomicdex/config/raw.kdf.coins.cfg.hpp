@@ -4,6 +4,7 @@
 #include <QJsonDocument>
 #include <nlohmann/json.hpp>
 #include <optional>
+#include <antara/gaming/core/real.path.hpp>
 #include "atomicdex/api/kdf/kdf.constants.hpp"
 #include "atomicdex/utilities/global.utilities.hpp"
 #include "atomicdex/utilities/qt.utilities.hpp"
