@@ -25,7 +25,6 @@
 #include <async++.h>
 #include <boost/thread/thread.hpp>
 #include <boost/algorithm/string/replace.hpp>
-#include <range/v3/algorithm/any_of.hpp>
 #include <QException>
 #include <QFile>
 #include <QSaveFile>
@@ -546,7 +545,7 @@ namespace atomic_dex
         t_coins enabled_coins = get_enabled_coins();
         for (const auto& coin : coins)
         {
-            if (ranges::any_of(enabled_coins, [&coin](const auto& enabled_coin) { return enabled_coin.ticker == coin.ticker; }))
+            if (std::any_of(enabled_coins.begin(), enabled_coins.end(), [&coin](const auto& enabled_coin) { return enabled_coin.ticker == coin.ticker; }))
             {
                 SPDLOG_WARN("{} cannot be enabled because it already is or is being enabled.", coin.ticker);
                 continue;

@@ -14,16 +14,11 @@
  *                                                                            *
  ******************************************************************************/
 
-//! Qt
 #include <QFile>
 #include <QJsonDocument>
-
-//! Deps
+#include <algorithm>
 #include <antara/gaming/core/real.path.hpp>
 #include <nlohmann/json.hpp>
-#include <range/v3/algorithm/any_of.hpp>
-
-//! Project Header
 #include "atomicdex/config/app.cfg.hpp"
 #include "atomicdex/utilities/global.utilities.hpp"
 #include "atomicdex/utilities/qt.utilities.hpp"
@@ -173,7 +168,7 @@ namespace atomic_dex
     bool
     is_this_currency_a_fiat(const cfg& config, const std::string& currency)
     {
-        return ranges::any_of(config.available_fiat, [currency](const std::string& current_fiat) { return current_fiat == currency; });
+        return std::find(config.available_fiat.begin(), config.available_fiat.end(), currency) != config.available_fiat.end();
     }
 
     void

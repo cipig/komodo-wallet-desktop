@@ -14,10 +14,8 @@
  *                                                                            *
  ******************************************************************************/
 
-//! Deps
-#include <range/v3/algorithm/any_of.hpp>
+#include <algorithm>
 
-//! Project
 #include "atomicdex/api/kdf/rpc_v1/rpc.recover_funds_of_swap.hpp"
 #include "atomicdex/events/qt.events.hpp"
 #include "atomicdex/models/qt.orders.model.hpp"
@@ -634,7 +632,7 @@ namespace atomic_dex
                    (cur_hist_swap.order_status == "matched" || cur_hist_swap.order_status == "ongoing" || cur_hist_swap.order_status == "matching");
         };
 
-        return ranges::any_of(m_model_data.orders_and_swaps, functor);
+        return std::any_of(m_model_data.orders_and_swaps.begin(), m_model_data.orders_and_swaps.end(), functor);
     }
 
     void

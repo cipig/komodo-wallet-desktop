@@ -2,10 +2,7 @@
 // Created by Sztergbaum Roman on 09/09/2021.
 //
 
-//! Deps
 #include <nlohmann/json.hpp>
-
-//! Project Headers
 #include "atomicdex/api/komodo_prices/komodo.prices.hpp"
 
 namespace
@@ -88,7 +85,7 @@ namespace atomic_dex::komodo_prices::api
             }
             catch (const std::exception& error)
             {
-                SPDLOG_ERROR("exception in async_market_infos with fallback {} and endpoint {}: {}", fallback, endpoint, error.what());
+                SPDLOG_ERROR("exception in async_market_infos with fallback {}: {}", fallback, error.what());
                 throw;
             }
         });
