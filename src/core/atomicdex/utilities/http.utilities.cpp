@@ -175,7 +175,11 @@ namespace atomic_dex::http
             }
 
             std::unordered_map<std::string, std::string> response_headers(cpr_response.header.begin(), cpr_response.header.end());
-            return response{cpr_response.status_code, materialize_std_string(cpr_response.text), std::move(response_headers)};
+            return response{
+                static_cast<int>(cpr_response.status_code),
+                materialize_std_string(cpr_response.text),
+                std::move(response_headers)
+            };
         });
     }
 
