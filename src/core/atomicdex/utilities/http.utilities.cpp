@@ -70,13 +70,13 @@ namespace atomic_dex::http
         m_body = std::move(body);
     }
 
-    http::headers&
+    http::http_headers_t&
     request::headers()
     {
         return m_headers;
     }
 
-    const http::headers&
+    const http::http_headers_t&
     request::headers() const
     {
         return m_headers;
@@ -100,8 +100,8 @@ namespace atomic_dex::http
         return m_body;
     }
 
-    response::response(int status_code, std::string body, std::unordered_map<std::string, std::string> headers) :
-        m_status_code(status_code), m_body(std::move(body)), m_headers(std::move(headers))
+    response::response(int status_code, std::string body, std::unordered_map<std::string, std::string> response_headers) :
+        m_status_code(status_code), m_body(std::move(body)), m_headers(std::move(response_headers))
     {
     }
 
@@ -154,7 +154,7 @@ namespace atomic_dex::http
     {
         return async::spawn([base_url = m_base_url, config = m_config, req]() {
             const auto url = build_url(base_url, req.request_uri());
-            cpr::Header headers(req.headers().values().begin(), req.headers().values().end());
+            cpr::Header cpr_headers(req.headers().values().begin(), req.headers().values().end());
             cpr::VerifySsl verify_ssl(config.validate_certificates());
             cpr::Timeout timeout(static_cast<std::int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(config.timeout()).count()));
             cpr::Response cpr_response;
@@ -162,10 +162,10 @@ namespace atomic_dex::http
             switch (req.method())
             {
             case method::post:
-                cpr_response = cpr::Post(cpr::Url{url}, headers, cpr::Body{req.body()}, verify_ssl, timeout);
+                cpr_response = cpr::Post(cpr::Url{url}, cpr_headers, cpr::Body{req.body()}, verify_ssl, timeout);
                 break;
             case method::get:
-                cpr_response = cpr::Get(cpr::Url{url}, headers, verify_ssl, timeout);
+                cpr_response = cpr::Get(cpr::Url{url}, cpr_headers, verify_ssl, timeout);
                 break;
             }
 
