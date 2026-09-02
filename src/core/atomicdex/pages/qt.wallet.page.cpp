@@ -553,7 +553,7 @@ namespace atomic_dex
                 amount_std = kdf_system.get_balance_info(ticker, ec);
             }
 
-            auto answer_functor = [this, coin_info, ticker, amount_std](web::http::http_response resp)
+            auto answer_functor = [this, coin_info, ticker, amount_std](t_http_response resp)
             {
                 const auto& settings_system     = m_system_manager.get_system<settings_page>();
                 const auto& global_price_system = m_system_manager.get_system<global_price_service>();
@@ -581,7 +581,7 @@ namespace atomic_dex
                             z_batch_array.push_back(j);
 
                             do {
-                                web::http::http_response             z_resp      = kdf_system.get_kdf_client().real_async_rpc_batch_standalone(z_batch_array).get();
+                                t_http_response             z_resp      = kdf_system.get_kdf_client().real_async_rpc_batch_standalone(z_batch_array).get();
                                 auto                                 z_answers   = kdf::basic_batch_answer(z_resp);
                                 z_error = z_answers;
                                 z_status = QString::fromStdString(z_answers[0].at("result").at("status").get<std::string>());
@@ -669,7 +669,7 @@ namespace atomic_dex
                 }
                 else
                 {
-                    std::string body                = TO_STD_STR(resp.extract_string(true).get());
+                    std::string body                = (resp.extract_string(true).get());
                     auto error_json = QJsonObject({{"error_code", resp.status_code()}, {"error_message", QString::fromStdString(body)}});
                     this->set_rpc_send_data(error_json);
                 }
@@ -678,7 +678,7 @@ namespace atomic_dex
 
             //! Process
             kdf_system.get_kdf_client().real_async_rpc_batch_standalone(batch).then(
-                [this, answer_functor](async::task<web::http::http_response> previous_task)
+                [this, answer_functor](async::task<t_http_response> previous_task)
                 {
                     try
                     {
@@ -760,12 +760,12 @@ namespace atomic_dex
             }
 
             //! Answer
-            auto answer_functor = [this, coin_info, ticker, amount_std](web::http::http_response resp)
+            auto answer_functor = [this, coin_info, ticker, amount_std](t_http_response resp)
             {
                 const auto& settings_system     = m_system_manager.get_system<settings_page>();
                 const auto& global_price_system = m_system_manager.get_system<global_price_service>();
                 const auto& current_fiat        = settings_system.get_current_fiat().toStdString();
-                std::string body                = TO_STD_STR(resp.extract_string(true).get());
+                std::string body                = (resp.extract_string(true).get());
 
                 if (resp.status_code() == 200 && body.find("error") == std::string::npos)
                 {
@@ -819,7 +819,7 @@ namespace atomic_dex
 
             //! Process
             kdf_system.get_kdf_client().real_async_rpc_batch_standalone(batch).then(
-                [this, answer_functor](async::task<web::http::http_response> previous_task)
+                [this, answer_functor](async::task<t_http_response> previous_task)
                 {
                     try
                     {
@@ -864,9 +864,9 @@ namespace atomic_dex
         batch.push_back(json_data);
 
         //! Answer
-        auto answer_functor = [this, is_claiming, is_max, amount](web::http::http_response resp)
+        auto answer_functor = [this, is_claiming, is_max, amount](t_http_response resp)
         {
-            std::string body = TO_STD_STR(resp.extract_string(true).get());
+            std::string body = (resp.extract_string(true).get());
             if (resp.status_code() == 200)
             {
                 auto&       kdf_system = m_system_manager.get_system<kdf_service>();
@@ -899,7 +899,7 @@ namespace atomic_dex
         };
 
         kdf_system.get_kdf_client().real_async_rpc_batch_standalone(batch).then(
-            [this, answer_functor](async::task<web::http::http_response> previous_task)
+            [this, answer_functor](async::task<t_http_response> previous_task)
             {
                 try
                 {
@@ -928,11 +928,11 @@ namespace atomic_dex
         json_data = kdf::template_request("kmd_rewards_info");
         batch.push_back(json_data);
 
-        auto answer_functor = [this](web::http::http_response resp)
+        auto answer_functor = [this](t_http_response resp)
         {
-            std::string body = TO_STD_STR(resp.extract_string(true).get());
+            std::string body = (resp.extract_string(true).get());
             // SPDLOG_DEBUG("resp claiming: {}", body);
-            if (resp.status_code() == static_cast<web::http::status_code>(antara::app::http_code::ok) && body.find("error") == std::string::npos)
+            if (resp.status_code() == static_cast<int>(antara::app::http_code::ok) && body.find("error") == std::string::npos)
             {
                 auto           answers              = nlohmann::json::parse(body);
                 auto           withdraw_answer      = kdf::rpc_process_answer_batch<t_withdraw_answer>(answers[0], "withdraw");
@@ -952,7 +952,7 @@ namespace atomic_dex
         };
 
         kdf_system.get_kdf_client().real_async_rpc_batch_standalone(batch).then(
-            [this, answer_functor](async::task<web::http::http_response> previous_task)
+            [this, answer_functor](async::task<t_http_response> previous_task)
             {
                 try
                 {
@@ -980,7 +980,7 @@ namespace atomic_dex
         this->set_claiming_faucet_is_busy(true);
         faucet::api::claim(claim_request)
             .then(
-                [this](async::task<web::http::http_response> previous_task)
+                [this](async::task<t_http_response> previous_task)
                 {
                     try
                     {
@@ -1082,13 +1082,13 @@ namespace atomic_dex
             nlohmann::json json_data = kdf::template_request("validateaddress");
             kdf::to_json(json_data, req);
             batch.push_back(json_data);
-            auto answer_functor = [this, ticker](web::http::http_response resp)
+            auto answer_functor = [this, ticker](t_http_response resp)
             {
-                std::string body = TO_STD_STR(resp.extract_string(true).get());
+                std::string body = (resp.extract_string(true).get());
                 // SPDLOG_DEBUG("resp validateaddress: {}", body);
                 nlohmann::json j_out = nlohmann::json::object();
                 j_out["ticker"]      = ticker.toStdString();
-                if (resp.status_code() == static_cast<web::http::status_code>(antara::app::http_code::ok))
+                if (resp.status_code() == static_cast<int>(antara::app::http_code::ok))
                 {
                     auto answers         = nlohmann::json::parse(body);
                     auto validate_answer = kdf::rpc_process_answer_batch<t_validate_address_answer>(answers[0], "validateaddress");
@@ -1121,7 +1121,7 @@ namespace atomic_dex
                 this->set_validate_address_busy(false);
             };
             kdf_system.get_kdf_client().real_async_rpc_batch_standalone(batch).then(
-                [answer_functor](async::task<web::http::http_response> previous_task)
+                [answer_functor](async::task<t_http_response> previous_task)
                 {
                     try
                     {
@@ -1160,11 +1160,11 @@ namespace atomic_dex
             nlohmann::json json_data = kdf::template_request("convertaddress");
             kdf::to_json(json_data, req);
             batch.push_back(json_data);
-            auto answer_functor = [this](web::http::http_response resp)
+            auto answer_functor = [this](t_http_response resp)
             {
-                std::string body = TO_STD_STR(resp.extract_string(true).get());
+                std::string body = (resp.extract_string(true).get());
                 //SPDLOG_DEBUG("resp convertaddress: {}", body);
-                if (resp.status_code() == static_cast<web::http::status_code>(antara::app::http_code::ok))
+                if (resp.status_code() == static_cast<int>(antara::app::http_code::ok))
                 {
                     auto answers        = nlohmann::json::parse(body);
                     auto convert_answer = kdf::rpc_process_answer_batch<t_convert_address_answer>(answers[0], "convertaddress");
@@ -1177,7 +1177,7 @@ namespace atomic_dex
                 this->set_convert_address_busy(false);
             };
             kdf_system.get_kdf_client().real_async_rpc_batch_standalone(batch).then(
-                [answer_functor](async::task<web::http::http_response> previous_task)
+                [answer_functor](async::task<t_http_response> previous_task)
                 {
                     try
                     {

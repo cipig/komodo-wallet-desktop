@@ -21,24 +21,24 @@
 namespace
 {
     constexpr const char* g_timesync_endpoint = "https://time.now";
-    web::http::client::http_client_config g_timesync_cfg{[]()
+    atomic_dex::http::client_config g_timesync_cfg{[]()
                                                           {
-                                                              web::http::client::http_client_config cfg;
+                                                              atomic_dex::http::client_config cfg;
                                                               cfg.set_validate_certificates(false);
                                                               cfg.set_timeout(std::chrono::seconds(5));
                                                               return cfg;
                                                           }()};
-    t_http_client_ptr g_timesync_client = std::make_unique<web::http::client::http_client>(FROM_STD_STR(g_timesync_endpoint), g_timesync_cfg);
+    t_http_client_ptr g_timesync_client = std::make_unique<t_http_client>((g_timesync_endpoint), g_timesync_cfg);
 
-    async::task<web::http::http_response>
+    async::task<t_http_response>
     async_fetch_timesync()
     {
         return async::spawn([]() {
             try
             {
-                web::http::http_request req;
-                req.set_method(web::http::methods::GET);
-                req.set_request_uri(FROM_STD_STR("developer/api/timezone/UTC"));
+                t_http_request req;
+                req.set_method(http_method::GET);
+                req.set_request_uri(("developer/api/timezone/UTC"));
                 return g_timesync_client->request(req).get();
             }
             catch (const std::exception& error)
@@ -49,12 +49,12 @@ namespace
         });
     }
 
-    bool get_timesync_info_rpc(web::http::http_response resp_http)
+    bool get_timesync_info_rpc(t_http_response resp_http)
     {
         using namespace std::string_literals;
         nlohmann::json   resp;
         bool             sync_ok = true;
-        std::string      resp_str = TO_STD_STR(resp_http.extract_string(true).get());
+        std::string      resp_str = (resp_http.extract_string(true).get());
         if (resp_http.status_code() != 200)
         {
             SPDLOG_ERROR("Cannot reach the endpoint [{}]: {}", g_timesync_endpoint, resp_str);
@@ -112,7 +112,7 @@ namespace atomic_dex
         is_timesync_fetching = true;
         emit isTimesyncFetchingChanged();
         async_fetch_timesync()
-            .then([this](async::task<web::http::http_response> previous_task) {
+            .then([this](async::task<t_http_response> previous_task) {
                 try
                 {
                     bool is_timesync_ok = get_timesync_info_rpc(previous_task.get());

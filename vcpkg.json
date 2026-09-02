@@ -29,7 +29,7 @@
     },
     "asyncplusplus",
     "asio",
-    "cpprestsdk",
+    "cpr",
     "entt",
     "refl-cpp",
     "strong-type",

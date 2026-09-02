@@ -30,11 +30,11 @@ namespace atomic_dex
     void
     komodo_prices_provider::process_update(bool fallback)
     {
-        atomic_dex::komodo_prices::api::async_market_infos(fallback).then([this, fallback](async::task<web::http::http_response> previous_task) {
+        atomic_dex::komodo_prices::api::async_market_infos(fallback).then([this, fallback](async::task<t_http_response> previous_task) {
             try
             {
                 auto resp        = previous_task.get();
-                auto body = TO_STD_STR(resp.extract_string(true).get());
+                auto body = (resp.extract_string(true).get());
                 if (resp.status_code() == 200)
                 {
                     nlohmann::json    j = nlohmann::json::parse(body);

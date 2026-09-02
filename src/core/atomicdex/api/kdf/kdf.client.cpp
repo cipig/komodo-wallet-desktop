@@ -41,19 +41,19 @@ namespace
     {
         //using namespace std::chrono_literals;
         //cfg.set_timeout(std::chrono::seconds(40));
-        web::http::client::http_client_config   cfg;
-        return {FROM_STD_STR(atomic_dex::g_dex_rpc), cfg};
+        atomic_dex::http::client_config   cfg;
+        return {(atomic_dex::g_dex_rpc), cfg};
     }
 
     template <atomic_dex::kdf::rpc Rpc>
-    web::http::http_request make_request(typename Rpc::expected_request_type data_req = {})
+    t_http_request make_request(typename Rpc::expected_request_type data_req = {})
     {
-        web::http::http_request request;
+        t_http_request request;
         nlohmann::json json_req = {{"method", Rpc::endpoint}, {"userpass", atomic_dex::kdf::get_rpc_password()}};
         nlohmann::json json_data;
 
         nlohmann::to_json(json_data, data_req);
-        request.set_method(web::http::methods::POST);
+        request.set_method(http_method::POST);
         if (Rpc::is_v2)
         {
             json_req["mmrpc"] = "2.0";
@@ -70,9 +70,9 @@ namespace
     }
 
     template <atomic_dex::kdf::rpc Rpc>
-    Rpc process_rpc_answer(const web::http::http_response& answer)
+    Rpc process_rpc_answer(const t_http_response& answer)
     {
-        std::string body = TO_STD_STR(answer.extract_string(true).get());
+        std::string body = (answer.extract_string(true).get());
         nlohmann::json json_answer;
         Rpc rpc;
         try
@@ -108,9 +108,9 @@ namespace
 namespace atomic_dex::kdf
 {
     template <typename RpcReturnType>
-    RpcReturnType kdf_client::rpc_process_answer(const web::http::http_response& resp, const std::string& rpc_command)
+    RpcReturnType kdf_client::rpc_process_answer(const t_http_response& resp, const std::string& rpc_command)
     {
-        std::string body = TO_STD_STR(resp.extract_string(true).get());
+        std::string body = (resp.extract_string(true).get());
         RpcReturnType answer;
 
         try
@@ -160,14 +160,14 @@ namespace atomic_dex::kdf
         return answer;
     }
 
-    async::task<web::http::http_response>
+    async::task<t_http_response>
     kdf_client::real_async_rpc_batch_standalone(nlohmann::json batch_array)
     {
-        return async::spawn([this, batch_array]() {
+        return async::spawn([batch_array]() {
             try
             {
-                web::http::http_request request;
-                request.set_method(web::http::methods::POST);
+                t_http_request request;
+                request.set_method(http_method::POST);
                 request.set_body(batch_array.dump());
                 auto resp = generate_client().request(request);
                 return resp.get();
@@ -203,7 +203,7 @@ namespace atomic_dex::kdf
         auto http_request = make_request<Rpc>(request);
         generate_client()
             .request(http_request)
-            .then([on_rpc_processed, request](const web::http::http_response& resp)
+            .then([on_rpc_processed, request](const t_http_response& resp)
             {
                 try
                 {
@@ -229,8 +229,8 @@ namespace atomic_dex::kdf
         auto json_copy        = json_data;
         json_copy["userpass"] = "*******";
 
-        web::http::http_request rpc_request(web::http::methods::POST);
-        rpc_request.headers().set_content_type(FROM_STD_STR("application/json"));
+        t_http_request rpc_request(http_method::POST);
+        rpc_request.headers().set_content_type(("application/json"));
         rpc_request.set_body(json_data.dump());
         auto resp = generate_client().request(rpc_request).get();
         return rpc_process_answer<TAnswer>(resp, rpc_command);
@@ -256,5 +256,5 @@ namespace atomic_dex::kdf
     }
 } // namespace atomic_dex
 
-template atomic_dex::kdf::tx_history_answer   atomic_dex::kdf::kdf_client::rpc_process_answer(const web::http::http_response& resp, const std::string& rpc_command);
-template atomic_dex::kdf::disable_coin_answer atomic_dex::kdf::kdf_client::rpc_process_answer(const web::http::http_response& resp, const std::string& rpc_command);
+template atomic_dex::kdf::tx_history_answer   atomic_dex::kdf::kdf_client::rpc_process_answer(const t_http_response& resp, const std::string& rpc_command);
+template atomic_dex::kdf::disable_coin_answer atomic_dex::kdf::kdf_client::rpc_process_answer(const t_http_response& resp, const std::string& rpc_command);

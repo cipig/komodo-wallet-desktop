@@ -35,26 +35,26 @@ namespace atomic_dex
 
 namespace
 {
-    web::http::client::http_client_config g_defi_stats_cfg{
+    atomic_dex::http::client_config g_defi_stats_cfg{
         [](){
-            web::http::client::http_client_config cfg;
+            atomic_dex::http::client_config cfg;
             cfg.set_validate_certificates(false);
             cfg.set_timeout(std::chrono::seconds(5));
             return cfg;
         }()
     };
-    t_http_client_ptr g_defi_stats_client = std::make_unique<web::http::client::http_client>(FROM_STD_STR("https://defistats.gleec.com/"), g_defi_stats_cfg);
+    t_http_client_ptr g_defi_stats_client = std::make_unique<t_http_client>(("https://defistats.gleec.com/"), g_defi_stats_cfg);
 
-    async::task<web::http::http_response>
+    async::task<t_http_response>
     async_fetch_defi_stats_volumes()
     {
         return async::spawn([]() {
             try
             {
-                web::http::http_request req;
-                req.set_method(web::http::methods::GET);
-                req.set_request_uri(FROM_STD_STR("api/v3/pairs/volumes_24hr"));
-                //SPDLOG_INFO("defi_stats req: {}", TO_STD_STR(req.to_string()));
+                t_http_request req;
+                req.set_method(http_method::GET);
+                req.set_request_uri(("api/v3/pairs/volumes_24hr"));
+                //SPDLOG_INFO("defi_stats req: {}", (req.to_string()));
                 return g_defi_stats_client->request(req).get();
             }
             catch (const std::exception& error)
@@ -66,9 +66,9 @@ namespace
     }
 
     nlohmann::json
-    process_fetch_defi_stats_volumes_answer(web::http::http_response resp)
+    process_fetch_defi_stats_volumes_answer(t_http_response resp)
     {
-        std::string body = TO_STD_STR(resp.extract_string(true).get());
+        std::string body = (resp.extract_string(true).get());
         if (resp.status_code() == 200)
         {
             nlohmann::json    answer = nlohmann::json::parse(body);
@@ -110,7 +110,7 @@ namespace atomic_dex
     {
         async_fetch_defi_stats_volumes()
             .then(
-                [this](async::task<web::http::http_response> previous_task)
+                [this](async::task<t_http_response> previous_task)
                 {
                     try
                     {

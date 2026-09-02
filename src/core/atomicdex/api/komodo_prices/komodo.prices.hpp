@@ -40,5 +40,5 @@ namespace atomic_dex::komodo_prices::api
 
 namespace atomic_dex::komodo_prices::api
 {
-    ENTT_API async::task<web::http::http_response> async_market_infos(bool fallback = false);
+    ENTT_API async::task<t_http_response> async_market_infos(bool fallback = false);
 }

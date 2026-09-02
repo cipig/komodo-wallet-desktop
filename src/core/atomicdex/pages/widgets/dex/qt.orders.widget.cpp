@@ -62,7 +62,7 @@ namespace atomic_dex
         auto& kdf_system = m_system_mgr.get_system<kdf_service>();
         kdf_system.get_kdf_client()
             .real_async_rpc_batch_standalone(batch)
-            .then([this](async::task<web::http::http_response> previous_task) {
+            .then([this](async::task<t_http_response> previous_task) {
                 try
                 {
                     previous_task.get();
@@ -98,7 +98,7 @@ namespace atomic_dex
         auto& kdf_system = m_system_mgr.get_system<kdf_service>();
         kdf_system.get_kdf_client()
             .real_async_rpc_batch_standalone(batch)
-            .then([this](async::task<web::http::http_response> previous_task) {
+            .then([this](async::task<t_http_response> previous_task) {
                 try
                 {
                     previous_task.get();

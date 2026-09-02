@@ -13,15 +13,15 @@ namespace
     constexpr const char*                 g_komodo_prices_endpoint = "https://prices.cipig.net:1717";
     constexpr const char*                 g_komodo_prices_endpoint_fallback = "https://defistats.gleec.com";
 
-    web::http::client::http_client_config g_komodo_prices_cfg{[]()
+    atomic_dex::http::client_config g_komodo_prices_cfg{[]()
                                                               {
-                                                                  web::http::client::http_client_config cfg;
+                                                                  atomic_dex::http::client_config cfg;
                                                                   cfg.set_validate_certificates(false);
                                                                   cfg.set_timeout(std::chrono::seconds(5));
                                                                   return cfg;
                                                               }()};
-    t_http_client_ptr g_komodo_prices_client = std::make_unique<web::http::client::http_client>(FROM_STD_STR(g_komodo_prices_endpoint), g_komodo_prices_cfg);
-    t_http_client_ptr g_komodo_prices_client_fallback = std::make_unique<web::http::client::http_client>(FROM_STD_STR(g_komodo_prices_endpoint_fallback), g_komodo_prices_cfg);
+    t_http_client_ptr g_komodo_prices_client = std::make_unique<t_http_client>((g_komodo_prices_endpoint), g_komodo_prices_cfg);
+    t_http_client_ptr g_komodo_prices_client_fallback = std::make_unique<t_http_client>((g_komodo_prices_endpoint_fallback), g_komodo_prices_cfg);
 } // namespace
 
 namespace atomic_dex::komodo_prices::api
@@ -74,16 +74,16 @@ namespace atomic_dex::komodo_prices::api
 
 namespace atomic_dex::komodo_prices::api
 {
-    async::task<web::http::http_response>
+    async::task<t_http_response>
     async_market_infos(bool fallback)
     {
         return async::spawn([fallback]() {
             try
             {
-                web::http::http_request req;
-                req.set_method(web::http::methods::GET);
+                t_http_request req;
+                req.set_method(http_method::GET);
                 std::string endpoint = fallback ? "api/v3/prices/tickers_v2?expire_at=259200" : "api/v2/tickers?expire_at=259200";
-                req.set_request_uri(FROM_STD_STR(endpoint));
+                req.set_request_uri((endpoint));
                 return fallback ? g_komodo_prices_client_fallback->request(req).get() : g_komodo_prices_client->request(req).get();
             }
             catch (const std::exception& error)
