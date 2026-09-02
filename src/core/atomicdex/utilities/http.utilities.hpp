@@ -40,6 +40,8 @@ namespace atomic_dex::http
         std::unordered_map<std::string, std::string> m_values;
     };
 
+    using http_headers_t = headers;
+
     class request
     {
       public:
@@ -50,8 +52,8 @@ namespace atomic_dex::http
         void set_request_uri(std::string uri);
         void set_body(std::string body);
 
-        headers&       headers();
-        const headers& headers() const;
+        http_headers_t&       headers();
+        const http_headers_t& headers() const;
 
         [[nodiscard]] method             method() const;
         [[nodiscard]] const std::string& request_uri() const;
@@ -61,14 +63,14 @@ namespace atomic_dex::http
         http::method  m_method{methods::GET};
         std::string  m_request_uri;
         std::string  m_body;
-        http::headers m_headers;
+        http_headers_t m_headers;
     };
 
     class response
     {
       public:
         response() = default;
-        response(int status_code, std::string body, std::unordered_map<std::string, std::string> headers = {});
+        response(int status_code, std::string body, std::unordered_map<std::string, std::string> response_headers = {});
 
         [[nodiscard]] int status_code() const;
         [[nodiscard]] async::task<std::string> extract_string(bool) const;
