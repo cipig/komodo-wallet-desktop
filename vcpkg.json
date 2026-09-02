@@ -28,7 +28,6 @@
       "platform": "windows"
     },
     "asyncplusplus",
-    "asio",
     "cpr",
     "entt",
     "refl-cpp",

@@ -39,10 +39,8 @@ namespace
 
     t_http_client generate_client()
     {
-        //using namespace std::chrono_literals;
-        //cfg.set_timeout(std::chrono::seconds(40));
-        atomic_dex::http::client_config   cfg;
-        return {(atomic_dex::g_dex_rpc), cfg};
+        atomic_dex::http::client_config cfg;
+        return t_http_client(atomic_dex::g_dex_rpc, cfg);
     }
 
     template <atomic_dex::kdf::rpc Rpc>

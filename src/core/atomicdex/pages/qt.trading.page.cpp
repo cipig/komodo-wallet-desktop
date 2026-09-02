@@ -91,7 +91,6 @@ namespace atomic_dex
             return;
         }
 
-        spdlog::stopwatch sw; using namespace std::chrono;
         auto* market_selector_mdl = get_market_pairs_mdl();
         const bool to_change = base != market_selector_mdl->get_left_selected_coin() || rel != market_selector_mdl->get_right_selected_coin();
         market_selector_mdl->set_left_selected_coin(base);
@@ -107,7 +106,6 @@ namespace atomic_dex
 
         emit kdfMinTradeVolChanged();
         dispatcher_.trigger<refresh_orderbook_model_data>(base.toStdString(), rel.toStdString());
-        SPDLOG_DEBUG("Time elapsed in trading_page::set_current_orderbook to {} / {}: {}", base.toStdString(), rel.toStdString(), duration_cast<milliseconds>(sw.elapsed()));
     }
 
     void

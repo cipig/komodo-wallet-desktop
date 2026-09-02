@@ -6,7 +6,6 @@ if (WIN32)
     set(BUILD_SHARED_LIBS OFF CACHE BOOL "Override option" FORCE)
 endif ()
 
-find_package(asio REQUIRED)
 find_package(Async++ REQUIRED)
 find_package(EnTT REQUIRED)
 find_package(nlohmann_json REQUIRED)
