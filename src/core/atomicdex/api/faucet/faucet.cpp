@@ -35,7 +35,9 @@ namespace atomic_dex::faucet::api
     {
         return async::spawn([claim_req]() {
             t_http_request http_request;
-            http_request.set_request_uri(cpr::util::urlEncode(claim_req.coin_name) + "/" + cpr::util::urlEncode(claim_req.wallet_address));
+            const auto encoded_coin_name = atomic_dex::http::materialize_std_string(cpr::util::urlEncode(claim_req.coin_name));
+            const auto encoded_wallet_address = atomic_dex::http::materialize_std_string(cpr::util::urlEncode(claim_req.wallet_address));
+            http_request.set_request_uri(encoded_coin_name + "/" + encoded_wallet_address);
             http_request.set_method(http_method::GET);
             return g_faucet_api_client->request(http_request).get();
         });
