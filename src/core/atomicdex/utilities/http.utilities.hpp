@@ -11,6 +11,13 @@
 
 namespace atomic_dex::http
 {
+    template <typename StringLike>
+    [[nodiscard]] inline std::string
+    materialize_std_string(const StringLike& value)
+    {
+        return {value.data(), value.size()};
+    }
+
     enum class method
     {
         get,

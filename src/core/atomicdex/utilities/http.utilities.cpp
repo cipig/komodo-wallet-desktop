@@ -171,11 +171,11 @@ namespace atomic_dex::http
 
             if (cpr_response.error.code != cpr::ErrorCode::OK)
             {
-                throw std::runtime_error(cpr_response.error.message);
+                throw std::runtime_error(materialize_std_string(cpr_response.error.message));
             }
 
             std::unordered_map<std::string, std::string> response_headers(cpr_response.header.begin(), cpr_response.header.end());
-            return response{cpr_response.status_code, cpr_response.text, std::move(response_headers)};
+            return response{cpr_response.status_code, materialize_std_string(cpr_response.text), std::move(response_headers)};
         });
     }
 
