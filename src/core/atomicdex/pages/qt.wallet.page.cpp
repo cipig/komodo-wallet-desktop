@@ -3,12 +3,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QSettings>
-
-//! Deps
 #include <QrCode.hpp>
-#include <antara/app/net/http.code.hpp>
-
-//! Project Headers
 #include "atomicdex/api/faucet/faucet.hpp"
 #include "atomicdex/api/kdf/rpc_v1/rpc.convertaddress.hpp"
 #include "atomicdex/api/kdf/rpc_v1/rpc.electrum.hpp"
@@ -931,8 +926,7 @@ namespace atomic_dex
         auto answer_functor = [this](t_http_response resp)
         {
             std::string body = (resp.extract_string(true).get());
-            // SPDLOG_DEBUG("resp claiming: {}", body);
-            if (resp.status_code() == static_cast<int>(antara::app::http_code::ok) && body.find("error") == std::string::npos)
+            if (resp.status_code() == 200 && body.find("error") == std::string::npos)
             {
                 auto           answers              = nlohmann::json::parse(body);
                 auto           withdraw_answer      = kdf::rpc_process_answer_batch<t_withdraw_answer>(answers[0], "withdraw");
@@ -1085,10 +1079,9 @@ namespace atomic_dex
             auto answer_functor = [this, ticker](t_http_response resp)
             {
                 std::string body = (resp.extract_string(true).get());
-                // SPDLOG_DEBUG("resp validateaddress: {}", body);
                 nlohmann::json j_out = nlohmann::json::object();
                 j_out["ticker"]      = ticker.toStdString();
-                if (resp.status_code() == static_cast<int>(antara::app::http_code::ok))
+                if (resp.status_code() == 200)
                 {
                     auto answers         = nlohmann::json::parse(body);
                     auto validate_answer = kdf::rpc_process_answer_batch<t_validate_address_answer>(answers[0], "validateaddress");
@@ -1163,8 +1156,7 @@ namespace atomic_dex
             auto answer_functor = [this](t_http_response resp)
             {
                 std::string body = (resp.extract_string(true).get());
-                //SPDLOG_DEBUG("resp convertaddress: {}", body);
-                if (resp.status_code() == static_cast<int>(antara::app::http_code::ok))
+                if (resp.status_code() == 200)
                 {
                     auto answers        = nlohmann::json::parse(body);
                     auto convert_answer = kdf::rpc_process_answer_batch<t_convert_address_answer>(answers[0], "convertaddress");

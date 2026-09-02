@@ -14,12 +14,8 @@
  *                                                                            *
  ******************************************************************************/
 
-// Deps Headers
-#include <antara/app/net/http.code.hpp>
 #include <cpr/cpr.h>
 #include <nlohmann/json.hpp>
-
-// Project Headers
 #include "atomicdex/api/faucet/faucet.hpp"
 
 namespace
@@ -48,15 +44,13 @@ namespace atomic_dex::faucet::api
     {
         const std::string resp_body = (claim_response.extract_string(true).get());
 
-        //! request success.
-        if (claim_response.status_code() == static_cast<int>(antara::app::http_code::ok))
+        if (claim_response.status_code() == 200)
         {
             auto resp_body_json = nlohmann::json::parse(resp_body);
-
             return faucet::api::claim_result{
                 .message = resp_body_json.at("result")["message"].get<std::string>(), .status = resp_body_json.at("status").get<std::string>()};
         }
-        //! request error.
+
         return faucet::api::claim_result{.message = resp_body, .status = "Request Error"};
     }
 } // namespace atomic_dex::faucet::api

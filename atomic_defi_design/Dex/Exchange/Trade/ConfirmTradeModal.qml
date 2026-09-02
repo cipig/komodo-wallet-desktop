@@ -95,7 +95,7 @@ MultipageModal
             // Fees Area
             DefaultRectangle {
                 Layout.alignment: Qt.AlignCenter
-                Layout.preferredHeight: 150
+                Layout.preferredHeight: 170
                 Layout.preferredWidth: parent.width - 20
                 color: DexTheme.contentColorTop
                 visible: !buy_sell_rpc_busy

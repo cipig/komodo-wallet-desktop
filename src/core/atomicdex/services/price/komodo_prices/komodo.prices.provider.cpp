@@ -33,8 +33,9 @@ namespace atomic_dex
         atomic_dex::komodo_prices::api::async_market_infos(fallback).then([this, fallback](async::task<t_http_response> previous_task) {
             try
             {
-                auto resp        = previous_task.get();
+                auto resp = previous_task.get();
                 auto body = (resp.extract_string(true).get());
+
                 if (resp.status_code() == 200)
                 {
                     nlohmann::json    j = nlohmann::json::parse(body);
@@ -57,7 +58,7 @@ namespace atomic_dex
             }
             catch (const std::exception& e)
             {
-                SPDLOG_ERROR("exception in komodo_prices_provider::process_update: {}", e.what());
+                SPDLOG_ERROR("exception in komodo_prices_provider::process_update with fallback {}: {}", fallback, e.what());
                 if (!fallback)
                 {
                     process_update(true);
@@ -75,7 +76,6 @@ namespace atomic_dex
     komodo_prices_provider::update()
     {
         using namespace std::chrono_literals;
-
         const auto now = std::chrono::high_resolution_clock::now();
         const auto s   = std::chrono::duration_cast<std::chrono::seconds>(now - m_clock);
 

@@ -15,7 +15,6 @@
  ******************************************************************************/
 
 //! Deps
-#include <antara/app/net/http.code.hpp>
 #include <range/v3/algorithm/any_of.hpp>
 
 //! Project
