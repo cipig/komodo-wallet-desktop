@@ -88,7 +88,7 @@ namespace atomic_dex
 
        //! Timers
        t_kdf_time_point m_orderbook_clock;
-       t_kdf_time_point m_info_clock;
+       t_kdf_time_point m_balances_clock;
        t_kdf_time_point m_activation_clock;
        t_kdf_time_point m_orders_clock;
 
@@ -134,7 +134,7 @@ namespace atomic_dex
        std::pair<bool, std::string>                        process_batch_enable_answer(const nlohmann::json& answer);
        [[nodiscard]] std::pair<t_transactions, t_tx_state> get_tx(t_kdf_ec& ec) const;
        std::vector<electrum_server>                        get_electrum_server_from_token(const std::string& ticker);
-       std::vector<atomic_dex::coin_config_t>                retrieve_coins_informations();
+       std::vector<atomic_dex::coin_config_t>              retrieve_coins_informations();
 
        void handle_exception_async_task(std::exception_ptr e, const std::string& from, nlohmann::json batch);
 
@@ -162,7 +162,7 @@ namespace atomic_dex
        void spawn_kdf_instance(std::string wallet_name, std::string passphrase, bool with_pin_cfg = false, std::string rpcpassword = "");
 
        //! Refresh the current info (internally call process_balance and process_tx)
-       void fetch_infos_thread();
+       void fetch_balances_thread();
        async::task<void> batch_balance_and_tx(bool is_a_reset, std::vector<std::string> tickers = {}, bool is_during_enabling = false, bool only_tx = false);
 
        // Coins enabling functions

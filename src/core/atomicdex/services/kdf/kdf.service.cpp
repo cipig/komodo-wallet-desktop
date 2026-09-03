@@ -284,7 +284,7 @@ namespace atomic_dex
     {
         m_orderbook_clock = std::chrono::high_resolution_clock::now();
         m_orders_clock    = std::chrono::high_resolution_clock::now();
-        m_info_clock      = std::chrono::high_resolution_clock::now();
+        m_balances_clock  = std::chrono::high_resolution_clock::now();
         dispatcher_.sink<gui_enter_trading>().connect<&kdf_service::on_gui_enter_trading>(*this);
         dispatcher_.sink<gui_leave_trading>().connect<&kdf_service::on_gui_leave_trading>(*this);
         dispatcher_.sink<gui_enter_wallet>().connect<&kdf_service::on_gui_enter_wallet>(*this);
@@ -303,7 +303,7 @@ namespace atomic_dex
         using namespace std::chrono_literals;
         const auto now          = std::chrono::high_resolution_clock::now();
         const auto s_orderbook  = std::chrono::duration_cast<std::chrono::seconds>(now - m_orderbook_clock);
-        const auto s_info       = std::chrono::duration_cast<std::chrono::seconds>(now - m_info_clock);
+        const auto s_balances   = std::chrono::duration_cast<std::chrono::seconds>(now - m_balances_clock);
         const auto s_activation = std::chrono::duration_cast<std::chrono::seconds>(now - m_activation_clock);
         const auto s_orders     = std::chrono::duration_cast<std::chrono::seconds>(now - m_orders_clock);
 
@@ -356,13 +356,13 @@ namespace atomic_dex
             }
         }
 
-        if (s_info >= 43s)
+        if (s_balances >= 43s)
         {
             std::unique_lock lock(m_activation_mutex);
             if (m_activation_queue.empty())
             {
-                fetch_infos_thread();
-                m_info_clock = std::chrono::high_resolution_clock::now();
+                fetch_balances_thread();
+                m_balances_clock = std::chrono::high_resolution_clock::now();
             }
         }
     }
@@ -1970,7 +1970,7 @@ namespace atomic_dex
             });
     }
 
-    void kdf_service::fetch_infos_thread()
+    void kdf_service::fetch_balances_thread()
     {
         const auto& enabled_coins = get_enabled_coins();
         for (const auto& coin : enabled_coins) {
