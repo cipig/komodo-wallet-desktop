@@ -25,22 +25,25 @@ else ()
     message(FATAL_ERROR "Didn't find ${PROJECT_APP_PATH}")
 endif ()
 
-if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/bin.zip)
-	message(STATUS "Creating bin.zip...")
-	execute_process(COMMAND powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('bin', 'bin.zip'); }"
-			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-			ECHO_OUTPUT_VARIABLE
-			ECHO_ERROR_VARIABLE
-		)
-else()
-	message(STATUS "bin.zip already present - skipping")
+set(SOURCE_ZIP "${CMAKE_CURRENT_SOURCE_DIR}/bin.zip")
+set(TARGET_ZIP "${TARGET_APP_PATH}/${DEX_PROJECT_NAME}.zip")
+
+if (NOT EXISTS ${SOURCE_ZIP})
+    message(STATUS "Creating bin.zip...")
+    execute_process(
+        COMMAND powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('bin', 'bin.zip'); }"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        ECHO_OUTPUT_VARIABLE
+        ECHO_ERROR_VARIABLE
+    )
 endif()
 
-if (NOT EXISTS ${TARGET_APP_PATH}/bin.zip)
-	message(STATUS "Copying ${CMAKE_SOURCE_DIR}/bin.zip to ${TARGET_APP_PATH}/${DEX_PROJECT_NAME}.zip")
-	file(COPY ${CMAKE_SOURCE_DIR}/bin.zip DESTINATION ${TARGET_APP_PATH}/${DEX_PROJECT_NAME}.zip)
+if (NOT EXISTS ${TARGET_ZIP})
+    message(STATUS "Copying ${SOURCE_ZIP} to ${TARGET_ZIP}")
+    file(COPY ${SOURCE_ZIP} DESTINATION ${TARGET_APP_PATH})
+    file(RENAME "${TARGET_APP_PATH}/bin.zip" "${TARGET_ZIP}")
 else()
-	message(STATUS "${TARGET_APP_PATH}/${DEX_PROJECT_NAME}.zip exists - skipping")
+    message(STATUS "${TARGET_ZIP} exists - skipping")
 endif()
 
 message(STATUS "Embedding the manifest")
