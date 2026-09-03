@@ -20,7 +20,6 @@ QtObject {
     readonly property string coin_icons_path: image_path + "coins/"
     readonly property string providerIconsPath: image_path + "providers/"
 
-    /* Timers */
     property Timer prevent_coin_disabling: Timer { interval: 5000 }
 
     function coinIcon(ticker)
@@ -211,6 +210,8 @@ QtObject {
                     return "https://arbiscan.io/token/" + coinContractAddress(ticker)
                 case "ETH-BASE":
                     return "https://basescan.org/token/" + coinContractAddress(ticker)
+                case "HYPE":
+                    return "https://hyperevmscan.io/token/" + coinContractAddress(ticker)
                 case "XDAI":
                     return "https://gnosisscan.io/token/" + coinContractAddress(ticker)
                 case "TAO":
@@ -223,11 +224,6 @@ QtObject {
                     return ""
             }
         }
-    }
-
-    function isIDO(ticker) {
-        let IDO_chains = []
-        return IDO_chains.includes(ticker)
     }
 
     // Returns the icon full path of a coin type.
@@ -761,10 +757,11 @@ QtObject {
             || current_ticker_infos.type == "Base"
             || current_ticker_infos.type == "Arbitrum"
             || current_ticker_infos.type == "Bittensor"
+            || current_ticker_infos.type == "HyperEVM"
     }
 
     function isParentCoin(ticker) {
-        return ["ETH", "ETH-ARB20", "ETH-BASE", "POL", "AVAX", "QTUM", "BNB", "ONE", "KCS", "TRX", "GLEEC", "XDAI", "TAO"].includes(ticker)
+        return ["ETH", "ETH-ARB20", "ETH-BASE", "POL", "AVAX", "QTUM", "BNB", "ONE", "KCS", "TRX", "GLEEC", "XDAI", "TAO", "HYPE"].includes(ticker)
     }
 
     function getFeesTicker(coin_info) {

@@ -192,7 +192,6 @@ QtObject {
     {
         switch (type)
         {
-            case 'IDO':               return dark_theme ? colorCoinDark["IDO"] : colorCoin["IDO"]
             case 'AVX-20':            return dark_theme ? colorCoinDark["AVAX"] : colorCoin["AVAX"]
             case 'ZHTLC':             return dark_theme ? colorCoinDark["ARRR"] : colorCoin["ARRR"]
             case 'COSMOS':            return dark_theme ? colorCoinDark["ATOM"] : colorCoin["ATOM"]
@@ -203,6 +202,7 @@ QtObject {
             case 'Arbitrum':          return dark_theme ? colorCoinDark["ETH-ARB20"] : colorCoin["ETH-ARB20"]
             case 'Base':              return dark_theme ? colorCoinDark["ETH-BASE"] : colorCoin["ETH-BASE"]
             case 'Gnosis':            return dark_theme ? colorCoinDark["XDAI"] : colorCoin["XDAI"]
+            case 'HyperEVM':          return dark_theme ? colorCoinDark["HYPE"] : colorCoin["HYPE"]
             case 'Bittensor':         return dark_theme ? colorCoinDark["TAO"] : colorCoin["TAO"]
             case 'ERC-20':            return dark_theme ? colorCoinDark["ETH"] : colorCoin["ETH"]
             case 'GRC-20':            return dark_theme ? colorCoinDark["GLEEC"] : colorCoin["GLEEC"]
@@ -237,7 +237,6 @@ QtObject {
     {
         switch (type)
         {
-            case 'IDO':               return dark_theme ? colorCoinDark["IDO"] : colorCoin["IDO"]
             case 'AVX-20':            return dark_theme ? colorCoinDark["AVAX"] : colorCoin["AVAX"]
             case 'ZHTLC':             return dark_theme ? colorCoinDark["ARRR"] : colorCoin["ARRR"]
             case 'COSMOS':            return dark_theme ? colorCoinDark["ATOM"] : colorCoin["ATOM"]
@@ -248,6 +247,7 @@ QtObject {
             case 'Arbitrum':          return dark_theme ? colorCoinDark["ETH-ARB20"] : colorCoin["ETH-ARB20"]
             case 'Base':              return dark_theme ? colorCoinDark["ETH-BASE"] : colorCoin["ETH-BASE"]
             case 'Gnosis':            return dark_theme ? colorCoinDark["XDAI"] : colorCoin["XDAI"]
+            case 'HyperEVM':          return dark_theme ? colorCoinDark["HYPE"] : colorCoin["HYPE"]
             case 'Bittensor':         return dark_theme ? colorCoinDark["TAO"] : colorCoin["TAO"]
             case 'ERC-20':            return dark_theme ? colorCoinDark["ETH"] : colorCoin["ETH"]
             case 'GRC-20':            return dark_theme ? colorCoinDark["GLEEC"] : colorCoin["GLEEC"]
@@ -298,6 +298,7 @@ QtObject {
                                           "EWT": "#A466FF",
                                           "GLEEC": "#6438ac",
                                           "GLMR": "#F6007C",
+                                          "HYPE": "#0d3730",
                                           "QTUM": "#2E9AD0",
                                           "KCS": "#25AF90",
                                           "KMD": "#2d4f86",
@@ -310,7 +311,6 @@ QtObject {
                                           "XDAI": "#00bad3",
                                           "UTXO": "#349d5f",
                                           "default": "#2f2f2f",
-                                          "IDO": "#536E93",
                                           "WALLET ONLY": "#404040"
                                       })
 
@@ -327,6 +327,7 @@ QtObject {
                                           "EWT": "#A466FF",
                                           "GLEEC": "#6438ac",
                                           "GLMR": "#F6007C",
+                                          "HYPE": "#0d3730",
                                           "QTUM": "#2E9AD0",
                                           "KCS": "#25AF90",
                                           "KMD": "#799bd2",
@@ -339,7 +340,6 @@ QtObject {
                                           "XDAI": "#00bad3",
                                           "UTXO": "#349d5f",
                                           "default": "#c8c8c8",
-                                          "IDO": "#536E93",
                                           "WALLET ONLY": "#cccccc"
                                       })
 }

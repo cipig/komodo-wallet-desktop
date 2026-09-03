@@ -17,8 +17,6 @@
 #pragma once
 
 #include <QObject>
-
-//! Deps
 #include <entt/core/attribute.h>
 
 namespace atomic_dex
@@ -57,10 +55,11 @@ namespace atomic_dex
             Gnosis          = 23,
             SIA             = 24,
             Bittensor       = 25,
-            Disabled        = 26,
-            Invalid         = 27,
-            All             = 28,
-            Size            = 29
+            HyperEVM        = 26,
+            Disabled        = 27,
+            Invalid         = 28,
+            All             = 29,
+            Size            = 30
         };
 
         Q_ENUM(CoinTypeEnum)

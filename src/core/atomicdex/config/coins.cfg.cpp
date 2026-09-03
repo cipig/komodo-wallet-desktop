@@ -86,6 +86,10 @@ namespace
         {
             return CoinType::Gnosis;
         }
+        if (coin_type == "HyperEVM")
+        {
+            return CoinType::HyperEVM;
+        }
         if (coin_type == "AVX-20")
         {
             return CoinType::AVX20;
@@ -342,6 +346,11 @@ namespace atomic_dex
         case CoinType::Gnosis:
             cfg.has_parent_fees_ticker = true;
             cfg.fees_ticker            = "XDAI";
+            cfg.is_erc_family          = true;
+            break;
+        case CoinType::HyperEVM:
+            cfg.has_parent_fees_ticker = true;
+            cfg.fees_ticker            = "HYPE";
             cfg.is_erc_family          = true;
             break;
         case CoinType::EWT:

@@ -180,15 +180,6 @@ MultipageModal
                                 {
                                     Layout.leftMargin: 6
                                     Layout.alignment: Qt.AlignVCenter
-                                    enabled: General.isIDO(model.ticker)
-                                    visible: enabled
-                                    type: "IDO"
-                                }
-
-                                CoinTypeTag
-                                {
-                                    Layout.leftMargin: 6
-                                    Layout.alignment: Qt.AlignVCenter
                                     enabled: API.app.portfolio_pg.global_cfg_mdl.get_coin_info(model.ticker).is_wallet_only
                                     visible: enabled
                                     type: "WALLET ONLY"

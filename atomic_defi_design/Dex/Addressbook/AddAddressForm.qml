@@ -40,6 +40,7 @@ Dex.Rectangle
             case "Arbitrum":    return "ETH-ARB20"
             case "Gnosis":      return "XDAI"
             case "Bittensor":   return "TAO"
+            case "HyperEVM":    return "HYPE"
             case "Smart Chain": return "KMD"
         }
 
@@ -65,6 +66,7 @@ Dex.Rectangle
             case "Arbitrum":    return true
             case "Gnosis":      return true
             case "Bittensor":   return true
+            case "HyperEVM":    return true
             case "Smart Chain": return true
         }
         return false

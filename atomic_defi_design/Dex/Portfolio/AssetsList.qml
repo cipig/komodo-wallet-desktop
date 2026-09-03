@@ -176,19 +176,6 @@ Dex.DefaultListView
                     font: Dex.DexTypo.overLine
                     opacity: .7
                     color: Dex.Style.getCoinColor(ticker)
-
-                    Dex.DexLabel
-                    {
-                        enabled: Dex.General.isIDO(ticker)
-                        visible: enabled
-                        anchors.left: parent.right
-                        anchors.leftMargin: 5
-
-                        text: "IDO"
-                        font: Dex.DexTypo.overLine
-                        opacity: .7
-                        color: Dex.DexTheme.warningColor
-                    }
                 }
             }
 
