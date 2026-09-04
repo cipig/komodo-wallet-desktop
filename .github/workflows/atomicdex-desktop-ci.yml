@@ -32,6 +32,32 @@ env:
 
 jobs:
 
+  # Fast, isolated regression guard for the pure JSON (de)serialization layer
+  # touched by docs/plans/sia-transaction-history.md -- see tests/unit/CMakeLists.txt
+  # for why this is its own standalone CMake project rather than a target
+  # inside the main tree (that tree's CMakeLists.txt bootstraps the full
+  # vcpkg dependency set on every configure, which this deliberately avoids).
+  unit-tests:
+    name: unit-tests
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: lukka/get-cmake@latest
+
+      - name: Install deps (apt)
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends qtbase5-dev libboost-dev libfmt-dev ninja-build
+
+      - name: Configure
+        run: cmake -S tests/unit -B tests/unit/build -G Ninja
+
+      - name: Build
+        run: cmake --build tests/unit/build -j$(nproc)
+
+      - name: Run
+        run: ./tests/unit/build/komodo_wallet_unit_tests
+
   ci-flow:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
@@ -266,7 +292,7 @@ jobs:
           export VCPKG_BUILD_TYPE=${{ matrix.typelc }}
           mkdir ci_tools_atomic_dex/build-${{ matrix.type }}
           cd ci_tools_atomic_dex/build-${{ matrix.type }}
-          cmake -GNinja -DCMAKE_BUILD_TYPE=${{ matrix.type }} ../../ -DCMAKE_OSX_SYSROOT=$HOME/sdk/MacOSX11.3.sdk -DCMAKE_OSX_DEPLOYMENT_TARGET=11.3
+          cmake -GNinja -DCMAKE_BUILD_TYPE=${{ matrix.type }} -DDEX_SHOW_COMMIT_HASH=ON ../../ -DCMAKE_OSX_SYSROOT=$HOME/sdk/MacOSX11.3.sdk -DCMAKE_OSX_DEPLOYMENT_TARGET=11.3
           cmake --build . --config ${{ matrix.type }}
           ninja install
 
@@ -277,7 +303,7 @@ jobs:
           export VCPKG_BUILD_TYPE=${{ matrix.typelc }}
           mkdir ci_tools_atomic_dex/build-${{ matrix.type }}
           cd ci_tools_atomic_dex/build-${{ matrix.type }}
-          cmake -GNinja -DCMAKE_BUILD_TYPE=${{ matrix.type }} ../../
+          cmake -GNinja -DCMAKE_BUILD_TYPE=${{ matrix.type }} -DDEX_SHOW_COMMIT_HASH=ON ../../
           cmake --build . --config ${{ matrix.type }}
           ninja install
 

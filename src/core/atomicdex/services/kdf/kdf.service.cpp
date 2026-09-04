@@ -32,6 +32,7 @@
 #include <QSettings>
 
 #include "atomicdex/api/kdf/utxo_merge_params.hpp"
+#include "atomicdex/services/kdf/kdf.coin.activation.policy.hpp"
 #include "atomicdex/api/kdf/rpc_v1/rpc.electrum.hpp"
 #include "atomicdex/api/kdf/rpc_v1/rpc.enable.hpp"
 #include "atomicdex/api/kdf/rpc_v1/rpc.min_trading_vol.hpp"
@@ -290,6 +291,7 @@ namespace atomic_dex
         dispatcher_.sink<gui_enter_wallet>().connect<&kdf_service::on_gui_enter_wallet>(*this);
         dispatcher_.sink<gui_leave_wallet>().connect<&kdf_service::on_gui_leave_wallet>(*this);
         dispatcher_.sink<refresh_orderbook_model_data>().connect<&kdf_service::on_refresh_orderbook_model_data>(*this);
+        dispatcher_.sink<coin_fully_initialized>().connect<&kdf_service::on_coin_fully_initialized_event>(*this);
         SPDLOG_INFO("kdf_service created");
     }
 
@@ -375,6 +377,7 @@ namespace atomic_dex
         dispatcher_.sink<gui_enter_wallet>().disconnect<&kdf_service::on_gui_enter_wallet>(*this);
         dispatcher_.sink<gui_leave_wallet>().disconnect<&kdf_service::on_gui_leave_wallet>(*this);
         dispatcher_.sink<refresh_orderbook_model_data>().disconnect<&kdf_service::on_refresh_orderbook_model_data>(*this);
+        dispatcher_.sink<coin_fully_initialized>().disconnect<&kdf_service::on_coin_fully_initialized_event>(*this);
         SPDLOG_INFO("kdf signals successfully disconnected");
         bool kdf_stopped = false;
         if (m_kdf_running)
@@ -1281,40 +1284,16 @@ namespace atomic_dex
                 });
     }
 
-    bool 
+    bool
     kdf_service::uses_task_activation(const coin_config_t& coin_info) const
     {
-        if (coin_info.coin_type == CoinType::ZHTLC)
-        {
-            return true;
-        }
-        if (coin_info.coin_type == CoinType::SIA)
-        {
-            return true;
-        }
-        return false;
+        return atomic_dex::uses_task_activation(coin_info);
     }
 
-    bool 
+    bool
     kdf_service::uses_v2_history(const coin_config_t& coin_info) const
     {
-        if (coin_info.coin_type == CoinType::ZHTLC)
-        {
-            return true;
-        }
-        if (coin_info.coin_type == CoinType::SIA)
-        {
-            return true;
-        }
-        if (coin_info.coin_type == CoinType::TENDERMINT)
-        {
-            return true;
-        }
-        if (coin_info.coin_type == CoinType::TENDERMINTTOKEN)
-        {
-            return true;
-        }
-        return false;
+        return atomic_dex::uses_v2_history(coin_info);
     }
 
     std::tuple<nlohmann::json, std::vector<std::string>, std::vector<std::string>>
@@ -1464,10 +1443,28 @@ namespace atomic_dex
 
             else if (coin_info.is_sia_family)
             {
+                //! `.value().at(0)` threw straight out of this lambda for a coin
+                //! configured without a server list, and the call site below is
+                //! not guarded, so one unconfigured Sia coin took the process
+                //! down instead of failing its own activation.
+                const auto& sia_urls = coin_info.sia_family_urls;
+                if (!sia_urls.has_value() || sia_urls->empty())
+                {
+                    SPDLOG_ERROR("No server url is configured for sia coin {}, cannot enable it", coin_info.ticker);
+                    this->dispatcher_.trigger<enabling_coin_failed>(
+                        coin_info.ticker, fmt::format("No server url is configured for {}", coin_info.ticker));
+                    return {};
+                }
+
                 t_enable_sia_coin_request request{
                     .coin_name            = coin_info.ticker,
-                    .server_url           = coin_info.sia_family_urls.value().at(0),
-                    .with_tx_history      = false}; // NotSupportedFor
+                    .server_url           = sia_urls->at(0),
+                    // KDF Reloaded ch.53 (2026-08-13, 3a078bb91) added Sia
+                    // history reporting; leaving this false silently starves
+                    // the coin's history loop forever (HistorySyncState::
+                    // NotEnabled), with no error to find it by. See
+                    // docs/plans/sia-transaction-history.md.
+                    .with_tx_history      = true};
 
                 nlohmann::json j = kdf::template_request("task::enable_sia::init", true);
                 kdf::to_json(j, request);
@@ -1476,6 +1473,12 @@ namespace atomic_dex
                 return {batch, {coin_info.ticker}};
             }
 
+            //! Reached when a coin is routed to a task activation without
+            //! carrying either family flag. The empty pair is skipped by the
+            //! caller; name the coin so it is findable in a log.
+            SPDLOG_ERROR("{} uses neither the zhtlc nor the sia activation task, cannot enable it", coin_info.ticker);
+            this->dispatcher_.trigger<enabling_coin_failed>(
+                coin_info.ticker, fmt::format("{} has no supported activation task", coin_info.ticker));
             return {nlohmann::json::array(), {}};
         };
 
@@ -1703,9 +1706,25 @@ namespace atomic_dex
 
         for (auto&& coin: coins)
         {
-            auto&& [request, coins_to_enable] = request_functor(coin);
-            //SPDLOG_INFO("{} {}", request.dump(4), coins_to_enable[0]);
-            answer_functor(coin, request, coins_to_enable);
+            //! Building the request touches optional config fields, so a coin
+            //! with an incomplete entry must fail only its own activation. This
+            //! loop is not inside any other handler: an exception escaping here
+            //! leaves the process with nowhere to catch it.
+            try
+            {
+                auto&& [request, coins_to_enable] = request_functor(coin);
+                //SPDLOG_INFO("{} {}", request.dump(4), coins_to_enable[0]);
+                if (coins_to_enable.empty())
+                {
+                    continue;
+                }
+                answer_functor(coin, request, coins_to_enable);
+            }
+            catch (const std::exception& error)
+            {
+                SPDLOG_ERROR("exception while preparing the activation of {}: {}", coin.ticker, error.what());
+                this->dispatcher_.trigger<enabling_coin_failed>(coin.ticker, error.what());
+            }
         }
     }
 
@@ -1920,6 +1939,46 @@ namespace atomic_dex
             return;
         }
         process_orderbook(is_a_reset);
+    }
+
+    //! Fetch the balance of a coin that has just become active, so it does not
+    //! stay absent until the next `fetch_infos_thread` tick (43 s away, and
+    //! skipped entirely while coins are still being enabled).
+    //!
+    //! Hooked to `coin_fully_initialized` rather than repeated in each enabling
+    //! function because the enabling paths do not agree on this: the UTXO/QRC20
+    //! and ERC20 batches record the balance from their own answer, but the
+    //! task-based path (ZHTLC, Sia), the Tendermint path, and every
+    //! "already activated" recovery branch mark the coin enabled without ever
+    //! recording one. Anything that reaches the active state is covered here,
+    //! including enabling paths added later.
+    //!
+    //! The work is spawned rather than run inline: this event is dispatched
+    //! synchronously, sometimes while the caller holds `m_coin_cfg_mutex`, and
+    //! reading the coin config here would then deadlock on a non-recursive
+    //! shared_mutex.
+    void kdf_service::on_coin_fully_initialized_event(const coin_fully_initialized& evt)
+    {
+        for (const auto& ticker: evt.tickers)
+        {
+            async::spawn([this, ticker]() { fetch_single_balance(ticker); });
+        }
+    }
+
+    void kdf_service::fetch_single_balance(const std::string& ticker)
+    {
+        const auto coin_info = get_coin_info(ticker);
+
+        //! An unknown ticker has nothing to query, and a coin whose activation
+        //! task has not reported success yet has no balance to report -- the
+        //! task-based path marks a coin enabled while it is still building its
+        //! wallet database. `fetch_infos_thread` picks that one up once it is
+        //! ready, as it did before this hook existed.
+        if (coin_info.ticker.empty() || !is_task_activation_ready(ticker))
+        {
+            return;
+        }
+        fetch_single_balance(coin_info);
     }
 
     void kdf_service::fetch_single_balance(const coin_config_t& cfg_infos)
