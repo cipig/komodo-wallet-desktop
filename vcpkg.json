@@ -33,12 +33,5 @@
     "strong-type",
     "tl-expected"
   ],
-  "builtin-baseline": "04a9d8e5212d01ee1dd9478eadd9caade4f8b0d4",
-  "overrides": [
-    {
-      "name": "entt",
-      "version": "3.15.0",
-      "port-version": 0
-    }
-  ]
+  "builtin-baseline": "04a9d8e5212d01ee1dd9478eadd9caade4f8b0d4"
 }
