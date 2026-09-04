@@ -437,8 +437,13 @@ namespace atomic_dex
             {
                 const QString& base_coin = data(idx, OrdersRoles::BaseCoinRole).toString();
                 const QString& rel_coin  = data(idx, OrdersRoles::RelCoinRole).toString();
-                m_dispatcher.trigger<swap_status_notification>(
-                    contents.order_id, prev_value.toString(), new_value.toString(), base_coin, rel_coin, new_value_d.toString());
+                m_dispatcher.trigger(
+                    swap_status_notification{.uuid = contents.order_id,
+                                             .prev_status = prev_value.toString(),
+                                             .new_status = new_value.toString(),
+                                             .base = base_coin,
+                                             .rel = rel_coin,
+                                             .human_date = new_value_d.toString()});
                 auto& kdf = m_system_manager.get_system<kdf_service>();
                 kdf.process_orderbook(true);
             }

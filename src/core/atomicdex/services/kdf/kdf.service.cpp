@@ -507,7 +507,7 @@ namespace atomic_dex
             std::unique_lock lock(m_coin_cfg_mutex);
             m_coins_informations[ticker].currently_enabled = false;
         }
-        dispatcher_.trigger<coin_disabled>(ticker);
+        dispatcher_.trigger(coin_disabled{.ticker = ticker});
         return true;
     }
 
@@ -676,7 +676,7 @@ namespace atomic_dex
                             else
                             {
                                 failed_coins.push_back(std::move(coins[idx]));
-                                this->dispatcher_.trigger<enabling_coin_failed>(coins[idx].ticker, error);
+                                this->dispatcher_.trigger(enabling_coin_failed{.coin = coins[idx].ticker, .reason = error});
                                 SPDLOG_ERROR(error);
                             }
                         }
@@ -695,7 +695,7 @@ namespace atomic_dex
                         m_coins_informations[coin.ticker].currently_enabled = true;
                         tickers.push_back(coin.ticker);
                     }
-                    dispatcher_.trigger<coin_fully_initialized>(tickers);
+                    dispatcher_.trigger(coin_fully_initialized{.tickers = tickers});
 
                     std::vector<std::string> failed_tickers;
                     for (auto&& coin: failed_coins)
@@ -784,7 +784,7 @@ namespace atomic_dex
                             else
                             {
                                 failed_coins.push_back(std::move(coins[idx]));
-                                this->dispatcher_.trigger<enabling_coin_failed>(coins[idx].ticker, error);
+                                this->dispatcher_.trigger(enabling_coin_failed{.coin = coins[idx].ticker, .reason = error});
                                 SPDLOG_ERROR("Error in kdf_service::enable_utxo_qrc20_coins: {}", error);
                             }
                         }
@@ -803,7 +803,7 @@ namespace atomic_dex
                         m_coins_informations[coin.ticker].currently_enabled = true;
                         tickers.push_back(coin.ticker);
                     }
-                    dispatcher_.trigger<coin_fully_initialized>(tickers);
+                    dispatcher_.trigger(coin_fully_initialized{.tickers = tickers});
 
                     std::vector<std::string> failed_tickers;
                     for (auto&& coin: failed_coins)
@@ -905,7 +905,7 @@ namespace atomic_dex
                     SPDLOG_ERROR("marking {} as inactive: {}", rpc.request.ticker, rpc.error->error_type);
                     std::unique_lock lock(m_coin_cfg_mutex);
                     m_coins_informations[rpc.request.ticker].currently_enabled = false;
-                    this->dispatcher_.trigger<enabling_coin_failed>(rpc.request.ticker, rpc.error->error);
+                    this->dispatcher_.trigger(enabling_coin_failed{.coin = rpc.request.ticker, .reason = rpc.error->error});
                 }
             }
             else
@@ -943,7 +943,7 @@ namespace atomic_dex
         if (!has_coin(parent_ticker))
         {
             static constexpr auto error = "{} is not present in the config. Cannot enable {} tokens.";
-            this->dispatcher_.trigger<enabling_coin_failed>(parent_ticker, fmt::format(error, parent_ticker, parent_ticker));
+            this->dispatcher_.trigger(enabling_coin_failed{.coin = parent_ticker, .reason = fmt::format(error, parent_ticker, parent_ticker)});
             return;
         }
 
@@ -1028,7 +1028,7 @@ namespace atomic_dex
                     SPDLOG_DEBUG("{} failed to activate", rpc.request.ticker);
                     std::unique_lock lock(m_coin_cfg_mutex);
                     m_coins_informations[rpc.request.ticker].currently_enabled = false;
-                    this->dispatcher_.trigger<enabling_coin_failed>(rpc.request.ticker, rpc.error->error);
+                    this->dispatcher_.trigger(enabling_coin_failed{.coin = rpc.request.ticker, .reason = rpc.error->error});
                 }
             }
             else
@@ -1051,7 +1051,7 @@ namespace atomic_dex
         {
             static constexpr auto error = "{} is not present in the config. Cannot enable TENDERMINT tokens.";
             SPDLOG_ERROR(error);
-            this->dispatcher_.trigger<enabling_coin_failed>(parent_ticker, fmt::format(error, parent_ticker));
+            this->dispatcher_.trigger(enabling_coin_failed{.coin = parent_ticker, .reason = fmt::format(error, parent_ticker)});
             return;
         }
 
@@ -1451,8 +1451,8 @@ namespace atomic_dex
                 if (!sia_urls.has_value() || sia_urls->empty())
                 {
                     SPDLOG_ERROR("No server url is configured for sia coin {}, cannot enable it", coin_info.ticker);
-                    this->dispatcher_.trigger<enabling_coin_failed>(
-                        coin_info.ticker, fmt::format("No server url is configured for {}", coin_info.ticker));
+                    this->dispatcher_.trigger(
+                        enabling_coin_failed{.coin = coin_info.ticker, .reason = fmt::format("No server url is configured for {}", coin_info.ticker)});
                     return {};
                 }
 
@@ -1477,8 +1477,8 @@ namespace atomic_dex
             //! carrying either family flag. The empty pair is skipped by the
             //! caller; name the coin so it is findable in a log.
             SPDLOG_ERROR("{} uses neither the zhtlc nor the sia activation task, cannot enable it", coin_info.ticker);
-            this->dispatcher_.trigger<enabling_coin_failed>(
-                coin_info.ticker, fmt::format("{} has no supported activation task", coin_info.ticker));
+            this->dispatcher_.trigger(
+                enabling_coin_failed{.coin = coin_info.ticker, .reason = fmt::format("{} has no supported activation task", coin_info.ticker)});
             return {nlohmann::json::array(), {}};
         };
 
@@ -1509,13 +1509,13 @@ namespace atomic_dex
                                             std::unique_lock lock(m_coin_cfg_mutex);
                                             m_coins_informations[tickers[idx]].currently_enabled = true;
                                             this->dispatcher_.trigger<coin_fully_initialized>(coin_fully_initialized{.tickers = {tickers[idx]}});
-                                            this->dispatcher_.trigger<enabling_task_status>(tickers[idx], "Complete!");
+                                            this->dispatcher_.trigger(enabling_task_status{.coin = tickers[idx], .reason = "Complete!"});
                                         }
                                         else
                                         {
                                             SPDLOG_ERROR("Error activating {}: {}", tickers[idx], error);
                                             to_remove.emplace(tickers[idx]);
-                                            this->dispatcher_.trigger<enabling_coin_failed>(tickers[idx], error);
+                                            this->dispatcher_.trigger(enabling_coin_failed{.coin = tickers[idx], .reason = error});
                                         }
                                     }
                                     else if (answer.contains("result"))
@@ -1620,7 +1620,7 @@ namespace atomic_dex
 
                                                                 dispatcher_.trigger<coin_fully_initialized>(coin_fully_initialized{.tickers = {tickers[idx]}});
                                                             }
-                                                            this->dispatcher_.trigger<enabling_task_status>(tickers[idx], event);
+                                                            this->dispatcher_.trigger(enabling_task_status{.coin = tickers[idx], .reason = event});
                                                             last_event = event;
                                                         }
                                                         // TODO: refactor to a background task
@@ -1642,8 +1642,8 @@ namespace atomic_dex
                                                             tickers[idx], idx, tickers.size(), answers.size()
                                                         );
 
-                                                        this->dispatcher_.trigger<enabling_task_status>(tickers[idx], event);
-                                                        this->dispatcher_.trigger<enabling_coin_failed>(tickers[idx], z_error[0].dump(4));
+                                                        this->dispatcher_.trigger(enabling_task_status{.coin = tickers[idx], .reason = event});
+                                                        this->dispatcher_.trigger(enabling_coin_failed{.coin = tickers[idx], .reason = z_error[0].dump(4)});
                                                         to_remove.emplace(tickers[idx]);
                                                     }
                                                     else if (z_nb_try == 10000)
@@ -1658,14 +1658,14 @@ namespace atomic_dex
                                                             "Bad answer for zhtlc_error: [{}] -> idx: {}, tickers size: {}, answers size: {}", tickers[idx], idx,
                                                             tickers.size(), answers.size()
                                                         );
-                                                        this->dispatcher_.trigger<enabling_coin_failed>(tickers[idx], z_error[0].dump(4));
+                                                        this->dispatcher_.trigger(enabling_coin_failed{.coin = tickers[idx], .reason = z_error[0].dump(4)});
                                                         update_coin_status(this->m_current_wallet_name, tickers, false, m_coins_informations, m_coin_cfg_mutex);
                                                         to_remove.emplace(tickers[idx]);
                                                     }
                                                     else
                                                     {
                                                         SPDLOG_INFO("{} enable loop complete!", tickers[idx]);
-                                                        this->dispatcher_.trigger<enabling_task_status>(tickers[idx], "Complete!");
+                                                        this->dispatcher_.trigger(enabling_task_status{.coin = tickers[idx], .reason = "Complete!"});
                                                     }
                                                 }
                                                 catch (const std::exception& error)
@@ -1691,7 +1691,7 @@ namespace atomic_dex
 
                                 if (!tickers.empty())
                                 {
-                                    dispatcher_.trigger<coin_fully_initialized>(tickers);
+                                    dispatcher_.trigger(coin_fully_initialized{.tickers = tickers});
                                 }
                             }
                         }
@@ -1723,7 +1723,7 @@ namespace atomic_dex
             catch (const std::exception& error)
             {
                 SPDLOG_ERROR("exception while preparing the activation of {}: {}", coin.ticker, error.what());
-                this->dispatcher_.trigger<enabling_coin_failed>(coin.ticker, error.what());
+                this->dispatcher_.trigger(enabling_coin_failed{.coin = coin.ticker, .reason = error.what()});
             }
         }
     }
@@ -2048,7 +2048,7 @@ namespace atomic_dex
         this->m_balance_factor = utils::determine_balance_factor(with_pin_cfg);
         SPDLOG_DEBUG("balance factor is: {}", m_balance_factor);
         this->m_current_wallet_name = std::move(wallet_name);
-        this->dispatcher_.trigger<coin_cfg_parsed>(this->retrieve_coins_informations());
+        this->dispatcher_.trigger(coin_cfg_parsed{.cfg = this->retrieve_coins_informations()});
         this->dispatcher_.trigger<force_update_providers>();
         this->dispatcher_.trigger<force_update_defi_stats>();
         kdf_config cfg{
@@ -2580,7 +2580,7 @@ namespace atomic_dex
             std::unique_lock lock(m_balance_mutex);
             m_balance_informations.at(ticker).balance = "0";
         }
-        this->dispatcher_.trigger<ticker_balance_updated>(std::vector<std::string>{ticker});
+        this->dispatcher_.trigger(ticker_balance_updated{.tickers = std::vector<std::string>{ticker}});
     }
 
     void
@@ -2600,7 +2600,7 @@ namespace atomic_dex
                 std::unique_lock lock(m_balance_mutex); //! Write
                 m_balance_informations.at(ticker).balance = result.str(8, std::ios_base::fixed);
             }
-            this->dispatcher_.trigger<ticker_balance_updated>(std::vector<std::string>{ticker});
+            this->dispatcher_.trigger(ticker_balance_updated{.tickers = std::vector<std::string>{ticker}});
         }
     }
 

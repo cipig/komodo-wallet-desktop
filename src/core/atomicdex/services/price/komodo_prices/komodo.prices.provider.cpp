@@ -54,7 +54,7 @@ namespace atomic_dex
                         process_update(true);
                     }
                 }
-                dispatcher_.trigger<fiat_rate_updated>("");
+                dispatcher_.trigger(fiat_rate_updated{.ticker = ""});
             }
             catch (const std::exception& e)
             {
@@ -63,7 +63,7 @@ namespace atomic_dex
                 {
                     process_update(true);
                 }
-                dispatcher_.trigger<fiat_rate_updated>("");
+                dispatcher_.trigger(fiat_rate_updated{.ticker = ""});
             }
         });
     }

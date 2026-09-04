@@ -103,7 +103,7 @@ namespace atomic_dex
             {
                 if (!get_kdf().is_task_activation_ready(coin.toStdString()))
                 {
-                    this->dispatcher_.trigger<disabling_coin_failed>(coin.toStdString(), "Can't disable until fully activated.");
+                    this->dispatcher_.trigger(disabling_coin_failed{.coin = coin.toStdString(), .reason = "Can't disable until fully activated."});
                 }
                 else
                 {
