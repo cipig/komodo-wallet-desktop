@@ -67,12 +67,12 @@ namespace atomic_dex
 {
     bool settings_page::get_use_sync_date() const
     {
-        QSettings& settings = entity_registry_.ctx<QSettings>();
+        QSettings& settings = entity_registry_.ctx().get<QSettings>();
         return settings.value("UseSyncDate").toBool();
     }
     int settings_page::get_pirate_sync_date() const
     {
-        QSettings& settings = entity_registry_.ctx<QSettings>();
+        QSettings& settings = entity_registry_.ctx().get<QSettings>();
         return settings.value("PirateSyncDate").toInt();
     }
     int settings_page::get_pirate_sync_height(int sync_date, int checkpoint_height, int checkpoint_blocktime) const
@@ -101,21 +101,21 @@ namespace atomic_dex
 
     void settings_page::set_pirate_sync_date(int new_value)
     {
-        QSettings&        settings     = entity_registry_.ctx<QSettings>();
+        QSettings&        settings     = entity_registry_.ctx().get<QSettings>();
         settings.setValue("UseSyncDate", new_value);
         settings.sync();
     }
 
     QString settings_page::get_current_lang() const
     {
-        QSettings& settings = entity_registry_.ctx<QSettings>();
+        QSettings& settings = entity_registry_.ctx().get<QSettings>();
         return settings.value("CurrentLang").toString();
     }
 
     void atomic_dex::settings_page::set_current_lang(QString new_lang)
     {
         const std::string new_lang_std = new_lang.toStdString();
-        QSettings&        settings     = entity_registry_.ctx<QSettings>();
+        QSettings&        settings     = entity_registry_.ctx().get<QSettings>();
         settings.setValue("CurrentLang", new_lang);
         settings.sync();
 
@@ -373,7 +373,7 @@ namespace atomic_dex
 {
     QStringList settings_page::get_available_langs() const
     {
-        QSettings& settings = entity_registry_.ctx<QSettings>();
+        QSettings& settings = entity_registry_.ctx().get<QSettings>();
         return settings.value("AvailableLang").toStringList();
     }
 
