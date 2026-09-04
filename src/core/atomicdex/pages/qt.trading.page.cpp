@@ -105,7 +105,7 @@ namespace atomic_dex
         }
 
         emit kdfMinTradeVolChanged();
-        dispatcher_.trigger<refresh_orderbook_model_data>(base.toStdString(), rel.toStdString());
+        dispatcher_.trigger<refresh_orderbook_model_data>({base.toStdString(), rel.toStdString()});
     }
 
     void
