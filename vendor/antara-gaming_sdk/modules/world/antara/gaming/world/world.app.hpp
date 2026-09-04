@@ -53,7 +53,7 @@ namespace antara::gaming::world
       protected:
         //! Protected Fields
         entt::registry      entity_registry_;
-        entt::dispatcher&   dispatcher_{this->entity_registry_.set<entt::dispatcher>()};
+        entt::dispatcher&   dispatcher_{this->entity_registry_.ctx().emplace<entt::dispatcher>()};
         ecs::system_manager system_manager_{entity_registry_};
     };
 } // namespace antara::gaming::world
