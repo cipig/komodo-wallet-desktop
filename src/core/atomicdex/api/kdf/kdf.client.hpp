@@ -4,7 +4,7 @@
 #include <functional>
 
 // Deps Headers
-#include <entt/core/attribute.h>
+#include <entt/config/config.h>
 #include <async++.h>
 
 // Project Headers

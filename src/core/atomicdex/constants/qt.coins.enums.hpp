@@ -17,7 +17,7 @@
 #pragma once
 
 #include <QObject>
-#include <entt/core/attribute.h>
+#include <entt/config/config.h>
 
 namespace atomic_dex
 {

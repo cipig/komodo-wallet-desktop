@@ -25,7 +25,7 @@
 #include <unordered_set>
 
 //! Deps
-#include <entt/core/attribute.h>
+#include <entt/config/config.h>
 
 //! Project headers
 #include "atomicdex/config/app.cfg.hpp"
