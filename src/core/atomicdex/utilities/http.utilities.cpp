@@ -154,18 +154,34 @@ namespace atomic_dex::http
     {
         return async::spawn([base_url = m_base_url, config = m_config, req]() {
             const auto url = build_url(base_url, req.request_uri());
+
+            // 1. Thread-isolated long-lived session mapping
+            thread_local cpr::Session session;
+
+            // 2. Parse per-request dynamic parameters
             cpr::Header cpr_headers(req.headers().values().begin(), req.headers().values().end());
             cpr::VerifySsl verify_ssl(config.validate_certificates());
             cpr::Timeout timeout(static_cast<std::int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(config.timeout()).count()));
+
+            // 3. Fully overwrite session states (wipes historical configurations)
+            session.SetUrl(cpr::Url{url});
+            session.SetHeader(cpr_headers);
+            session.SetVerifySsl(verify_ssl);
+            session.SetTimeout(timeout);
+
             cpr::Response cpr_response;
 
             switch (req.method())
             {
             case verb::post:
-                cpr_response = cpr::Post(cpr::Url{url}, cpr_headers, cpr::Body{req.body()}, verify_ssl, timeout);
+                session.SetBody(cpr::Body{req.body()});
+                cpr_response = session.Post();
                 break;
+
             case verb::get:
-                cpr_response = cpr::Get(cpr::Url{url}, cpr_headers, verify_ssl, timeout);
+                // Explicitly strip previous payload states when switching context to GET
+                session.SetBody(cpr::Body{""});
+                cpr_response = session.Get();
                 break;
             }
 
