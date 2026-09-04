@@ -71,7 +71,6 @@ execute_process(COMMAND ${LINUX_DEPLOY_PATH} ${PROJECT_BIN_PATH}
         -no-copy-copyright-files
         -extra-plugins=iconengines,platformthemes/libqgtk3.so
         -appimage
-        -verbose=1
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         ECHO_OUTPUT_VARIABLE
         ECHO_ERROR_VARIABLE)

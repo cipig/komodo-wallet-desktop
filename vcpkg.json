@@ -10,24 +10,33 @@
     "nlohmann-json",
     "libsodium",
     "fmt",
-    "spdlog",
     {
       "name": "spdlog",
       "features": [
-        "wchar"
-      ],
-      "platform": "windows"
+        {
+          "name": "wchar",
+          "platform": "windows"
+        }
+      ]
     },
-    "date",
     {
       "name": "date",
       "features": [
-        "remote-api"
-      ],
-      "platform": "windows"
+        {
+          "name": "remote-api",
+          "platform": "windows"
+        }
+      ]
     },
     "asyncplusplus",
     "cpr",
+    {
+      "name": "curl",
+      "default-features": false,
+      "features": [
+        "ssl"
+      ]
+    },
     "entt",
     "refl-cpp",
     "strong-type",
