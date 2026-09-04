@@ -21,7 +21,7 @@
 
 #include <date/date.h>           ///< date::format
 #include <date/tz.h>             ///< date::make_zoned
-#include <entt/core/attribute.h> ///< ENTT_API
+#include <entt/config/config.h> ///< ENTT_API
 
 #include "safe.float.hpp"
 #include "atomicdex/config/coins.cfg.hpp"

@@ -65,7 +65,7 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(nlohmann_json spdlog date)
 
-# Only entt/core/attribute.h (for ENTT_API) is actually needed here -- avoid
+# Only entt/config/config.h (for ENTT_API) is actually needed here -- avoid
 # configuring entt's own CMakeLists (packaging/install rules, its own test
 # suite) for the sake of one header.
 FetchContent_Populate(entt

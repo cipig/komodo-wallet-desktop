@@ -3,7 +3,7 @@
 #include <string>
 
 #include <nlohmann/json_fwd.hpp>
-#include <entt/core/attribute.h>
+#include <entt/config/config.h>
 
 namespace atomic_dex::kdf
 {
