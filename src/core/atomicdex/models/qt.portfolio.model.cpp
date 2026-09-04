@@ -323,7 +323,7 @@ namespace atomic_dex
                 item.is_multi_ticker_enabled = value.toBool();
                 if (item.is_multi_ticker_enabled == true)
                 {
-                    this->m_dispatcher.trigger<multi_ticker_enabled>(item.ticker);
+                    this->m_dispatcher.trigger<multi_ticker_enabled>({item.ticker});
                 }
             }
             break;
@@ -506,7 +506,7 @@ namespace atomic_dex
         // This is a temporary fix to see if it prevents the crash.
         if (amount_f > 0.0)
         {
-            this->m_dispatcher.trigger<balance_update_notification>(am_i_sender, amount, ticker, human_date, timestamp);
+            this->m_dispatcher.trigger<balance_update_notification>({am_i_sender, amount, ticker, human_date, timestamp});
         }
         emit portfolioItemDataChanged();
     }

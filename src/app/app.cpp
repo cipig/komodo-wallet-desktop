@@ -103,7 +103,7 @@ namespace atomic_dex
             {
                 if (!get_kdf().is_task_activation_ready(coin.toStdString()))
                 {
-                    this->dispatcher_.trigger<disabling_coin_failed>(coin.toStdString(), "Can't disable until fully activated.");
+                    this->dispatcher_.trigger<disabling_coin_failed>({coin.toStdString(), "Can't disable until fully activated."});
                 }
                 else
                 {
@@ -134,7 +134,7 @@ namespace atomic_dex
                 coins_std.push_back(coin.toStdString());
             }
             get_kdf().disable_multiple_coins(coins_std);
-            this->dispatcher_.trigger<update_portfolio_values>(false);
+            this->dispatcher_.trigger<update_portfolio_values>({false});
         }
 
         return true;
@@ -674,7 +674,7 @@ namespace atomic_dex
         }
         else if (get_portfolio_page()->get_portfolio()->update_balance_values(evt.tickers))
         {
-            this->dispatcher_.trigger<update_portfolio_values>(false);
+            this->dispatcher_.trigger<update_portfolio_values>({false});
         }
         else
         {
