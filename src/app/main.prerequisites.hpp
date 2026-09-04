@@ -368,7 +368,7 @@ run_app(int argc, char** argv)
 
     //! App declaration
     atomic_dex::application atomic_app;
-    QSettings&              settings = atomic_app.get_registry().ctx().get<QSettings>();
+    QSettings&              settings = atomic_app.get_registry().ctx().at<QSettings>();
     handle_settings(settings);
     atomic_app.post_handle_settings();
 

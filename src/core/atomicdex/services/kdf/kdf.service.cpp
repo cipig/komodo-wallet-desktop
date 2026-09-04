@@ -1263,7 +1263,7 @@ namespace atomic_dex
                                 {
                                     const std::string error = answer.dump(4);
                                     SPDLOG_ERROR("error answer for tx or my_balance: {}", error);
-                                    this->dispatcher_.trigger<tx_fetch_finished>(true);
+                                    this->dispatcher_.trigger<tx_fetch_finished>(tx_fetch_finished{.with_error = true});
                                     if (error.find("future timed out") != std::string::npos)
                                     {
                                         SPDLOG_WARN("Future timed out error detected, probably a connection issue");
@@ -1278,7 +1278,7 @@ namespace atomic_dex
                     catch (const std::exception& error)
                     {
                         SPDLOG_ERROR("exception in kdf_service::batch_balance_and_tx: {}", error.what());
-                        this->dispatcher_.trigger<tx_fetch_finished>(true);
+                        this->dispatcher_.trigger<tx_fetch_finished>(tx_fetch_finished{.with_error = true});
                         this->handle_exception_async_task(std::current_exception(), "batch_balance_and_tx", batch_array);
                     }
                 });
@@ -1841,7 +1841,7 @@ namespace atomic_dex
                     process_orderbook_extras(batch, is_a_reset);
                 }
                 m_orderbook = rpc.result.value();
-                this->dispatcher_.trigger<process_orderbook_finished>(is_a_reset);
+                this->dispatcher_.trigger<process_orderbook_finished>(process_orderbook_finished{.is_a_reset = is_a_reset});
             }
         };
 
@@ -2291,7 +2291,7 @@ namespace atomic_dex
             //! Compute everything
             m_orders_and_swaps = std::move(result);
 
-            this->dispatcher_.trigger<process_swaps_and_orders_finished>(after_manual_reset);
+            this->dispatcher_.trigger<process_swaps_and_orders_finished>(process_swaps_and_orders_finished{.after_manual_reset = after_manual_reset});
         };
 
         m_kdf_client.async_rpc_batch_standalone(batch)
@@ -2405,7 +2405,7 @@ namespace atomic_dex
                         {
                             // SPDLOG_ERROR("answer.rpc_result_code is {} in kdf::async_process_rpc_get with answer.raw_result: {}", answer.rpc_result_code, answer.raw_result);
                             // answer.rpc_result_code is -1 in kdf::async_process_rpc_get with answer.raw_result: [json.exception.parse_error.101] parse error at line 1, column 1: syntax error while parsing value - invalid literal; last read: 'N'
-                            this->dispatcher_.trigger<tx_fetch_finished>(true, ticker);
+                            this->dispatcher_.trigger<tx_fetch_finished>(tx_fetch_finished{.with_error = true, .ticker = ticker});
                         }
                         else if (answer.rpc_result_code not_eq -1 and answer.result.has_value())
                         {
@@ -2462,7 +2462,7 @@ namespace atomic_dex
                             m_tx_informations->insert_or_assign(ticker, std::make_pair(out, state));
 
                             //! Dispatch
-                            this->dispatcher_.trigger<tx_fetch_finished>(false, ticker);
+                            this->dispatcher_.trigger<tx_fetch_finished>(tx_fetch_finished{.with_error = false, .ticker = ticker});
                         }
                     }
                     catch (...)
@@ -2677,7 +2677,7 @@ namespace atomic_dex
 
         //! History
         m_tx_informations->insert_or_assign("result", std::make_pair(out, state));
-        this->dispatcher_.trigger<tx_fetch_finished>(false, std::move(ticker));
+        this->dispatcher_.trigger<tx_fetch_finished>(tx_fetch_finished{.with_error = false, .ticker = std::move(ticker)});
     }
 
     void

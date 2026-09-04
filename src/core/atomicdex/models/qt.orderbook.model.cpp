@@ -485,9 +485,13 @@ namespace atomic_dex
     {
         auto refresh_functor = [this](const std::vector<kdf::order_contents>& contents)
         {
+            std::unordered_set<std::string> current_uuids;
+            current_uuids.reserve(contents.size());
+
             for (auto&& order: contents)
             {
-                if (this->m_orders_id_registry.find(order.uuid) != this->m_orders_id_registry.end()) // crash: (__lhs="5763aab7-bfa2-4277-b1ed-0395115c160e-segwit", __rhs=<error reading variable: Cannot access memory at address 0x5550357008c9>)
+                current_uuids.emplace(order.uuid);
+                if (this->m_orders_id_registry.count(order.uuid) > 0u)
                 {
                     this->update_order(order);
                 }
@@ -499,12 +503,9 @@ namespace atomic_dex
 
             // Deletion
             std::unordered_set<std::string> to_remove;
-            for (auto&& id: this->m_orders_id_registry)
+            for (const auto& id: this->m_orders_id_registry)
             {
-                bool res = std::none_of(begin(contents), end(contents), [id](auto&& contents) { return contents.uuid == id; });
-                // Need to remove the row
-                // segwits are deleted here when they shouldnt be
-                if (res)
+                if (current_uuids.count(id) == 0u)
                 {
                     auto res_list = this->match(index(0, 0), UUIDRole, QString::fromStdString(id));
                     if (not res_list.empty())
