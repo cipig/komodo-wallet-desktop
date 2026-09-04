@@ -1075,7 +1075,7 @@ namespace atomic_dex
             this->clear_forms("set_current_trading_mode");
             this->set_market_mode(MarketMode::Sell);
             m_current_trading_mode = trading_mode;
-            entity_registry_.ctx().at<QSettings>().setValue("DefaultTradingMode", m_current_trading_mode);
+            entity_registry_.ctx().get<QSettings>().setValue("DefaultTradingMode", m_current_trading_mode);
             emit tradingModeChanged();
         }
     }
@@ -1705,7 +1705,7 @@ namespace atomic_dex
     void
     trading_page::set_preferred_settings()
     {
-        auto&         settings            = entity_registry_.ctx().at<QSettings>();
+        auto&         settings            = entity_registry_.ctx().get<QSettings>();
         const auto*   market_selector_mdl = get_market_pairs_mdl();
         const auto    left                = market_selector_mdl->get_left_selected_coin();
         const auto    right               = market_selector_mdl->get_right_selected_coin();

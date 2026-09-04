@@ -405,7 +405,7 @@ namespace atomic_dex
 
     void application::post_handle_settings()
     {
-        QSettings& settings = get_registry().ctx().at<QSettings>();
+        QSettings& settings = get_registry().ctx().get<QSettings>();
         if (settings.value("AutomaticUpdateOrderBot", false).toBool())
         {
             SPDLOG_INFO("AutomaticUpdateOrderBot is true, activating the service");

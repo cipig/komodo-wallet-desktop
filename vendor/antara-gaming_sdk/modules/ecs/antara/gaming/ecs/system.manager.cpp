@@ -50,7 +50,7 @@ namespace antara::gaming::ecs
 namespace antara::gaming::ecs
 {
     system_manager::system_manager(entt::registry& reg)  :
-        entity_registry_(reg), dispatcher_(reg.ctx().at<entt::dispatcher>())
+        entity_registry_(reg), dispatcher_(reg.ctx().get<entt::dispatcher>())
     {
     }
 
