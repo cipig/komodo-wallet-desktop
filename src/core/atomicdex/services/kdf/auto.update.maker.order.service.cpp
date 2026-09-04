@@ -66,7 +66,7 @@ namespace atomic_dex
         const auto    rel_coin          = data.rel_coin.toStdString();
         const auto    base_coin_info    = kdf.get_coin_info(base_coin);
         const auto    rel_coin_info     = kdf.get_coin_info(rel_coin);
-        QSettings&    settings          = entity_registry_.ctx<QSettings>();
+        QSettings&    settings          = entity_registry_.ctx().get<QSettings>();
         const auto    category_settings = data.base_coin + "_" + data.rel_coin;
         const QString target_settings   = "Disabled";
         settings.beginGroup(category_settings);

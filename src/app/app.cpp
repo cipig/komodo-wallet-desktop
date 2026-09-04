@@ -405,7 +405,7 @@ namespace atomic_dex
 
     void application::post_handle_settings()
     {
-        QSettings& settings = get_registry().ctx<QSettings>();
+        QSettings& settings = get_registry().ctx().get<QSettings>();
         if (settings.value("AutomaticUpdateOrderBot", false).toBool())
         {
             SPDLOG_INFO("AutomaticUpdateOrderBot is true, activating the service");
@@ -421,9 +421,9 @@ namespace atomic_dex
     {
         std::filesystem::path settings_path = (atomic_dex::utils::get_current_configs_path() / "cfg.ini");
         #if defined(_WIN32) || defined(WIN32)
-            this->entity_registry_.set<QSettings>(QString::fromStdWString(settings_path.wstring()), QSettings::IniFormat);
+            this->entity_registry_.ctx().emplace<QSettings>(QString::fromStdWString(settings_path.wstring()), QSettings::IniFormat);
         #else
-            this->entity_registry_.set<QSettings>(QString::fromStdString(settings_path.string()), QSettings::IniFormat);
+            this->entity_registry_.ctx().emplace<QSettings>(QString::fromStdString(settings_path.string()), QSettings::IniFormat);
         #endif
 
         //! Creates managers

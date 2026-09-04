@@ -108,7 +108,7 @@ namespace atomic_dex
        mutable std::shared_mutex m_raw_coin_cfg_mutex;
 
        //! Concurrent Registry.
-       t_coins_registry&        m_coins_informations{entity_registry_.set<t_coins_registry>()};
+       t_coins_registry&        m_coins_informations{entity_registry_.ctx().emplace<t_coins_registry>()};
        t_balance_registry       m_balance_informations;
        t_tx_registry            m_tx_informations;
        t_orderbook              m_orderbook{kdf::orderbook_result_rpc{}};
