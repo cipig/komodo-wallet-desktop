@@ -134,7 +134,7 @@ namespace atomic_dex
                 coins_std.push_back(coin.toStdString());
             }
             get_kdf().disable_multiple_coins(coins_std);
-            this->dispatcher_.trigger<update_portfolio_values>(false);
+            this->dispatcher_.trigger<update_portfolio_values>(update_portfolio_values{.with_update_model = false});
         }
 
         return true;
@@ -405,7 +405,7 @@ namespace atomic_dex
 
     void application::post_handle_settings()
     {
-        QSettings& settings = get_registry().ctx().get<QSettings>();
+        QSettings& settings = get_registry().ctx().at<QSettings>();
         if (settings.value("AutomaticUpdateOrderBot", false).toBool())
         {
             SPDLOG_INFO("AutomaticUpdateOrderBot is true, activating the service");
@@ -674,7 +674,7 @@ namespace atomic_dex
         }
         else if (get_portfolio_page()->get_portfolio()->update_balance_values(evt.tickers))
         {
-            this->dispatcher_.trigger<update_portfolio_values>(false);
+            this->dispatcher_.trigger<update_portfolio_values>(update_portfolio_values{.with_update_model = false});
         }
         else
         {
