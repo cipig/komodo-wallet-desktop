@@ -158,7 +158,7 @@ static void init_logging()
     //! and drain periodically so the log is never more than a few seconds behind
     //! even when nothing logs an error on the way down.
     spdlog::flush_on(spdlog::level::err);
-    spdlog::flush_every(std::chrono::seconds(3));
+    spdlog::flush_every(std::chrono::seconds(7));
 
     spdlog::set_pattern("[%T] [%^%l%$] [%s:%#] [%t]: %v");
 }
