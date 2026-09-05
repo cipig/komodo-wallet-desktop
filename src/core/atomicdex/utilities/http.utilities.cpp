@@ -1,10 +1,7 @@
-//! Deps
 #include <cstdint>
 #include <cpr/cpr.h>
 #include <spdlog/spdlog.h>
 #include <stdexcept>
-
-//! Project Headers
 #include "atomicdex/utilities/http.utilities.hpp"
 
 namespace
@@ -150,43 +147,50 @@ namespace atomic_dex::http
     client::client(std::string base_url, client_config config) : m_base_url(std::move(base_url)), m_config(std::move(config)) {}
 
     async::task<response>
-    client::request(const http::request& req) const
+    client::request(const http::request& req, priority prio) const
     {
-        return async::spawn([base_url = m_base_url, config = m_config, req]() {
+        return async::spawn([base_url = m_base_url, config = m_config, req, prio]() {
             const auto url = build_url(base_url, req.request_uri());
+            std::int64_t ms_timeout = static_cast<std::int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(config.timeout()).count());
 
-            // 1. Thread-isolated long-lived session mapping
-            thread_local cpr::Session session;
-
-            // 2. Parse per-request dynamic parameters
-            cpr::Header cpr_headers(req.headers().values().begin(), req.headers().values().end());
-            cpr::VerifySsl verify_ssl(config.validate_certificates());
-            cpr::Timeout timeout(static_cast<std::int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(config.timeout()).count()));
-
-            // 3. Fully overwrite session states (wipes historical configurations)
-            session.SetUrl(cpr::Url{url});
-            session.SetHeader(cpr_headers);
-            session.SetVerifySsl(verify_ssl);
-            session.SetTimeout(timeout);
-
-            cpr::Response cpr_response;
-
-            switch (req.method())
-            {
-            case verb::post:
-                session.SetBody(cpr::Body{req.body()});
-                cpr_response = session.Post();
-                break;
-
-            case verb::get:
-                // Explicitly strip previous payload states when switching context to GET
-                session.SetBody(cpr::Body{""});
-                cpr_response = session.Get();
-                break;
+            if (ms_timeout == 0) {
+                ms_timeout = 30000; // 30s fallback
             }
 
-            if (cpr_response.error.code != cpr::ErrorCode::OK)
+            cpr::Header cpr_headers(req.headers().values().begin(), req.headers().values().end());
+            cpr::VerifySsl verify_ssl(config.validate_certificates());
+            cpr::Timeout timeout(ms_timeout);
+            cpr::Response cpr_response;
+
+            // PATH A: Throttled background traffic (Reuses sockets sequentially per worker thread)
+            if (prio == priority::background)
             {
+                thread_local cpr::Session local_session;
+
+                local_session.SetUrl(cpr::Url{url});
+                local_session.SetHeader(cpr_headers);
+                local_session.SetVerifySsl(verify_ssl);
+                local_session.SetTimeout(timeout);
+
+                if (req.method() == verb::post) {
+                    local_session.SetBody(cpr::Body{req.body()});
+                    cpr_response = local_session.Post();
+                } else {
+                    local_session.SetBody(cpr::Body{""});
+                    cpr_response = local_session.Get();
+                }
+            }
+            // PATH B: Standard / Interactive (Bypasses queuing over standalone connections)
+            else
+            {
+                if (req.method() == verb::post) {
+                    cpr_response = cpr::Post(cpr::Url{url}, cpr_headers, cpr::Body{req.body()}, verify_ssl, timeout);
+                } else {
+                    cpr_response = cpr::Get(cpr::Url{url}, cpr_headers, verify_ssl, timeout);
+                }
+            }
+
+            if (cpr_response.error.code != cpr::ErrorCode::OK) {
                 throw std::runtime_error(materialize_std_string(cpr_response.error.message));
             }
 

@@ -6,7 +6,6 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
-
 #include <async++.h>
 
 namespace atomic_dex::http
@@ -22,6 +21,12 @@ namespace atomic_dex::http
     {
         get,
         post
+    };
+
+    enum class priority
+    {
+        interactive, // Default configuration: concurrent standalone connections
+        background   // Throttled: persistent worker-thread-bound sessions
     };
 
     namespace methods
@@ -108,7 +113,7 @@ namespace atomic_dex::http
       public:
         explicit client(std::string base_url, client_config config = {});
 
-        [[nodiscard]] async::task<response> request(const http::request& req) const;
+        [[nodiscard]] async::task<response> request(const http::request& req, priority prio = priority::interactive) const;
         [[nodiscard]] const std::string&    base_url() const;
 
       private:
@@ -122,6 +127,7 @@ using t_http_client     = atomic_dex::http::client;
 using t_http_request    = atomic_dex::http::request;
 using t_http_response   = atomic_dex::http::response;
 using t_http_method     = atomic_dex::http::verb;
+using t_http_priority   = atomic_dex::http::priority;
 namespace http_method       = atomic_dex::http::methods;
 namespace http_status_codes = atomic_dex::http::status_codes;
 

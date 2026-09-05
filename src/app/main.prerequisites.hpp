@@ -14,14 +14,12 @@
  *                                                                            *
  ******************************************************************************/
 
-//! PCH Headers
 #include "atomicdex/pch.hpp"
-
-//! C Headers
 #include <chrono>
 #include <csignal>
-
-//! Qt
+#include <async++.h>
+#include <thread>
+#include <algorithm>
 #include <QApplication>
 #include <QDebug>
 #include <QDesktopWidget>
@@ -35,13 +33,9 @@
 #include <QtWebEngine>
 #include <QWebEngineProfile>
 #include <Qaterial/Qaterial.hpp>
-
-//! Deps
 #include <QSslSocket>
 #include <sodium/core.h>
 #include <wally.hpp>
-
-//! Project Headers
 #include "app.hpp"
 #include "atomicdex/constants/dex.constants.hpp"
 #include "atomicdex/models/qt.portfolio.model.hpp"
@@ -323,17 +317,23 @@ handle_settings(QSettings& settings)
 inline int
 run_app(int argc, char** argv)
 {
+    unsigned int cores = std::thread::hardware_concurrency();
+    if (cores == 0) {
+        cores = 4;
+    }
+    unsigned int pool_size = cores * 2;
+    async::parallel_scheduler custom_scheduler(pool_size);
+    async::set_default_scheduler(custom_scheduler);
+
     SPDLOG_DEBUG("Installing qt_message_handler");
     qInstallMessageHandler(&qt_message_handler);
     SPDLOG_DEBUG("SSL: {} {} {}", QSslSocket::supportsSsl(), QSslSocket::sslLibraryBuildVersionString().toStdString(), QSslSocket::sslLibraryVersionString().toStdString());
 
+    qputenv("QTWEBENGINE_CHROMIUM_FLAGS", "--disable-web-security");
 #if defined(Q_OS_LINUX)
     // Force the app to run via X11/XWayland layer cleanly to avoid missing wayland plugin warnings
     qputenv("QT_QPA_PLATFORM", "xcb");
 #endif
-
-    qputenv("QTWEBENGINE_CHROMIUM_FLAGS", "--disable-web-security");
-
 #if defined(Q_OS_MACOS)
     // https://bugreports.qt.io/browse/QTBUG-89379
     qputenv("QT_ENABLE_GLYPH_CACHE_WORKAROUND", "1");

@@ -2,10 +2,7 @@
 // Created by Sztergbaum Roman on 27/03/2021.
 //
 
-//! Deps
 #include <nlohmann/json.hpp>
-
-//! Project Headers
 #include "atomicdex/api/kdf/rpc_v1/rpc.recover_funds_of_swap.hpp"
 
 namespace atomic_dex::kdf

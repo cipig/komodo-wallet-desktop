@@ -16,7 +16,6 @@
 
 #include <filesystem>
 #include <meta/detection/detection.hpp>
-
 #include "kdf.hpp"
 #include "atomicdex/api/kdf/rpc.hpp"
 #include "kdf.client.hpp"
@@ -159,15 +158,15 @@ namespace atomic_dex::kdf
     }
 
     async::task<t_http_response>
-    kdf_client::async_rpc_batch_standalone(nlohmann::json batch_array)
+    kdf_client::async_rpc_batch_standalone(nlohmann::json batch_array, t_http_priority prio)
     {
-        return async::spawn([batch_array]() {
+        return async::spawn([batch_array, prio]() {
             try
             {
                 t_http_request request;
                 request.set_method(http_method::POST);
                 request.set_body(batch_array.dump());
-                auto resp = generate_client().request(request);
+                auto resp = generate_client().request(request, prio);
                 return resp.get();
             }
             catch (const std::exception& error)

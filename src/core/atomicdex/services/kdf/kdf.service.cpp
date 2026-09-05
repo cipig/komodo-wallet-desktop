@@ -690,7 +690,6 @@ namespace atomic_dex
                     std::vector<std::string> tickers;
                     for (auto&& coin: activated_coins)
                     {
-
                         std::unique_lock lock(m_coin_cfg_mutex);
                         m_coins_informations[coin.ticker].currently_enabled = true;
                         tickers.push_back(coin.ticker);
@@ -738,7 +737,8 @@ namespace atomic_dex
             kdf::to_json(j, request);
             batch_array.push_back(j);
         }
-        m_kdf_client.async_rpc_batch_standalone(batch_array)
+
+        m_kdf_client.async_rpc_batch_standalone(batch_array, t_http_priority::background)
             .then([this, batch = batch_array, callback](async::task<t_http_response> previous_task) mutable {
                 try
                 {
@@ -852,7 +852,8 @@ namespace atomic_dex
             kdf::to_json(j, request);
             batch_array.push_back(j);
         }
-        m_kdf_client.async_rpc_batch_standalone(batch_array)
+
+        m_kdf_client.async_rpc_batch_standalone(batch_array, t_http_priority::background)
             .then([this, batch = batch_array, callback](async::task<t_http_response> previous_task) mutable {
                 try
                 {
@@ -1220,7 +1221,7 @@ namespace atomic_dex
         (void)tickers;
         (void)is_during_enabling;
         auto&& [batch_array, tickers_idx, tokens_to_fetch] = prepare_batch_balance_and_tx(only_tx);
-        return m_kdf_client.async_rpc_batch_standalone(batch_array)
+        return m_kdf_client.async_rpc_batch_standalone(batch_array, t_http_priority::background)
             .then(
                 [this, tokens_to_fetch = tokens_to_fetch, is_a_reset, tickers, batch_array = batch_array](async::task<t_http_response> previous_task)
                 {
@@ -1267,7 +1268,6 @@ namespace atomic_dex
                                     if (error.find("future timed out") != std::string::npos)
                                     {
                                         SPDLOG_WARN("Future timed out error detected, probably a connection issue");
-                                        //! Emit error for UI Change
                                     }
                                 }
                             }
@@ -2016,7 +2016,7 @@ namespace atomic_dex
             }
         };
 
-        m_kdf_client.async_rpc_batch_standalone(batch_array)
+        m_kdf_client.async_rpc_batch_standalone(batch_array, t_http_priority::background)
             .then([this, batch = batch_array, answer_functor](t_http_response resp) {
                 try
                 {

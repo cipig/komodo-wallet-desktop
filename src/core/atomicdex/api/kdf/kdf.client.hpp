@@ -1,13 +1,8 @@
 #pragma once
 
-// Std Headers
 #include <functional>
-
-// Deps Headers
 #include <entt/config/config.h>
 #include <async++.h>
-
-// Project Headers
 #include "atomicdex/utilities/http.utilities.hpp"
 #include "atomicdex/api/kdf/rpc_v1/rpc.disable_coin.hpp"
 #include "atomicdex/api/kdf/rpc_v1/rpc.recover_funds_of_swap.hpp"
@@ -23,7 +18,10 @@ namespace atomic_dex::kdf
         ~kdf_client() = default;
 
         //! API
-        async::task<t_http_response> async_rpc_batch_standalone(nlohmann::json batch_array);
+        async::task<t_http_response> async_rpc_batch_standalone(
+            nlohmann::json batch_array,
+            t_http_priority prio = t_http_priority::interactive
+        );
 
         template <rpc Rpc>
         void process_rpc_async(const std::function<void(Rpc)>& on_rpc_processed);

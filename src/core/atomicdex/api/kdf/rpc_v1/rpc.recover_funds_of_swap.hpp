@@ -2,8 +2,6 @@
 
 #include <optional>
 #include <string>
-
-//! Deps
 #include <nlohmann/json_fwd.hpp>
 
 namespace atomic_dex::kdf
