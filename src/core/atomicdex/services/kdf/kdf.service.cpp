@@ -1216,60 +1216,58 @@ namespace atomic_dex
     }
 
     async::task<void>
-    kdf_service::batch_balance_and_tx(bool is_a_reset, bool only_tx)
+    kdf_service::batch_balance_and_tx()
     {
         auto&& [batch_array, tokens_to_fetch] = prepare_batch_balance_and_tx();
+
+        // If it's a token, there is no batch array payload to send to the standard rpc endpoint
+        if (batch_array.empty())
+        {
+            if (!tokens_to_fetch.empty()) {
+                process_tx_tokenscan(tokens_to_fetch.front());
+            }
+            return async::spawn([](){});
+        }
+
         return m_kdf_client.async_rpc_batch_standalone(batch_array, t_http_priority::background)
             .then(
-                [this, tokens_to_fetch = tokens_to_fetch, is_a_reset, batch_array = batch_array](async::task<t_http_response> previous_task)
+                [this, tokens_to_fetch = tokens_to_fetch, batch_array = batch_array](async::task<t_http_response> previous_task)
                 {
                     try
                     {
                         auto answers = kdf::basic_batch_answer(previous_task.get());
-                        if (not answers.contains("error"))
+                        if (not answers.contains("error") && answers.is_array() && !answers.empty())
                         {
-                            for (auto i = 0ul; i < answers.size(); i++)
+                            auto&       answer = answers[0]; // Access single item directly without loops
+                            std::string ticker;
+
+                            if (batch_array[0].contains("mmrpc") && batch_array[0].at("mmrpc") == "2.0")
                             {
-                                auto&       answer = answers[i];
-                                std::string ticker;
-
-                                if (batch_array[i].contains("mmrpc") && batch_array[i].at("mmrpc") == "2.0")
-                                {
-                                    if (batch_array[i].at("params").contains("coin"))
-                                    {
-                                        ticker = batch_array[i].at("params").at("coin");
-                                    }
-                                    else if (batch_array[i].at("params").contains("ticker"))
-                                    {
-                                        ticker = batch_array[i].at("params").at("ticker");
-                                    }
-                                }
-                                else
-                                {
-                                    ticker = batch_array[i].at("coin");
-                                }
-
-                                if (answer.contains("balance"))
-                                {
-                                    this->process_balance_answer(answer);
-                                }
-                                else if (answer.contains("result"))
-                                {
-                                    this->process_tx_answer(answer, ticker);
-                                }
-                                else
-                                {
-                                    const std::string error = answer.dump(4);
-                                    SPDLOG_ERROR("error answer for tx or my_balance: {}", error);
-                                    this->dispatcher_.trigger<tx_fetch_finished>(tx_fetch_finished{.with_error = true});
-                                    if (error.find("future timed out") != std::string::npos)
-                                    {
-                                        SPDLOG_WARN("Future timed out error detected, probably a connection issue");
-                                    }
+                                if (batch_array[0].at("params").contains("coin")) {
+                                    ticker = batch_array[0].at("params").at("coin");
+                                } else if (batch_array[0].at("params").contains("ticker")) {
+                                    ticker = batch_array[0].at("params").at("ticker");
                                 }
                             }
+                            else
+                            {
+                                ticker = batch_array[0].at("coin");
+                            }
 
-                            for (auto&& coin: tokens_to_fetch) { process_tx_tokenscan(coin, is_a_reset); }
+                            if (answer.contains("result"))
+                            {
+                                this->process_tx_answer(answer, ticker);
+                            }
+                            else
+                            {
+                                const std::string error = answer.dump(4);
+                                SPDLOG_ERROR("error answer for tx history: {}", error);
+                                this->dispatcher_.trigger<tx_fetch_finished>(tx_fetch_finished{.with_error = true});
+                            }
+                        }
+
+                        if (!tokens_to_fetch.empty()) {
+                            process_tx_tokenscan(tokens_to_fetch.front());
                         }
                     }
                     catch (const std::exception& error)
@@ -1293,7 +1291,7 @@ namespace atomic_dex
         return atomic_dex::uses_v2_history(coin_info);
     }
 
-    std::tuple<nlohmann::json, std::vector<std::string>, std::vector<std::string>>
+    std::pair<nlohmann::json, std::vector<std::string>>
     kdf_service::prepare_batch_balance_and_tx() const
     {
         nlohmann::json           batch_array   = nlohmann::json::array();
@@ -1307,7 +1305,7 @@ namespace atomic_dex
         }
         else
         {
-            std::size_t     limit =  250;
+            std::size_t     limit = 250;
             bool            requires_v2 = false;
             std::string     method = "my_tx_history";
 
@@ -1316,7 +1314,6 @@ namespace atomic_dex
                 requires_v2 = true;
                 if (coin_info.is_zhtlc_family)
                 {
-                    // Don't request balance / history if not completely activated.
                     if (coin_info.activation_status.at("result").at("status") == "Ok")
                     {
                         limit = 100;
@@ -1324,7 +1321,7 @@ namespace atomic_dex
                     }
                     else
                     {
-                        return std::make_tuple(batch_array, tokens_to_fetch);
+                        return std::make_pair(batch_array, tokens_to_fetch);
                     }
                 }
             }
@@ -1334,7 +1331,7 @@ namespace atomic_dex
             batch_array.push_back(j);
         }
 
-        return std::make_tuple(batch_array, tokens_to_fetch);
+        return std::make_pair(batch_array, tokens_to_fetch);
     }
 
     std::pair<bool, std::string>
@@ -1963,7 +1960,7 @@ namespace atomic_dex
         }
 
         if (m_wallet_page_active) {
-            batch_balance_and_tx(true, true);
+            batch_balance_and_tx();
         }
     }
 
@@ -2231,7 +2228,7 @@ namespace atomic_dex
             });
     }
 
-    void kdf_service::process_tx_tokenscan(const std::string& ticker, [[maybe_unused]] bool is_a_reset)
+    void kdf_service::process_tx_tokenscan(const std::string& ticker)
     {
         std::error_code ec;
         using namespace std::string_literals;

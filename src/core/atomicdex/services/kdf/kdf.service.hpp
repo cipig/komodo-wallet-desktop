@@ -124,10 +124,10 @@ namespace atomic_dex
        void process_orderbook_extras(nlohmann::json batch, bool is_a_reset);
 
        //! Batch balance / tx
-       std::tuple<nlohmann::json, std::vector<std::string>, std::vector<std::string>> prepare_batch_balance_and_tx() const;
+       std::pair<nlohmann::json, std::vector<std::string>> prepare_batch_balance_and_tx() const;
        void process_balance_answer(const nlohmann::json& answer);
        void process_tx_answer(const nlohmann::json& answer_json, std::string ticker);
-       void process_tx_tokenscan(const std::string& ticker, bool is_a_reset);
+       void process_tx_tokenscan(const std::string& ticker);
        void fetch_single_balance(const coin_config_t& cfg_infos);
 
        //!
@@ -164,7 +164,7 @@ namespace atomic_dex
 
        //! Refresh the current info (internally call process_balance and process_tx)
        void fetch_balances_thread();
-       async::task<void> batch_balance_and_tx(bool is_a_reset, bool only_tx = false);
+       async::task<void> batch_balance_and_tx();
 
        // Coins enabling functions
        bool enable_default_coins(); // Enables required coins + coins enabled in the config
