@@ -954,14 +954,13 @@ namespace atomic_dex
         {
             for (const auto& token_config : coins)
             {
-                // SPDLOG_DEBUG("Processing {} token: {}", parent_ticker, token_config.ticker);
                 kdf::enable_erc20_rpc rpc{.request={.ticker = token_config.ticker}};
 
                 if (token_config.ticker == parent_ticker_info.ticker)
                 {
                     continue;
                 }
-                m_kdf_client.process_rpc_async<kdf::enable_erc20_rpc>(rpc.request, callback);
+                m_kdf_client.process_rpc_async<kdf::enable_erc20_rpc>(rpc.request, callback, t_http_priority::background);
             }
         }
         else
@@ -982,7 +981,7 @@ namespace atomic_dex
                 }
                 rpc.request.erc20_tokens_requests.push_back({.ticker = coin_config.ticker});
             }
-            m_kdf_client.process_rpc_async<kdf::enable_eth_with_tokens_rpc>(rpc.request, callback);
+            m_kdf_client.process_rpc_async<kdf::enable_eth_with_tokens_rpc>(rpc.request, callback, t_http_priority::background);
         }
         SPDLOG_DEBUG("kdf_service::enable_erc20_coins done for {}", parent_ticker);
     }
@@ -1706,7 +1705,7 @@ namespace atomic_dex
         {
             if (coin_info.activation_status.contains("result"))
             {
-                //SPDLOG_DEBUG("kdf_service::is_zhtlc_coin_ready coin_info.activation_status for coin {}: {}", coin, coin_info.activation_status.dump(4));
+                SPDLOG_DEBUG("kdf_service::is_task_activation_ready => coin_info.activation_status for coin {}: {}", coin, coin_info.activation_status.dump(4));
                 if (coin_info.activation_status.at("result").contains("status"))
                 {
                     if (coin_info.activation_status.at("result").at("status") == "Ok")
@@ -1736,9 +1735,9 @@ namespace atomic_dex
         return m_coins_informations.at(ticker);
     }
     
+    // TODO atomic_defi_design/Dex/Addressbook/Main.qml
     bool kdf_service::is_coin_enabled(const std::string& ticker) const
     {
-        SPDLOG_DEBUG("UNUSED ??");
         return m_coins_informations[ticker].currently_enabled;
     }
     
@@ -1749,13 +1748,13 @@ namespace atomic_dex
 
     void kdf_service::on_coin_fully_initialized_event(const coin_fully_initialized& evt)
     {
-        for (const auto& ticker: evt.tickers)
+        for ([[maybe_unused]] const auto& ticker: evt.tickers)
         {
             SPDLOG_DEBUG("kdf_service::on_coin_fully_initialized_event triggered for {}", ticker);
         }
     }
 
-    // [smk] Only called by trading_page::process_action()
+    // TODO Only called by trading_page::process_action()
     kdf::orderbook_result_rpc kdf_service::get_orderbook(t_kdf_ec& ec) const
     {
         auto&& [base, rel]          = this->m_synchronized_ticker_pair.get();
@@ -2094,8 +2093,7 @@ namespace atomic_dex
     std::string
     kdf_service::get_balance_info(const std::string& ticker, t_kdf_ec& ec) const
     {
-        // This happens quite often
-        std::shared_lock lock(m_balance_mutex); ///! read
+        std::shared_lock lock(m_balance_mutex);
         auto             it = m_balance_informations.find(ticker);
         
         if (m_coins_informations[ticker].currently_enabled)

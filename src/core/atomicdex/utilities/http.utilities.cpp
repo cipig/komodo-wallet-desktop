@@ -147,7 +147,6 @@ namespace atomic_dex::http
 
     unsigned int determine_pool_size() {
         unsigned int cores = std::thread::hardware_concurrency();
-        SPDLOG_DEBUG("Cores found by std::thread::hardware_concurrency: {}", cores);
         return (cores == 0) ? 8 : (cores * 2);
     }
 

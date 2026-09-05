@@ -24,9 +24,17 @@ namespace atomic_dex::kdf
         );
 
         template <rpc Rpc>
-        void process_rpc_async(const std::function<void(Rpc)>& on_rpc_processed);
+        void process_rpc_async(
+            const std::function<void(Rpc)>& on_rpc_processed,
+            t_http_priority prio = t_http_priority::interactive
+        );
+
         template <rpc Rpc>
-        void process_rpc_async(typename Rpc::expected_request_type request, const std::function<void(Rpc)>& on_rpc_processed);
+        void process_rpc_async(
+            typename Rpc::expected_request_type request,
+            const std::function<void(Rpc)>& on_rpc_processed,
+            t_http_priority prio = t_http_priority::interactive
+        );
 
         //! Synced
         template <typename TRequest, typename TAnswer>

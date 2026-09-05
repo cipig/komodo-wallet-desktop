@@ -177,35 +177,25 @@ namespace atomic_dex::kdf
                         item["userpass"] = "*******";
                     }
                 }
-                SPDLOG_ERROR("exception in kdf_client::async_rpc_batch_standalone: {} | Request payload: {}", error.what(), masked_batch.dump());
+                SPDLOG_ERROR("exception in kdf_client::async_rpc_batch_standalone: {} | Pirority: {} | Request payload: {}", error.what(), prio, masked_batch.dump());
                 throw;
             }
         });
     }
 
     template <rpc Rpc>
-    void kdf_client::process_rpc_async(const std::function<void(Rpc)>& on_rpc_processed)
+    void kdf_client::process_rpc_async(const std::function<void(Rpc)>& on_rpc_processed, t_http_priority prio)
     {
         using request_type = typename Rpc::expected_request_type;
-        process_rpc_async(request_type{}, on_rpc_processed);
+        process_rpc_async<Rpc>(request_type{}, on_rpc_processed, prio);
     }
 
-    template void kdf_client::process_rpc_async<orderbook_rpc>(const std::function<void(orderbook_rpc)>&);
-    template void kdf_client::process_rpc_async<bestorders_rpc>(const std::function<void(bestorders_rpc)>&);
-    template void kdf_client::process_rpc_async<enable_erc20_rpc>(const std::function<void(enable_erc20_rpc)>&);
-    template void kdf_client::process_rpc_async<get_public_key_rpc>(const std::function<void(get_public_key_rpc)>&);
-    template void kdf_client::process_rpc_async<my_tx_history_v1_rpc>(const std::function<void(my_tx_history_v1_rpc)>&);
-    template void kdf_client::process_rpc_async<my_tx_history_v2_rpc>(const std::function<void(my_tx_history_v2_rpc)>&);
-    template void kdf_client::process_rpc_async<enable_eth_with_tokens_rpc>(const std::function<void(enable_eth_with_tokens_rpc)>&);
-    template void kdf_client::process_rpc_async<enable_tendermint_token_rpc>(const std::function<void(enable_tendermint_token_rpc)>&);
-    template void kdf_client::process_rpc_async<enable_tendermint_with_assets_rpc>(const std::function<void(enable_tendermint_with_assets_rpc)>&);
-    
     template <kdf::rpc Rpc>
-    void kdf_client::process_rpc_async(typename Rpc::expected_request_type request, const std::function<void(Rpc)>& on_rpc_processed)
+    void kdf_client::process_rpc_async(typename Rpc::expected_request_type request, const std::function<void(Rpc)>& on_rpc_processed, t_http_priority prio)
     {
         auto http_request = make_request<Rpc>(request);
         generate_client()
-            .request(http_request)
+            .request(http_request, prio)
             .then([on_rpc_processed, request](const t_http_response& resp)
             {
                 try
@@ -222,6 +212,16 @@ namespace atomic_dex::kdf
                 }
             });
     }
+
+    template void kdf_client::process_rpc_async<orderbook_rpc>(const std::function<void(orderbook_rpc)>&);
+    template void kdf_client::process_rpc_async<bestorders_rpc>(const std::function<void(bestorders_rpc)>&);
+    template void kdf_client::process_rpc_async<enable_erc20_rpc>(const std::function<void(enable_erc20_rpc)>&);
+    template void kdf_client::process_rpc_async<get_public_key_rpc>(const std::function<void(get_public_key_rpc)>&);
+    template void kdf_client::process_rpc_async<my_tx_history_v1_rpc>(const std::function<void(my_tx_history_v1_rpc)>&);
+    template void kdf_client::process_rpc_async<my_tx_history_v2_rpc>(const std::function<void(my_tx_history_v2_rpc)>&);
+    template void kdf_client::process_rpc_async<enable_eth_with_tokens_rpc>(const std::function<void(enable_eth_with_tokens_rpc)>&);
+    template void kdf_client::process_rpc_async<enable_tendermint_token_rpc>(const std::function<void(enable_tendermint_token_rpc)>&);
+    template void kdf_client::process_rpc_async<enable_tendermint_with_assets_rpc>(const std::function<void(enable_tendermint_with_assets_rpc)>&);
 
     template <typename TRequest, typename TAnswer>
     TAnswer
