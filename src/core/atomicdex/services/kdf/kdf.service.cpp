@@ -557,101 +557,92 @@ namespace atomic_dex
 
     void kdf_service::activate_coins(const t_coins& coins)
     {
-        t_coins other_coins;
-        t_coins sia_coins;
-        t_coins erc_family_coins;
-        t_coins zhtlc_coins;
-        t_coins tendermint_coins;
-        t_coins bep20_coins;
-        t_coins bep20_testnet_coins;
-        t_coins plg20_coins;
-        t_coins arb20_coins;
-       
-        SPDLOG_INFO(">>>>>>>>>>>>>>>>>>>>>>>>>>> Enabling {} coins <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<", coins.size());
+        std::map<std::string, std::vector<coin_config_t>> evm_chain_groups;
+        std::map<std::string, std::vector<coin_config_t>> tendermint_chain_groups;
+        std::vector<coin_config_t> utxo_qrc20_coins;
+        std::vector<coin_config_t> sia_coins;
+        std::vector<coin_config_t> zhtlc_coins;
+
         for (const auto& coin_cfg : coins)
         {
             if (coin_cfg.currently_enabled)
             {
-                SPDLOG_WARN("{} cannot be enabled because it already is or is being enabled.", coin_cfg.ticker);
+                SPDLOG_WARN("{} cannot be enabled because it already is active.", coin_cfg.ticker);
                 continue;
             }
-            if (coin_cfg.coin_type == CoinType::TENDERMINT || coin_cfg.coin_type == CoinType::TENDERMINTTOKEN)
+
+            switch (coin_cfg.coin_type)
             {
-                tendermint_coins.push_back(coin_cfg);
-            }
-            else if (coin_cfg.coin_type == CoinType::SIA)
-            {
-                sia_coins.push_back(coin_cfg);
-            }
-            else if (coin_cfg.coin_type == CoinType::ZHTLC)
-            {
-                zhtlc_coins.push_back(coin_cfg);
-            }
-            else if (coin_cfg.coin_type == CoinType::BEP20)
-            {
-                coin_cfg.is_testnet.value_or(false) ? bep20_testnet_coins.push_back(coin_cfg) : bep20_coins.push_back(coin_cfg);
-            }
-            else if (coin_cfg.coin_type == CoinType::PLG20)
-            {
-                plg20_coins.push_back(coin_cfg);
-            }
-            else if (coin_cfg.coin_type == CoinType::Arbitrum)
-            {
-                arb20_coins.push_back(coin_cfg);
-            }
-            else if (coin_cfg.is_erc_family)
-            {
-                erc_family_coins.push_back(coin_cfg);
-            }
-            else
-            {
-                other_coins.push_back(coin_cfg);
+                case CoinType::AVX20:
+                case CoinType::BEP20:
+                case CoinType::ERC20:
+                case CoinType::GRC20:
+                case CoinType::HRC20:
+                case CoinType::KRC20:
+                case CoinType::PLG20:
+                case CoinType::TRC20:
+                case CoinType::Arbitrum:
+                case CoinType::Base:
+                case CoinType::Bittensor:
+                case CoinType::Gnosis:
+                case CoinType::HyperEVM:
+                case CoinType::Optimism:
+                    evm_chain_groups[coin_cfg.parent_coin].push_back(coin_cfg);
+                    break;
+
+                case CoinType::UTXO:
+                case CoinType::QRC20:
+                case CoinType::SmartChain:
+                    utxo_qrc20_coins.push_back(coin_cfg);
+                    break;
+
+                case CoinType::SIA:
+                    sia_coins.push_back(coin_cfg);
+                    break;
+
+                case CoinType::ZHTLC:
+                    zhtlc_coins.push_back(coin_cfg);
+                    break;
+
+                case CoinType::TENDERMINT:
+                case CoinType::TENDERMINTTOKEN:
+                    tendermint_chain_groups[coin_cfg.parent_coin].push_back(coin_cfg);
+                    break;
+
+                default:
+                    SPDLOG_WARN("Unsupported coin type for ticker: {}", coin_cfg.ticker);
+                    break;
             }
         }
-        if (other_coins.size() > 0)
+
+        for (const auto& [parent_coin, tokens_vector] : evm_chain_groups)
         {
-            SPDLOG_INFO(">>>>>>>>>>>>>>>>>>>>>>>>>>> Enabling {} utxo_qrc20_coins <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<", other_coins.size());
-            enable_utxo_qrc20_coins(other_coins);
+            SPDLOG_DEBUG("Batch activating {} tokens on the [{}] chain architecture.", tokens_vector.size(), parent_coin);
+            enable_erc20_coins(tokens_vector, parent_coin);
         }
-        if (bep20_coins.size() > 0)
+
+        if (!utxo_qrc20_coins.empty())
         {
-            SPDLOG_INFO(">>>>>>>>>>>>>>>>>>>>>>>>>>> Enabling {} BEP20 coins <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<", bep20_coins.size());
-            for (const auto& [parent_coin, coins_vector] : groupByParentCoin(bep20_coins)) {
-                SPDLOG_DEBUG("--- Group Found! Parent coin is: {} ---", parent_coin);
-                for (const auto& coin : coins_vector) {
-                    SPDLOG_DEBUG("  > Token: {} )", coin.ticker);
-                }
-                enable_erc20_coins(coins_vector, parent_coin);
-            }
-            //enable_erc_family_coins(bep20_coins);
+            SPDLOG_DEBUG("Activating {} UTXO/QRC20 coins.", utxo_qrc20_coins.size());
+            enable_utxo_qrc20_coins(utxo_qrc20_coins);
         }
-        if (bep20_testnet_coins.size() > 0)
+
+        if (!sia_coins.empty())
         {
-            SPDLOG_INFO(">>>>>>>>>>>>>>>>>>>>>>>>>>> Enabling {} bep20_testnet_coins <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<", bep20_testnet_coins.size());
-            // enable_erc20_coins(bep20_testnet_coins, "BNBT");
-            enable_erc_family_coins(bep20_testnet_coins);
+            SPDLOG_DEBUG("Activating {} SIA coins.", sia_coins.size());
+            enable_task(sia_coins);
         }
-        if (erc_family_coins.size() > 0)
+
+        if (!zhtlc_coins.empty())
         {
-            SPDLOG_INFO(">>>>>>>>>>>>>>>>>>>>>>>>>>> Enabling {} erc_family_coins <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<", erc_family_coins.size());
-            enable_erc_family_coins(erc_family_coins);
-        }
-        if (zhtlc_coins.size() > 0)
-        {
-            SPDLOG_INFO(">>>>>>>>>>>>>>>>>>>>>>>>>>> Enabling {} zhtlc_coins <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<", zhtlc_coins.size());
+            SPDLOG_DEBUG("Activating {} ZHTLC coins.", zhtlc_coins.size());
             enable_task(zhtlc_coins);
         }
-        if (tendermint_coins.size() > 0)
+
+        for (const auto& [parent_coin, tokens_vector] : tendermint_chain_groups)
         {
-            SPDLOG_INFO(">>>>>>>>>>>>>>>>>>>>>>>>>>> Enabling {} tendermint_coins <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<", tendermint_coins.size());
-            for (const auto& [parent_coin, coins_vector] : groupByParentCoin(tendermint_coins)) {
-                enable_tendermint_coins(coins_vector, parent_coin);
-            }
-        }
-        if (sia_coins.size() > 0)
-        {
-            SPDLOG_INFO(">>>>>>>>>>>>>>>>>>>>>>>>>>> Enabling {} sia_coins <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<", sia_coins.size());
-            enable_task(sia_coins);
+            SPDLOG_DEBUG("Batch activating {} tokens on the [{}] chain architecture.", tokens_vector.size(), parent_coin);
+            enable_tendermint_coins(tokens_vector, parent_coin);
         }
     }
 

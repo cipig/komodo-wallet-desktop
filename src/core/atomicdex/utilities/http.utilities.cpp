@@ -147,7 +147,7 @@ namespace atomic_dex::http
 
     unsigned int determine_pool_size() {
         unsigned int cores = std::thread::hardware_concurrency();
-        return (cores == 0) ? 8 : (cores * 2);
+        return (cores == 0) ? 4 : (cores * 1);
     }
 
     client::client(std::string base_url, client_config config)

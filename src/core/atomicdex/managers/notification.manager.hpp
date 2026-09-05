@@ -16,13 +16,8 @@
 
 #pragma once
 
-//! QT Include
 #include <QObject>
-
-//! Deps
 #include <entt/signal/dispatcher.hpp>
-
-//! Project Headers
 #include "atomicdex/events/events.hpp"
 #include "atomicdex/events/qt.events.hpp"
 
@@ -56,7 +51,6 @@ namespace atomic_dex
         void disablingCoinFailedStatus(QString coin, QString error, QString human_date, qint64 timestamp);
         void endpointNonReacheableStatus(QString base_uri, QString human_date, qint64 timestamp);
         void fatalNotification(QString message);
-        void batchFailed(QString reason, QString from, QString human_date, qint64 timestamp);
 
       private:
         entt::dispatcher& m_dispatcher;
