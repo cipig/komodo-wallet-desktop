@@ -177,7 +177,7 @@ namespace atomic_dex::kdf
                         item["userpass"] = "*******";
                     }
                 }
-                SPDLOG_ERROR("exception in kdf_client::async_rpc_batch_standalone: {} | Pirority: {} | Request payload: {}", error.what(), prio, masked_batch.dump());
+                SPDLOG_ERROR("exception in kdf_client::async_rpc_batch_standalone: {} | Request payload: {}", error.what(), masked_batch.dump());
                 throw;
             }
         });

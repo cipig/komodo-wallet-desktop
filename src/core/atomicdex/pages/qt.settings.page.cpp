@@ -14,17 +14,12 @@
  *                                                                            *
  ******************************************************************************/
 
-// Qt Headers
 #include <QDebug>
 #include <QFile>
 #include <QJsonDocument>
 #include <QLocale>
 #include <QSettings>
-
-// Deps Headers
 #include <boost/algorithm/string/case_conv.hpp>
-
-// Project Headers
 #include "atomicdex/constants/dex.constants.hpp"
 #include "atomicdex/api/kdf/rpc_v2/rpc2.get_public_key.hpp"
 #include "atomicdex/config/enable.cfg.hpp"
@@ -59,10 +54,8 @@ namespace atomic_dex
     }
 } // namespace atomic_dex
 
-// Base Class ag::ecs::pre_update_system
 namespace atomic_dex { void settings_page::update() {} }
 
-// Getters|Setters
 namespace atomic_dex
 {
     bool settings_page::get_use_sync_date() const
@@ -182,7 +175,6 @@ namespace atomic_dex
         return m_zhtlc_status.get();
     }
 
-
     void settings_page::set_static_rpcpass_enabled(bool is_enabled)
     {
         if (m_config.static_rpcpass_enabled != is_enabled)
@@ -201,7 +193,6 @@ namespace atomic_dex
     {
         if (m_config.spamfilter_enabled != is_enabled)
         {
-            
             auto& kdf       = m_system_manager.get_system<kdf_service>();
             auto& wallet_pg = m_system_manager.get_system<wallet_page>();
             QString ticker  = QString::fromStdString(kdf.get_current_ticker());
@@ -448,7 +439,7 @@ namespace atomic_dex
         if (!ec)
         {
             this->set_fetching_priv_key_busy(true);
-            //! Also fetch private keys
+
             nlohmann::json batch   = nlohmann::json::array();
             const auto*    cfg_mdl = m_system_manager.get_system<portfolio_page>().get_global_cfg();
             const auto     coins   = cfg_mdl->get_enabled_coins();
@@ -459,13 +450,14 @@ namespace atomic_dex
                 to_json(req_json, req);
                 batch.push_back(req_json);
             }
+
             auto&      kdf_system     = m_system_manager.get_system<kdf_service>();
+
             const auto answer_functor = [this](t_http_response resp)
             {
                 std::string body = (resp.extract_string(true).get());
                 if (resp.status_code() == 200)
                 {
-                    //!
                     auto answers = nlohmann::json::parse(body);
                     SPDLOG_WARN("Priv keys fetched, those are sensitive data.");
                     for (auto&& answer: answers)

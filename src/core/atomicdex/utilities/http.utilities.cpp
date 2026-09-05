@@ -164,7 +164,7 @@ namespace atomic_dex::http
             std::int64_t ms_timeout = static_cast<std::int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(config.timeout()).count());
 
             if (ms_timeout == 0) {
-                ms_timeout = 30000; // 30s fallback
+                ms_timeout = 32000; // 32s fallback
             }
 
             cpr::Header cpr_headers(req.headers().values().begin(), req.headers().values().end());
