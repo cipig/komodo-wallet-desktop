@@ -40,7 +40,7 @@ namespace atomic_dex
     {
         if (m_bestorders_busy)
         {
-            // SPDLOG_WARN("process_best_orders is busy - skipping");
+            SPDLOG_DEBUG("orderbook_scanner_service::process_best_orders is busy - skipping");
             return;
         }
 
@@ -82,14 +82,6 @@ namespace atomic_dex
                 kdf::bestorders_rpc rpc{.request={.coin = std::move(coin), .volume = std::move(volume), .action = std::move(action)}};
                 kdf_system.get_kdf_client().process_rpc_async<atomic_dex::kdf::bestorders_rpc>(rpc.request, callback);
             }
-            else
-            {
-                // SPDLOG_WARN("Not on trading page or KDF not running - skipping process_best_orders");
-            }
-        }
-        else
-        {
-            SPDLOG_WARN("KDF Service not created yet - skipping process_best_orders");
         }
     }
 } // namespace atomic_dex
