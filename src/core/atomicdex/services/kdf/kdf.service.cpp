@@ -611,9 +611,8 @@ namespace atomic_dex
         {
             SPDLOG_INFO(">>>>>>>>>>>>>>>>>>>>>>>>>>> Enabling {} BEP20 coins <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<", bep20_coins.size());
             for (const auto& [parent_coin, coins_vector] : groupByParentCoin(bep20_coins)) {
-                enable_erc20_coins(bep20_coins, "BNB");
+                enable_erc20_coins(coins_vector, parent_coin);
             }
-            // enable_erc20_coins(bep20_coins, "BNB");
             //enable_erc_family_coins(bep20_coins);
         }
         if (bep20_testnet_coins.size() > 0)
@@ -995,8 +994,6 @@ namespace atomic_dex
         for (const auto& coin : coins) {
             groupedCoins[coin.parent_coin].push_back(coin);
         }
-        nlohmann::json j = groupedCoins;
-        SPDLOG_DEBUG("kdf_service::groupByParentCoin result is: {}", j.dump(4));
         return groupedCoins;
     }
 
