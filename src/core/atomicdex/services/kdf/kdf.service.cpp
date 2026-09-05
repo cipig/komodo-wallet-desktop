@@ -584,6 +584,7 @@ namespace atomic_dex
                 case CoinType::Arbitrum:
                 case CoinType::Base:
                 case CoinType::Bittensor:
+                case CoinType::EthereumClassic:
                 case CoinType::Gnosis:
                 case CoinType::HyperEVM:
                 case CoinType::Optimism:

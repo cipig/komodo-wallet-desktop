@@ -17,9 +17,7 @@
 #pragma once
 
 #include <type_traits>
-
-#include <nlohmann/json_fwd.hpp> //> nlohmann::json
-
+#include <nlohmann/json_fwd.hpp>
 #include "../api.call.hpp"
 
 namespace atomic_dex::kdf

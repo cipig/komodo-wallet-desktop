@@ -36,18 +36,28 @@ namespace atomic_dex::kdf
     {
         out.type = json["type"];
     }
-    
+
     void from_json(const nlohmann::json& json, enable_eth_with_tokens_result_rpc::eth_address_infos_t& out)
     {
         out.derivation_method = json["derivation_method"];
         out.pubkey = json["pubkey"];
-        out.balances = json["balances"];
+
+        if (json.contains("balances")) {
+            out.balances = json["balances"];
+        } else {
+            out.balances = balance_infos{};
+        }
     }
-    
+
     void from_json(const nlohmann::json& json, enable_eth_with_tokens_result_rpc::erc20_address_infos_t& out)
     {
         out.derivation_method = json["derivation_method"];
         out.pubkey = json["pubkey"];
-        out.balances = json["balances"].get<typeof(out.balances)>();
+
+        if (json.contains("balances")) {
+            out.balances = json["balances"].get<typeof(out.balances)>();
+        } else {
+            out.balances.clear();
+        }
     }
 }
