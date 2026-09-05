@@ -19,7 +19,6 @@
 #include <entt/core/hashed_string.hpp>
 #include <entt/core/type_info.hpp>
 #include <entt/core/type_traits.hpp>
-
 #include <atomicdex/config/coins.cfg.hpp>
 
 namespace atomic_dex
@@ -84,16 +83,6 @@ namespace atomic_dex
         bool is_a_reset;
     };
 
-    struct refresh_ohlc_needed
-    {
-        bool is_a_reset;
-    };
-
-    struct start_fetching_new_ohlc_data
-    {
-        bool is_a_reset;
-    };
-
     struct ticker_balance_updated
     {
         std::vector<std::string> tickers;
@@ -109,7 +98,6 @@ namespace atomic_dex
         std::vector<std::string> tickers;
     };
 
-    //! Event when gecko fetch all the data of this specific coin
     struct coin_fully_initialized
     {
         std::vector<std::string> tickers;

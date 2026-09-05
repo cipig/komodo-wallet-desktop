@@ -454,9 +454,7 @@ namespace atomic_dex
         system_manager_.create_system<timesync_checker_service>();
         system_manager_.create_system<exporter_service>(system_manager_);
         system_manager_.create_system<trading_page>(
-            system_manager_, m_event_actions.at(events_action::about_to_exit_app), portfolio_system.get_portfolio(), this);
-
-
+        system_manager_, m_event_actions.at(events_action::about_to_exit_app), portfolio_system.get_portfolio(), this);
         system_manager_.create_system<zcash_params_service>(system_manager_, this->dispatcher_, this);
 
         connect_signals();
@@ -473,7 +471,6 @@ namespace atomic_dex
     void
     application::on_coin_fully_initialized_event(const coin_fully_initialized& evt)
     {
-        //! This event is called when a call is enabled and cex provider finished fetch data
         if (not m_event_actions[events_action::about_to_exit_app])
         {
 #if !defined(_WIN32)
