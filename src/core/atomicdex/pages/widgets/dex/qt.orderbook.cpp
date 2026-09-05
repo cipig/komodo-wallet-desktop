@@ -244,15 +244,17 @@ namespace atomic_dex
     QString
     qt_orderbook_wrapper::get_current_min_taker_vol() const
     {
+        spdlog::stopwatch sw; using namespace std::chrono;
         QString    cur_taker_vol   = get_base_min_taker_vol();
         auto&      trading_pg      = m_system_manager.get_system<trading_page>();
         auto       preferred_order = trading_pg.get_raw_preferred_order();
         t_float_50 price_f         = safe_float(trading_pg.get_price().toStdString());
+
         if (preferred_order.has_value())
         {
             price_f = safe_float(preferred_order->at("price").get<std::string>());
         }
-        // if (trading_pg.)
+
         if (price_f <= 0)
         {
             //! Price is not set yet in the UI in this particular case return the min volume calculated by kdf
@@ -272,7 +274,7 @@ namespace atomic_dex
             // SPDLOG_INFO("Overriding min_volume with the one from orderbook: {}", cur_taker_vol.toStdString());
         }
 
-        // SPDLOG_INFO("final_taker_vol: {}", cur_taker_vol.toStdString());
+        SPDLOG_DEBUG("Time elapsed in qt_orderbook_wrapper::get_current_min_taker_vol with final_taker_vol={}: {}", cur_taker_vol.toStdString(), duration_cast<milliseconds>(sw.elapsed()));
         return cur_taker_vol;
     }
 } // namespace atomic_dex

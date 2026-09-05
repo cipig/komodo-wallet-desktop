@@ -610,8 +610,11 @@ namespace atomic_dex
         if (bep20_coins.size() > 0)
         {
             SPDLOG_INFO(">>>>>>>>>>>>>>>>>>>>>>>>>>> Enabling {} BEP20 coins <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<", bep20_coins.size());
+            for (const auto& [parent_coin, coins_vector] : groupByParentCoin(bep20_coins)) {
+                enable_erc20_coins(bep20_coins, "BNB");
+            }
             // enable_erc20_coins(bep20_coins, "BNB");
-            enable_erc_family_coins(bep20_coins);
+            //enable_erc_family_coins(bep20_coins);
         }
         if (bep20_testnet_coins.size() > 0)
         {
@@ -992,6 +995,8 @@ namespace atomic_dex
         for (const auto& coin : coins) {
             groupedCoins[coin.parent_coin].push_back(coin);
         }
+        nlohmann::json j = groupedCoins;
+        SPDLOG_DEBUG("kdf_service::groupByParentCoin result is: {}", j.dump(4));
         return groupedCoins;
     }
 
@@ -1705,7 +1710,6 @@ namespace atomic_dex
         {
             if (coin_info.activation_status.contains("result"))
             {
-                SPDLOG_DEBUG("kdf_service::is_task_activation_ready => coin_info.activation_status for coin {}: {}", coin, coin_info.activation_status.dump(4));
                 if (coin_info.activation_status.at("result").contains("status"))
                 {
                     if (coin_info.activation_status.at("result").at("status") == "Ok")
@@ -1714,6 +1718,7 @@ namespace atomic_dex
                         {
                             if (!coin_info.activation_status.at("result").at("details").contains("error"))
                             {
+                                SPDLOG_DEBUG("kdf_service::is_task_activation_ready => coin_info.activation_status for coin {}: {}", coin, coin_info.activation_status.dump(4));
                                 return true;
                             }
                         }
@@ -2095,8 +2100,8 @@ namespace atomic_dex
     {
         std::shared_lock lock(m_balance_mutex);
         auto             it = m_balance_informations.find(ticker);
-        
-        if (m_coins_informations[ticker].currently_enabled)
+
+        if (m_coins_informations.at(ticker).currently_enabled)
         {
             if (it == m_balance_informations.cend())
             {
@@ -2108,6 +2113,7 @@ namespace atomic_dex
                 else
                 {
                     SPDLOG_ERROR("kdf_service::get_balance_info not found for enabled coin: {}", ticker);
+                    SPDLOG_DEBUG("kdf_service::get_balance_info it for ticker {} is: {}", ticker, m_balance_informations.dump(4));
                 }
                 ec = dextop_error::balance_of_a_non_enabled_coin;
                 return "0";
@@ -2130,7 +2136,6 @@ namespace atomic_dex
         nlohmann::json batch             = nlohmann::json::array();
         nlohmann::json my_orders_request = kdf::template_request("my_orders");
         batch.push_back(my_orders_request);
-        //SPDLOG_DEBUG("my_orders_request {}", my_orders_request.dump(4));
 
         //! Swaps preparation
         [[maybe_unused]]  std::size_t       total           = 0;

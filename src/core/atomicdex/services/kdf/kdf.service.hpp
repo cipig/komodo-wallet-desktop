@@ -197,7 +197,7 @@ namespace atomic_dex
        [[nodiscard]] bool           is_task_activation_ready(const std::string coin) const;
        [[nodiscard]] nlohmann::json get_task_activation_status(const std::string coin) const;
 
-      std::map<std::string, t_coins> groupByParentCoin(const t_coins& coins);
+       std::map<std::string, t_coins> groupByParentCoin(const t_coins& coins);
 
        //! Cancel zhtlc activation
        void enable_z_coin_cancel(const std::int8_t task_id);
