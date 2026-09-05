@@ -453,8 +453,7 @@ namespace atomic_dex
         system_manager_.create_system<komodo_prices_provider>();
         system_manager_.create_system<timesync_checker_service>();
         system_manager_.create_system<exporter_service>(system_manager_);
-        system_manager_.create_system<trading_page>(
-        system_manager_, m_event_actions.at(events_action::about_to_exit_app), portfolio_system.get_portfolio(), this);
+        system_manager_.create_system<trading_page>(system_manager_, m_event_actions.at(events_action::about_to_exit_app), portfolio_system.get_portfolio(), this);
         system_manager_.create_system<zcash_params_service>(system_manager_, this->dispatcher_, this);
 
         connect_signals();

@@ -173,9 +173,6 @@ namespace atomic_dex::http
             cpr::Timeout timeout(ms_timeout);
             cpr::Response cpr_response;
 
-            SPDLOG_DEBUG("[HTTP Client] Request for {} handled on thread ID: {}", req.request_uri(), reinterpret_cast<uint64_t>(std::this_thread::get_id()));
-
-            // PATH A: Throttled background traffic (Reuses sockets sequentially per worker thread)
             if (prio == priority::background)
             {
                 thread_local cpr::Session local_session;
@@ -193,7 +190,6 @@ namespace atomic_dex::http
                     cpr_response = local_session.Get();
                 }
             }
-            // PATH B: Standard / Interactive (Bypasses queuing over standalone connections)
             else
             {
                 if (req.method() == verb::post) {
