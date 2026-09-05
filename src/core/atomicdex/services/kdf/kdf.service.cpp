@@ -1747,6 +1747,14 @@ namespace atomic_dex
         return m_coins_informations.contains(ticker);
     }
 
+    void kdf_service::on_coin_fully_initialized_event(const coin_fully_initialized& evt)
+    {
+        for (const auto& ticker: evt.tickers)
+        {
+            SPDLOG_DEBUG("kdf_service::on_coin_fully_initialized_event triggered for {}", ticker);
+        }
+    }
+
     // [smk] Only called by trading_page::process_action()
     kdf::orderbook_result_rpc kdf_service::get_orderbook(t_kdf_ec& ec) const
     {
