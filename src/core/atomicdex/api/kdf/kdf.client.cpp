@@ -171,7 +171,13 @@ namespace atomic_dex::kdf
             }
             catch (const std::exception& error)
             {
-                SPDLOG_ERROR("exception in kdf_client::async_rpc_batch_standalone: {}", error.what());
+                nlohmann::json masked_batch = batch_array;
+                for (auto& item : masked_batch) {
+                    if (item.contains("userpass")) {
+                        item["userpass"] = "*******";
+                    }
+                }
+                SPDLOG_ERROR("exception in kdf_client::async_rpc_batch_standalone: {} | Request payload: {}", error.what(), masked_batch.dump());
                 throw;
             }
         });

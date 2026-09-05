@@ -1218,7 +1218,7 @@ namespace atomic_dex
     async::task<void>
     kdf_service::batch_balance_and_tx(bool is_a_reset, bool only_tx)
     {
-        auto&& [batch_array, tickers_idx, tokens_to_fetch] = prepare_batch_balance_and_tx(only_tx);
+        auto&& [batch_array, tokens_to_fetch] = prepare_batch_balance_and_tx();
         return m_kdf_client.async_rpc_batch_standalone(batch_array, t_http_priority::background)
             .then(
                 [this, tokens_to_fetch = tokens_to_fetch, is_a_reset, batch_array = batch_array](async::task<t_http_response> previous_task)
@@ -1294,11 +1294,9 @@ namespace atomic_dex
     }
 
     std::tuple<nlohmann::json, std::vector<std::string>, std::vector<std::string>>
-    kdf_service::prepare_batch_balance_and_tx(bool only_tx) const
+    kdf_service::prepare_batch_balance_and_tx() const
     {
-        const auto&              enabled_coins = get_enabled_coins();
         nlohmann::json           batch_array   = nlohmann::json::array();
-        std::vector<std::string> tickers_idx;
         std::vector<std::string> tokens_to_fetch;
         const auto&              ticker    = get_current_ticker();
         auto                     coin_info = get_coin_info(ticker);
@@ -1326,7 +1324,7 @@ namespace atomic_dex
                     }
                     else
                     {
-                        return std::make_tuple(batch_array, tickers_idx, tokens_to_fetch);
+                        return std::make_tuple(batch_array, tokens_to_fetch);
                     }
                 }
             }
@@ -1336,38 +1334,7 @@ namespace atomic_dex
             batch_array.push_back(j);
         }
 
-        if (not only_tx)
-        {
-            for (auto&& coin : enabled_coins)
-            {
-                coin_info = get_coin_info(ticker);
-
-                if (uses_task_activation(coin_info))
-                {
-                    // Don't request balance / history if not completely activated.
-                    if (coin_info.activation_status.at("result").at("status") != "Ok")
-                    {
-                        continue;
-                    }
-                }
-
-                if (is_pin_cfg_enabled())
-                {
-                    std::shared_lock lock(m_balance_mutex); ///< shared_lock
-                    if (m_balance_informations.find(coin.ticker) != m_balance_informations.cend())
-                    {
-                        continue;
-                    }
-                }
-                SPDLOG_INFO("Getting balance for {} ", coin.ticker);
-                t_balance_request balance_request{.coin = coin.ticker};
-                nlohmann::json    j = kdf::template_request("my_balance");
-                kdf::to_json(j, balance_request);
-                batch_array.push_back(j);
-                tickers_idx.push_back(coin.ticker);
-            }
-        }
-        return std::make_tuple(batch_array, tickers_idx, tokens_to_fetch);
+        return std::make_tuple(batch_array, tokens_to_fetch);
     }
 
     std::pair<bool, std::string>
@@ -1936,47 +1903,6 @@ namespace atomic_dex
             return;
         }
         process_orderbook(is_a_reset);
-    }
-
-    //! Fetch the balance of a coin that has just become active, so it does not
-    //! stay absent until the next `fetch_infos_thread` tick (43 s away, and
-    //! skipped entirely while coins are still being enabled).
-    //!
-    //! Hooked to `coin_fully_initialized` rather than repeated in each enabling
-    //! function because the enabling paths do not agree on this: the UTXO/QRC20
-    //! and ERC20 batches record the balance from their own answer, but the
-    //! task-based path (ZHTLC, Sia), the Tendermint path, and every
-    //! "already activated" recovery branch mark the coin enabled without ever
-    //! recording one. Anything that reaches the active state is covered here,
-    //! including enabling paths added later.
-    //!
-    //! The work is spawned rather than run inline: this event is dispatched
-    //! synchronously, sometimes while the caller holds `m_coin_cfg_mutex`, and
-    //! reading the coin config here would then deadlock on a non-recursive
-    //! shared_mutex.
-    void kdf_service::on_coin_fully_initialized_event(const coin_fully_initialized& evt)
-    {
-        for (const auto& ticker: evt.tickers)
-        {
-            SPDLOG_DEBUG("kdf_service::on_coin_fully_initialized_event calling fetch_single_balance for {}", ticker);
-            async::spawn([this, ticker]() { fetch_single_balance(ticker); });
-        }
-    }
-
-    void kdf_service::fetch_single_balance(const std::string& ticker)
-    {
-        const auto coin_info = get_coin_info(ticker);
-
-        //! An unknown ticker has nothing to query, and a coin whose activation
-        //! task has not reported success yet has no balance to report -- the
-        //! task-based path marks a coin enabled while it is still building its
-        //! wallet database. `fetch_infos_thread` picks that one up once it is
-        //! ready, as it did before this hook existed.
-        if (coin_info.ticker.empty() || !is_task_activation_ready(ticker))
-        {
-            return;
-        }
-        fetch_single_balance(coin_info);
     }
 
     void kdf_service::fetch_single_balance(const coin_config_t& cfg_infos)
