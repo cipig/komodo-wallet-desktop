@@ -2,6 +2,7 @@
 #include <cpr/cpr.h>
 #include <spdlog/spdlog.h>
 #include <stdexcept>
+#include <thread>
 #include "atomicdex/utilities/http.utilities.hpp"
 
 namespace
@@ -144,7 +145,16 @@ namespace atomic_dex::http
         return m_timeout;
     }
 
-    client::client(std::string base_url, client_config config) : m_base_url(std::move(base_url)), m_config(std::move(config)) {}
+    unsigned int determine_pool_size() {
+        unsigned int cores = std::thread::hardware_concurrency();
+        return (cores == 0) ? 8 : (cores * 2);
+    }
+
+    client::client(std::string base_url, client_config config)
+        : m_base_url(std::move(base_url)),
+          m_config(std::move(config)),
+          m_network_pool(determine_pool_size())
+    {}
 
     async::task<response>
     client::request(const http::request& req, priority prio) const

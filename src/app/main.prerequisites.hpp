@@ -17,9 +17,6 @@
 #include "atomicdex/pch.hpp"
 #include <chrono>
 #include <csignal>
-#include <async++.h>
-#include <thread>
-#include <algorithm>
 #include <QApplication>
 #include <QDebug>
 #include <QDesktopWidget>
@@ -317,14 +314,6 @@ handle_settings(QSettings& settings)
 inline int
 run_app(int argc, char** argv)
 {
-    unsigned int cores = std::thread::hardware_concurrency();
-    if (cores == 0) {
-        cores = 4;
-    }
-    unsigned int pool_size = cores * 2;
-    async::parallel_scheduler custom_scheduler(pool_size);
-    async::set_default_scheduler(custom_scheduler);
-
     SPDLOG_DEBUG("Installing qt_message_handler");
     qInstallMessageHandler(&qt_message_handler);
     SPDLOG_DEBUG("SSL: {} {} {}", QSslSocket::supportsSsl(), QSslSocket::sslLibraryBuildVersionString().toStdString(), QSslSocket::sslLibraryVersionString().toStdString());

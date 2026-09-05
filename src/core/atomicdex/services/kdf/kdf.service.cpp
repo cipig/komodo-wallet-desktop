@@ -1216,14 +1216,12 @@ namespace atomic_dex
     }
 
     async::task<void>
-    kdf_service::batch_balance_and_tx(bool is_a_reset, std::vector<std::string> tickers, bool is_during_enabling, bool only_tx)
+    kdf_service::batch_balance_and_tx(bool is_a_reset, bool only_tx)
     {
-        (void)tickers;
-        (void)is_during_enabling;
         auto&& [batch_array, tickers_idx, tokens_to_fetch] = prepare_batch_balance_and_tx(only_tx);
         return m_kdf_client.async_rpc_batch_standalone(batch_array, t_http_priority::background)
             .then(
-                [this, tokens_to_fetch = tokens_to_fetch, is_a_reset, tickers, batch_array = batch_array](async::task<t_http_response> previous_task)
+                [this, tokens_to_fetch = tokens_to_fetch, is_a_reset, batch_array = batch_array](async::task<t_http_response> previous_task)
                 {
                     try
                     {
@@ -1234,7 +1232,6 @@ namespace atomic_dex
                             {
                                 auto&       answer = answers[i];
                                 std::string ticker;
-                                // SPDLOG_DEBUG("batch_balance_and_tx answer: {}", answer.dump(4));
 
                                 if (batch_array[i].contains("mmrpc") && batch_array[i].at("mmrpc") == "2.0")
                                 {
@@ -1961,6 +1958,7 @@ namespace atomic_dex
     {
         for (const auto& ticker: evt.tickers)
         {
+            SPDLOG_DEBUG("kdf_service::on_coin_fully_initialized_event calling fetch_single_balance for {}", ticker);
             async::spawn([this, ticker]() { fetch_single_balance(ticker); });
         }
     }
@@ -2039,7 +2037,7 @@ namespace atomic_dex
         }
 
         if (m_wallet_page_active) {
-            batch_balance_and_tx(true, {}, false, true);
+            batch_balance_and_tx(true, true);
         }
     }
 

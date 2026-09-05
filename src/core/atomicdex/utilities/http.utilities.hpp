@@ -119,6 +119,7 @@ namespace atomic_dex::http
       private:
         std::string   m_base_url;
         client_config m_config;
+        mutable async::threadpool_scheduler m_network_pool;
     };
 } // namespace atomic_dex::http
 
