@@ -2110,7 +2110,6 @@ namespace atomic_dex
                 else
                 {
                     SPDLOG_ERROR("kdf_service::get_balance_info not found for enabled coin: {}", ticker);
-                    SPDLOG_DEBUG("kdf_service::get_balance_info it for ticker {} is: {}", ticker, m_balance_informations.dump(4));
                 }
                 ec = dextop_error::balance_of_a_non_enabled_coin;
                 return "0";
