@@ -321,7 +321,7 @@ namespace atomic_dex
             m_orders_clock = std::chrono::high_resolution_clock::now();
         }
 
-        if (s_activation >= 4s)
+        if (s_activation >= 33s)
         {
             auto                     coins = this->get_enabled_coins();
             std::vector<std::string> tickers;
@@ -344,13 +344,9 @@ namespace atomic_dex
             if (!m_activation_queue.empty())
             {
                 std::unique_lock lock(m_activation_mutex);
-                SPDLOG_DEBUG("{} coins in the activation queue", m_activation_queue.size());
-                t_coins to_enable;
-                for (size_t i = 0; i < 25 && i < m_activation_queue.size(); ++i) {
-                    to_enable.push_back(m_activation_queue[i]);
-                }
-                activate_coins(to_enable);
-                m_activation_queue.erase(m_activation_queue.begin(), m_activation_queue.begin() + to_enable.size());
+                SPDLOG_DEBUG("Processing all {} coins from the activation queue via background worker pool", m_activation_queue.size());
+                activate_coins(m_activation_queue);
+                m_activation_queue.clear();
                 m_activation_clock = std::chrono::high_resolution_clock::now();
             }
             else {
@@ -568,6 +564,8 @@ namespace atomic_dex
         t_coins tendermint_coins;
         t_coins bep20_coins;
         t_coins bep20_testnet_coins;
+        t_coins plg20_coins;
+        t_coins arb20_coins;
        
         SPDLOG_INFO(">>>>>>>>>>>>>>>>>>>>>>>>>>> Enabling {} coins <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<", coins.size());
         for (const auto& coin_cfg : coins)
@@ -593,6 +591,14 @@ namespace atomic_dex
             {
                 coin_cfg.is_testnet.value_or(false) ? bep20_testnet_coins.push_back(coin_cfg) : bep20_coins.push_back(coin_cfg);
             }
+            else if (coin_cfg.coin_type == CoinType::PLG20)
+            {
+                plg20_coins.push_back(coin_cfg);
+            }
+            else if (coin_cfg.coin_type == CoinType::Arbitrum)
+            {
+                arb20_coins.push_back(coin_cfg);
+            }
             else if (coin_cfg.is_erc_family)
             {
                 erc_family_coins.push_back(coin_cfg);
@@ -611,6 +617,10 @@ namespace atomic_dex
         {
             SPDLOG_INFO(">>>>>>>>>>>>>>>>>>>>>>>>>>> Enabling {} BEP20 coins <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<", bep20_coins.size());
             for (const auto& [parent_coin, coins_vector] : groupByParentCoin(bep20_coins)) {
+                SPDLOG_DEBUG("--- Group Found! Parent coin is: {} ---", parent_coin);
+                for (const auto& coin : coins_vector) {
+                    SPDLOG_DEBUG("  > Token: {} )", coin.ticker);
+                }
                 enable_erc20_coins(coins_vector, parent_coin);
             }
             //enable_erc_family_coins(bep20_coins);

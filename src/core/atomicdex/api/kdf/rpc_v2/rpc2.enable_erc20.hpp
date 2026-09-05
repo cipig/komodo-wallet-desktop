@@ -40,7 +40,7 @@ namespace atomic_dex::kdf
         {
             std::string                                     platform_coin;
             int                                             required_confirmations;
-            std::unordered_map<std::string, balance_infos>   balances;
+            std::unordered_map<std::string, balance_infos>  balances;
         };
 
         using expected_error_type = rpc_basic_error_type;

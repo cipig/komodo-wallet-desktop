@@ -1,5 +1,4 @@
 #include <nlohmann/json.hpp>
-
 #include "atomicdex/api/kdf/rpc_v2/rpc2.enable_eth_with_tokens.hpp"
 
 namespace atomic_dex::kdf
@@ -13,8 +12,6 @@ namespace atomic_dex::kdf
         j["erc20_tokens_requests"]  = in.erc20_tokens_requests;
         if (in.required_confirmations.has_value())
             j["required_confirmations"] = in.required_confirmations.value();
-        if (in.requires_notarization.has_value())
-            j["requires_notarization"] = in.requires_notarization.value();
         j["swap_contract_address"] = in.swap_contract_address;
         j["fallback_swap_contract"] = in.fallback_swap_contract;
 

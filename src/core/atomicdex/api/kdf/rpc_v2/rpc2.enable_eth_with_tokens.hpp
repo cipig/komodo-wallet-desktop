@@ -43,12 +43,11 @@ namespace atomic_dex::kdf
             std::optional<std::string>          gas_station_url;
             std::string                         swap_contract_address;
             std::string                         fallback_swap_contract;
-            bool                                tx_history{true};
-            bool                                get_balances{true};
+            bool                                tx_history{false};
+            bool                                get_balances{false};
             std::optional<bool>                 is_testnet{false};
             std::optional<size_t>               gas_station_decimals;
             std::optional<int>                  required_confirmations;
-            std::optional<bool>                 requires_notarization;
             std::vector<node>                   nodes;
             std::vector<erc20_token_request_t>  erc20_tokens_requests;
         };
@@ -60,13 +59,13 @@ namespace atomic_dex::kdf
             {
                 derivation_method_t derivation_method;
                 std::string         pubkey;
-                balance_infos        balances;
+                balance_infos       balances;
             };
             struct erc20_address_infos_t
             {
                 derivation_method_t                             derivation_method;
                 std::string                                     pubkey;
-                std::unordered_map<std::string, balance_infos>   balances;
+                std::unordered_map<std::string, balance_infos>  balances;
             };
 
             std::size_t current_block;
