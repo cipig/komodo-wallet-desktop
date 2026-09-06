@@ -91,6 +91,7 @@ namespace atomic_dex
        t_kdf_time_point m_balances_clock;
        t_kdf_time_point m_activation_clock;
        t_kdf_time_point m_orders_clock;
+       t_kdf_time_point m_last_activation_fire_time{std::chrono::high_resolution_clock::now() - std::chrono::hours(1)};
 
        //! Atomicity / Threads
        std::atomic_bool m_kdf_running{false};

@@ -321,7 +321,7 @@ namespace atomic_dex
             m_orders_clock = std::chrono::high_resolution_clock::now();
         }
 
-        if (s_activation >= 33s)
+        if (s_activation >= 4s)
         {
             auto                     coins = this->get_enabled_coins();
             std::vector<std::string> tickers;
@@ -337,7 +337,6 @@ namespace atomic_dex
             if (!tickers.empty())
             {
                 // Mark coins as active internally, and updates the coins file
-                SPDLOG_DEBUG("Making sure {} enabled coins are marked as active", tickers.size());
                 update_coin_status(this->m_current_wallet_name, tickers, true, m_coins_informations, m_coin_cfg_mutex);
             }
 
@@ -345,19 +344,34 @@ namespace atomic_dex
             {
                 std::unique_lock lock(m_activation_mutex);
                 SPDLOG_DEBUG("Processing all {} coins from the activation queue via background worker pool", m_activation_queue.size());
+
+                // Keep track of the exact timestamp this network load was dispatched
+                m_last_activation_fire_time = std::chrono::high_resolution_clock::now();
+
                 activate_coins(m_activation_queue);
                 m_activation_queue.clear();
                 m_activation_clock = std::chrono::high_resolution_clock::now();
             }
             else {
-                m_activation_clock = std::chrono::high_resolution_clock::now() + std::chrono::duration_cast<std::chrono::seconds>(std::chrono::seconds(53));
+                m_activation_clock = std::chrono::high_resolution_clock::now();
             }
         }
 
         if (s_balances >= 43s)
         {
             std::unique_lock lock(m_activation_mutex);
-            if (m_activation_queue.empty())
+
+            auto time_since_activation = std::chrono::duration_cast<std::chrono::seconds>(now - m_last_activation_fire_time);
+
+            // SECURITY GUARD: If new manual allocations sit in queue, or if an intense
+            // activation pass went out less than 20 seconds ago, hold back balance network calls.
+            if (!m_activation_queue.empty() || time_since_activation < 20s)
+            {
+                SPDLOG_DEBUG("Deferring balance thread to protect active coin/token initialization traffic.");
+                // Push the check window forward slightly (tries again in 5 seconds) without sleeping the worker thread
+                m_balances_clock = now - 38s;
+            }
+            else
             {
                 fetch_balances_thread();
                 m_balances_clock = std::chrono::high_resolution_clock::now();
@@ -1249,7 +1263,9 @@ namespace atomic_dex
         if (batch_array.empty())
         {
             if (!tokens_to_fetch.empty()) {
+                spdlog::stopwatch sw; using namespace std::chrono;
                 process_tx_tokenscan(tokens_to_fetch.front());
+                SPDLOG_DEBUG("Time elapsed in kdf_service::batch_balance_and_tx for process_tx_tokenscan with {}: {}", tokens_to_fetch.dump(), duration_cast<milliseconds>(sw.elapsed()));
             }
             return async::spawn([](){});
         }
@@ -1476,7 +1492,7 @@ namespace atomic_dex
                     {
                         try
                         {
-                            auto answers                 = kdf::basic_batch_answer(previous_task.get());
+                            auto answers           = kdf::basic_batch_answer(previous_task.get());
                             auto& settings_system  = m_system_manager.get_system<settings_page>();
 
                             if (answers.count("error") == 0)
@@ -1536,9 +1552,9 @@ namespace atomic_dex
                                                 std::string event = "none";
 
                                                 do {
-                                                    t_http_response             z_resp      = m_kdf_client.async_rpc_batch_standalone(z_batch_array).get();
-                                                    auto                                 z_answers   = kdf::basic_batch_answer(z_resp);
-                                                    z_error                                          = z_answers;
+                                                    t_http_response  z_resp      = m_kdf_client.async_rpc_batch_standalone(z_batch_array, t_http_priority::background).get();
+                                                    auto             z_answers   = kdf::basic_batch_answer(z_resp);
+                                                    z_error                      = z_answers;
 
                                                     std::string status = z_answers[0].at("result").at("status").get<std::string>();
 
@@ -1739,7 +1755,7 @@ namespace atomic_dex
                         {
                             if (!coin_info.activation_status.at("result").at("details").contains("error"))
                             {
-                                SPDLOG_DEBUG("kdf_service::is_task_activation_ready => coin_info.activation_status for coin {}: {}", coin, coin_info.activation_status.dump(4));
+                                //SPDLOG_DEBUG("kdf_service::is_task_activation_ready => coin_info.activation_status for coin {}: {}", coin, coin_info.activation_status.dump(4));
                                 return true;
                             }
                         }
@@ -2070,13 +2086,39 @@ namespace atomic_dex
                     std::this_thread::sleep_for(1s);
                 }
 
-                // m_kdf_client.connect_client();
                 std::filesystem::remove(kdf_cfg_path);
                 SPDLOG_INFO("kdf is initialized");
                 dispatcher_.trigger<kdf_initialized>();
+
+                // 1. Temporarily pause expensive dynamic sorting while the bulk loading process runs
+                const auto& portfolio_mdl = m_system_manager.get_system<portfolio_model>();
+                if (auto* proxy = portfolio_mdl.get_portfolio_proxy_mdl()) {
+                    SPDLOG_INFO("Disabling dynamic portfolio sorting to accelerate startup token initialization.");
+                    proxy->setDynamicSortFilter(false);
+                }
+
                 enable_default_coins();
+
+                // Initialize clean reference anchors on boot execution pass
+                auto startup_time = std::chrono::high_resolution_clock::now();
+                m_orders_clock = startup_time;
+                m_balances_clock = startup_time + std::chrono::seconds(6);
+                m_activation_clock = startup_time - std::chrono::seconds(13);
+                m_last_activation_fire_time = startup_time - std::chrono::hours(1);
+
                 m_kdf_running = true;
                 dispatcher_.trigger<kdf_started>();
+
+                // 2. Reactivate dynamic proxy sorting in the background once initial network traffic settles
+                async::spawn([this]() {
+                    std::this_thread::sleep_for(std::chrono::seconds(8));
+                    const auto& portfolio_mdl = m_system_manager.get_system<portfolio_model>();
+                    if (auto* proxy = portfolio_mdl.get_portfolio_proxy_mdl()) {
+                        SPDLOG_INFO("Token initialization complete. Restoring dynamic portfolio sorting layouts.");
+                        proxy->setDynamicSortFilter(true);
+                        proxy->invalidate(); // Force a single clean sorting pass of finalized data
+                    }
+                });
             });
     }
 
@@ -2744,10 +2786,14 @@ namespace atomic_dex
         }
         catch (const std::exception& ex)
         {
-            for (auto&& cur: request) cur["userpass"] = "";
-            SPDLOG_ERROR("exception in kdf_service::handle_exception_async_task from {} with request {} and error: {}", from, request.dump(4), ex.what());
-            //this->dispatcher_.trigger<fatal_notification>("connection dropped");
-            using namespace std::chrono; std::this_thread::sleep_for(std::chrono::milliseconds(300));
+            // Clean sensitive data before printing to logs
+            for (auto&& cur : request) {
+                if (cur.contains("userpass")) {
+                    cur["userpass"] = "";
+                }
+            }
+            SPDLOG_ERROR("Exception in kdf_service::handle_exception_async_task from [{}] with request {} and error: {}",
+                         from, request.dump(4), ex.what());
         }
     }
 

@@ -568,7 +568,7 @@ namespace atomic_dex
                             using namespace std::chrono_literals;
                             auto&              kdf_system = m_system_manager.get_system<kdf_service>();
                             static std::size_t z_nb_try      = 1;
-                            static std::size_t loop_limit    = 600;
+                            static std::size_t loop_limit    = 500;
                             nlohmann::json     z_error       = nlohmann::json::array();
                             nlohmann::json     z_batch_array = nlohmann::json::array();
                             QString            z_status;
@@ -593,7 +593,7 @@ namespace atomic_dex
                                 {
                                     set_withdraw_status("Generating transaction");
                                 }
-                                std::this_thread::sleep_for(2s);
+                                std::this_thread::sleep_for(3s);
                                 z_nb_try += 1;
 
                             } while (z_nb_try < loop_limit);
