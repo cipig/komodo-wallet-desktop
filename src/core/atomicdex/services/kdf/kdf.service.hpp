@@ -158,7 +158,6 @@ namespace atomic_dex
        void on_gui_leave_trading(const gui_leave_trading& evt);
        void on_gui_enter_wallet(const gui_enter_wallet& evt);
        void on_gui_leave_wallet(const gui_leave_wallet& evt);
-       void on_coin_fully_initialized_event(const coin_fully_initialized& evt);
 
        //! Spawn kdf instance with given seed
        void spawn_kdf_instance(std::string wallet_name, std::string passphrase, bool with_pin_cfg = false, std::string rpcpassword = "");
@@ -175,8 +174,6 @@ namespace atomic_dex
        void enable_coin(const std::string& ticker);
        void enable_coin(const coin_config_t& coin_config);
      private:
-       void enable_erc_family_coin(const coin_config_t& coin_config);
-       void enable_erc_family_coins(const t_coins& coins);
        void enable_utxo_qrc20_coin(coin_config_t coin_config);
        void enable_utxo_qrc20_coins(const t_coins& coins);
        void enable_erc20_coin(coin_config_t coin_config, std::string parent_ticker);

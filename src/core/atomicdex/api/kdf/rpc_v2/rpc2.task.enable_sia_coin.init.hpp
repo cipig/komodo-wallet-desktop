@@ -16,13 +16,8 @@
 
 #pragma once
 
-// Std Headers
 #include <string>
-
-// Deps Headers
 #include <nlohmann/json_fwd.hpp>
-
-//! Project Headers
 #include "atomicdex/config/electrum.cfg.hpp"
 #include "atomicdex/constants/qt.coins.enums.hpp"
 

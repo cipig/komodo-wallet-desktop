@@ -14,8 +14,7 @@ namespace atomic_dex::kdf
             j["required_confirmations"] = in.required_confirmations.value();
         j["swap_contract_address"] = in.swap_contract_address;
         j["fallback_swap_contract"] = in.fallback_swap_contract;
-
-        SPDLOG_DEBUG("enable_eth_with_tokens: {}", j.dump(4));
+        //SPDLOG_DEBUG("enable_eth_with_tokens: {}", j.dump(4));
     }
 
     void to_json(nlohmann::json& j, const enable_eth_with_tokens_request_rpc::erc20_token_request_t& in)
