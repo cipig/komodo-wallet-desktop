@@ -877,7 +877,7 @@ namespace atomic_dex
 
     void kdf_service::enable_erc20_coins(const t_coins& coins, const std::string parent_ticker)
     {
-        auto callback = [this]<typename RpcRequest>(RpcRequest rpc)
+        auto callback = [this, coins]<typename RpcRequest>(RpcRequest rpc)
         {
             if (rpc.error)
             {
@@ -891,7 +891,7 @@ namespace atomic_dex
                     if constexpr (std::is_same_v<RpcRequest, kdf::enable_eth_with_tokens_rpc>)
                     {
                         SPDLOG_ERROR("{} {}: ", rpc.request.ticker, rpc.error->error_type);
-                        
+
                         for (const auto& erc20_coin_info : rpc.request.erc20_tokens_requests)
                         {
                             SPDLOG_ERROR("{} {}: ", erc20_coin_info.ticker, rpc.error->error_type);
@@ -925,7 +925,31 @@ namespace atomic_dex
                 if constexpr (std::is_same_v<RpcRequest, kdf::enable_eth_with_tokens_rpc>)
                 {
                     std::vector<std::string> activated_token_tickers;
+                    bool processed_via_balances = false;
+
+                    // FIX: Path A - Backend returned balance payloads (get_balances = true)
+                    if (!rpc.result->erc20_addresses_infos.empty())
                     {
+                        for (const auto& erc20_address_info : rpc.result->erc20_addresses_infos)
+                        {
+                            if (!erc20_address_info.second.balances.empty())
+                            {
+                                std::unique_lock lock(m_coin_cfg_mutex);
+                                for (const auto& balance : erc20_address_info.second.balances)
+                                {
+                                    m_coins_informations[balance.first].currently_enabled = true;
+                                    activated_token_tickers.push_back(balance.first);
+                                    SPDLOG_DEBUG("marking token {} as active via response balance info", balance.first);
+                                }
+                                processed_via_balances = true;
+                            }
+                        }
+                    }
+
+                    // FIX: Path B - Backend balance payload skipped or empty (get_balances = false fallback)
+                    if (!processed_via_balances)
+                    {
+                        SPDLOG_DEBUG("erc20_address_info balances are empty. Falling back to activation array verification.");
                         std::unique_lock lock(m_coin_cfg_mutex);
                         for (const auto& token_config : coins)
                         {
@@ -933,7 +957,7 @@ namespace atomic_dex
                             {
                                 m_coins_informations[token_config.ticker].currently_enabled = true;
                                 activated_token_tickers.push_back(token_config.ticker);
-                                SPDLOG_DEBUG("marking token {} as active (deferred balance initialization)", token_config.ticker);
+                                SPDLOG_DEBUG("marking token {} as active via initial initialization request context", token_config.ticker);
                             }
                         }
                     }
@@ -943,8 +967,7 @@ namespace atomic_dex
                         dispatcher_.trigger<coin_fully_initialized>(coin_fully_initialized{.tickers = {ticker}});
                     }
 
-                    if (!rpc.result->erc20_addresses_infos.empty() &&
-                        !rpc.result->erc20_addresses_infos.begin()->second.balances.empty())
+                    if (processed_via_balances)
                     {
                         process_balance_answer(rpc);
                     }
