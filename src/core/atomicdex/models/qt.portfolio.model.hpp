@@ -29,6 +29,9 @@
 
 namespace atomic_dex
 {
+    struct suspend_portfolio_sorting;
+    struct resume_portfolio_sorting;
+
     class ENTT_API portfolio_model final : public QAbstractListModel
     {
         Q_OBJECT
@@ -122,6 +125,6 @@ namespace atomic_dex
         t_ticker_registry m_ticker_registry;
     };
 
+    using t_portfolio_roles = atomic_dex::portfolio_model::PortfolioRoles;
 } // namespace atomic_dex
 
-using t_portfolio_roles = atomic_dex::portfolio_model::PortfolioRoles;

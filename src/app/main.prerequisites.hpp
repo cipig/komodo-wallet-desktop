@@ -431,7 +431,7 @@ run_app(int argc, char** argv)
     qmlRegisterSingletonType(QUrl("qrc:/Dex/Constants/General.qml"), "App", 1, 0, "General");
     qmlRegisterSingletonType(QUrl("qrc:/Dex/Constants/Style.qml"), "App", 1, 0, "Style");
     qmlRegisterSingletonType(QUrl("qrc:/Dex/Constants/API.qml"), "App", 1, 0, "API");
-    qRegisterMetaType<t_portfolio_roles>("PortfolioRoles");
+    qRegisterMetaType<atomic_dex::t_portfolio_roles>("PortfolioRoles");
     SPDLOG_INFO("QML singleton created");
 
     SPDLOG_INFO("Load qml engine");
