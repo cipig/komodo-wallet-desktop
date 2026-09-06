@@ -40,6 +40,14 @@ namespace atomic_dex
         m_model_proxy->sort_by_currency_balance(false);
         m_model_proxy->setFilterRole(NameAndTicker);
         m_model_proxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
+        m_dispatcher.sink<suspend_portfolio_sorting>().connect<&portfolio_model::on_suspend_sorting>(*this);
+        m_dispatcher.sink<resume_portfolio_sorting>().connect<&portfolio_model::on_resume_sorting>(*this);
+    }
+
+    portfolio_model::~portfolio_model()
+    {
+        m_dispatcher.sink<suspend_portfolio_sorting>().disconnect<&portfolio_model::on_suspend_sorting>(*this);
+        m_dispatcher.sink<resume_portfolio_sorting>().disconnect<&portfolio_model::on_resume_sorting>(*this);
     }
 
     void
@@ -537,6 +545,27 @@ namespace atomic_dex
             } else {
                 SPDLOG_ERROR("res.empty in portfolio_model::adjust_percent_current_currency");
             }
+        }
+    }
+
+    void
+    portfolio_model::on_suspend_sorting(const suspend_portfolio_sorting&)
+    {
+        if (m_model_proxy)
+        {
+            SPDLOG_INFO("Catching notification: Disabling dynamic portfolio proxy sorting metrics.");
+            m_model_proxy->setDynamicSortFilter(false);
+        }
+    }
+
+    void
+    portfolio_model::on_resume_sorting(const resume_portfolio_sorting&)
+    {
+        if (m_model_proxy)
+        {
+            SPDLOG_INFO("Catching notification: Restoring dynamic portfolio proxy sorting layouts.");
+            m_model_proxy->setDynamicSortFilter(true);
+            m_model_proxy->invalidate(); // Triggers a single sorting pass across the finalized list
         }
     }
 } // namespace atomic_dex

@@ -43,4 +43,8 @@ namespace atomic_dex
     {
         QString ticker;
     };
+
+    struct suspend_portfolio_sorting {};
+    struct resume_portfolio_sorting {};
+
 } // namespace atomic_dex

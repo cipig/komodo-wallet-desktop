@@ -46,7 +46,6 @@
 #include "atomicdex/config/coins.cfg.hpp"
 #include "atomicdex/constants/dex.constants.hpp"
 #include "atomicdex/managers/qt.wallet.manager.hpp"
-#include "atomicdex/models/qt.portfolio.model.hpp"
 #include "atomicdex/pages/qt.settings.page.hpp"
 #include "atomicdex/services/kdf/kdf.service.hpp"
 #include "atomicdex/utilities/qt.utilities.hpp"
@@ -2087,16 +2086,13 @@ namespace atomic_dex
                     std::this_thread::sleep_for(1s);
                 }
 
+                // m_kdf_client.connect_client();
                 std::filesystem::remove(kdf_cfg_path);
                 SPDLOG_INFO("kdf is initialized");
                 dispatcher_.trigger<kdf_initialized>();
 
-                // 1. Temporarily pause dynamic sorting using fully qualified type name
-                const auto& portfolio_mdl = m_system_manager.get_system<atomic_dex::portfolio_model>();
-                if (auto* proxy = portfolio_mdl.get_portfolio_proxy_mdl()) {
-                    SPDLOG_INFO("Disabling dynamic portfolio sorting to accelerate startup token initialization.");
-                    proxy->setDynamicSortFilter(false);
-                }
+                // 1. Halt synchronous sorting computations during initial high-volume traffic
+                dispatcher_.trigger(suspend_portfolio_sorting{});
 
                 enable_default_coins();
 
@@ -2110,15 +2106,10 @@ namespace atomic_dex
                 m_kdf_running = true;
                 dispatcher_.trigger<kdf_started>();
 
-                // 2. Reactivate dynamic proxy sorting layouts once initialization passes settle down
+                // 2. Reactivate dynamic proxy sorting layouts after 8 seconds once the startup peak has settled
                 async::spawn([this]() {
                     std::this_thread::sleep_for(std::chrono::seconds(8));
-                    const auto& portfolio_mdl = m_system_manager.get_system<atomic_dex::portfolio_model>();
-                    if (auto* proxy = portfolio_mdl.get_portfolio_proxy_mdl()) {
-                        SPDLOG_INFO("Token initialization complete. Restoring dynamic portfolio sorting layouts.");
-                        proxy->setDynamicSortFilter(true);
-                        proxy->invalidate(); // Force a single clean re-sorting pass
-                    }
+                    dispatcher_.trigger(resume_portfolio_sorting{});
                 });
             });
     }
