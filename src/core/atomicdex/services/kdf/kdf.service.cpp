@@ -21,7 +21,6 @@
 #include <map>
 #include <string>
 #include <vector>
-
 #include <async++.h>
 #include <boost/thread/thread.hpp>
 #include <boost/algorithm/string/replace.hpp>
@@ -32,7 +31,6 @@
 #include <QSettings>
 
 #include "atomicdex/api/kdf/utxo_merge_params.hpp"
-#include "atomicdex/services/kdf/kdf.coin.activation.policy.hpp"
 #include "atomicdex/api/kdf/rpc_v1/rpc.electrum.hpp"
 #include "atomicdex/api/kdf/rpc_v1/rpc.enable.hpp"
 #include "atomicdex/api/kdf/rpc_v1/rpc.min_trading_vol.hpp"
@@ -45,8 +43,10 @@
 #include "atomicdex/config/kdf.cfg.hpp"
 #include "atomicdex/config/coins.cfg.hpp"
 #include "atomicdex/constants/dex.constants.hpp"
+#include "atomicdex/events/qt.events.hpp"
 #include "atomicdex/managers/qt.wallet.manager.hpp"
 #include "atomicdex/pages/qt.settings.page.hpp"
+#include "atomicdex/services/kdf/kdf.coin.activation.policy.hpp"
 #include "atomicdex/services/kdf/kdf.service.hpp"
 #include "atomicdex/utilities/qt.utilities.hpp"
 #include "atomicdex/utilities/kill.hpp"
