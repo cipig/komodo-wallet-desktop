@@ -26,10 +26,25 @@ Dex.DefaultListView
 
     Timer {
         id: delayModel
-        interval: 100
+        interval: 1500 // Gives 1.5s for heavy bulk row allocations to settle
         repeat: false
         running: true
-        onTriggered: list.model = Dex.API.app.portfolio_pg.portfolio_mdl.portfolio_proxy_mdl
+        onTriggered: {
+            console.log("Token allocation pass complete. Finalizing model proxy pipelines.");
+            let proxy = Dex.API.app.portfolio_pg.portfolio_mdl.portfolio_proxy_mdl;
+            if (proxy) {
+                // Pause dynamic sorting to protect the oncoming update loop pass
+                proxy.with_balance = false;
+                // Mount the dataset model context source
+                list.model = proxy;
+                // Force an explicit layout valuation refresh on the main thread now
+                // that row structures are completely initialized
+                Dex.API.app.portfolio_pg.portfolio_mdl.update_currency_values();
+                // Safely restore dynamic sorting and filter updates on the main execution thread
+                proxy.invalidate();
+                console.log("Dynamic portfolio proxy layouts successfully restored.");
+            }
+        }
     }
 
     header: Item

@@ -43,7 +43,6 @@
 #include "atomicdex/config/kdf.cfg.hpp"
 #include "atomicdex/config/coins.cfg.hpp"
 #include "atomicdex/constants/dex.constants.hpp"
-#include "atomicdex/events/qt.events.hpp"
 #include "atomicdex/managers/qt.wallet.manager.hpp"
 #include "atomicdex/pages/qt.settings.page.hpp"
 #include "atomicdex/services/kdf/kdf.coin.activation.policy.hpp"
@@ -2090,10 +2089,6 @@ namespace atomic_dex
                 std::filesystem::remove(kdf_cfg_path);
                 SPDLOG_INFO("kdf is initialized");
                 dispatcher_.trigger<kdf_initialized>();
-
-                // 1. Halt synchronous sorting computations during initial high-volume traffic
-                dispatcher_.trigger(suspend_portfolio_sorting{});
-
                 enable_default_coins();
 
                 // Initialize clean reference anchors on boot execution pass
@@ -2105,12 +2100,6 @@ namespace atomic_dex
 
                 m_kdf_running = true;
                 dispatcher_.trigger<kdf_started>();
-
-                // 2. Reactivate dynamic proxy sorting layouts after 8 seconds once the startup peak has settled
-                async::spawn([this]() {
-                    std::this_thread::sleep_for(std::chrono::seconds(8));
-                    dispatcher_.trigger(resume_portfolio_sorting{});
-                });
             });
     }
 

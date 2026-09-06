@@ -29,9 +29,6 @@
 
 namespace atomic_dex
 {
-    struct suspend_portfolio_sorting;
-    struct resume_portfolio_sorting;
-
     class ENTT_API portfolio_model final : public QAbstractListModel
     {
         Q_OBJECT
@@ -77,7 +74,7 @@ namespace atomic_dex
 
         //! Constructor / Destructor
         explicit portfolio_model(ag::ecs::system_manager& system_manager, entt::dispatcher& dispatcher, QObject* parent = nullptr);
-        ~portfolio_model() final;
+        ~portfolio_model() final = default;
 
         //! Overrides
         [[nodiscard]] QVariant               data(const QModelIndex& index, int role) const final;
@@ -110,8 +107,6 @@ namespace atomic_dex
         void portfolioItemDataChanged();
 
       private:
-        void on_suspend_sorting(const suspend_portfolio_sorting& evt);
-        void on_resume_sorting(const resume_portfolio_sorting& evt);
         void balance_update_handler(const QString& prev_value, const QString& new_value, const QString& ticker);
         //! From project
         ag::ecs::system_manager& m_system_manager;
