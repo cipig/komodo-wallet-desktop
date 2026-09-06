@@ -1152,40 +1152,42 @@ namespace atomic_dex
         {
             kdf::balance_answer balance_answer;
             balance_answer.coin = rpc.request.ticker;
-            SPDLOG_DEBUG("balance_answer.coin: {}", balance_answer.coin);
             balance_answer.balance = answer.eth_addresses_infos.begin()->second.balances.spendable;
-            SPDLOG_DEBUG("balance_answer.balance: {}", balance_answer.balance);
             balance_answer.address = answer.eth_addresses_infos.begin()->first;
-            SPDLOG_DEBUG("balance_answer.address: {}", balance_answer.address);
             {
                 std::unique_lock lock(m_balance_mutex);
                 m_balance_informations[balance_answer.coin] = std::move(balance_answer);
             }
-            SPDLOG_DEBUG("balance_answer for {} complete", rpc.request.ticker);
+            SPDLOG_DEBUG("balance_answer for parent {} complete", rpc.request.ticker);
         }
+
         if (answer.erc20_addresses_infos.empty())
         {
             SPDLOG_DEBUG("answer.erc20_addresses_infos is empty");
             return;
         }
-        SPDLOG_DEBUG("for (auto [address, data] : answer.erc20_addresses_infos) [{}]", answer.erc20_addresses_infos.size());
-        for (auto [address, data] : answer.erc20_addresses_infos)
+
+        SPDLOG_DEBUG("Processing tokens map across {} address sets.", answer.erc20_addresses_infos.size());
+        for (const auto& [address, data] : answer.erc20_addresses_infos)
         {
-            SPDLOG_DEBUG("for (auto [address, data] : answer.erc20_addresses_infos) address [{}]", address);
-            kdf::balance_answer balance_answer;
-            balance_answer.address = address;
             if (data.balances.empty())
             {
-                SPDLOG_DEBUG("data.balances is empty");
+                SPDLOG_DEBUG("data.balances is empty for address {}", address);
                 continue;
             }
-            balance_answer.balance = data.balances.begin()->second.spendable;
-            SPDLOG_DEBUG("balance_answer.coin: {}", balance_answer.balance);
-            balance_answer.coin = data.balances.begin()->first;
-            SPDLOG_DEBUG("balance_answer.coin: {}", balance_answer.coin);
+            for (const auto& [token_ticker, balance_data] : data.balances)
             {
-                std::unique_lock lock(m_balance_mutex);
-                m_balance_informations[balance_answer.coin] = std::move(balance_answer);
+                kdf::balance_answer balance_answer;
+                balance_answer.address = address;
+                balance_answer.coin    = token_ticker;
+                balance_answer.balance = balance_data.spendable;
+
+                SPDLOG_DEBUG("Parsed asset balance allocation from activation result -> Ticker: {} | Balance: {}",
+                             balance_answer.coin, balance_answer.balance);
+                {
+                    std::unique_lock lock(m_balance_mutex);
+                    m_balance_informations[balance_answer.coin] = std::move(balance_answer);
+                }
             }
         }
         SPDLOG_DEBUG("process_balance_answer for enable_eth_with_tokens_rpc complete");

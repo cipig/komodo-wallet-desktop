@@ -87,8 +87,8 @@ namespace atomic_dex
 
         //! Public api
         void                                  initialize_portfolio(const std::vector<std::string>& tickers);
-        bool                                  update_currency_values();
-        bool                                  update_balance_values(const std::vector<std::string>& tickers);
+        Q_INVOKABLE bool                      update_currency_values();
+        Q_INVOKABLE bool                      update_balance_values(const std::vector<std::string>& tickers);
         void                                  adjust_percent_current_currency(QString balance_all);
         void                                  disable_coins(const QStringList& coins);
         void                                  set_cfg(atomic_dex::cfg& cfg);
