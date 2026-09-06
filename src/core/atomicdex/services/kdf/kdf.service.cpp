@@ -1093,7 +1093,7 @@ namespace atomic_dex
                 {
                     continue;
                 }
-                m_kdf_client.process_rpc_async<kdf::enable_tendermint_token_rpc>(rpc.request, callback);
+                m_kdf_client.process_rpc_async<kdf::enable_tendermint_token_rpc>(rpc.request, callback, t_http_priority::background);
             }
         }
         else
@@ -1110,7 +1110,7 @@ namespace atomic_dex
                 }
                 rpc.request.tokens_params.push_back({.ticker = coin_config.ticker});
             }
-            m_kdf_client.process_rpc_async<kdf::enable_tendermint_with_assets_rpc>(rpc.request, callback);
+            m_kdf_client.process_rpc_async<kdf::enable_tendermint_with_assets_rpc>(rpc.request, callback, t_http_priority::background);
         }
     }
 
@@ -1470,7 +1470,7 @@ namespace atomic_dex
 
         auto answer_functor = [this](coin_config_t coin_info, nlohmann::json batch, std::vector<std::string> tickers)
         {
-            m_kdf_client.async_rpc_batch_standalone(batch)
+            m_kdf_client.async_rpc_batch_standalone(batch, t_http_priority::background)
                 .then(
                     [this, coin_info, tickers, batch](async::task<t_http_response> previous_task) mutable
                     {
@@ -2246,7 +2246,7 @@ namespace atomic_dex
             this->dispatcher_.trigger<process_swaps_and_orders_finished>(process_swaps_and_orders_finished{.after_manual_reset = after_manual_reset});
         };
 
-        m_kdf_client.async_rpc_batch_standalone(batch)
+        m_kdf_client.async_rpc_batch_standalone(batch, t_http_priority::background)
             .then([this, batch, answer_functor](async::task<t_http_response> previous_task) {
                 try
                 {
