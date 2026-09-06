@@ -940,7 +940,7 @@ namespace atomic_dex
                     std::vector<std::string> activated_token_tickers;
                     bool processed_via_balances = false;
 
-                    // FIX: Path A - Backend returned balance payloads (get_balances = true)
+                    // Path A - Backend returned balance payloads (get_balances = true)
                     if (!rpc.result->erc20_addresses_infos.empty())
                     {
                         for (const auto& erc20_address_info : rpc.result->erc20_addresses_infos)
@@ -959,10 +959,10 @@ namespace atomic_dex
                         }
                     }
 
-                    // FIX: Path B - Backend balance payload skipped or empty (get_balances = false fallback)
+                    // Path B - Backend balance payload skipped or empty (fallback handling)
                     if (!processed_via_balances)
                     {
-                        SPDLOG_DEBUG("erc20_address_info balances are empty. Falling back to activation array verification.");
+                        SPDLOG_DEBUG("erc20_address_info balances are empty for {}. Processing request references.", rpc.request.ticker);
                         std::unique_lock lock(m_coin_cfg_mutex);
                         for (const auto& token_config : coins)
                         {
@@ -970,17 +970,21 @@ namespace atomic_dex
                             {
                                 m_coins_informations[token_config.ticker].currently_enabled = true;
                                 activated_token_tickers.push_back(token_config.ticker);
-                                SPDLOG_DEBUG("marking token {} as active via initial initialization request context", token_config.ticker);
+                                SPDLOG_DEBUG("marking token {} as active via initial request configuration", token_config.ticker);
                             }
                         }
                     }
 
+                    // 2. Alert the portfolio framework UI layer for each loaded token asset
                     for (const auto& ticker : activated_token_tickers)
                     {
                         dispatcher_.trigger<coin_fully_initialized>(coin_fully_initialized{.tickers = {ticker}});
                     }
 
-                    if (processed_via_balances)
+                    // ALWAYS call process_balance_answer if get_balances was true!
+                    // This guarantees that the native parent balance (ETC, ETH, BNB) inside
+                    // eth_addresses_infos is parsed even when the token list is empty.
+                    if (processed_via_balances || rpc.request.erc20_tokens_requests.empty())
                     {
                         process_balance_answer(rpc);
                     }
