@@ -46,6 +46,7 @@
 #include "atomicdex/config/coins.cfg.hpp"
 #include "atomicdex/constants/dex.constants.hpp"
 #include "atomicdex/managers/qt.wallet.manager.hpp"
+#include "atomicdex/models/qt.portfolio.model.hpp"
 #include "atomicdex/pages/qt.settings.page.hpp"
 #include "atomicdex/services/kdf/kdf.service.hpp"
 #include "atomicdex/utilities/qt.utilities.hpp"
@@ -1265,7 +1266,7 @@ namespace atomic_dex
             if (!tokens_to_fetch.empty()) {
                 spdlog::stopwatch sw; using namespace std::chrono;
                 process_tx_tokenscan(tokens_to_fetch.front());
-                SPDLOG_DEBUG("Time elapsed in kdf_service::batch_balance_and_tx for process_tx_tokenscan with {}: {}", tokens_to_fetch.dump(), duration_cast<milliseconds>(sw.elapsed()));
+                SPDLOG_DEBUG("Time elapsed in kdf_service::batch_balance_and_tx for process_tx_tokenscan with {}: {}", tokens_to_fetch.front(), duration_cast<milliseconds>(sw.elapsed()));
             }
             return async::spawn([](){});
         }
@@ -2090,8 +2091,8 @@ namespace atomic_dex
                 SPDLOG_INFO("kdf is initialized");
                 dispatcher_.trigger<kdf_initialized>();
 
-                // 1. Temporarily pause expensive dynamic sorting while the bulk loading process runs
-                const auto& portfolio_mdl = m_system_manager.get_system<portfolio_model>();
+                // 1. Temporarily pause dynamic sorting using fully qualified type name
+                const auto& portfolio_mdl = m_system_manager.get_system<atomic_dex::portfolio_model>();
                 if (auto* proxy = portfolio_mdl.get_portfolio_proxy_mdl()) {
                     SPDLOG_INFO("Disabling dynamic portfolio sorting to accelerate startup token initialization.");
                     proxy->setDynamicSortFilter(false);
@@ -2109,14 +2110,14 @@ namespace atomic_dex
                 m_kdf_running = true;
                 dispatcher_.trigger<kdf_started>();
 
-                // 2. Reactivate dynamic proxy sorting in the background once initial network traffic settles
+                // 2. Reactivate dynamic proxy sorting layouts once initialization passes settle down
                 async::spawn([this]() {
                     std::this_thread::sleep_for(std::chrono::seconds(8));
-                    const auto& portfolio_mdl = m_system_manager.get_system<portfolio_model>();
+                    const auto& portfolio_mdl = m_system_manager.get_system<atomic_dex::portfolio_model>();
                     if (auto* proxy = portfolio_mdl.get_portfolio_proxy_mdl()) {
                         SPDLOG_INFO("Token initialization complete. Restoring dynamic portfolio sorting layouts.");
                         proxy->setDynamicSortFilter(true);
-                        proxy->invalidate(); // Force a single clean sorting pass of finalized data
+                        proxy->invalidate(); // Force a single clean re-sorting pass
                     }
                 });
             });
