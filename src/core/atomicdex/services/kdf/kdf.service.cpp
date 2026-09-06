@@ -916,29 +916,37 @@ namespace atomic_dex
             else
             {
                 dispatcher_.trigger<coin_fully_initialized>(coin_fully_initialized{.tickers = {rpc.request.ticker}});
-                std::unique_lock lock(m_coin_cfg_mutex);
-                m_coins_informations[rpc.request.ticker].currently_enabled = true;
+                {
+                    std::unique_lock lock(m_coin_cfg_mutex);
+                    m_coins_informations[rpc.request.ticker].currently_enabled = true;
+                }
                 SPDLOG_DEBUG("marking {} as active", rpc.request.ticker);
+
                 if constexpr (std::is_same_v<RpcRequest, kdf::enable_eth_with_tokens_rpc>)
                 {
-                    for (const auto& erc20_address_info : rpc.result->erc20_addresses_infos)
+                    std::vector<std::string> activated_token_tickers;
                     {
-                        SPDLOG_DEBUG("erc20_address_info.first {}: ", erc20_address_info.first);
-                        if (erc20_address_info.second.balances.empty())
+                        std::unique_lock lock(m_coin_cfg_mutex);
+                        for (const auto& token_config : coins)
                         {
-                            SPDLOG_DEBUG("erc20_address_info.second.balances is empty");
-                        }
-                        else
-                        {
-                            for (const auto& balance : erc20_address_info.second.balances)
+                            if (token_config.ticker != rpc.request.ticker)
                             {
-                                SPDLOG_DEBUG("marking token {} as active", balance.first);
-                                dispatcher_.trigger<coin_fully_initialized>(coin_fully_initialized{.tickers = {balance.first}});
-                                process_balance_answer(rpc);
-                                std::unique_lock lock(m_coin_cfg_mutex);
-                                m_coins_informations[balance.first].currently_enabled = true;
+                                m_coins_informations[token_config.ticker].currently_enabled = true;
+                                activated_token_tickers.push_back(token_config.ticker);
+                                SPDLOG_DEBUG("marking token {} as active (deferred balance initialization)", token_config.ticker);
                             }
                         }
+                    }
+
+                    for (const auto& ticker : activated_token_tickers)
+                    {
+                        dispatcher_.trigger<coin_fully_initialized>(coin_fully_initialized{.tickers = {ticker}});
+                    }
+
+                    if (!rpc.result->erc20_addresses_infos.empty() &&
+                        !rpc.result->erc20_addresses_infos.begin()->second.balances.empty())
+                    {
+                        process_balance_answer(rpc);
                     }
                 }
                 SPDLOG_DEBUG("process_balance_answer(rpc) done");
@@ -988,15 +996,6 @@ namespace atomic_dex
             m_kdf_client.process_rpc_async<kdf::enable_eth_with_tokens_rpc>(rpc.request, callback, t_http_priority::background);
         }
         SPDLOG_DEBUG("kdf_service::enable_erc20_coins done for {}", parent_ticker);
-    }
-
-    std::map<std::string, std::vector<coin_config_t>>
-    kdf_service::groupByParentCoin(const std::vector<coin_config_t>& coins) {
-        std::map<std::string, std::vector<coin_config_t>> groupedCoins;
-        for (const auto& coin : coins) {
-            groupedCoins[coin.parent_coin].push_back(coin);
-        }
-        return groupedCoins;
     }
 
     void kdf_service::enable_tendermint_coin(coin_config_t coin_config)
