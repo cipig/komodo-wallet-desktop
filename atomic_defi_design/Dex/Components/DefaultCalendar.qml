@@ -14,6 +14,8 @@ Item
 
     // Replicate the calendar properties used externally
     property date selectedDate: new Date()
+    property var minimumDate: undefined
+    property var maximumDate: undefined
 
     // Properties required for the inner layout calculations
     readonly property int currentMonth: selectedDate.getMonth()
@@ -178,7 +180,11 @@ Item
                     anchors.fill: parent
                     hoverEnabled: true
                     onClicked: {
-                        root.selectedDate = model.date;
+                        var isTooEarly = root.minimumDate !== undefined && model.date < root.minimumDate;
+                        var isTooLate = root.maximumDate !== undefined && model.date > root.maximumDate;
+                        if (!isTooEarly && !isTooLate) {
+                            root.selectedDate = model.date;
+                        }
                     }
                 }
             }
