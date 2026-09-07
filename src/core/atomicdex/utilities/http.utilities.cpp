@@ -32,6 +32,24 @@ namespace
         }
         return base_url + request_uri;
     }
+
+    async::threadpool_scheduler& get_interactive_scheduler()
+    {
+        // Agile: Min 4 threads, Max 16, or scales 1:1 with logical cores.
+        static unsigned int cores = std::max(4u, std::thread::hardware_concurrency());
+        static unsigned int size = std::min(16u, cores);
+        static async::threadpool_scheduler pool(size);
+        return pool;
+    }
+
+    async::threadpool_scheduler& get_background_scheduler()
+    {
+        // Batch: Scaled to 4x logical cores. Min 16 threads, Max 64 threads.
+        static unsigned int cores = std::max(4u, std::thread::hardware_concurrency());
+        static unsigned int size = std::clamp(cores * 4, 16u, 64u);
+        static async::threadpool_scheduler pool(size);
+        return pool;
+    }
 } // namespace
 
 namespace atomic_dex::http
@@ -109,10 +127,13 @@ namespace atomic_dex::http
         return m_status_code;
     }
 
+    // OPTIMIZATION: Bypasses the threadpool completely.
+    // Since the calling side instantly hits .get(), returning a pre-resolved task
+    // eliminates the thread scheduling overhead entirely.
     async::task<std::string>
     response::extract_string(bool) const
     {
-        return async::spawn([body = m_body]() { return body; });
+        return async::make_task(m_body);
     }
 
     const std::unordered_map<std::string, std::string>&
@@ -153,7 +174,11 @@ namespace atomic_dex::http
     async::task<response>
     client::request(const http::request& req, priority prio) const
     {
-        return async::spawn([base_url = m_base_url, config = m_config, req, prio]() {
+        auto& scheduler = (prio == priority::background)
+                          ? get_background_scheduler()
+                          : get_interactive_scheduler();
+
+        return async::spawn(scheduler, [base_url = m_base_url, config = m_config, req, prio]() {
             const auto url = build_url(base_url, req.request_uri());
             std::int64_t ms_timeout = static_cast<std::int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(config.timeout()).count());
 
@@ -168,27 +193,34 @@ namespace atomic_dex::http
 
             if (prio == priority::background)
             {
-                thread_local cpr::Session local_session;
-
-                local_session.SetUrl(cpr::Url{url});
-                local_session.SetHeader(cpr_headers);
-                local_session.SetVerifySsl(verify_ssl);
-                local_session.SetTimeout(timeout);
+                thread_local cpr::Session bg_session;
+                bg_session.SetUrl(cpr::Url{url});
+                bg_session.SetHeader(cpr_headers);
+                bg_session.SetVerifySsl(verify_ssl);
+                bg_session.SetTimeout(timeout);
 
                 if (req.method() == verb::post) {
-                    local_session.SetBody(cpr::Body{req.body()});
-                    cpr_response = local_session.Post();
+                    bg_session.SetBody(cpr::Body{req.body()});
+                    cpr_response = bg_session.Post();
                 } else {
-                    local_session.SetBody(cpr::Body{""});
-                    cpr_response = local_session.Get();
+                    bg_session.SetBody(cpr::Body{""});
+                    cpr_response = bg_session.Get();
                 }
             }
-            else
+            else // priority::interactive
             {
+                thread_local cpr::Session interactive_session;
+                interactive_session.SetUrl(cpr::Url{url});
+                interactive_session.SetHeader(cpr_headers);
+                interactive_session.SetVerifySsl(verify_ssl);
+                interactive_session.SetTimeout(timeout);
+
                 if (req.method() == verb::post) {
-                    cpr_response = cpr::Post(cpr::Url{url}, cpr_headers, cpr::Body{req.body()}, verify_ssl, timeout);
+                    interactive_session.SetBody(cpr::Body{req.body()});
+                    cpr_response = interactive_session.Post();
                 } else {
-                    cpr_response = cpr::Get(cpr::Url{url}, cpr_headers, verify_ssl, timeout);
+                    interactive_session.SetBody(cpr::Body{""});
+                    cpr_response = interactive_session.Get();
                 }
             }
 

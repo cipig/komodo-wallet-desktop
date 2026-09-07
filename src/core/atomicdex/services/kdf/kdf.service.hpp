@@ -187,6 +187,7 @@ namespace atomic_dex
        void process_balance_answer(const kdf::enable_tendermint_token_rpc& rpc);
        void process_balance_answer(const kdf::enable_eth_with_tokens_rpc& rpc);
        void process_balance_answer(const kdf::enable_erc20_rpc& rpc);
+       void process_task_balance_answer(const nlohmann::json& task_ok_answer);
 
      public:
        void                         update_sync_ticker_pair(std::string base, std::string rel);

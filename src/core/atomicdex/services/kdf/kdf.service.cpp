@@ -308,7 +308,7 @@ namespace atomic_dex
 
         if (s_orderbook >= 11s)
         {
-            fetch_current_orderbook_thread(false); // process_orderbook (not a reset) if on trading page
+            fetch_current_orderbook_thread(false); // process_orderbook if on trading page
             m_orderbook_clock = std::chrono::high_resolution_clock::now();
         }
 
@@ -871,7 +871,6 @@ namespace atomic_dex
                         process_balance_answer(rpc);
                     }
                 }
-                SPDLOG_DEBUG("process_balance_answer(rpc) done");
             }
         };
 
@@ -1013,6 +1012,45 @@ namespace atomic_dex
         }
     }
 
+    void kdf_service::process_task_balance_answer(const nlohmann::json& task_ok_answer)
+    {
+        try
+        {
+            if (!task_ok_answer.contains("result") || !task_ok_answer["result"].contains("details"))
+            {
+                SPDLOG_ERROR("Invalid task JSON structure passed to process_task_balance_answer");
+                return;
+            }
+
+            const auto& details = task_ok_answer.at("result").at("details");
+
+            if (details.contains("wallet_balance"))
+            {
+                const auto& wallet_balance = details.at("wallet_balance");
+
+                kdf::balance_answer balance_answer;
+                balance_answer.coin    = details.at("ticker").get<std::string>();
+                balance_answer.address = wallet_balance.at("address").get<std::string>();
+                balance_answer.balance = wallet_balance.at("balance").at("spendable").get<std::string>();
+
+                SPDLOG_DEBUG("Parsed task activation balance -> Ticker: {} | Balance: {} | Address: {}",
+                             balance_answer.coin, balance_answer.balance, balance_answer.address);
+                {
+                    std::unique_lock lock(m_balance_mutex);
+                    m_balance_informations[balance_answer.coin] = std::move(balance_answer);
+                }
+            }
+            else
+            {
+                SPDLOG_WARN("Task completed 'Ok' but payload is missing 'wallet_balance' fields.");
+            }
+        }
+        catch (const std::exception& error)
+        {
+            SPDLOG_ERROR("Exception in kdf_service::process_task_balance_answer: {}", error.what());
+        }
+    }
+
     void kdf_service::process_balance_answer(const kdf::enable_erc20_rpc& rpc)
     {
         const auto& answer = rpc.result.value();
@@ -1033,7 +1071,6 @@ namespace atomic_dex
 
     void kdf_service::process_balance_answer(const kdf::enable_eth_with_tokens_rpc& rpc)
     {
-        spdlog::stopwatch sw; using namespace std::chrono;
         const auto& answer = rpc.result.value();
         {
             kdf::balance_answer balance_answer;
@@ -1074,7 +1111,6 @@ namespace atomic_dex
                 }
             }
         }
-        SPDLOG_DEBUG("Time elapsed in kdf_service::process_balance_answer: {}", duration_cast<milliseconds>(sw.elapsed()));
     }
 
     void kdf_service::process_balance_answer(const kdf::enable_tendermint_token_rpc& rpc)
@@ -1148,11 +1184,9 @@ namespace atomic_dex
         if (batch_array.empty())
         {
             if (!tokens_to_fetch.empty()) {
-                spdlog::stopwatch sw; using namespace std::chrono;
                 process_tx_tokenscan(tokens_to_fetch.front());
-                SPDLOG_DEBUG("Time elapsed in kdf_service::batch_balance_and_tx for process_tx_tokenscan with {}: {}", tokens_to_fetch.front(), duration_cast<milliseconds>(sw.elapsed()));
             }
-            return async::spawn([](){});
+            return async::make_task();
         }
 
         return m_kdf_client.async_rpc_batch_standalone(batch_array, t_http_priority::background)
@@ -1164,7 +1198,7 @@ namespace atomic_dex
                         auto answers = kdf::basic_batch_answer(previous_task.get());
                         if (not answers.contains("error") && answers.is_array() && !answers.empty())
                         {
-                            auto&       answer = answers[0]; // Access single item directly without loops
+                            auto&       answer = answers[0];
                             std::string ticker;
 
                             if (batch_array[0].contains("mmrpc") && batch_array[0].at("mmrpc") == "2.0")
@@ -1462,6 +1496,10 @@ namespace atomic_dex
                                                             SPDLOG_ERROR("Enabling [{}] error: {}", tickers[idx], event);
                                                             break;
                                                         }
+
+                                                        lock.unlock();
+                                                        this->process_task_balance_answer(z_answers[0]);
+                                                        lock.unlock();
 
                                                         m_coins_informations[tickers[idx]].currently_enabled = true;
                                                         this->dispatcher_.trigger<coin_fully_initialized>(coin_fully_initialized{.tickers = {tickers[idx]}});
@@ -1897,7 +1935,6 @@ namespace atomic_dex
         this->m_current_wallet_name = std::move(wallet_name);
         this->dispatcher_.trigger(coin_cfg_parsed{.cfg = this->retrieve_coins_informations()});
         this->dispatcher_.trigger<force_update_providers>();
-        this->dispatcher_.trigger<force_update_defi_stats>();
         kdf_config cfg{
             .passphrase = std::move(passphrase), 
             .rpc_password = std::move(rpcpass) == "" ? std::move(atomic_dex::gen_random_password()) : std::move(rpcpass)
@@ -2147,7 +2184,7 @@ namespace atomic_dex
             this->dispatcher_.trigger<process_swaps_and_orders_finished>(process_swaps_and_orders_finished{.after_manual_reset = after_manual_reset});
         };
 
-        m_kdf_client.async_rpc_batch_standalone(batch, t_http_priority::background)
+        m_kdf_client.async_rpc_batch_standalone(batch, t_http_priority::interactive)
             .then([this, batch, answer_functor](async::task<t_http_response> previous_task) {
                 try
                 {
