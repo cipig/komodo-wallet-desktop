@@ -1175,6 +1175,7 @@ namespace atomic_dex
             {
                 SPDLOG_WARN("{}", ec.message());
             }
+
             {
                 std::unique_lock lock(m_coin_cfg_mutex);
                 if (m_coins_informations.contains(ticker))

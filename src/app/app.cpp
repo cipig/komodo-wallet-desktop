@@ -95,6 +95,7 @@ namespace atomic_dex
         QString     secondary_coin = QString::fromStdString(g_second_primary_dex_coin);
         QStringList coins_copy;
         const auto& kdf = system_manager_.get_system<kdf_service>();
+
         for (auto&& coin : coins)
         {
             const auto coin_info       = kdf.get_coin_info(coin.toStdString());
@@ -124,6 +125,7 @@ namespace atomic_dex
             std::vector<std::string> coins_std{};
             system_manager_.get_system<portfolio_page>().disable_coins(coins_copy);
             system_manager_.get_system<trading_page>().disable_coins(coins_copy);
+
             coins_std.reserve(coins_copy.size());
             for (auto&& coin : coins_copy)
             {
@@ -133,7 +135,18 @@ namespace atomic_dex
                 }
                 coins_std.push_back(coin.toStdString());
             }
+
             get_kdf().disable_multiple_coins(coins_std);
+
+            if (auto* port_page = get_portfolio_page())
+            {
+                if (auto* port_mdl = port_page->get_portfolio())
+                {
+                    port_mdl->reset();
+                }
+            }
+
+            system_manager_.get_system<trading_page>().clear_models();
             this->dispatcher_.trigger<update_portfolio_values>(update_portfolio_values{.with_update_model = true});
         }
 
