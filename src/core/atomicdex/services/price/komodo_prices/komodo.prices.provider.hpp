@@ -1,12 +1,7 @@
 #pragma once
 
-//! STD
 #include <shared_mutex>
-
-//! Deps
 #include <antara/gaming/ecs/system.manager.hpp>
-
-//! Project Headers
 #include "atomicdex/api/komodo_prices/komodo.prices.hpp"
 
 namespace atomic_dex
@@ -38,7 +33,6 @@ namespace atomic_dex
 
         //! Get the rate conversion for the given ticker.
         [[nodiscard]] std::string get_rate_conversion(const std::string& ticker) const;
-        ;
 
         //! Get the ticker informations.
         [[nodiscard]] std::string get_change_24h(const std::string& ticker) const;

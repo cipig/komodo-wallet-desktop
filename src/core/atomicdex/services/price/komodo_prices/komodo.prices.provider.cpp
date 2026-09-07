@@ -1,7 +1,4 @@
-//! Deps
 #include <nlohmann/json.hpp>
-
-//! Project Headers
 #include "atomicdex/events/events.hpp"
 #include "atomicdex/services/price/komodo_prices/komodo.prices.provider.hpp"
 #include "atomicdex/utilities/global.utilities.hpp"

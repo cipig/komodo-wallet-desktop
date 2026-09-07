@@ -134,7 +134,7 @@ namespace atomic_dex
                 coins_std.push_back(coin.toStdString());
             }
             get_kdf().disable_multiple_coins(coins_std);
-            this->dispatcher_.trigger<update_portfolio_values>(update_portfolio_values{.with_update_model = false});
+            this->dispatcher_.trigger<update_portfolio_values>(update_portfolio_values{.with_update_model = true});
         }
 
         return true;

@@ -916,7 +916,6 @@ namespace atomic_dex
             }
             m_kdf_client.process_rpc_async<kdf::enable_eth_with_tokens_rpc>(rpc.request, callback, t_http_priority::background);
         }
-        SPDLOG_DEBUG("kdf_service::enable_erc20_coins done for {}", parent_ticker);
     }
 
     void kdf_service::enable_tendermint_coin(coin_config_t coin_config)
@@ -1093,7 +1092,6 @@ namespace atomic_dex
         {
             if (data.balances.empty())
             {
-                SPDLOG_DEBUG("data.balances is empty for address {}", address);
                 continue;
             }
             for (const auto& [token_ticker, balance_data] : data.balances)
@@ -1170,6 +1168,13 @@ namespace atomic_dex
             if (ec)
             {
                 SPDLOG_WARN("{}", ec.message());
+            }
+            {
+                std::unique_lock lock(m_coin_cfg_mutex);
+                if (m_coins_informations.contains(ticker))
+                {
+                    m_coins_informations[ticker].currently_enabled = false;
+                }
             }
         }
         update_coin_status(this->m_current_wallet_name, tickers, false, m_coins_informations, m_coin_cfg_mutex);
@@ -2094,6 +2099,12 @@ namespace atomic_dex
     void
     kdf_service::batch_fetch_orders_and_swap(bool after_manual_reset)
     {
+        if (not m_kdf_running)
+        {
+            SPDLOG_DEBUG("Skipping batch_fetch_orders_and_swap: local KDF process is not active.");
+            return;
+        }
+
         nlohmann::json batch             = nlohmann::json::array();
         nlohmann::json my_orders_request = kdf::template_request("my_orders");
         batch.push_back(my_orders_request);
@@ -2670,13 +2681,6 @@ namespace atomic_dex
         {
             m_orders_and_swaps = orders_and_swaps{.current_page = current_page, .limit = limit, .filtering_infos = std::move(filter_infos)};
         }
-
-        if (not m_kdf_running)
-        {
-            SPDLOG_DEBUG("Deferring batch_fetch_orders_and_swap network call: KDF engine is not running yet.");
-            return;
-        }
-
         this->batch_fetch_orders_and_swap(true);
     }
 
