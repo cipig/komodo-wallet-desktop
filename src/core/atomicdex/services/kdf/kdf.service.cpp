@@ -2078,13 +2078,14 @@ namespace atomic_dex
                 ec = dextop_error::balance_of_a_non_enabled_coin;
                 return "0";
             }
-            else
-            {
-                return it->second.balance;
-            }
+            return it->second.balance;
         }
         else
         {
+            if (not m_kdf_running || is_default_coin(ticker))
+            {
+                return "0";
+            }
             ec = dextop_error::balance_of_a_non_enabled_coin;
             return "0";
         }
@@ -2669,6 +2670,13 @@ namespace atomic_dex
         {
             m_orders_and_swaps = orders_and_swaps{.current_page = current_page, .limit = limit, .filtering_infos = std::move(filter_infos)};
         }
+
+        if (not m_kdf_running)
+        {
+            SPDLOG_DEBUG("Deferring batch_fetch_orders_and_swap network call: KDF engine is not running yet.");
+            return;
+        }
+
         this->batch_fetch_orders_and_swap(true);
     }
 
