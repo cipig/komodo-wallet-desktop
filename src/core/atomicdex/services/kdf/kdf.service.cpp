@@ -816,24 +816,18 @@ namespace atomic_dex
             }
             else
             {
-                dispatcher_.trigger<coin_fully_initialized>(coin_fully_initialized{.tickers = {rpc.request.ticker}});
-                {
-                    std::unique_lock lock(m_coin_cfg_mutex);
-                    m_coins_informations[rpc.request.ticker].currently_enabled = true;
-                }
+                std::vector<std::string> activated_token_tickers;
+                bool processed_via_balances = false;
 
                 if constexpr (std::is_same_v<RpcRequest, kdf::enable_eth_with_tokens_rpc>)
                 {
-                    std::vector<std::string> activated_token_tickers;
-                    bool processed_via_balances = false;
-
                     if (!rpc.result->erc20_addresses_infos.empty())
                     {
+                        std::unique_lock lock(m_coin_cfg_mutex);
                         for (const auto& erc20_address_info : rpc.result->erc20_addresses_infos)
                         {
                             if (!erc20_address_info.second.balances.empty())
                             {
-                                std::unique_lock lock(m_coin_cfg_mutex);
                                 for (const auto& balance : erc20_address_info.second.balances)
                                 {
                                     m_coins_informations[balance.first].currently_enabled = true;
@@ -858,17 +852,28 @@ namespace atomic_dex
                         }
                     }
 
-                    for (const auto& ticker : activated_token_tickers)
-                    {
-                        dispatcher_.trigger<coin_fully_initialized>(coin_fully_initialized{.tickers = {ticker}});
-                    }
-
-                    // ALWAYS call process_balance_answer if get_balances was true!
-                    // This guarantees that the native parent balance (ETC, ETH, BNB) inside
-                    // eth_addresses_infos is parsed even when the token list is empty.
                     if (processed_via_balances || rpc.request.erc20_tokens_requests.empty())
                     {
                         process_balance_answer(rpc);
+                    }
+                }
+                else if constexpr (std::is_same_v<RpcRequest, kdf::enable_erc20_rpc>)
+                {
+                    process_balance_answer(rpc);
+                }
+
+                // Set the parent coin memory flag safely
+                {
+                    std::unique_lock lock(m_coin_cfg_mutex);
+                    m_coins_informations[rpc.request.ticker].currently_enabled = true;
+                }
+                dispatcher_.trigger<coin_fully_initialized>(coin_fully_initialized{.tickers = {rpc.request.ticker}});
+
+                if constexpr (std::is_same_v<RpcRequest, kdf::enable_eth_with_tokens_rpc>)
+                {
+                    for (const auto& ticker : activated_token_tickers)
+                    {
+                        dispatcher_.trigger<coin_fully_initialized>(coin_fully_initialized{.tickers = {ticker}});
                     }
                 }
             }
@@ -956,15 +961,16 @@ namespace atomic_dex
             }
             else
             {
-                dispatcher_.trigger<coin_fully_initialized>(coin_fully_initialized{.tickers = {rpc.request.ticker}});
                 std::unique_lock lock(m_coin_cfg_mutex);
                 m_coins_informations[rpc.request.ticker].currently_enabled = true;
+                dispatcher_.trigger<coin_fully_initialized>(coin_fully_initialized{.tickers = {rpc.request.ticker}});
+
                 if constexpr (std::is_same_v<RpcRequest, kdf::enable_tendermint_with_assets_rpc>)
                 {
                     for (const auto& tendermint_token_addresses_info : rpc.result->tendermint_token_balances_infos)
                     {
-                        dispatcher_.trigger<coin_fully_initialized>(coin_fully_initialized{.tickers = {tendermint_token_addresses_info.first}});
                         m_coins_informations[tendermint_token_addresses_info.first].currently_enabled = true;
+                        dispatcher_.trigger<coin_fully_initialized>(coin_fully_initialized{.tickers = {tendermint_token_addresses_info.first}});
                     }
                 }
             }
@@ -1545,7 +1551,6 @@ namespace atomic_dex
                                                             {
                                                                 std::unique_lock lock(m_coin_cfg_mutex);
                                                                 m_coins_informations[tickers[idx]].currently_enabled = true;
-
                                                                 dispatcher_.trigger<coin_fully_initialized>(coin_fully_initialized{.tickers = {tickers[idx]}});
                                                             }
                                                             this->dispatcher_.trigger(enabling_task_status{.coin = tickers[idx], .reason = event});
