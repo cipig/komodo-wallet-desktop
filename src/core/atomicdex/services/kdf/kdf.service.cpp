@@ -838,7 +838,7 @@ namespace atomic_dex
                         }
                     }
 
-                    if (!processed_via_balances)
+                    if (!processed_via_balances && !rpc.request.erc20_tokens_requests.empty())
                     {
                         SPDLOG_DEBUG("erc20_address_info balances are empty for {}. Processing request references.", rpc.request.ticker);
                         std::unique_lock lock(m_coin_cfg_mutex);
@@ -862,7 +862,6 @@ namespace atomic_dex
                     process_balance_answer(rpc);
                 }
 
-                // Set the parent coin memory flag safely
                 {
                     std::unique_lock lock(m_coin_cfg_mutex);
                     m_coins_informations[rpc.request.ticker].currently_enabled = true;

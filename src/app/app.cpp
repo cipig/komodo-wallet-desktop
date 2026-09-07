@@ -118,10 +118,11 @@ namespace atomic_dex
         if (not coins_copy.empty())
         {
             std::vector<std::string> coins_std{};
+
             system_manager_.get_system<portfolio_page>().disable_coins(coins_copy);
             system_manager_.get_system<trading_page>().disable_coins(coins_copy);
-            coins_std.reserve(coins_copy.size());
 
+            coins_std.reserve(coins_copy.size());
             for (auto&& coin : coins_copy)
             {
                 if (QString::fromStdString(get_kdf().get_current_ticker()) == coin && m_primary_coin_fully_enabled)
@@ -132,16 +133,6 @@ namespace atomic_dex
             }
 
             get_kdf().disable_multiple_coins(coins_std);
-            auto remaining_enabled_coins = get_kdf().get_enabled_coins();
-            std::vector<std::string> remaining_tickers;
-            remaining_tickers.reserve(remaining_enabled_coins.size());
-
-            for (const auto& coin_cfg : remaining_enabled_coins)
-            {
-                remaining_tickers.push_back(coin_cfg.ticker);
-            }
-
-            system_manager_.get_system<portfolio_page>().initialize_portfolio(remaining_tickers);
             system_manager_.get_system<trading_page>().clear_models();
             this->dispatcher_.trigger<update_portfolio_values>(update_portfolio_values{.with_update_model = true});
         }

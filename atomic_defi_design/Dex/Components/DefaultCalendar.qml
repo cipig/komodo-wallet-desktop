@@ -2,7 +2,6 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import Qt.labs.calendar 1.0
-
 import "../Qaterial" as Qaterial
 import Dex.Themes 1.0 as Dex
 
@@ -144,7 +143,8 @@ Item
             delegate: DefaultRectangle
             {
                 id: dayCell
-                anchors.fill: parent
+                implicitWidth: grid.width / 7
+                implicitHeight: grid.height / 6
 
                 readonly property bool isSelected: model.date.getDate() === root.selectedDate.getDate() &&
                                                     model.date.getMonth() === root.selectedDate.getMonth() &&
@@ -163,7 +163,7 @@ Item
                 {
                     id: dayDelegateText
                     text: model.day
-                    anchors.centerIn: parent
+                    anchors.centerIn: parent // This anchor is perfectly safe because it's inside the rectangle cell, not the grid!
                     horizontalAlignment: Text.AlignRight
                     font.pixelSize: Math.min(parent.height/3, parent.width/3)
                     color: {
