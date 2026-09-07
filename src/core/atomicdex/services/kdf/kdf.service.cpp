@@ -1474,34 +1474,32 @@ namespace atomic_dex
                                                     t_http_response  z_resp      = m_kdf_client.async_rpc_batch_standalone(z_batch_array, t_http_priority::background).get();
                                                     auto             z_answers   = kdf::basic_batch_answer(z_resp);
                                                     z_error                      = z_answers;
-
-                                                    std::string status = z_answers[0].at("result").at("status").get<std::string>();
+                                                    std::string      status      = z_answers[0].at("result").at("status").get<std::string>();
 
                                                     if (status == "Ok")
                                                     {
                                                         SPDLOG_INFO("{} activation ready, status is {}", tickers[idx], status);
-                                                        std::unique_lock lock(m_coin_cfg_mutex);
-                                                        m_coins_informations[tickers[idx]].activation_status = z_answers[0];
-
-                                                        if (z_answers[0].at("result").at("details").contains("error"))
                                                         {
-                                                            if (z_answers[0].at("result").at("details").at("error").contains("error_type"))
+                                                            std::unique_lock lock(m_coin_cfg_mutex);
+                                                            m_coins_informations[tickers[idx]].activation_status = z_answers[0];
+
+                                                            if (z_answers[0].at("result").at("details").contains("error"))
                                                             {
-                                                                if (z_answers[0].at("result").at("details").at("error").at("error_type") == "CoinIsAlreadyActivated")
+                                                                if (z_answers[0].at("result").at("details").at("error").contains("error_type"))
                                                                 {
-                                                                    continue;
+                                                                    if (z_answers[0].at("result").at("details").at("error").at("error_type") == "CoinIsAlreadyActivated")
+                                                                    {
+                                                                        continue;
+                                                                    }
                                                                 }
+                                                                event = z_answers[0].at("result").at("details").at("error").get<std::string>();
+                                                                SPDLOG_ERROR("Enabling [{}] error: {}", tickers[idx], event);
+                                                                break;
                                                             }
-                                                            event = z_answers[0].at("result").at("details").at("error").get<std::string>();
-                                                            SPDLOG_ERROR("Enabling [{}] error: {}", tickers[idx], event);
-                                                            break;
+                                                            m_coins_informations[tickers[idx]].currently_enabled = true;
                                                         }
 
-                                                        lock.unlock();
                                                         this->process_task_balance_answer(z_answers[0]);
-                                                        lock.unlock();
-
-                                                        m_coins_informations[tickers[idx]].currently_enabled = true;
                                                         this->dispatcher_.trigger<coin_fully_initialized>(coin_fully_initialized{.tickers = {tickers[idx]}});
                                                         break;
                                                     }
@@ -1917,14 +1915,18 @@ namespace atomic_dex
     void kdf_service::fetch_balances_thread()
     {
         const auto& enabled_coins = get_enabled_coins();
+        auto& scheduler = atomic_dex::http::client::get_background_scheduler();
+
         for (const auto& coin : enabled_coins) {
-            async::spawn([this, coin]() {
+            async::spawn(scheduler, [this, coin]() {
                 fetch_single_balance(coin);
             });
         }
 
         if (m_wallet_page_active) {
-            batch_balance_and_tx();
+            async::spawn(scheduler, [this]() {
+                batch_balance_and_tx();
+            });
         }
     }
 
@@ -2283,21 +2285,21 @@ namespace atomic_dex
         };
 
         std::string url = retrieve_api_functor(ticker, address(ticker, ec));
+        auto& scheduler = atomic_dex::http::client::get_interactive_scheduler();
+
         kdf::async_process_rpc_get(kdf::g_etherscan_proxy_http_client, "tx_history", url)
-            .then(
-                [this, ticker](async::task<t_http_response> previous_task)
+            .then(scheduler, [this, ticker](async::task<t_http_response> previous_task)
                 {
                     try
                     {
-                        auto answer = m_kdf_client.rpc_process_answer<kdf::tx_history_answer>(previous_task.get(), "tx_history");
+                        t_http_response resp = previous_task.get();
+                        auto answer = m_kdf_client.rpc_process_answer<kdf::tx_history_answer>(resp, "tx_history");
 
                         if (answer.rpc_result_code != 200)
                         {
-                            // SPDLOG_ERROR("answer.rpc_result_code is {} in kdf::async_process_rpc_get with answer.raw_result: {}", answer.rpc_result_code, answer.raw_result);
-                            // answer.rpc_result_code is -1 in kdf::async_process_rpc_get with answer.raw_result: [json.exception.parse_error.101] parse error at line 1, column 1: syntax error while parsing value - invalid literal; last read: 'N'
                             this->dispatcher_.trigger<tx_fetch_finished>(tx_fetch_finished{.with_error = true, .ticker = ticker});
                         }
-                        else if (answer.rpc_result_code not_eq -1 and answer.result.has_value())
+                        else if (answer.rpc_result_code != -1 && answer.result.has_value())
                         {
                             t_tx_state state;
                             state.state             = "Finished";
@@ -2348,10 +2350,7 @@ namespace atomic_dex
                                     out.push_back(std::move(current_info));
                                 });
 
-                            //! History
                             m_tx_informations->insert_or_assign(ticker, std::make_pair(out, state));
-
-                            //! Dispatch
                             this->dispatcher_.trigger<tx_fetch_finished>(tx_fetch_finished{.with_error = false, .ticker = ticker});
                         }
                     }

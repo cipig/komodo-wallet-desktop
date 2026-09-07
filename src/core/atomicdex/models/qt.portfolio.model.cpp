@@ -103,7 +103,6 @@ namespace atomic_dex
         const std::string& currency      = m_config->current_currency;
         const std::string& fiat          = m_config->current_fiat;
 
-        spdlog::stopwatch sw; using namespace std::chrono;
         for (auto&& [_, coin]: coins)
         {
             if (m_ticker_registry.find(coin.ticker) == m_ticker_registry.end())
@@ -146,7 +145,6 @@ namespace atomic_dex
                 update_value(ActivationStatus, status, idx, *this);
             }
         }
-        SPDLOG_DEBUG("Time elapsed in portfolio_model::update_currency_values: {}", duration_cast<milliseconds>(sw.elapsed()));
         return true;
     }
 

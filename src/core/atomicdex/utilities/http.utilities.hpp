@@ -116,6 +116,9 @@ namespace atomic_dex::http
         [[nodiscard]] async::task<response> request(const http::request& req, priority prio = priority::interactive) const;
         [[nodiscard]] const std::string&    base_url() const;
 
+        [[nodiscard]] static async::threadpool_scheduler& get_interactive_scheduler();
+        [[nodiscard]] static async::threadpool_scheduler& get_background_scheduler();
+
       private:
         std::string   m_base_url;
         client_config m_config;

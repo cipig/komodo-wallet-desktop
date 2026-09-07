@@ -160,7 +160,11 @@ namespace atomic_dex::kdf
     async::task<t_http_response>
     kdf_client::async_rpc_batch_standalone(nlohmann::json batch_array, t_http_priority prio)
     {
-        return async::spawn([batch_array, prio]() {
+        auto& scheduler = (prio == t_http_priority::background)
+                          ? atomic_dex::http::client::get_background_scheduler()
+                          : atomic_dex::http::client::get_interactive_scheduler();
+
+        return async::spawn(scheduler, [batch_array, prio]() {
             try
             {
                 t_http_request request;
@@ -194,9 +198,14 @@ namespace atomic_dex::kdf
     void kdf_client::process_rpc_async(typename Rpc::expected_request_type request, const std::function<void(Rpc)>& on_rpc_processed, t_http_priority prio)
     {
         auto http_request = make_request<Rpc>(request);
+
+        auto& scheduler = (prio == t_http_priority::background)
+                          ? atomic_dex::http::client::get_background_scheduler()
+                          : atomic_dex::http::client::get_interactive_scheduler();
+
         generate_client()
             .request(http_request, prio)
-            .then([on_rpc_processed, request](const t_http_response& resp)
+            .then(scheduler, [on_rpc_processed, request](const t_http_response& resp)
             {
                 try
                 {

@@ -695,7 +695,9 @@ namespace atomic_dex::kdf
     async::task<t_http_response>
     async_process_rpc_get(t_http_client_ptr& client, const std::string rpc_command, const std::string& url)
     {
-        return async::spawn([&client, rpc_command, url]() {
+        auto& scheduler = atomic_dex::http::client::get_interactive_scheduler();
+
+        return async::spawn(scheduler, [&client, rpc_command, url]() {
             try
             {
                 t_http_request req;

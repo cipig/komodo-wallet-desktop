@@ -237,6 +237,18 @@ namespace atomic_dex::http
         });
     }
 
+    async::threadpool_scheduler&
+    client::get_interactive_scheduler()
+    {
+        return get_interactive_scheduler();
+    }
+
+    async::threadpool_scheduler&
+    client::get_background_scheduler()
+    {
+        return get_background_scheduler();
+    }
+
     const std::string&
     client::base_url() const
     {
