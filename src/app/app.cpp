@@ -14,27 +14,21 @@
  *                                                                            *
  ******************************************************************************/
 
-//! Deps
 #include <boost/random/random_device.hpp>
 #include <wally_bip39.h>
 #include <algorithm>
-
-//! QT
 #include <QDebug>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QProcess>
 #include <QSettings>
 #include <QTimer>
-
 #ifdef __APPLE__
 #    include <QGuiApplication>
 #    include <QWindow>
 #    include <QWindowList>
 #    include "atomicdex/platform/osx/manager.hpp"
 #endif
-
-//! Project Headers
 #include "app.hpp"
 #include "atomicdex/services/exporter/exporter.service.hpp"
 #include "atomicdex/services/kdf/auto.update.maker.order.service.hpp"
@@ -100,6 +94,7 @@ namespace atomic_dex
         {
             const auto coin_info       = kdf.get_coin_info(coin.toStdString());
             bool       has_parent_fees = coin_info.has_parent_fees_ticker;
+
             if (not get_orders()->swap_is_in_progress(coin) && coin != primary_coin && coin != secondary_coin)
             {
                 if (!get_kdf().is_task_activation_ready(coin.toStdString()))
@@ -125,8 +120,8 @@ namespace atomic_dex
             std::vector<std::string> coins_std{};
             system_manager_.get_system<portfolio_page>().disable_coins(coins_copy);
             system_manager_.get_system<trading_page>().disable_coins(coins_copy);
-
             coins_std.reserve(coins_copy.size());
+
             for (auto&& coin : coins_copy)
             {
                 if (QString::fromStdString(get_kdf().get_current_ticker()) == coin && m_primary_coin_fully_enabled)
@@ -137,15 +132,16 @@ namespace atomic_dex
             }
 
             get_kdf().disable_multiple_coins(coins_std);
+            auto remaining_enabled_coins = get_kdf().get_enabled_coins();
+            std::vector<std::string> remaining_tickers;
+            remaining_tickers.reserve(remaining_enabled_coins.size());
 
-            if (auto* port_page = get_portfolio_page())
+            for (const auto& coin_cfg : remaining_enabled_coins)
             {
-                if (auto* port_mdl = port_page->get_portfolio())
-                {
-                    port_mdl->reset();
-                }
+                remaining_tickers.push_back(coin_cfg.ticker);
             }
 
+            system_manager_.get_system<portfolio_page>().initialize_portfolio(remaining_tickers);
             system_manager_.get_system<trading_page>().clear_models();
             this->dispatcher_.trigger<update_portfolio_values>(update_portfolio_values{.with_update_model = true});
         }

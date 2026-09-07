@@ -1065,7 +1065,7 @@ namespace atomic_dex
         SPDLOG_DEBUG("balance_answer.address: {}", balance_answer.address);
         balance_answer.balance  = answer.balances.begin()->second.spendable;
         SPDLOG_DEBUG("balance_answer.balance: {}", balance_answer.balance);
-        balance_answer.coin     = answer.platform_coin;
+        balance_answer.coin     = rpc.request.ticker;
         SPDLOG_DEBUG("balance_answer.coin: {}", balance_answer.coin);
         {
             std::unique_lock lock(m_balance_mutex);

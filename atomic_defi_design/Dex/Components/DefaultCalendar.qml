@@ -143,6 +143,7 @@ Item
 
             delegate: DefaultRectangle
             {
+                id: dayCell
                 anchors.fill: parent
 
                 readonly property bool isSelected: model.date.getDate() === root.selectedDate.getDate() &&
@@ -150,7 +151,7 @@ Item
                                                     model.date.getFullYear() === root.selectedDate.getFullYear()
                 readonly property bool isVisibleMonth: model.month === root.currentMonth
 
-                color: isSelected ? selectedDateColor : hovered ? hoveredDateColor : "transparent"
+                color: isSelected ? selectedDateColor : cellMouseArea.containsMouse ? hoveredDateColor : "transparent"
 
                 readonly property color sameMonthDateTextColor: Dex.CurrentTheme.foregroundColor
                 readonly property color hoveredDateColor: Dex.CurrentTheme.buttonColorHovered
@@ -183,6 +184,7 @@ Item
 
                 MouseArea
                 {
+                    id: cellMouseArea
                     anchors.fill: parent
                     hoverEnabled: true
                     onClicked: {

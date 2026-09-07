@@ -14,7 +14,6 @@
  *                                                                            *
  ******************************************************************************/
 
-//! Project Headers
 #include "atomicdex/services/price/global.provider.hpp"
 #include "atomicdex/pages/qt.settings.page.hpp"
 #include "atomicdex/services/price/komodo_prices/komodo.prices.provider.hpp"
@@ -270,8 +269,6 @@ namespace atomic_dex
     std::string
     global_price_service::get_price_in_fiat(const std::string& fiat, const std::string& ticker, std::error_code& ec, bool skip_precision) const
     {
-        // Runs often to update fiat values for all enabled coins.
-        // fetch ticker infos loop and on_update_portfolio_values_event triggers this.
         try
         {
             auto& kdf_instance = m_system_manager.get_system<kdf_service>();
@@ -290,10 +287,16 @@ namespace atomic_dex
             }
 
             std::error_code t_ec;
-            const auto      amount = kdf_instance.get_balance_info(ticker, t_ec); // from registry
+            const auto      amount = kdf_instance.get_balance_info(ticker, t_ec);
 
             if (t_ec)
             {
+                if (t_ec == dextop_error::balance_of_a_non_enabled_coin)
+                {
+                    ec.clear();
+                    return "0.00";
+                }
+
                 ec = t_ec;
                 SPDLOG_ERROR("get_balance_info error: {} {}", t_ec.message(), ticker);
                 return "0.00";
