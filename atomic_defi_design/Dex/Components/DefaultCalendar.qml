@@ -36,7 +36,7 @@ Item
     ColumnLayout
     {
         anchors.fill: parent
-        anchors.margin: 10
+        Layout.margins: 10
         spacing: 5
 
         // Navigation Bar

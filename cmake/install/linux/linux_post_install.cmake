@@ -75,7 +75,10 @@ execute_process(COMMAND ${LINUX_DEPLOY_PATH} ${PROJECT_BIN_PATH}
         ECHO_OUTPUT_VARIABLE
         ECHO_ERROR_VARIABLE)
 
-message(STATUS "Pruning unavoidable background Qt modules...")
+if (EXISTS "${PROJECT_APP_PATH}/usr/qml/QtQuick/Controls")
+    message(STATUS "Wiping out unused legacy Controls v1 style directories")
+    file(REMOVE_RECURSE "${PROJECT_APP_PATH}/usr/qml/QtQuick/Controls")
+endif()
 if (EXISTS "${PROJECT_APP_PATH}/usr/qml/QtQuick/PrivateWidgets")
     file(REMOVE_RECURSE "${PROJECT_APP_PATH}/usr/qml/QtQuick/PrivateWidgets")
 endif()
