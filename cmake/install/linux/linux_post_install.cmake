@@ -75,6 +75,14 @@ execute_process(COMMAND ${LINUX_DEPLOY_PATH} ${PROJECT_BIN_PATH}
         ECHO_OUTPUT_VARIABLE
         ECHO_ERROR_VARIABLE)
 
+message(STATUS "Pruning unavoidable background Qt modules...")
+if (EXISTS "${PROJECT_APP_PATH}/usr/qml/QtQuick/PrivateWidgets")
+    file(REMOVE_RECURSE "${PROJECT_APP_PATH}/usr/qml/QtQuick/PrivateWidgets")
+endif()
+if (EXISTS "${PROJECT_APP_PATH}/usr/qml/QtQuick/Controls.2/Universal")
+    file(REMOVE_RECURSE "${PROJECT_APP_PATH}/usr/qml/QtQuick/Controls.2/Universal")
+endif()
+
 message(STATUS "Renaming ${CMAKE_SOURCE_DIR}/${DEX_PROJECT_NAME}-${VERSION_ID}-x86_64.AppImage to ${CMAKE_SOURCE_DIR}/${DEX_PROJECT_NAME}-linux-${VERSION_ID}-x86_64.AppImage")
 file(RENAME ${CMAKE_SOURCE_DIR}/${DEX_PROJECT_NAME}-${VERSION_ID}-x86_64.AppImage ${CMAKE_SOURCE_DIR}/${DEX_PROJECT_NAME}-linux-${VERSION_ID}-x86_64.AppImage)
 
