@@ -12,7 +12,7 @@ Item
     width: 300
     height: 450
 
-    // Replicate the calendar properties used externally
+    // Properties exposed directly on the root item for the DatePicker aliases
     property date selectedDate: new Date()
     property var minimumDate: undefined
     property var maximumDate: undefined
@@ -76,7 +76,6 @@ Item
             DexLabel
             {
                 id: dateText
-                // Format title string (e.g., "December 2026") using the systems locale
                 text: Qt.locale().standaloneMonthName(root.currentMonth, Locale.LongFormat) + " " + root.currentYear
                 elide: Text.ElideRight
                 horizontalAlignment: Text.AlignHCenter
@@ -125,7 +124,7 @@ Item
                 implicitHeight: 20
                 Label
                 {
-                    text: model.shortName // Uses short name from locale
+                    text: model.shortName
                     anchors.centerIn: parent
                     color: Dex.CurrentTheme.foregroundColor
                 }
@@ -146,7 +145,6 @@ Item
             {
                 anchors.fill: parent
 
-                // Helper evaluations matching the old styleData layout
                 readonly property bool isSelected: model.date.getDate() === root.selectedDate.getDate() &&
                                                     model.date.getMonth() === root.selectedDate.getMonth() &&
                                                     model.date.getFullYear() === root.selectedDate.getFullYear()
@@ -168,9 +166,17 @@ Item
                     horizontalAlignment: Text.AlignRight
                     font.pixelSize: Math.min(parent.height/3, parent.width/3)
                     color: {
-                        var theColor = isVisibleMonth ? sameMonthDateTextColor : differentMonthDateTextColor;
-                        if (isSelected)
+                        var isTooEarly = root.minimumDate !== undefined && model.date < root.minimumDate;
+                        var isTooLate = root.maximumDate !== undefined && model.date > root.maximumDate;
+                        var isValidRange = !isTooEarly && !isTooLate;
+
+                        var theColor = (isVisibleMonth && isValidRange) ? sameMonthDateTextColor : differentMonthDateTextColor;
+
+                        if (!isValidRange) {
+                            theColor = Dex.CurrentTheme.textDisabledColor;
+                        } else if (isSelected) {
                             theColor = selectedDateTextColor;
+                        }
                         theColor;
                     }
                 }
