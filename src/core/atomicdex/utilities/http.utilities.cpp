@@ -32,24 +32,6 @@ namespace
         }
         return base_url + request_uri;
     }
-
-    async::threadpool_scheduler& get_interactive_scheduler()
-    {
-        // Agile: Min 4 threads, Max 16, or scales 1:1 with logical cores.
-        static unsigned int cores = std::max(4u, std::thread::hardware_concurrency());
-        static unsigned int size = std::min(16u, cores);
-        static async::threadpool_scheduler pool(size);
-        return pool;
-    }
-
-    async::threadpool_scheduler& get_background_scheduler()
-    {
-        // Batch: Scaled to 4x logical cores. Min 16 threads, Max 64 threads.
-        static unsigned int cores = std::max(4u, std::thread::hardware_concurrency());
-        static unsigned int size = std::clamp(cores * 4, 16u, 64u);
-        static async::threadpool_scheduler pool(size);
-        return pool;
-    }
 } // namespace
 
 namespace atomic_dex::http
@@ -171,6 +153,26 @@ namespace atomic_dex::http
           m_config(std::move(config))
     {}
 
+    async::threadpool_scheduler&
+    client::get_interactive_scheduler()
+    {
+        // Agile: Min 4 threads, Max 16, or scales 1:1 with logical cores.
+        static unsigned int cores = std::max(4u, std::thread::hardware_concurrency());
+        static unsigned int size = std::min(16u, cores);
+        static async::threadpool_scheduler pool(size);
+        return pool;
+    }
+
+    async::threadpool_scheduler&
+    client::get_background_scheduler()
+    {
+        // Batch: Scaled to 4x logical cores. Min 16 threads, Max 64 threads.
+        static unsigned int cores = std::max(4u, std::thread::hardware_concurrency());
+        static unsigned int size = std::clamp(cores * 4, 16u, 64u);
+        static async::threadpool_scheduler pool(size);
+        return pool;
+    }
+
     async::task<response>
     client::request(const http::request& req, priority prio) const
     {
@@ -235,18 +237,6 @@ namespace atomic_dex::http
                 std::move(response_headers)
             };
         });
-    }
-
-    async::threadpool_scheduler&
-    client::get_interactive_scheduler()
-    {
-        return get_interactive_scheduler();
-    }
-
-    async::threadpool_scheduler&
-    client::get_background_scheduler()
-    {
-        return get_background_scheduler();
     }
 
     const std::string&
