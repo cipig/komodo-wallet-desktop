@@ -388,14 +388,16 @@ namespace atomic_dex
 
             if (not res.empty())
             {
+                SPDLOG_DEBUG("About to remove row {} for coin {}", row, coin.toStdString());
                 this->removeRow(res.at(0).row());
+                m_model_proxy->invalidateFilter();
+                SPDLOG_DEBUG("Row {} removed successfully", row);
             }
             else {
                 SPDLOG_ERROR("res.empty in portfolio_model::disable_coins for coin: {}", coin.toStdString());
             }
         }
         emit lengthChanged();
-        m_model_proxy->reset();
     }
 
     int
