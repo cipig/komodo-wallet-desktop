@@ -75,46 +75,32 @@ execute_process(COMMAND ${LINUX_DEPLOY_PATH} ${PROJECT_BIN_PATH}
         ECHO_OUTPUT_VARIABLE
         ECHO_ERROR_VARIABLE)
 
+message(STATUS "Performing final application bundle pruning...")
 if (EXISTS "${PROJECT_APP_PATH}/usr/qml/QtQuick/Controls")
-    message(STATUS "Wiping out unused legacy Controls v1 style directories")
     file(REMOVE_RECURSE "${PROJECT_APP_PATH}/usr/qml/QtQuick/Controls")
 endif()
 if (EXISTS "${PROJECT_APP_PATH}/usr/qml/QtQuick/PrivateWidgets")
     file(REMOVE_RECURSE "${PROJECT_APP_PATH}/usr/qml/QtQuick/PrivateWidgets")
 endif()
-if (EXISTS "${PROJECT_APP_PATH}/usr/qml/QtQuick/Controls.2/Universal")
-    file(REMOVE_RECURSE "${PROJECT_APP_PATH}/usr/qml/QtQuick/Controls.2/Universal")
-endif()
-if (EXISTS "${PROJECT_APP_PATH}/usr/qml/QtQuick/Controls.2/designer")
-    file(REMOVE_RECURSE "${PROJECT_APP_PATH}/usr/qml/QtQuick/Controls.2/designer")
-endif()
-if (EXISTS "${PROJECT_APP_PATH}/usr/qml/QtQuick/Controls.2/Fusion")
-    file(REMOVE_RECURSE "${PROJECT_APP_PATH}/usr/qml/QtQuick/Controls.2/Fusion")
-endif()
-if (EXISTS "${PROJECT_APP_PATH}/usr/qml/QtQuick/Controls.2/Imagine")
-    file(REMOVE_RECURSE "${PROJECT_APP_PATH}/usr/qml/QtQuick/Controls.2/Imagine")
+set(CONTROLS2_DIR "${PROJECT_APP_PATH}/usr/qml/QtQuick/Controls.2")
+if (EXISTS "${CONTROLS2_DIR}")
+    file(REMOVE_RECURSE "${CONTROLS2_DIR}/designer" "${CONTROLS2_DIR}/Fusion" "${CONTROLS2_DIR}/Imagine" "${CONTROLS2_DIR}/Universal")
 endif()
 if (EXISTS "${PROJECT_APP_PATH}/usr/qml/QtWebEngine/Controls1Delegates")
-    message(STATUS "Pruning unused QtWebEngine legacy Controls1Delegates...")
     file(REMOVE_RECURSE "${PROJECT_APP_PATH}/usr/qml/QtWebEngine/Controls1Delegates")
 endif()
-
 set(TRANS_DIR "${PROJECT_APP_PATH}/usr/translations")
 if (EXISTS "${TRANS_DIR}")
-    message(STATUS "Filtering Qt translation layers defensively...")
-
-    # 1. Purge unwanted base Qt .qm files directly
+    # Purge base Qt .qm files
     file(GLOB RUNTIME_QMS "${TRANS_DIR}/qt_*.qm")
     foreach(QM_FILE ${RUNTIME_QMS})
         if (NOT QM_FILE MATCHES "qt_(de|en|es|fr|ru|tr)\\.qm")
             file(REMOVE "${QM_FILE}")
         endif()
     endforeach()
-
-    # 2. Purge unwanted WebEngine .pak language bundles safely
+    # Purge unused WebEngine language pak files
     set(PAK_DIR "${TRANS_DIR}/qtwebengine_locales")
     if (EXISTS "${PAK_DIR}")
-        message(STATUS "Filtering QtWebEngine localization packs...")
         file(GLOB CHROMIUM_PAKS "${PAK_DIR}/*.pak")
         foreach(PAK_FILE ${CHROMIUM_PAKS})
             if (NOT PAK_FILE MATCHES "(de|en-US|en-GB|es|fr|ru|tr)\\.pak")

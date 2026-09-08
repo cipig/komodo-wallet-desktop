@@ -38,7 +38,7 @@ endif ()
 
 message(STATUS "CREATING DMG")
 if (NOT EXISTS ${CMAKE_SOURCE_DIR}/bin/${DEX_PROJECT_NAME}.dmg)
-    message(STATUS "${MAC_DEPLOY_PATH} ${PROJECT_APP_PATH} -qmldir=${PROJECT_QML_DIR} -always-overwrite -verbose=3")
+    message(STATUS "${MAC_DEPLOY_PATH} ${PROJECT_APP_PATH} -qmldir=${PROJECT_QML_DIR} -always-overwrite -timestamp -verbose=1")
     execute_process(
             COMMAND
             ${MAC_DEPLOY_PATH} ${PROJECT_APP_PATH} -qmldir=${PROJECT_QML_DIR} -always-overwrite -timestamp -verbose=1
@@ -46,6 +46,27 @@ if (NOT EXISTS ${CMAKE_SOURCE_DIR}/bin/${DEX_PROJECT_NAME}.dmg)
             ECHO_OUTPUT_VARIABLE
             ECHO_ERROR_VARIABLE
             )
+
+    message(STATUS "Performing macOS application bundle pruning...")
+    set(MAC_QML_DIR "${PROJECT_APP_PATH}/Contents/Resources/qml")
+    if (EXISTS "${MAC_QML_DIR}")
+        file(REMOVE_RECURSE "${MAC_QML_DIR}/QtQuick/Controls")
+        file(REMOVE_RECURSE "${MAC_QML_DIR}/QtQuick/PrivateWidgets")
+        set(MAC_C2_DIR "${MAC_QML_DIR}/QtQuick/Controls.2")
+        file(REMOVE_RECURSE "${MAC_C2_DIR}/designer" "${MAC_C2_DIR}/Fusion" "${MAC_C2_DIR}/Imagine" "${MAC_C2_DIR}/Universal")
+        file(REMOVE_RECURSE "${MAC_QML_DIR}/QtWebEngine/Controls1Delegates")
+    endif()
+    set(MAC_PAK_DIR "${PROJECT_APP_PATH}/Contents/Resources/qtwebengine_locales")
+    if (EXISTS "${MAC_PAK_DIR}")
+        message(STATUS "Filtering macOS QtWebEngine localization packs...")
+        file(GLOB MAC_CHROMIUM_PAKS "${MAC_PAK_DIR}/*.pak")
+        foreach(PAK_FILE ${MAC_CHROMIUM_PAKS})
+            if (NOT PAK_FILE MATCHES "(de|en-US|en-GB|es|fr|ru|tr)\\.pak")
+                file(REMOVE "${PAK_FILE}")
+            endif()
+        endforeach()
+    endif()
+
     message(STATUS "Fixing QTWebengineProcess")
     set(QTWEBENGINE_BUNDLED_PATH ${PROJECT_APP_PATH}/Contents/Frameworks/QtWebEngineCore.framework/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess)
     message(STATUS "Executing: [install_name_tool -add_rpath @executable_path/../../../../../../Frameworks ${QTWEBENGINE_BUNDLED_PATH}]")
