@@ -175,7 +175,6 @@ namespace
 
         for (auto&& ticker: tickers)
         {
-            SPDLOG_DEBUG("Setting ticker: {} field {} to {}", ticker, field_name, status);
             //! `at` throws for a ticker the config does not carry; skipping is
             //! the safe reaction, for the same event-handler reason as above.
             if (config_json_data.contains(ticker))
@@ -189,7 +188,6 @@ namespace
 
             if (field_name == "active")
             {
-                SPDLOG_DEBUG("ticker: {} status active: {}", ticker, status);
                 registry[ticker].active = status;
             }
         }
@@ -213,8 +211,6 @@ namespace
             SPDLOG_ERROR("Could not write coins config: {} ({})", filepath.string(), ofs.errorString().toStdString());
             return;
         }
-
-        SPDLOG_DEBUG("Coins file updated to set {}: {} | tickers: [{}]", field_name, status,  fmt::join(tickers, ", "));
     }
 }
 
@@ -1061,16 +1057,12 @@ namespace atomic_dex
         kdf::balance_answer balance_answer;
 
         balance_answer.address  = answer.balances.begin()->first;
-        SPDLOG_DEBUG("balance_answer.address: {}", balance_answer.address);
         balance_answer.balance  = answer.balances.begin()->second.spendable;
-        SPDLOG_DEBUG("balance_answer.balance: {}", balance_answer.balance);
         balance_answer.coin     = rpc.request.ticker;
-        SPDLOG_DEBUG("balance_answer.coin: {}", balance_answer.coin);
         {
             std::unique_lock lock(m_balance_mutex);
             m_balance_informations[balance_answer.coin] = std::move(balance_answer);
         }
-        SPDLOG_DEBUG("balance_answer for {} complete", rpc.request.ticker);
     }
 
     void kdf_service::process_balance_answer(const kdf::enable_eth_with_tokens_rpc& rpc)
@@ -1089,7 +1081,7 @@ namespace atomic_dex
 
         if (answer.erc20_addresses_infos.empty())
         {
-            SPDLOG_DEBUG("answer.erc20_addresses_infos is empty");
+            SPDLOG_WARN("answer.erc20_addresses_infos is empty");
             return;
         }
 

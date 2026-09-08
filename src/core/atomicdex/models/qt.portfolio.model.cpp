@@ -394,6 +394,7 @@ namespace atomic_dex
                 SPDLOG_ERROR("res.empty in portfolio_model::disable_coins for coin: {}", coin.toStdString());
             }
         }
+        emit lengthChanged();
     }
 
     int
