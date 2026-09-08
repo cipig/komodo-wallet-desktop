@@ -58,8 +58,6 @@ namespace atomic_dex
                 !coins.contains(QString::fromStdString(coin_info.fees_ticker)))
             {
                 auto coin_parent_info = kdf.get_coin_info(coin_info.fees_ticker);
-                // TODO: why can it be empty when it has been found ?
-                //       refactor coins enabling logic!!!
                 if (coin_parent_info.ticker != "")
                 {
                     if (!coin_parent_info.currently_enabled && !coin_parent_info.active && extra_coins.insert(coin_parent_info.ticker).second)
@@ -94,7 +92,6 @@ namespace atomic_dex
         {
             const auto coin_info       = kdf.get_coin_info(coin.toStdString());
             bool       has_parent_fees = coin_info.has_parent_fees_ticker;
-
             if (not get_orders()->swap_is_in_progress(coin) && coin != primary_coin && coin != secondary_coin)
             {
                 if (!get_kdf().is_task_activation_ready(coin.toStdString()))
@@ -434,13 +431,10 @@ namespace atomic_dex
 
         //! Creates models
         {
-            // m_manager_models.emplace("addressbook", new addressbook_model(system_manager_, this));
             m_manager_models.emplace("orders", new orders_model(system_manager_, this->dispatcher_, this));
             m_manager_models.emplace("notifications", new notification_manager(dispatcher_, this));
         }
 
-        // get_dispatcher().sink<refresh_update_status>().connect<&application::on_refresh_update_status_event>(*this);
-        //! KDF system need to be created before the GUI and give the instance to the gui
         system_manager_.create_system<kdf_service>(system_manager_);
         auto& settings_page_system = system_manager_.create_system<settings_page>(system_manager_, m_app, this);
         auto& portfolio_system     = system_manager_.create_system<portfolio_page>(system_manager_, this);
@@ -461,7 +455,6 @@ namespace atomic_dex
         {
             auto* wallet_mgr = get_wallet_mgr();
             wallet_mgr->set_wallet_default_name(wallet_mgr->get_default_wallet_name());
-            // set_wallet_default_name(get_default_wallet_name());
         }
 
         SPDLOG_INFO("application created");

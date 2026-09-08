@@ -113,8 +113,8 @@ namespace atomic_dex
             m_system_manager.get_system<trading_page>().set_preferred_order(m_selected_best_order->value());
             m_selected_best_order = std::nullopt;
         }
-        m_best_orders->clear_orderbook();                                                     ///< Remove all elements from the model
-        this->m_system_manager.get_system<orderbook_scanner_service>().process_best_orders(); ///< re process the model
+        m_best_orders->clear_orderbook();
+        this->m_system_manager.get_system<orderbook_scanner_service>().process_best_orders();
     }
 
     void
@@ -274,6 +274,7 @@ namespace atomic_dex
             // SPDLOG_INFO("Overriding min_volume with the one from orderbook: {}", cur_taker_vol.toStdString());
         }
 
+        // TODO: UNUSED?
         SPDLOG_DEBUG("Time elapsed in qt_orderbook_wrapper::get_current_min_taker_vol with final_taker_vol={}: {}", cur_taker_vol.toStdString(), duration_cast<milliseconds>(sw.elapsed()));
         return cur_taker_vol;
     }

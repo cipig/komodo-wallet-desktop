@@ -16,15 +16,21 @@ Item
     property var minimumDate: undefined
     property var maximumDate: undefined
 
-    // Properties required for the inner layout calculations
-    readonly property int currentMonth: selectedDate.getMonth()
-    readonly property int currentYear: selectedDate.getFullYear()
+    // Separate tracking property for visual month scrolling layout behavior
+    // Automatically initializes to match whichever selection date the app loads!
+    property date visualTrackingDate: selectedDate
 
-    // Helper functions to mimic the old control API
-    function showPreviousYear() { root.selectedDate = new Date(currentYear - 1, currentMonth, 1) }
-    function showNextYear() { root.selectedDate = new Date(currentYear + 1, currentMonth, 1) }
-    function showPreviousMonth() { root.selectedDate = new Date(currentYear, currentMonth - 1, 1) }
-    function showNextMonth() { root.selectedDate = new Date(currentYear, currentMonth + 1, 1) }
+    // Properties required for the inner layout calculations (Now map to visualTrackingDate)
+    readonly property int currentMonth: visualTrackingDate.getMonth()
+    readonly property int currentYear: visualTrackingDate.getFullYear()
+
+    function showPreviousYear() { root.visualTrackingDate = new Date(currentYear - 1, currentMonth, 1) }
+    function showNextYear() { root.visualTrackingDate = new Date(currentYear + 1, currentMonth, 1) }
+    function showPreviousMonth() { root.visualTrackingDate = new Date(currentYear, currentMonth - 1, 1) }
+    function showNextMonth() { root.visualTrackingDate = new Date(currentYear, currentMonth + 1, 1) }
+
+    // Safety check: If the app changes selectedDate externally, sync the visual frame
+    onSelectedDateChanged: { root.visualTrackingDate = selectedDate }
 
     // Background Panel
     DefaultRectangle

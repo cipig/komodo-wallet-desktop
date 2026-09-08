@@ -577,6 +577,7 @@ namespace atomic_dex
         {
             return;
         }
+
         const auto&     kdf_system = m_system_manager.get_system<kdf_service>();
         trading_actions last_action;
         this->m_actions_queue.pop(last_action);

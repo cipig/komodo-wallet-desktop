@@ -14,10 +14,7 @@
  *                                                                            *
  ******************************************************************************/
 
-//! Qt
 #include <QJSValue>
-
-//! Project Headers
 #include "atomicdex/events/qt.events.hpp"
 #include "atomicdex/managers/qt.wallet.manager.hpp"
 #include "atomicdex/pages/qt.portfolio.page.hpp"
@@ -371,7 +368,7 @@ namespace atomic_dex
     portfolio_model::coin_balance(QString coin)
     {
         auto res = this->match(this->index(0, 0), TickerRole, coin, 1, Qt::MatchFlag::MatchExactly);
-        // assert(not res.empty());
+
         if (not res.empty())
         {
             return QString(this->data(res.at(0), BalanceRole).toString());
@@ -386,13 +383,15 @@ namespace atomic_dex
     {
         for (auto&& coin: coins)
         {
+            this->m_ticker_registry.erase(coin.toStdString());
             auto res = this->match(this->index(0, 0), TickerRole, coin, 1, Qt::MatchFlag::MatchExactly);
-            // assert(not res.empty());
+
             if (not res.empty())
             {
                 this->removeRow(res.at(0).row());
-            } else {
-                SPDLOG_ERROR("res.empty in portfolio_model::disable_coins");
+            }
+            else {
+                SPDLOG_ERROR("res.empty in portfolio_model::disable_coins for coin: {}", coin.toStdString());
             }
         }
     }

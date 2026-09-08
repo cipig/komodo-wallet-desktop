@@ -92,12 +92,11 @@ namespace atomic_dex
     orderbook_scanner_service::update() 
     {
         using namespace std::chrono_literals;
-
         const auto now = std::chrono::high_resolution_clock::now();
         const auto s   = std::chrono::duration_cast<std::chrono::seconds>(now - m_update_clock);
         if (s >= 61s)
         {
-            process_best_orders();
+            //process_best_orders();
             m_update_clock = std::chrono::high_resolution_clock::now();
         }
     }

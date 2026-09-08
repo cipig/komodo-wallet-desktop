@@ -99,58 +99,29 @@ if (EXISTS "${PROJECT_APP_PATH}/usr/qml/QtWebEngine/Controls1Delegates")
     file(REMOVE_RECURSE "${PROJECT_APP_PATH}/usr/qml/QtWebEngine/Controls1Delegates")
 endif()
 
-# =====================================================================
-# TRANSLATION OPTIMIZATION: Keep only supported Qt language strings
-# =====================================================================
 set(TRANS_DIR "${PROJECT_APP_PATH}/usr/translations")
 if (EXISTS "${TRANS_DIR}")
-    message(STATUS "Optimizing Qt translation strings...")
+    message(STATUS "Filtering Qt translation layers defensively...")
 
-    # Create a temporary staging folder
-    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/trans_stage")
-
-    # List of baseline languages your app supports
-    set(ALLOWED_LANGS "de" "en" "es" "fr" "ru" "tr")
-
-    # Copy only matching files over to the staging area safely
-    foreach(LANG ${ALLOWED_LANGS})
-        if(EXISTS "${TRANS_DIR}/qt_${LANG}.qm")
-            file(COPY "${TRANS_DIR}/qt_${LANG}.qm" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/trans_stage")
+    # 1. Purge unwanted base Qt .qm files directly
+    file(GLOB RUNTIME_QMS "${TRANS_DIR}/qt_*.qm")
+    foreach(QM_FILE ${RUNTIME_QMS})
+        if (NOT QM_FILE MATCHES "qt_(de|en|es|fr|ru|tr)\\.qm")
+            file(REMOVE "${QM_FILE}")
         endif()
     endforeach()
 
-    # Completely clear the original translation repository folder
-    file(REMOVE_RECURSE "${TRANS_DIR}")
-    file(MAKE_DIRECTORY "${TRANS_DIR}")
-
-    # Move your streamlined translations back into place
-    file(COPY "${CMAKE_CURRENT_BINARY_DIR}/trans_stage/" DESTINATION "${TRANS_DIR}")
-    file(REMOVE_RECURSE "${CMAKE_CURRENT_BINARY_DIR}/trans_stage")
-endif()
-
-# =====================================================================
-# WEBENGINE OPTIMIZATION: Keep only supported Chromium language packs
-# =====================================================================
-set(PAK_DIR "${PROJECT_APP_PATH}/usr/translations/qtwebengine_locales")
-if (EXISTS "${PAK_DIR}")
-    message(STATUS "Pruning unused QtWebEngine localization packs...")
-
-    # Create staging folder for .pak elements
-    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/pak_stage")
-    set(ALLOWED_PAKS "de.pak" "en-US.pak" "en-GB.pak" "es.pak" "fr.pak" "ru.pak" "tr.pak")
-
-    foreach(PAK ${ALLOWED_PAKS})
-        if(EXISTS "${PAK_DIR}/${PAK}")
-            file(COPY "${PAK_DIR}/${PAK}" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/pak_stage")
-        endif()
-    endforeach()
-
-    # Clear old folder footprint and drop the clean versions back down
-    file(REMOVE_RECURSE "${PAK_DIR}")
-    file(MAKE_DIRECTORY "${PAK_DIR}")
-
-    file(COPY "${CMAKE_CURRENT_BINARY_DIR}/pak_stage/" DESTINATION "${PAK_DIR}")
-    file(REMOVE_RECURSE "${CMAKE_CURRENT_BINARY_DIR}/pak_stage")
+    # 2. Purge unwanted WebEngine .pak language bundles safely
+    set(PAK_DIR "${TRANS_DIR}/qtwebengine_locales")
+    if (EXISTS "${PAK_DIR}")
+        message(STATUS "Filtering QtWebEngine localization packs...")
+        file(GLOB CHROMIUM_PAKS "${PAK_DIR}/*.pak")
+        foreach(PAK_FILE ${CHROMIUM_PAKS})
+            if (NOT PAK_FILE MATCHES "(de|en-US|en-GB|es|fr|ru|tr)\\.pak")
+                file(REMOVE "${PAK_FILE}")
+            endif()
+        endforeach()
+    endif()
 endif()
 
 message(STATUS "Renaming ${CMAKE_SOURCE_DIR}/${DEX_PROJECT_NAME}-${VERSION_ID}-x86_64.AppImage to ${CMAKE_SOURCE_DIR}/${DEX_PROJECT_NAME}-linux-${VERSION_ID}-x86_64.AppImage")
