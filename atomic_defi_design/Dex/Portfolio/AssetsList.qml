@@ -26,7 +26,7 @@ Dex.DefaultListView
 
     Timer {
         id: delayModel
-        interval: 1500 // Gives 1.5s for heavy bulk row allocations to settle
+        interval: 200 // Gives a short delay for heavy bulk row allocations to settle
         repeat: false
         running: true
         onTriggered: {
@@ -34,7 +34,6 @@ Dex.DefaultListView
             if (proxy) {
                 proxy.with_balance = false;
                 list.model = proxy;
-                Dex.API.app.portfolio_pg.portfolio_mdl.update_currency_values();
                 proxy.invalidate();
             }
         }
