@@ -215,6 +215,7 @@ QtObject {
             case 'Smart Chain':       return dark_theme ? colorCoinDark["KMD"] : colorCoin["KMD"]
             case 'Polygon':           return dark_theme ? colorCoinDark["POL"] : colorCoin["POL"]
             case 'PLG-20':            return dark_theme ? colorCoinDark["POL"] : colorCoin["POL"]
+            case 'Mantle':            return dark_theme ? colorCoinDark["MNT"] : colorCoin["MNT"]
             case 'Moonriver':         return dark_theme ? colorCoinDark["MOVR"] : colorCoin["MOVR"]
             case 'HRC-20':            return dark_theme ? colorCoinDark["ONE"] : colorCoin["ONE"]
             case 'SmartBCH':          return dark_theme ? colorCoinDark["SBCH"] : colorCoin["SBCH"]
@@ -254,6 +255,7 @@ QtObject {
             case 'TRC-20':            return dark_theme ? colorCoinDark["TRX"] : colorCoin["TRX"]
             case 'TRX':               return dark_theme ? colorCoinDark["TRX"] : colorCoin["TRX"]
             case 'EWT':               return dark_theme ? colorCoinDark["EWT"] : colorCoin["EWT"]
+            case 'Mantle':            return dark_theme ? colorCoinDark["MNT"] : colorCoin["MNT"]
             case 'Moonbeam':          return dark_theme ? colorCoinDark["GLMR"] : colorCoin["GLMR"]
             case 'QRC-20':            return dark_theme ? colorCoinDark["QTUM"] : colorCoin["QTUM"]
             case 'KRC-20':            return dark_theme ? colorCoinDark["KCS"] : colorCoin["KCS"]
@@ -302,6 +304,7 @@ QtObject {
                                           "QTUM": "#2E9AD0",
                                           "KCS": "#25AF90",
                                           "KMD": "#2d4f86",
+                                          "MNT": "#27584c",
                                           "MOVR": "#52CCC9",
                                           "POL": "#804EE1",
                                           "ONE": "#00BEEE",
@@ -331,6 +334,7 @@ QtObject {
                                           "QTUM": "#2E9AD0",
                                           "KCS": "#25AF90",
                                           "KMD": "#799bd2",
+                                          "MNT": "#27584c",
                                           "MOVR": "#52CCC9",
                                           "POL": "#804EE1",
                                           "ONE": "#00BEEE",

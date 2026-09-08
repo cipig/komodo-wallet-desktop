@@ -593,6 +593,7 @@ namespace atomic_dex
                 case CoinType::EthereumClassic:
                 case CoinType::Gnosis:
                 case CoinType::HyperEVM:
+                case CoinType::Mantle:
                 case CoinType::Optimism:
                     evm_chain_groups[coin_cfg.parent_coin].push_back(coin_cfg);
                     break;

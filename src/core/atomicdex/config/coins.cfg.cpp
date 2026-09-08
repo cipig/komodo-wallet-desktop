@@ -102,6 +102,10 @@ namespace
         {
             return CoinType::KRC20;
         }
+        if (coin_type == "Mantle")
+        {
+            return CoinType::Mantle;
+        }
         if (coin_type == "Moonriver")
         {
             return CoinType::Moonriver;
@@ -371,6 +375,11 @@ namespace atomic_dex
         case CoinType::KRC20:
             cfg.has_parent_fees_ticker = true;
             cfg.fees_ticker            = cfg.is_testnet.value_or(false) ? "KCST" : "KCS";
+            cfg.is_erc_family          = true;
+            break;
+        case CoinType::Mantle:
+            cfg.has_parent_fees_ticker = true;
+            cfg.fees_ticker            = "MNT";
             cfg.is_erc_family          = true;
             break;
         case CoinType::Moonriver:
