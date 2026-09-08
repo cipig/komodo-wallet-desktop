@@ -139,10 +139,8 @@ namespace atomic_dex
     void
     portfolio_proxy_model::reset()
     {
-        spdlog::stopwatch sw; using namespace std::chrono;
         this->beginResetModel();
         this->endResetModel();
-        SPDLOG_DEBUG("Time elapsed in portfolio_proxy_model::reset: {}", duration_cast<milliseconds>(sw.elapsed()));
     }
 
     void

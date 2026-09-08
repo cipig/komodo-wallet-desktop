@@ -390,8 +390,11 @@ namespace atomic_dex
             {
                 int row = res.at(0).row();
                 SPDLOG_INFO("Removing coin: {} at row {}", coin.toStdString(), row);
+
+                this->beginRemoveRows(QModelIndex(), row, row);
                 this->m_model_data.removeAt(row);
-                this->removeRow(row);
+                this->endRemoveRows();
+
                 SPDLOG_INFO("After remove - m_model_data.count(): {}", m_model_data.count());
             }
             else {
@@ -528,7 +531,6 @@ namespace atomic_dex
         for (auto&& [coin, cfg]: coins)
         {
             auto res = this->match(this->index(0, 0), TickerRole, QString::fromStdString(coin), 1, Qt::MatchFlag::MatchExactly);
-            // assert(not res.empty());
             if (not res.empty())
             {
                 t_float_50 balance_all_f         = safe_float(balance_all.toStdString());
@@ -539,7 +541,6 @@ namespace atomic_dex
                     auto       percent = QString::fromStdString(res_f.str(2, std::ios::fixed));
                     update_value(PortfolioRoles::PercentMainCurrency, percent, res.at(0), *this);
                 }
-                // update_value(PortfolioRoles::PrivKey, "", res.at(0), *this);
             } else {
                 SPDLOG_ERROR("res.empty in portfolio_model::adjust_percent_current_currency");
             }

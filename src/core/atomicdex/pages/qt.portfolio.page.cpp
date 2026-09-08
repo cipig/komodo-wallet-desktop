@@ -44,7 +44,6 @@ namespace atomic_dex
     void
     portfolio_page::update()
     {
-        //SPDLOG_DEBUG("UNUSED ??");
     }
 
     portfolio_page::~portfolio_page() {}
