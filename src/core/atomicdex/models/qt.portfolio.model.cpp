@@ -381,31 +381,26 @@ namespace atomic_dex
     void
     portfolio_model::disable_coins(const QStringList& coins)
     {
-        SPDLOG_INFO("disable_coins called with {} coins", coins.size());
-
         for (auto&& coin: coins)
         {
-            SPDLOG_INFO("Before remove - m_model_data.count(): {}", m_model_data.count());
-
             this->m_ticker_registry.erase(coin.toStdString());
             auto res = this->match(this->index(0, 0), TickerRole, coin, 1, Qt::MatchFlag::MatchExactly);
 
             if (not res.empty())
             {
                 int row = res.at(0).row();
-                SPDLOG_INFO("Found {} at row {}, removing...", coin.toStdString(), row);
+                SPDLOG_INFO("Removing coin: {} at row {}", coin.toStdString(), row);
+                this->m_model_data.removeAt(row);
                 this->removeRow(row);
-                SPDLOG_INFO("After removeRow - m_model_data.count(): {}", m_model_data.count());
+                SPDLOG_INFO("After remove - m_model_data.count(): {}", m_model_data.count());
             }
             else {
                 SPDLOG_ERROR("res.empty in portfolio_model::disable_coins for coin: {}", coin.toStdString());
             }
         }
 
-        SPDLOG_INFO("Final m_model_data.count(): {}", m_model_data.count());
         emit lengthChanged();
         m_model_proxy->reset();
-        SPDLOG_INFO("proxy->reset() called");
     }
 
     int
