@@ -14,10 +14,7 @@
  *                                                                            *
  ******************************************************************************/
 
-//! Qt
 #include <QDebug>
-
-//! Project
 #include "atomicdex/models/qt.orderbook.model.hpp"
 #include "atomicdex/models/qt.orderbook.proxy.model.hpp"
 #include "atomicdex/pages/qt.portfolio.page.hpp"
@@ -137,15 +134,14 @@ namespace atomic_dex
     bool
     orderbook_proxy_model::filterAcceptsRow(int source_row, const QModelIndex& source_parent) const
     {
-        //SPDLOG_DEBUG("orderbook_proxy_model::filterAcceptsRow");
         [[maybe_unused]] QModelIndex idx = this->sourceModel()->index(source_row, 0, source_parent);
         assert(this->sourceModel()->hasIndex(idx.row(), 0));
         auto* orderbook = qobject_cast<orderbook_model*>(this->sourceModel());
 
         if (orderbook != nullptr)
         {
-            switch (orderbook->get_orderbook_kind())
-            {
+          switch (orderbook->get_orderbook_kind())
+          {
             case orderbook_model::kind::asks:
                 break;
             case orderbook_model::kind::bids:
@@ -173,10 +169,10 @@ namespace atomic_dex
                 {
                     return false;
                 }
-
                 return true;
             }
+          }
+          return QSortFilterProxyModel::filterAcceptsRow(source_row, source_parent);
         }
-        return QSortFilterProxyModel::filterAcceptsRow(source_row, source_parent);
     }
 } // namespace atomic_dex
