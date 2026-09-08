@@ -172,7 +172,7 @@ namespace atomic_dex
                 return true;
             }
           }
-          return QSortFilterProxyModel::filterAcceptsRow(source_row, source_parent);
         }
+        return QSortFilterProxyModel::filterAcceptsRow(source_row, source_parent);
     }
 } // namespace atomic_dex
