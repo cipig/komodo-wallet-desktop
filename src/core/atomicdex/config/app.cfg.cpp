@@ -73,7 +73,8 @@ namespace atomic_dex
         j.at("notification_enabled").get_to(config.notification_enabled);
         j.at("available_fiat").get_to(config.available_fiat);
 
-        config.available_fiat_fast_set.assign(config.available_fiat.begin(), config.available_fiat.end());
+        config.available_fiat_fast_set.clear();
+        config.available_fiat_fast_set.insert(config.available_fiat.begin(), config.available_fiat.end());
 
         if (j.contains("spamfilter_enabled"))
         {
