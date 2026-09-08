@@ -129,7 +129,6 @@ namespace atomic_dex
                 auto&& [prev_balance, new_balance, is_change_b] = update_value(BalanceRole, balance, idx, *this);
                 const QString display                           = QString::fromStdString(coin.ticker) + " (" + balance + ")";
                 update_value(Display, display, idx, *this);
-                // Not a good way to trigger notification, use websocket instead in the future. New was of enabling coins is not compatible.
                 if (is_change_b)
                 {
                     balance_update_handler(prev_balance.toString(), new_balance.toString(), QString::fromStdString(ticker));
@@ -137,8 +136,7 @@ namespace atomic_dex
                 QJsonArray trend = nlohmann_json_array_to_qt_json_array(provider.get_ticker_historical(ticker));
                 update_value(Trend7D, trend, idx, *this);
         
-                auto        coin_info          = kdf_system.get_coin_info(ticker);
-                QJsonObject status = nlohmann_json_object_to_qt_json_object(coin_info.activation_status);
+                QJsonObject status = nlohmann_json_object_to_qt_json_object(coin.activation_status);
                 update_value(ActivationStatus, status, idx, *this);
             }
         }
@@ -164,7 +162,7 @@ namespace atomic_dex
             {
                 const auto&        kdf_system    = this->m_system_manager.get_system<kdf_service>();
                 const auto*        global_cfg    = this->m_system_manager.get_system<portfolio_page>().get_global_cfg();
-                const auto         coin          = global_cfg->get_coin_info(ticker);
+                const auto&        coin          = global_cfg->get_coin_info(ticker);
                 const auto&        price_service = this->m_system_manager.get_system<global_price_service>();
                 const auto&        provider      = this->m_system_manager.get_system<komodo_prices_provider>();
                 std::error_code    ec;
@@ -389,19 +387,14 @@ namespace atomic_dex
             if (not res.empty())
             {
                 int row = res.at(0).row();
-                SPDLOG_INFO("Removing coin: {} at row {}", coin.toStdString(), row);
-
                 this->beginRemoveRows(QModelIndex(), row, row);
                 this->m_model_data.removeAt(row);
                 this->endRemoveRows();
-
-                SPDLOG_INFO("After remove - m_model_data.count(): {}", m_model_data.count());
             }
             else {
                 SPDLOG_ERROR("res.empty in portfolio_model::disable_coins for coin: {}", coin.toStdString());
             }
         }
-
         emit lengthChanged();
         m_model_proxy->reset();
     }

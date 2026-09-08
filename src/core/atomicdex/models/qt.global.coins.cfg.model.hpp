@@ -16,19 +16,12 @@
 
 #pragma once
 
-//! Qt
 #include <QAbstractListModel>
-
-//! Absl
 // TODO: When absl fix std::result_of switch to flat_hash_map
 #include <unordered_map>
 //#include <absl/container/flat_hash_map.h>
-
-//! Deps
 #include <entt/config/config.h>
 #include <entt/entity/registry.hpp>
-
-//! Project Headers
 #include "atomicdex/config/coins.cfg.hpp"
 #include "atomicdex/models/qt.global.coins.cfg.proxy.filter.model.hpp"
 
@@ -75,7 +68,8 @@ namespace atomic_dex
 
         // Getters/Setters
         [[nodiscard]] const std::vector<coin_config_t>& get_model_data() const;
-        [[nodiscard]] coin_config_t                     get_coin_info(const std::string& ticker) const;
+        [[nodiscard]] const coin_config_t&            get_coin_info(const std::string& ticker) const;
+        [[nodiscard]] bool                            is_wallet_only(const std::string& ticker) const;
         [[nodiscard]] t_enabled_coins_registry        get_enabled_coins() const;
         [[nodiscard]] global_coins_cfg_proxy_model*   get_all_disabled_proxy() const;
         [[nodiscard]] global_coins_cfg_proxy_model*   get_all_proxy() const;
@@ -97,6 +91,7 @@ namespace atomic_dex
         [[nodiscard]] Q_INVOKABLE QVariant    get_coin_info(const QString& ticker) const;
         [[nodiscard]] Q_INVOKABLE QString     get_parent_coin(const QString& ticker) const;
         [[nodiscard]] Q_INVOKABLE bool        is_coin_type(const QString& ticker) const;      // Tells if the given string is a valid coin type (e.g. QRC-20)
+        [[nodiscard]] Q_INVOKABLE bool        is_coin_enabled(const QString& ticker) const;
 
         // QML API properties
         Q_PROPERTY(global_coins_cfg_proxy_model* all_disabled_proxy    READ get_all_disabled_proxy    NOTIFY all_disabled_proxyChanged)

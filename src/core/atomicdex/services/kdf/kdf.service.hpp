@@ -235,7 +235,7 @@ namespace atomic_dex
        [[nodiscard]] t_coins get_active_coins() const;
 
        //! Get Specific info about one coin
-       [[nodiscard]] coin_config_t get_coin_info(const std::string& ticker) const;
+       [[nodiscard]] const coin_config_t& get_coin_info(const std::string& ticker) const;
 
        //! Check if tx_history v2 is required
        [[nodiscard]] bool uses_task_activation(const coin_config_t& coin_info) const;    

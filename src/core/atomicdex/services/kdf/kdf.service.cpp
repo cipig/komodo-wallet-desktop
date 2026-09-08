@@ -1690,14 +1690,16 @@ namespace atomic_dex
         return true;
     }
 
-    coin_config_t kdf_service::get_coin_info(const std::string& ticker) const
+    const coin_config_t& kdf_service::get_coin_info(const std::string& ticker) const
     {
         std::shared_lock lock(m_coin_cfg_mutex);
-        if (m_coins_informations.find(ticker) == m_coins_informations.cend())
+        auto it = m_coins_informations.find(ticker);
+        if (it == m_coins_informations.cend())
         {
-            return {};
+            static const coin_config_t empty_cfg{};
+            return empty_cfg;
         }
-        return m_coins_informations.at(ticker);
+        return it->second;
     }
     
     // TODO atomic_defi_design/Dex/Addressbook/Main.qml

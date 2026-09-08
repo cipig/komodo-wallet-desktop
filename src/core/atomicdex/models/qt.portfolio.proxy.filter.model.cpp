@@ -107,7 +107,7 @@ namespace atomic_dex
             }
         }
 
-        if (am_i_a_market_selector && m_system_mgr.get_system<portfolio_page>().get_global_cfg()->get_coin_info(ticker.toStdString()).wallet_only)
+        if (am_i_a_market_selector && m_system_mgr.get_system<portfolio_page>().get_global_cfg()->is_wallet_only(ticker.toStdString()))
         {
             return false;
         }

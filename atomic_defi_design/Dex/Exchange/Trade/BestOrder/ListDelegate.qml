@@ -1,9 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
-
 import "../../../Qaterial" as Qaterial
-
 import "../../../Components"
 import "../../../Constants"
 import App 1.0 as App
@@ -14,7 +12,7 @@ import AtomicDEX.MarketMode 1.0
 Item
 {
     id: _control
-    property bool _isCoinEnabled: API.app.portfolio_pg.global_cfg_mdl.get_coin_info(coin).is_enabled
+    property bool _isCoinEnabled: API.app.portfolio_pg.global_cfg_mdl.is_coin_enabled(coin)
     property bool isAsk
 
     AnimatedRectangle
@@ -162,7 +160,7 @@ Item
 
         onClicked:
         {
-            if (!API.app.portfolio_pg.global_cfg_mdl.get_coin_info(coin).is_enabled)
+            if (!API.app.portfolio_pg.global_cfg_mdl.is_coin_enabled(coin))
             {
                 _tooltip.open()
             }

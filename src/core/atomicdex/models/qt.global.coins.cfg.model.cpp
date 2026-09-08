@@ -14,12 +14,9 @@
  *                                                                            *
  ******************************************************************************/
 
-//! Qt Headers
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QSettings>
-
-//! Project Headers
 #include "atomicdex/models/qt.global.coins.cfg.model.hpp"
 #include "atomicdex/utilities/qt.utilities.hpp"
 
@@ -374,16 +371,50 @@ namespace atomic_dex
         return m_model_data;
     }
 
-    coin_config_t
-    global_coins_cfg_model::get_coin_info(const std::string& ticker) const 
+    bool
+    global_coins_cfg_model::is_coin_enabled(const QString& ticker) const
     {
-        if (const auto res = this->match(this->index(0, 0), TickerRole, QString::fromStdString(ticker), 1, Qt::MatchFlag::MatchExactly); not res.isEmpty())
+        return m_enabled_coins.contains(ticker.toStdString());
+    }
+
+    bool
+    global_coins_cfg_model::is_wallet_only(const std::string& ticker) const
+    {
+        auto it = m_enabled_coins.find(ticker);
+        if (it != m_enabled_coins.end())
         {
-            const QModelIndex& idx  = res.at(0);
-            const coin_config_t& item = m_model_data.at(idx.row());
-            return item;
+            return it->second.wallet_only;
         }
-        return {};
+
+        for (const auto& item : m_model_data)
+        {
+            if (item.ticker == ticker)
+            {
+                return item.wallet_only;
+            }
+        }
+        return false;
+    }
+
+    const coin_config_t&
+    global_coins_cfg_model::get_coin_info(const std::string& ticker) const
+    {
+        auto it = m_enabled_coins.find(ticker);
+        if (it != m_enabled_coins.end())
+        {
+            return it->second;
+        }
+
+        for (const auto& item : m_model_data)
+        {
+            if (item.ticker == ticker)
+            {
+                return item;
+            }
+        }
+
+        static const coin_config_t empty_cfg{};
+        return empty_cfg;
     }
 
     global_coins_cfg_model::t_enabled_coins_registry
