@@ -395,6 +395,7 @@ namespace atomic_dex
             }
         }
         emit lengthChanged();
+        m_model_proxy->reset();
     }
 
     int

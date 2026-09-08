@@ -575,7 +575,6 @@ namespace atomic_dex
         get_dispatcher().sink<coin_fully_initialized>().connect<&application::on_coin_fully_initialized_event>(*this);
         get_dispatcher().sink<kdf_initialized>().connect<&application::on_kdf_initialized_event>(*this);
         get_dispatcher().sink<process_swaps_and_orders_finished>().connect<&application::on_process_orders_and_swaps_finished_event>(*this);
-        // get_dispatcher().sink<process_swaps_finished>().connect<&application::on_process_swaps_finished_event>(*this);
     }
 
     void application::set_qt_app(std::shared_ptr<QApplication> app, QQmlApplicationEngine* engine)
@@ -675,15 +674,6 @@ namespace atomic_dex
 //! Orders
 namespace atomic_dex
 {
-    /*void
-    application::on_process_swaps_finished_event([[maybe_unused]] const process_swaps_finished& evt)
-    {
-        if (not m_event_actions[events_action::about_to_exit_app])
-        {
-            this->m_actions_queue.push(action::post_process_swaps_finished);
-        }
-    }*/
-
     void
     application::on_process_orders_and_swaps_finished_event([[maybe_unused]] const process_swaps_and_orders_finished& evt)
     {
