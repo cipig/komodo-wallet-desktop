@@ -82,7 +82,7 @@ namespace atomic_dex
             {
                 const auto  coin         = m_model_data.at(index.row()).rel_coin.value();
                 const auto& portfolio_pg = m_system_mgr.get_system<portfolio_page>();
-                const auto  cfg          = portfolio_pg.get_global_cfg()->get_coin_info(coin);
+                const auto& cfg          = portfolio_pg.get_global_cfg()->get_coin_info(coin);
                 return QString::fromStdString(coin + cfg.name);
             }
             return QString::fromStdString(m_model_data.at(index.row()).coin);
@@ -212,7 +212,7 @@ namespace atomic_dex
         case HaveCEXIDRole:
         {
             const auto* global_cfg = m_system_mgr.get_system<portfolio_page>().get_global_cfg();
-            auto        infos      = global_cfg->get_coin_info(data(index, CoinRole).toString().toStdString());
+            const auto& infos      = global_cfg->get_coin_info(data(index, CoinRole).toString().toStdString());
             return infos.coingecko_id != "test-coin" || infos.coinpaprika_id != "test-coin";
         }
         }

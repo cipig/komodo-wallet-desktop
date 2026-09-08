@@ -151,26 +151,24 @@ namespace atomic_dex
             case orderbook_model::kind::bids:
                 break;
             case orderbook_model::kind::best_orders:
-                std::string ticker              = this->sourceModel()->data(idx, orderbook_model::CoinRole).toString().toStdString();
-                const auto  coin_info           = this->m_system_mgr.get_system<portfolio_page>().get_global_cfg()->get_coin_info(ticker);
-                std::string left_ticker         = this->m_system_mgr.get_system<trading_page>().get_market_pairs_mdl()->get_left_selected_coin().toStdString();
-                const auto  left_coin_info      = this->m_system_mgr.get_system<portfolio_page>().get_global_cfg()->get_coin_info(left_ticker);
-                t_float_50  fiat_price          = safe_float(this->sourceModel()->data(idx, orderbook_model::PriceFiatRole).toString().toStdString());
+            {
+                const std::string left_ticker = this->m_system_mgr.get_system<trading_page>().get_market_pairs_mdl()->get_left_selected_coin().toStdString();
+                const auto& left_coin_info = this->m_system_mgr.get_system<portfolio_page>().get_global_cfg()->get_coin_info(left_ticker);
+                const bool is_left_testnet = left_coin_info.is_testnet.value_or(false);
+                const std::string ticker = this->sourceModel()->data(idx, orderbook_model::CoinRole).toString().toStdString();
+                const auto& coin_info = this->m_system_mgr.get_system<portfolio_page>().get_global_cfg()->get_coin_info(ticker);
 
-                if (coin_info.ticker.empty() || coin_info.wallet_only) //< this means it's not present in our cfg - skipping
+                if (coin_info.ticker.empty() || coin_info.wallet_only)
                 {
                     return false;
                 }
 
-                if (left_coin_info.is_testnet.value_or(false))
+                if (is_left_testnet)
                 {
-                    if (coin_info.is_testnet.value_or(false))
-                    {
-                        return true;
-                    }
-                    return false;
+                    return coin_info.is_testnet.value_or(false);
                 }
 
+                t_float_50 fiat_price = safe_float(this->sourceModel()->data(idx, orderbook_model::PriceFiatRole).toString().toStdString());
                 if (fiat_price <= 0)
                 {
                     return false;
@@ -179,8 +177,6 @@ namespace atomic_dex
                 return true;
             }
         }
-
         return QSortFilterProxyModel::filterAcceptsRow(source_row, source_parent);
     }
-
 } // namespace atomic_dex

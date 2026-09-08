@@ -55,7 +55,7 @@ namespace atomic_dex
         //spdlog::stopwatch sw; using namespace std::chrono;
         auto& kdf              = m_system_manager.get_system<kdf_service>();
         auto  global_coins_cfg = m_system_manager.get_system<portfolio_page>().get_global_cfg();
-        auto  ticker_info      = global_coins_cfg->get_coin_info(kdf.get_current_ticker());
+        const auto& ticker_info = global_coins_cfg->get_coin_info(kdf.get_current_ticker());
 
         m_send_available                   = true;
         m_send_availability_state          = "";
@@ -69,7 +69,7 @@ namespace atomic_dex
         }
         else if (ticker_info.has_parent_fees_ticker)
         {
-            auto parent_ticker_info = global_coins_cfg->get_coin_info(ticker_info.fees_ticker);
+            const auto& parent_ticker_info = global_coins_cfg->get_coin_info(ticker_info.fees_ticker);
 
             if (!parent_ticker_info.currently_enabled)
             {
@@ -107,7 +107,7 @@ namespace atomic_dex
     void wallet_page::set_current_ticker(const QString& ticker, bool force)
     {
         auto& kdf_system = m_system_manager.get_system<kdf_service>();
-        auto  coin_info  = kdf_system.get_coin_info(ticker.toStdString());
+        const auto& coin_info = kdf_system.get_coin_info(ticker.toStdString());
         if (kdf_system.set_current_ticker(ticker.toStdString()) || force)
         {
             m_transactions_mdl->reset();
@@ -516,7 +516,7 @@ namespace atomic_dex
         nlohmann::json     batch      = nlohmann::json::array();
         auto&              kdf_system = m_system_manager.get_system<kdf_service>();
         const auto&        ticker     = kdf_system.get_current_ticker();
-        auto               coin_info  = kdf_system.get_coin_info(ticker);
+        const auto&        coin_info  = kdf_system.get_coin_info(ticker);
 
         // Sia's withdraw is a plain, synchronous MmCoin::withdraw on the KDF
         // side (mm2src/coins/siacoin/siacoin_mm_coin.rs) with no task-based

@@ -220,20 +220,21 @@ namespace atomic_dex
 
         for (auto&& ticker: tickers)
         {
-            QString final_ticker = "";
-
-            if constexpr (std::is_same_v<std::string, std::decay_t<decltype(ticker)>>)
-            {
-                final_ticker = QString::fromStdString(ticker);
-            }
-            else if constexpr (std::is_same_v<QString, std::decay_t<decltype(ticker)>>)
-            {
-                final_ticker = ticker;
+            std::string target_ticker;
+            if constexpr (std::is_same_v<std::string, std::decay_t<decltype(ticker)>>) {
+                target_ticker = ticker;
+            } else if constexpr (std::is_same_v<QString, std::decay_t<decltype(ticker)>>) {
+                target_ticker = ticker.toStdString();
             }
 
-            if (const auto res = this->match(this->index(0, 0), TickerRole, final_ticker, 1, Qt::MatchFlag::MatchExactly); not res.isEmpty())
+            for (size_t row = 0; row < m_model_data.size(); ++row)
             {
-                update_functor(res, final_ticker);
+                if (m_model_data[row].ticker == target_ticker)
+                {
+                    QModelIndex idx = this->index(static_cast<int>(row), 0);
+                    update_functor({idx}, QString::fromStdString(target_ticker));
+                    break;
+                }
             }
         }
     }

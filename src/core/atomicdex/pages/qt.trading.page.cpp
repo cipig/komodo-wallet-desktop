@@ -1408,15 +1408,15 @@ namespace atomic_dex
         const auto        regular_min_taker_vol    = m_market_mode == MarketMode::Sell ? get_min_trade_vol().toStdString() : rel_min_taker_vol;
         const auto&       cur_min_taker_vol        = get_min_trade_vol().toStdString();
         const auto&       kdf                      = m_system_manager.get_system<kdf_service>();
-        const auto        left_cfg                 = kdf.get_coin_info(left);
-        const auto        right_cfg                = kdf.get_coin_info(right);
+        const auto&       left_cfg                 = kdf.get_coin_info(left);
+        const auto&       right_cfg                = kdf.get_coin_info(right);
         const bool        has_preferred_order      = m_preferred_order.has_value();
         const bool        is_selected_min_max =
             has_preferred_order && m_preferred_order->at("base_min_volume").get<std::string>() == m_preferred_order->at("base_max_volume").get<std::string>();
         
         if (left_cfg.has_parent_fees_ticker && left_cfg.ticker != "QTUM")
         {
-            const auto left_fee_cfg = kdf.get_coin_info(left_cfg.fees_ticker);
+            const auto&       left_fee_cfg             = kdf.get_coin_info(left_cfg.fees_ticker);
             if (!left_fee_cfg.currently_enabled)
             {
                 current_trading_error = TradingError::LeftParentChainNotEnabled;
@@ -1428,7 +1428,7 @@ namespace atomic_dex
         }
         else if (right_cfg.has_parent_fees_ticker && right_cfg.ticker != "QTUM")
         {
-            const auto right_fee_cfg = kdf.get_coin_info(right_cfg.fees_ticker);
+            const auto&       right_fee_cfg            = kdf.get_coin_info(right_cfg.fees_ticker);
             if (!right_fee_cfg.currently_enabled)
             {
                 current_trading_error = TradingError::RightParentChainNotEnabled;

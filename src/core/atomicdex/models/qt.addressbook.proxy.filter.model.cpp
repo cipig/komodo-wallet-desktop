@@ -90,18 +90,22 @@ namespace atomic_dex
             if (!contact) return false;
 
             const auto& addresses = contact->get_address_entries();
+            const std::string filter_type_std = m_type_filter.toStdString();
+            const std::string filter_coin_family = glb_coins_cfg->get_coin_info(filter_type_std).type;
+            const bool is_filter_a_coin_type = glb_coins_cfg->is_coin_type(m_type_filter);
 
-            auto it = std::find_if(addresses.begin(), addresses.end(), [this, &glb_coins_cfg](const auto& address)
+            auto it = std::find_if(addresses.begin(), addresses.end(),
+                [this, &glb_coins_cfg, &filter_type_std, &filter_coin_family, is_filter_a_coin_type](const auto& address)
                 {
                     if (glb_coins_cfg->is_coin_type(address.type))
                     {
                         return address.type == m_type_filter ||
-                               glb_coins_cfg->get_coin_info(m_type_filter.toStdString()).type == address.type.toStdString();
+                               filter_coin_family == address.type.toStdString();
                     }
-                    if (glb_coins_cfg->is_coin_type(m_type_filter))
+                    if (is_filter_a_coin_type)
                     {
                         return address.type == m_type_filter ||
-                               glb_coins_cfg->get_coin_info(address.type.toStdString()).type == m_type_filter.toStdString();
+                               glb_coins_cfg->get_coin_info(address.type.toStdString()).type == filter_type_std;
                     }
                     return address.type == m_type_filter;
                 });

@@ -41,11 +41,12 @@ namespace atomic_dex
         if (!m_filter_type.isEmpty())
         {
             const auto& glb_coins_cfg = m_system_manager.get_system<portfolio_page>().get_global_cfg();
+            const std::string filter_type_std = m_filter_type.toStdString();
 
             if (glb_coins_cfg->is_coin_type(m_filter_type))
             {
                 if (m_filter_type != address_type &&
-                    glb_coins_cfg->get_coin_info(address_type.toStdString()).type != m_filter_type.toStdString())
+                    glb_coins_cfg->get_coin_info(address_type.toStdString()).type != filter_type_std)
                 {
                     return false;
                 }
@@ -53,7 +54,7 @@ namespace atomic_dex
             else if (glb_coins_cfg->is_coin_type(address_type))
             {
                 if (m_filter_type != address_type &&
-                    glb_coins_cfg->get_coin_info(m_filter_type.toStdString()).type != address_type.toStdString())
+                    glb_coins_cfg->get_coin_info(filter_type_std).type != address_type.toStdString())
                 {
                     return false;
                 }

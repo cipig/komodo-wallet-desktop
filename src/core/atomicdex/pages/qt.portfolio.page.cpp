@@ -14,10 +14,8 @@
  *                                                                            *
  ******************************************************************************/
 
-//! Qt
 #include <QSettings>
-
-//! Project Headers
+#include <QSignalBlocker>
 #include "atomicdex/pages/qt.portfolio.page.hpp"
 #include "atomicdex/pages/qt.settings.page.hpp"
 #include "atomicdex/pages/qt.wallet.page.hpp"
@@ -76,7 +74,19 @@ namespace atomic_dex
         bool res = true;
         if (evt.with_update_model)
         {
-            res = m_portfolio_mdl->update_currency_values();
+            {
+                QSignalBlocker blocker(m_portfolio_mdl);
+                if (auto* proxy = m_portfolio_mdl->get_portfolio_proxy_mdl()) {
+                    proxy->setDynamicSortFilter(false);
+                }
+                res = m_portfolio_mdl->update_currency_values();
+            }
+
+            if (auto* proxy = m_portfolio_mdl->get_portfolio_proxy_mdl()) {
+                proxy->setDynamicSortFilter(true);
+                proxy->invalidate();
+            }
+
             m_system_manager.get_system<wallet_page>().refresh_ticker_infos();
         }
 

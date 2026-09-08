@@ -32,7 +32,6 @@ main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 #endif
 
     int res = 0;
-    //! run app
     try
     {
         res = run_app(argc, argv);

@@ -71,6 +71,9 @@ namespace atomic_dex
         j.at("available_signs").get_to(config.available_currency_signs);
         j.at("current_fiat_sign").get_to(config.current_fiat_sign);
         j.at("notification_enabled").get_to(config.notification_enabled);
+        j.at("available_fiat").get_to(config.available_fiat);
+
+        config.available_fiat_fast_set.assign(config.available_fiat.begin(), config.available_fiat.end());
 
         if (j.contains("spamfilter_enabled"))
         {
@@ -168,7 +171,7 @@ namespace atomic_dex
     bool
     is_this_currency_a_fiat(const cfg& config, const std::string& currency)
     {
-        return std::find(config.available_fiat.begin(), config.available_fiat.end(), currency) != config.available_fiat.end();
+        return config.available_fiat_fast_set.contains(currency);
     }
 
     void
