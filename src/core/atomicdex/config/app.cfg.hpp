@@ -16,7 +16,10 @@
 
 #pragma once
 
-//! Deps
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include <unordered_set>
 #include <nlohmann/json_fwd.hpp>
 
 namespace atomic_dex
