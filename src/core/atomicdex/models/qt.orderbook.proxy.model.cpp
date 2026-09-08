@@ -89,31 +89,32 @@ namespace atomic_dex
             break;
         case orderbook_model::CEXRatesRole:
         {
-            t_float_50 left   = safe_float(left_data.toString().toStdString());
-            t_float_50 right  = safe_float(right_data.toString().toStdString());
+            // FAST PATH: Extract native primitives to completely bypass string parsing
+            t_float_50 left, right;
+
+            if (left_data.userType() == QMetaType::QString) {
+                left = safe_float(left_data.toString().toStdString());
+            } else {
+                left = t_float_50(left_data.toDouble());
+            }
+
+            if (right_data.userType() == QMetaType::QString) {
+                right = safe_float(right_data.toString().toStdString());
+            } else {
+                right = t_float_50(right_data.toDouble());
+            }
+
             const bool is_buy = this->m_system_mgr.get_system<trading_page>().get_market_mode() == MarketMode::Buy;
             if (!is_buy)
             {
-                if (left.is_zero()) //< NA
-                {
-                    return true;
-                }
-                if (right.is_zero())
-                {
-                    return false;
-                }
+                if (left.is_zero()) return true;
+                if (right.is_zero()) return false;
                 return left > right;
             }
             else
             {
-                if (left.is_zero())
-                {
-                    return false;
-                }
-                if (right.is_zero())
-                {
-                    return true;
-                }
+                if (left.is_zero()) return false;
+                if (right.is_zero()) return true;
                 return left < right;
             }
         }
@@ -124,9 +125,24 @@ namespace atomic_dex
         case orderbook_model::NameAndTicker:
             break;
         case orderbook_model::PriceFiatRole:
-            t_float_50 left  = safe_float(left_data.toString().toStdString());
-            t_float_50 right = safe_float(right_data.toString().toStdString());
+        {
+            // FAST PATH: Scope block addition handles zero-allocation numeric sorting
+            t_float_50 left, right;
+
+            if (left_data.userType() == QMetaType::QString) {
+                left = safe_float(left_data.toString().toStdString());
+            } else {
+                left = t_float_50(left_data.toDouble());
+            }
+
+            if (right_data.userType() == QMetaType::QString) {
+                right = safe_float(right_data.toString().toStdString());
+            } else {
+                right = t_float_50(right_data.toDouble());
+            }
+
             return left < right;
+        }
         }
         return true;
     }

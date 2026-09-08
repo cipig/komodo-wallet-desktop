@@ -107,7 +107,6 @@ namespace atomic_dex
     void wallet_page::set_current_ticker(const QString& ticker, bool force)
     {
         auto& kdf_system = m_system_manager.get_system<kdf_service>();
-        const auto& coin_info = kdf_system.get_coin_info(ticker.toStdString());
         if (kdf_system.set_current_ticker(ticker.toStdString()) || force)
         {
             m_transactions_mdl->reset();
