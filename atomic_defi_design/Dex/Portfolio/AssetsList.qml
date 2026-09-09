@@ -121,8 +121,8 @@ Dex.DefaultListView
 
         width: list.width
         height: _assetRowHeight
-        //color: mouseArea.containsMouse ? Dex.CurrentTheme.listItemHoveredBackground : _idleColor
-        color: _idleColor
+        color: mouseArea.containsMouse ? Dex.CurrentTheme.listItemHoveredBackground : _idleColor
+        //color: _idleColor
 
         RowLayout
         {
@@ -232,7 +232,7 @@ Dex.DefaultListView
                 horizontalAlignment: Text.AlignRight
                 verticalAlignment: Text.AlignVCenter
                 text_value: model.change_24h === "0.000" ? '-' : model.change_24h + " %"
-                color: parseFloat(model.change_24h) < 0 ? Dex.DexTheme.errorColor : Dex.DexTheme.okColor
+                color: parseFloat(model.change_24h) < 0 ? Dex.DexTheme.warningColor : Dex.DexTheme.okColor
             }
 
             Dex.DexLabel // Price Column
@@ -269,7 +269,7 @@ Dex.DefaultListView
         {
             id: mouseArea
             anchors.fill: parent
-            hoverEnabled: false
+            hoverEnabled: true
             acceptedButtons: Qt.LeftButton | Qt.RightButton
 
             onClicked:
