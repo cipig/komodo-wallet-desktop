@@ -114,6 +114,10 @@ namespace
         {
             return CoinType::Moonbeam;
         }
+        if (coin_type == "Plasma")
+        {
+            return CoinType::Plasma;
+        }
         if (coin_type == "SmartBCH")
         {
             return CoinType::SmartBCH;
@@ -375,6 +379,11 @@ namespace atomic_dex
         case CoinType::KRC20:
             cfg.has_parent_fees_ticker = true;
             cfg.fees_ticker            = cfg.is_testnet.value_or(false) ? "KCST" : "KCS";
+            cfg.is_erc_family          = true;
+            break;
+        case CoinType::Plasma:
+            cfg.has_parent_fees_ticker = true;
+            cfg.fees_ticker            = "XPL";
             cfg.is_erc_family          = true;
             break;
         case CoinType::Mantle:

@@ -57,10 +57,11 @@ namespace atomic_dex
             Bittensor       = 25,
             HyperEVM        = 26,
             Mantle          = 27,
-            Disabled        = 28,
-            Invalid         = 29,
-            All             = 30,
-            Size            = 31
+            Plasma          = 28,
+            Disabled        = 29,
+            Invalid         = 30,
+            All             = 31,
+            Size            = 32
         };
 
         Q_ENUM(CoinTypeEnum)

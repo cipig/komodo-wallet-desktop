@@ -595,6 +595,7 @@ namespace atomic_dex
                 case CoinType::HyperEVM:
                 case CoinType::Mantle:
                 case CoinType::Optimism:
+                case CoinType::Plasma:
                     evm_chain_groups[coin_cfg.parent_coin].push_back(coin_cfg);
                     break;
 
