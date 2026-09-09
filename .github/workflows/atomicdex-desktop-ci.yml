@@ -229,9 +229,9 @@ jobs:
       # archive has already superseded and the download 404s. cache-apt-pkgs-action
       # swallows that and still reports success, leaving the job with nothing
       # installed until vcpkg fails opaquely much later.
-      - name: Refresh apt index (Linux)
-        if: runner.os == 'Linux'
-        run: sudo apt-get update
+      #- name: Refresh apt index (Linux)
+      #  if: runner.os == 'Linux'
+      #  run: sudo apt-get update
 
       - name: Install apt deps (Linux)
         if: runner.os == 'Linux'
