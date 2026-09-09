@@ -1,9 +1,6 @@
 #pragma once
 
-//! QGadget
 #include <QObject>
-
-//! Deps
 #include <entt/config/config.h>
 
 namespace atomic_dex

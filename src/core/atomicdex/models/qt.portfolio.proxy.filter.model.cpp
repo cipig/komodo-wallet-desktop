@@ -14,7 +14,7 @@
  *                                                                            *
  ******************************************************************************/
 
-//! Project Headers
+#include <QtMath>
 #include "atomicdex/models/qt.portfolio.proxy.filter.model.hpp"
 #include "atomicdex/models/qt.portfolio.model.hpp"
 #include "atomicdex/pages/qt.portfolio.page.hpp"
@@ -27,19 +27,34 @@ namespace atomic_dex
     {
     }
 
-    //! Override member functions
     bool
     portfolio_proxy_model::lessThan(const QModelIndex& source_left, const QModelIndex& source_right) const
     {
         int      role       = this->sortRole();
         QVariant left_data  = sourceModel()->data(source_left, role);
         QVariant right_data = sourceModel()->data(source_right, role);
+
         switch (static_cast<atomic_dex::portfolio_model::PortfolioRoles>(role))
         {
         case atomic_dex::portfolio_model::TickerRole:
             return left_data.toString() > right_data.toString();
         case atomic_dex::portfolio_model::NameRole:
             return left_data.toString().toLower() < right_data.toString().toLower();
+        case atomic_dex::portfolio_model::RawMainCurrencyBalanceRole:
+        {
+            double left_val = left_data.toDouble();
+            double right_val = right_data.toDouble();
+            if (qFuzzyCompare(left_val, right_val) || left_val == right_val)
+            {
+                left_val = sourceModel()->data(source_left, atomic_dex::portfolio_model::RawBalanceRole).toDouble();
+                right_val = sourceModel()->data(source_right, atomic_dex::portfolio_model::RawBalanceRole).toDouble();
+            }
+            return left_val < right_val;
+        }
+        case atomic_dex::portfolio_model::RawBalanceRole:
+        case atomic_dex::portfolio_model::RawChange24HRole:
+        case atomic_dex::portfolio_model::RawMainCurrencyPriceRole:
+            return left_data.toDouble() < right_data.toDouble();
         case atomic_dex::portfolio_model::BalanceRole:
             return safe_float(left_data.toString().toStdString()) < safe_float(right_data.toString().toStdString());
         case atomic_dex::portfolio_model::MainCurrencyBalanceRole:
@@ -71,6 +86,7 @@ namespace atomic_dex
         case portfolio_model::PercentMainCurrency:
         case portfolio_model::PriceProvider:
         case portfolio_model::LastPriceTimestamp:
+        default:
             return false;
         }
     }
@@ -170,21 +186,21 @@ namespace atomic_dex
     void
     portfolio_proxy_model::sort_by_currency_balance(bool is_ascending)
     {
-        this->setSortRole(atomic_dex::portfolio_model::MainCurrencyBalanceRole);
+        this->setSortRole(atomic_dex::portfolio_model::RawMainCurrencyBalanceRole);
         this->sort(0, is_ascending ? Qt::AscendingOrder : Qt::DescendingOrder);
     }
 
     void
     portfolio_proxy_model::sort_by_change_last24h(bool is_ascending)
     {
-        this->setSortRole(atomic_dex::portfolio_model::Change24H);
+        this->setSortRole(atomic_dex::portfolio_model::RawChange24HRole);
         this->sort(0, is_ascending ? Qt::AscendingOrder : Qt::DescendingOrder);
     }
 
     void
     portfolio_proxy_model::sort_by_currency_unit(bool is_ascending)
     {
-        this->setSortRole(atomic_dex::portfolio_model::MainCurrencyPriceForOneUnit);
+        this->setSortRole(atomic_dex::portfolio_model::RawChange24HRole);
         this->sort(0, is_ascending ? Qt::AscendingOrder : Qt::DescendingOrder);
     }
 

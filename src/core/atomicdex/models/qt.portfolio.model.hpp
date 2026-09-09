@@ -61,7 +61,11 @@ namespace atomic_dex
             PrivKey,                     ///< Priv key
             PercentMainCurrency,
             LastPriceTimestamp,
-            PriceProvider                 // 280
+            PriceProvider,                // 280
+            RawBalanceRole,
+            RawMainCurrencyBalanceRole,
+            RawChange24HRole,
+            RawMainCurrencyPriceRole
         };
         Q_ENUM(PortfolioRoles)
 
@@ -122,4 +126,3 @@ namespace atomic_dex
 
     using t_portfolio_roles = atomic_dex::portfolio_model::PortfolioRoles;
 } // namespace atomic_dex
-

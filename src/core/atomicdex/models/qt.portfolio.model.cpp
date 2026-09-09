@@ -53,6 +53,12 @@ namespace atomic_dex
         }
     }
 
+    double safe_string_to_double(const std::string& str) {
+        if (str.empty()) return 0.0;
+        try { return std::stod(str); }
+        catch (...) { return 0.0; }
+    }
+
     void
     atomic_dex::portfolio_model::initialize_portfolio(const std::vector<std::string>& tickers)
     {
@@ -77,9 +83,7 @@ namespace atomic_dex
             std::string fiat_balance_raw = price_service.get_price_in_fiat(m_config->current_currency, coin.ticker, ec);
             std::string price_raw = price_service.get_rate_conversion(m_config->current_currency, coin.ticker, true);
             std::string fiat_price_raw = price_service.get_rate_conversion(m_config->current_fiat, coin.ticker);
-
-            QString change_24h_raw = retrieve_change_24h(provider, coin, *m_config, m_system_manager);
-            QString formatted_change_24h = format_to_precision(change_24h_raw.toStdString(), 3);
+            QString     change_24h_raw = retrieve_change_24h(provider, coin, *m_config, m_system_manager);
 
             portfolio_data  data{
                 .ticker                           = QString::fromStdString(coin.ticker),
@@ -87,9 +91,13 @@ namespace atomic_dex
                 .name                             = QString::fromStdString(coin.name),
                 .balance                          = format_to_precision(balance_raw, 8),
                 .main_currency_balance            = format_to_precision(fiat_balance_raw, 2),
-                .change_24h                       = formatted_change_24h,
+                .change_24h                       = format_to_precision(change_24h_raw.toStdString(), 3),
                 .main_currency_price_for_one_unit = format_to_precision(price_raw, 8),
                 .main_fiat_price_for_one_unit     = format_to_precision(fiat_price_raw, 2),
+                .raw_balance                      = safe_string_to_double(balance_raw),
+                .raw_main_currency_balance        = safe_string_to_double(fiat_balance_raw),
+                .raw_change_24h                   = safe_string_to_double(change_24h_raw.toStdString()),
+                .raw_main_currency_price          = safe_string_to_double(price_raw),
                 .trend_7d                         = nlohmann_json_array_to_qt_json_array(provider.get_ticker_historical(coin.ticker)),
                 .activation_status                = nlohmann_json_object_to_qt_json_object(coin.activation_status),
                 .price_provider                   = QString::fromStdString(provider.get_price_provider(coin.ticker)),
@@ -302,6 +310,14 @@ namespace atomic_dex
             return item.price_provider;
         case LastPriceTimestamp:
             return item.price_last_timestamp;
+        case RawBalanceRole:
+            return item.raw_balance;
+        case RawMainCurrencyBalanceRole:
+            return item.raw_main_currency_balance;
+        case RawChange24HRole:
+            return item.raw_change_24h;
+        case RawMainCurrencyPriceRole:
+            return item.raw_main_currency_price;
         }
         return {};
     }
@@ -393,6 +409,18 @@ namespace atomic_dex
             break;
         case LastPriceTimestamp:
             item.price_last_timestamp = value.toInt();
+            break;
+        case RawBalanceRole:
+            item.raw_balance = value.toDouble();
+            break;
+        case RawMainCurrencyBalanceRole:
+            item.raw_main_currency_balance = value.toDouble();
+            break;
+        case RawChange24HRole:
+            item.raw_change_24h = value.toDouble();
+            break;
+        case RawMainCurrencyPriceRole:
+            item.raw_main_currency_price = value.toDouble();
             break;
         default:
             return false;

@@ -30,29 +30,22 @@ namespace atomic_dex
 {
     struct portfolio_data
     {
-        //! eg: BTC,ETH,KMD (constant)
         QString ticker;
-
-        //! eg: ERC-20/QRC-20/etc
         QString coin_type;
-
-        //! eg: Bitcoin
         QString name;
 
-        //! eg: 1
+        // GUI Presentation Strings
         QString balance;
-
-        //! eg: 18800 $
         QString main_currency_balance;
-
-        //! eg: +2.4%
         QString change_24h;
-
-        //! eg: 9400 $
         QString main_currency_price_for_one_unit;
-
-        //! eg: Real fiat values eg: 9400$
         QString main_fiat_price_for_one_unit;
+
+        // Raw Numeric Fields for Ultra-Fast Sorting
+        double raw_balance{0.0};
+        double raw_main_currency_balance{0.0};
+        double raw_change_24h{0.0};
+        double raw_main_currency_price{0.0};
 
         //! eg: Komodo data rates
         QJsonArray trend_7d;
