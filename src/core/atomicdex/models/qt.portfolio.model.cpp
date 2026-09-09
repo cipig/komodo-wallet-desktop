@@ -14,6 +14,8 @@
  *                                                                            *
  ******************************************************************************/
 
+#include <iomanip>
+#include <sstream>
 #include <QJSValue>
 #include "atomicdex/events/qt.events.hpp"
 #include "atomicdex/managers/qt.wallet.manager.hpp"
@@ -39,6 +41,18 @@ namespace atomic_dex
         m_model_proxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
     }
 
+    QString format_to_precision(const std::string& raw_val, int precision) {
+        if (raw_val.empty()) return QString::fromStdString("0." + std::string(precision, '0'));
+        try {
+            double val = std::stod(raw_val);
+            std::stringstream stream;
+            stream << std::fixed << std::setprecision(precision) << val;
+            return QString::fromStdString(stream.str());
+        } catch (...) {
+            return QString::fromStdString(raw_val);
+        }
+    }
+
     void
     atomic_dex::portfolio_model::initialize_portfolio(const std::vector<std::string>& tickers)
     {
@@ -53,28 +67,31 @@ namespace atomic_dex
                 continue;
             }
 
-            const auto& kdf_system    = this->m_system_manager.get_system<kdf_service>();
-            const auto& price_service = this->m_system_manager.get_system<global_price_service>();
-            const auto& provider      = this->m_system_manager.get_system<komodo_prices_provider>();
-            const auto& coin          = kdf_system.get_coin_info(ticker);
             std::error_code ec;
-            std::string balance       = kdf_system.get_balance_info(coin.ticker, ec);
-            const QString   change_24h = retrieve_change_24h(provider, coin, *m_config, m_system_manager);
+            std::string balance_raw = kdf_system.get_balance_info(coin.ticker, ec);
+            std::string fiat_balance_raw = price_service.get_price_in_fiat(m_config->current_currency, coin.ticker, ec);
+            std::string price_raw = price_service.get_rate_conversion(m_config->current_currency, coin.ticker, true);
+            std::string fiat_price_raw = price_service.get_rate_conversion(m_config->current_fiat, coin.ticker);
+
+            QString change_24h_raw = retrieve_change_24h(provider, coin, *m_config, m_system_manager);
+            QString formatted_change_24h = format_to_precision(change_24h_raw.toStdString(), 3);
+
             portfolio_data  data{
                 .ticker                           = QString::fromStdString(coin.ticker),
                 .coin_type                        = QString::fromStdString(coin.type),
                 .name                             = QString::fromStdString(coin.name),
-                .balance                          = QString::fromStdString(balance),
-                .main_currency_balance            = QString::fromStdString(price_service.get_price_in_fiat(m_config->current_currency, coin.ticker, ec)),
-                .change_24h                       = change_24h,
-                .main_currency_price_for_one_unit = QString::fromStdString(price_service.get_rate_conversion(m_config->current_currency, coin.ticker, true)),
-                .main_fiat_price_for_one_unit     = QString::fromStdString(price_service.get_rate_conversion(m_config->current_fiat, coin.ticker)),
+                .balance                          = format_to_precision(balance_raw, 8),
+                .main_currency_balance            = format_to_precision(fiat_balance_raw, 2),
+                .change_24h                       = formatted_change_24h,
+                .main_currency_price_for_one_unit = format_to_precision(price_raw, 8),
+                .main_fiat_price_for_one_unit     = format_to_precision(fiat_price_raw, 2),
                 .trend_7d                         = nlohmann_json_array_to_qt_json_array(provider.get_ticker_historical(coin.ticker)),
                 .activation_status                = nlohmann_json_object_to_qt_json_object(coin.activation_status),
                 .price_provider                   = QString::fromStdString(provider.get_price_provider(coin.ticker)),
                 .price_last_timestamp             = static_cast<int>(provider.get_last_price_timestamp(coin.ticker)),
                 .is_excluded                      = false,
                 .public_address                   = QString::fromStdString(kdf_system.address(coin.ticker, ec))};
+
             data.display         = QString::fromStdString(coin.ticker) + " (" + data.balance + ")";
             data.ticker_and_name = QString::fromStdString(coin.ticker) + data.name;
             datas.push_back(std::move(data));
@@ -107,35 +124,39 @@ namespace atomic_dex
                 SPDLOG_WARN("[update_currency_values] ticker: {} not inserted yet in the model, skipping", coin.ticker);
                 return false;
             }
+
             const std::string& ticker = coin.ticker;
             if (const auto res = this->match(this->index(0, 0), TickerRole, QString::fromStdString(ticker), 1, Qt::MatchFlag::MatchExactly);
                 not res.isEmpty())
+
             {
                 std::error_code    ec;
                 const QModelIndex& idx                         = res.at(0);
-                const QString      main_currency_balance_value = QString::fromStdString(price_service.get_price_in_fiat(currency, ticker, ec));
-                update_value(MainCurrencyBalanceRole, main_currency_balance_value, idx, *this);
-                const QString currency_price_for_one_unit = QString::fromStdString(price_service.get_rate_conversion(currency, ticker, true));
-                update_value(MainCurrencyPriceForOneUnit, currency_price_for_one_unit, idx, *this);
-                const QString currency_fiat_for_one_unit = QString::fromStdString(price_service.get_rate_conversion(fiat, ticker, false));
-                update_value(MainFiatPriceForOneUnit, currency_fiat_for_one_unit, idx, *this);
-                const QString price_provider = QString::fromStdString(provider.get_price_provider(ticker));
+                const std::string  main_currency_balance_raw   = price_service.get_price_in_fiat(currency, ticker, ec);
+                update_value(MainCurrencyBalanceRole, format_to_precision(main_currency_balance_raw, 2), idx, *this);
+                const std::string  currency_price_raw          = price_service.get_rate_conversion(currency, ticker, true);
+                update_value(MainCurrencyPriceForOneUnit, format_to_precision(currency_price_raw, 8), idx, *this);
+                const std::string  currency_fiat_raw           = price_service.get_rate_conversion(fiat, ticker, false);
+                update_value(MainFiatPriceForOneUnit, format_to_precision(currency_fiat_raw, 2), idx, *this);
+                const QString      price_provider              = QString::fromStdString(provider.get_price_provider(ticker));
                 update_value(PriceProvider, price_provider, idx, *this);
                 int last_price_timestamp = static_cast<int>(provider.get_last_price_timestamp(ticker));
                 update_value(LastPriceTimestamp, last_price_timestamp, idx, *this);
-                QString change24_h = retrieve_change_24h(provider, coin, *m_config, m_system_manager);
-                update_value(Change24H, change24_h, idx, *this);
-                const QString balance                           = QString::fromStdString(kdf_system.get_balance_info(coin.ticker, ec));
-                auto&& [prev_balance, new_balance, is_change_b] = update_value(BalanceRole, balance, idx, *this);
-                const QString display                           = QString::fromStdString(coin.ticker) + " (" + balance + ")";
+                QString            change24_h_raw              = retrieve_change_24h(provider, coin, *m_config, m_system_manager);
+                update_value(Change24H, format_to_precision(change24_h_raw.toStdString(), 3), idx, *this);
+                const std::string  balance_raw                 = kdf_system.get_balance_info(coin.ticker, ec);
+                QString            formatted_balance           = format_to_precision(balance_raw, 8);
+                auto&& [prev_balance, new_balance, is_change_b] = update_value(BalanceRole, formatted_balance, idx, *this);
+                const QString display = QString::fromStdString(coin.ticker) + " (" + formatted_balance + ")";
                 update_value(Display, display, idx, *this);
+
                 if (is_change_b)
                 {
                     balance_update_handler(prev_balance.toString(), new_balance.toString(), QString::fromStdString(ticker));
                 }
+
                 QJsonArray trend = nlohmann_json_array_to_qt_json_array(provider.get_ticker_historical(ticker));
                 update_value(Trend7D, trend, idx, *this);
-        
                 QJsonObject status = nlohmann_json_object_to_qt_json_object(coin.activation_status);
                 update_value(ActivationStatus, status, idx, *this);
             }
@@ -157,7 +178,7 @@ namespace atomic_dex
                 SPDLOG_WARN("ticker: {} not inserted yet in the model, skipping", ticker);
                 return false;
             }
-            
+
             if (const auto res = this->match(this->index(0, 0), TickerRole, QString::fromStdString(ticker), 1, Qt::MatchFlag::MatchExactly); not res.isEmpty())
             {
                 const auto&        kdf_system    = this->m_system_manager.get_system<kdf_service>();
@@ -165,26 +186,37 @@ namespace atomic_dex
                 const auto&        coin          = global_cfg->get_coin_info(ticker);
                 const auto&        price_service = this->m_system_manager.get_system<global_price_service>();
                 const auto&        provider      = this->m_system_manager.get_system<komodo_prices_provider>();
+
                 std::error_code    ec;
                 const std::string& currency                     = m_config->current_currency;
                 const std::string& fiat                         = m_config->current_fiat;
                 const QModelIndex& idx                          = res.at(0);
-                const QString      balance                      = QString::fromStdString(kdf_system.get_balance_info(ticker, ec));
-                auto&& [prev_balance, new_balance, is_change_b] = update_value(BalanceRole, balance, idx, *this);
-                const QString main_currency_balance_value       = QString::fromStdString(price_service.get_price_in_fiat(currency, ticker, ec));
-                auto&& [_1, _2, is_change_mc]                   = update_value(MainCurrencyBalanceRole, main_currency_balance_value, idx, *this);
-                const QString currency_price_for_one_unit       = QString::fromStdString(price_service.get_rate_conversion(currency, ticker, true));
-                auto&& [_3, _4, is_change_mcpfo]                = update_value(MainCurrencyPriceForOneUnit, currency_price_for_one_unit, idx, *this);
-                const QString currency_fiat_for_one_unit        = QString::fromStdString(price_service.get_rate_conversion(fiat, ticker, false));
-                update_value(MainFiatPriceForOneUnit, currency_fiat_for_one_unit, idx, *this);
+
+                const std::string  balance_raw                  = kdf_system.get_balance_info(ticker, ec);
+                QString            formatted_balance            = format_to_precision(balance_raw, 8);
+                auto&& [prev_balance, new_balance, is_change_b] = update_value(BalanceRole, formatted_balance, idx, *this);
+
+                const std::string  main_currency_balance_raw    = price_service.get_price_in_fiat(currency, ticker, ec);
+                auto&& [_1, _2, is_change_mc]                   = update_value(MainCurrencyBalanceRole, format_to_precision(main_currency_balance_raw, 2), idx, *this);
+
+                const std::string  currency_price_raw           = price_service.get_rate_conversion(currency, ticker, true);
+                auto&& [_3, _4, is_change_mcpfo]                = update_value(MainCurrencyPriceForOneUnit, format_to_precision(currency_price_raw, 8), idx, *this);
+
+                const std::string  currency_fiat_raw            = price_service.get_rate_conversion(fiat, ticker, false);
+                update_value(MainFiatPriceForOneUnit, format_to_precision(currency_fiat_raw, 2), idx, *this);
+
                 const QString price_provider = QString::fromStdString(provider.get_price_provider(ticker));
                 update_value(PriceProvider, price_provider, idx, *this);
+
                 int last_price_timestamp = static_cast<int>(provider.get_last_price_timestamp(ticker));
                 update_value(LastPriceTimestamp, last_price_timestamp, idx, *this);
-                const QString display = QString::fromStdString(ticker) + " (" + balance + ")";
+
+                const QString display = QString::fromStdString(ticker) + " (" + formatted_balance + ")";
                 update_value(Display, display, idx, *this);
-                QString change24_h = retrieve_change_24h(provider, coin, *m_config, m_system_manager);
-                update_value(Change24H, change24_h, idx, *this);
+
+                QString change24_h_raw = retrieve_change_24h(provider, coin, *m_config, m_system_manager);
+                update_value(Change24H, format_to_precision(change24_h_raw.toStdString(), 3), idx, *this);
+
                 if (is_change_b)
                 {
                     balance_update_handler(prev_balance.toString(), new_balance.toString(), QString::fromStdString(ticker));
