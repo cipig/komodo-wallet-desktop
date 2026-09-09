@@ -698,7 +698,6 @@ namespace atomic_dex
     application::get_portfolio_page() const
     {
         portfolio_page* ptr = const_cast<portfolio_page*>(std::addressof(system_manager_.get_system<portfolio_page>()));
-        //SPDLOG_DEBUG("application::get_portfolio_page");
         assert(ptr != nullptr);
         return ptr;
     }

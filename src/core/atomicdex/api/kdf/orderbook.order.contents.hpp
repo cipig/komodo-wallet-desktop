@@ -56,6 +56,8 @@ namespace atomic_dex::kdf
         std::string                depth_percent;
         bool                       is_mine;
         std::optional<std::string> rel_coin;
+        std::string                cached_price_diff{"0"};
+        std::string                cached_price_fiat{"0.00"};
 
         std::string to_string() const noexcept;
     };

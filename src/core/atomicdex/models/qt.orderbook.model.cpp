@@ -148,30 +148,6 @@ namespace atomic_dex
             i_have_enough_funds  = min_volume_f > 0 && taker_vol > min_volume_f;
             return i_have_enough_funds;
         }
-        case CEXRatesRole:
-        {
-            const auto& price_service   = m_system_mgr.get_system<global_price_service>();
-            const auto& trading_pg      = m_system_mgr.get_system<trading_page>();
-            const auto* market_selector = trading_pg.get_market_pairs_mdl();
-            const auto& base            = market_selector->get_left_selected_coin().toStdString();
-            const auto& rel             = data(index, CoinRole).toString().toStdString();
-            const auto& price           = m_model_data.at(index.row()).price;
-            if (base == rel)
-            {
-                return "0";
-            }
-            const bool is_buy = trading_pg.get_market_mode() == MarketMode::Buy;
-            t_float_50 price_diff(0);
-            t_float_50 cex_price = safe_float(price_service.get_cex_rates(base, rel));
-            if (cex_price > 0)
-            {
-                price_diff = t_float_50(100) * (t_float_50(1) - safe_float(price) / cex_price) * (!is_buy ? t_float_50(1) : t_float_50(-1));
-                // SPDLOG_INFO("{}/{} price_diff({}%) = 100 * (1 - price[{}] / cex_price[{}])) * ({})", base, rel, utils::format_float(price_diff),
-                // utils::adjust_precision(price), utils::format_float(cex_price), !is_buy ? 1 : -1);
-                return QString::fromStdString(utils::format_float(price_diff));
-            }
-            return "0";
-        }
         case SendRole:
         {
             if (m_current_orderbook_kind == kind::best_orders)
@@ -188,26 +164,17 @@ namespace atomic_dex
                 return "0";
             }
         }
+        case CEXRatesRole:
+        {
+            return QString::fromStdString(m_model_data.at(index.row()).cached_price_diff);
+        }
         case PriceFiatRole:
         {
             if (m_current_orderbook_kind == kind::best_orders)
             {
-                const auto& price_service = m_system_mgr.get_system<global_price_service>();
-                const auto& fiat          = m_system_mgr.get_system<settings_page>().get_cfg().current_fiat;
-                const auto  total_amount  = this->data(index, SendRole).toString().toStdString();
-                const auto  coin          = data(index, CoinRole).toString().toStdString();
-                const auto  result        = price_service.get_price_as_currency_from_amount(fiat, coin, total_amount);
-                auto        final_result  = result;
-                if (safe_float(result) <= 0)
-                {
-                    return "0.00";
-                }
-                return QString::fromStdString(final_result);
+                return QString::fromStdString(m_model_data.at(index.row()).cached_price_fiat);
             }
-            else
-            {
-                return "0.00";
-            }
+            return "0.00";
         }
         case HaveCEXIDRole:
         {
@@ -344,7 +311,42 @@ namespace atomic_dex
     orderbook_model::reset_orderbook(const t_orders_contents& orderbook)
     {
         this->beginResetModel();
-        m_model_data = orderbook;
+
+        auto optimized_orderbook = orderbook;
+
+        const auto& price_service   = m_system_mgr.get_system<global_price_service>();
+        const auto& trading_pg      = m_system_mgr.get_system<trading_page>();
+        const auto* market_selector = trading_pg.get_market_pairs_mdl();
+        const std::string base      = market_selector->get_left_selected_coin().toStdString();
+        const bool is_buy           = trading_pg.get_market_mode() == MarketMode::Buy;
+        const auto fiat             = m_system_mgr.get_system<settings_page>().get_cfg().current_fiat;
+
+        for (auto& order : optimized_orderbook)
+        {
+            if (base == order.coin) {
+                order.cached_price_diff = "0";
+            } else {
+                t_float_50 cex_price = safe_float(price_service.get_cex_rates(base, order.coin));
+                if (cex_price > 0) {
+                    t_float_50 price_diff = t_float_50(100) * (t_float_50(1) - safe_float(order.price) / cex_price) * (!is_buy ? t_float_50(1) : t_float_50(-1));
+                    order.cached_price_diff = utils::format_float(price_diff);
+                } else {
+                    order.cached_price_diff = "0";
+                }
+            }
+
+            if (m_current_orderbook_kind == kind::best_orders) {
+                t_float_50 volume_f = safe_float(trading_pg.get_volume().toStdString());
+                t_float_50 total_amount_f = volume_f * safe_float(order.price);
+                std::string total_amount = utils::format_float(total_amount_f);
+                std::string result = price_service.get_price_as_currency_from_amount(fiat, order.coin, total_amount);
+                order.cached_price_fiat = (safe_float(result) <= 0) ? "0.00" : result;
+            } else {
+                order.cached_price_fiat = "0.00";
+            }
+        }
+
+        m_model_data = std::move(optimized_orderbook);
         m_orders_id_registry.clear();
         for (auto&& order: m_model_data)
         {
@@ -355,9 +357,6 @@ namespace atomic_dex
         }
         this->endResetModel();
         emit lengthChanged();
-        // This assert was causing a crash due to duplicated UUIDs being filtered out for orders that exist for both segwit and non-segwit of a coin,
-        // because bestorders response will add duplicate entries (one for each address format) to the response.
-        assert(m_model_data.size() == m_orders_id_registry.size());
 
         if (m_current_orderbook_kind == kind::best_orders)
         {
@@ -392,29 +391,59 @@ namespace atomic_dex
         }
 
         if (m_model_data.size() != m_orders_id_registry.size()) { SPDLOG_ERROR("m_model_data.size = {}, m_orders_id_registry.size = {}", m_model_data.size(), m_orders_id_registry.size()); }
-        //assert(m_model_data.size() == m_orders_id_registry.size());
+
+        auto optimized_order = order;
+
+        const auto& price_service   = m_system_mgr.get_system<global_price_service>();
+        const auto& trading_pg      = m_system_mgr.get_system<trading_page>();
+        const auto* market_selector = trading_pg.get_market_pairs_mdl();
+        const std::string base      = market_selector->get_left_selected_coin().toStdString();
+        const bool is_buy           = trading_pg.get_market_mode() == MarketMode::Buy;
+        const auto fiat             = m_system_mgr.get_system<settings_page>().get_cfg().current_fiat;
+
+        if (base == optimized_order.coin) {
+            optimized_order.cached_price_diff = "0";
+        } else {
+            t_float_50 cex_price = safe_float(price_service.get_cex_rates(base, optimized_order.coin));
+            if (cex_price > 0) {
+                t_float_50 price_diff = t_float_50(100) * (t_float_50(1) - safe_float(optimized_order.price) / cex_price) * (!is_buy ? t_float_50(1) : t_float_50(-1));
+                optimized_order.cached_price_diff = utils::format_float(price_diff);
+            } else {
+                optimized_order.cached_price_diff = "0";
+            }
+        }
+
+        if (m_current_orderbook_kind == kind::best_orders) {
+            t_float_50 volume_f = safe_float(trading_pg.get_volume().toStdString());
+            t_float_50 total_amount_f = volume_f * safe_float(optimized_order.price);
+            std::string total_amount = utils::format_float(total_amount_f);
+            std::string result = price_service.get_price_as_currency_from_amount(fiat, optimized_order.coin, total_amount);
+            optimized_order.cached_price_fiat = (safe_float(result) <= 0) ? "0.00" : result;
+        } else {
+            optimized_order.cached_price_fiat = "0.00";
+        }
+
         beginInsertRows(QModelIndex(), m_model_data.size(), m_model_data.size());
-        m_model_data.push_back(order);
+        m_model_data.push_back(std::move(optimized_order));
         this->m_orders_id_registry.emplace(order.uuid);
         endInsertRows();
         emit lengthChanged();
+
         if (m_model_data.size() != m_orders_id_registry.size()) { SPDLOG_ERROR("m_model_data.size = {}, m_orders_id_registry.size = {}", m_model_data.size(), m_orders_id_registry.size()); }
-        //assert(m_model_data.size() == m_orders_id_registry.size());
 
         if (m_system_mgr.has_system<trading_page>() && m_current_orderbook_kind == kind::bids)
         {
-            auto& trading_pg = m_system_mgr.get_system<trading_page>();
-            if (trading_pg.get_market_mode() == MarketMode::Sell)
+            auto& trading_pg_local = m_system_mgr.get_system<trading_page>();
+            if (trading_pg_local.get_market_mode() == MarketMode::Sell)
             {
-                const auto preferred_order = trading_pg.get_preferred_order();
+                const auto preferred_order = trading_pg_local.get_preferred_order();
                 if (!preferred_order.empty())
                 {
                     const t_float_50 price_std       = safe_float(order.price);
                     t_float_50       preferred_price = safe_float(preferred_order.value("price", "0").toString().toStdString());
                     if (price_std > preferred_price)
                     {
-                        //SPDLOG_DEBUG("An order with a better price is inserted, uuid: {}, new_price: {}, current_price: {}", order.uuid, utils::format_float(price_std), utils::format_float(preferred_price));
-                        trading_pg.set_selected_order_status(SelectedOrderStatus::BetterPriceAvailable);
+                        trading_pg_local.set_selected_order_status(SelectedOrderStatus::BetterPriceAvailable);
                         emit betterOrderDetected(get_order_from_uuid(QString::fromStdString(order.uuid)));
                     }
                 }
@@ -427,7 +456,6 @@ namespace atomic_dex
     {
         if (const auto res = this->match(index(0, 0), UUIDRole, QString::fromStdString(order.uuid)); not res.isEmpty())
         {
-            //! ID Found, update !
             const QModelIndex& idx                  = res.at(0);
             auto&& [_, new_price, is_price_changed] = update_value(OrderbookRoles::PriceRole, QString::fromStdString(order.price), idx, *this);
             update_value(OrderbookRoles::PriceNumerRole, QString::fromStdString(order.price_fraction_numer), idx, *this);
@@ -449,9 +477,44 @@ namespace atomic_dex
             update_value(OrderbookRoles::RelMaxVolumeNumerRole, QString::fromStdString(order.rel_max_volume_numer), idx, *this);
             update_value(OrderbookRoles::MinVolumeRole, QString::fromStdString(order.min_volume), idx, *this);
             update_value(OrderbookRoles::EnoughFundsToPayMinVolume, true, idx, *this);
-            update_value(OrderbookRoles::CEXRatesRole, "0.00", idx, *this);
-            update_value(OrderbookRoles::SendRole, "0.00", idx, *this);
-            update_value(OrderbookRoles::PriceFiatRole, "0.00", idx, *this);
+
+            // 1. Fetch our working reference inside the internal cache vector array
+            kdf::order_contents& existing_order = m_model_data.at(idx.row());
+
+            const auto& price_service   = m_system_mgr.get_system<global_price_service>();
+            const auto& trading_pg      = m_system_mgr.get_system<trading_page>();
+            const auto* market_selector = trading_pg.get_market_pairs_mdl();
+            const std::string base      = market_selector->get_left_selected_coin().toStdString();
+            const bool is_buy           = trading_pg.get_market_mode() == MarketMode::Buy;
+            const auto fiat             = m_system_mgr.get_system<settings_page>().get_cfg().current_fiat;
+
+            // 2. Pre-calculate the updated CEX differential data properties
+            if (base == existing_order.coin) {
+                existing_order.cached_price_diff = "0";
+            } else {
+                t_float_50 cex_price = safe_float(price_service.get_cex_rates(base, existing_order.coin));
+                if (cex_price > 0) {
+                    t_float_50 price_diff = t_float_50(100) * (t_float_50(1) - safe_float(existing_order.price) / cex_price) * (!is_buy ? t_float_50(1) : t_float_50(-1));
+                    existing_order.cached_price_diff = utils::format_float(price_diff);
+                } else {
+                    existing_order.cached_price_diff = "0";
+                }
+            }
+
+            // 3. Pre-calculate the updated fiat rate data parameters
+            if (m_current_orderbook_kind == kind::best_orders) {
+                t_float_50 volume_f = safe_float(trading_pg.get_volume().toStdString());
+                t_float_50 total_amount_f = volume_f * safe_float(existing_order.price);
+                std::string total_amount = utils::format_float(total_amount_f);
+                std::string result = price_service.get_price_as_currency_from_amount(fiat, existing_order.coin, total_amount);
+                existing_order.cached_price_fiat = (safe_float(result) <= 0) ? "0.00" : result;
+            } else {
+                existing_order.cached_price_fiat = "0.00";
+            }
+
+            // 4. Force emit update signals to notify proxy and QML layers
+            update_value(OrderbookRoles::CEXRatesRole, QString::fromStdString(existing_order.cached_price_diff), idx, *this);
+            update_value(OrderbookRoles::PriceFiatRole, QString::fromStdString(existing_order.cached_price_fiat), idx, *this);
 
             if (m_system_mgr.has_system<trading_page>() && m_current_orderbook_kind == kind::bids && is_price_changed)
             {
