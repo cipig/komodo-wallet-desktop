@@ -67,6 +67,11 @@ namespace atomic_dex
                 continue;
             }
 
+            const auto& kdf_system    = this->m_system_manager.get_system<kdf_service>();
+            const auto& price_service = this->m_system_manager.get_system<global_price_service>();
+            const auto& provider      = this->m_system_manager.get_system<komodo_prices_provider>();
+            const auto& coin          = kdf_system.get_coin_info(ticker);
+
             std::error_code ec;
             std::string balance_raw = kdf_system.get_balance_info(coin.ticker, ec);
             std::string fiat_balance_raw = price_service.get_price_in_fiat(m_config->current_currency, coin.ticker, ec);
@@ -221,11 +226,14 @@ namespace atomic_dex
                 {
                     balance_update_handler(prev_balance.toString(), new_balance.toString(), QString::fromStdString(ticker));
                 }
+
                 QJsonArray trend = nlohmann_json_array_to_qt_json_array(provider.get_ticker_historical(ticker));
                 update_value(Trend7D, trend, idx, *this);
+
                 const auto& coin_info          = kdf_system.get_coin_info(ticker);
                 QJsonObject status = nlohmann_json_object_to_qt_json_object(coin_info.activation_status);
                 update_value(ActivationStatus, status, idx, *this);
+
                 if (ticker == kdf_system.get_current_ticker() && (is_change_b || is_change_mc || is_change_mcpfo))
                 {
                     m_system_manager.get_system<wallet_page>().refresh_ticker_infos();
