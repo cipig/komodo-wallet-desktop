@@ -29,7 +29,7 @@ namespace atomic_dex
         m_model_proxy(new orderbook_proxy_model(system_mgr, this))
     {
         this->m_model_proxy->setSourceModel(this);
-        this->m_model_proxy->setSortRole(PriceRole);
+        this->m_model_proxy->setSortRole(RawOrderbookPriceRole);
 
         switch (m_current_orderbook_kind)
         {
@@ -207,6 +207,26 @@ namespace atomic_dex
             }
             return "0.00";
         }
+        case FormattedOrderbookPriceRole:
+        {
+            if (order_item.price.empty()) return "0.00000000";
+            double val = safe_float(order_item.price).convert_to<double>();
+            return QString::number(val, 'f', 8);
+        }
+        case FormattedOrderbookQtyRole:
+        {
+            if (order_item.base_max_volume.empty()) return "0.0000";
+            double val = safe_float(order_item.base_max_volume).convert_to<double>();
+            return QString::number(val, 'f', 4);
+        }
+        case FormattedOrderbookTotalRole:
+        {
+            if (order_item.total.empty()) return "0.000000";
+            double val = safe_float(order_item.total).convert_to<double>();
+            return QString::number(val, 'f', 6);
+        }
+        case RawOrderbookPriceRole:
+            return safe_float(order_item.price).convert_to<double>();
       }
       return {};
     }
@@ -302,6 +322,10 @@ namespace atomic_dex
         case RawPriceFiatRole:
         case FormattedCEXRatesRole:
         case FormattedPriceFiatRole:
+        case FormattedOrderbookPriceRole:
+        case FormattedOrderbookQtyRole:
+        case FormattedOrderbookTotalRole:
+        case RawOrderbookPriceRole:
             break;
       }
 
@@ -339,7 +363,11 @@ namespace atomic_dex
             {RelMinVolumeNumerRole, "rel_min_volume_numer"},
             {RelMaxVolumeRole, "rel_max_volume"},
             {RelMaxVolumeDenomRole, "rel_max_volume_denom"},
-            {RelMaxVolumeNumerRole, "rel_max_volume_numer"}};
+            {RelMaxVolumeNumerRole, "rel_max_volume_numer"},
+            {FormattedOrderbookPriceRole, "formatted_price"},
+            {FormattedOrderbookQtyRole, "formatted_qty"},
+            {FormattedOrderbookTotalRole, "formatted_total"}
+        };
     }
 
     void

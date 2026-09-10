@@ -1203,7 +1203,9 @@ namespace atomic_dex
                 auto available_quantity = m_preferred_order->at("base_max_volume").get<std::string>();
                 this->set_volume(QString::fromStdString(utils::extract_large_float(available_quantity)));
             }
-            this->get_orderbook_wrapper()->refresh_best_orders();
+
+            //already triggered automatically inside set_volume above!
+            //this->get_orderbook_wrapper()->refresh_best_orders();
             this->determine_fees();
             emit preferredOrderChangeFinished();
         }

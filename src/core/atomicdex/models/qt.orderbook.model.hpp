@@ -16,17 +16,10 @@
 
 #pragma once
 
-//! QT
 #include <QAbstractListModel>
 #include <QVariantMap>
-
-//! STD
 #include <unordered_set>
-
-//! Deps
 #include <antara/gaming/ecs/system.manager.hpp>
-
-//! Project
 #include "atomicdex/api/kdf/rpc_v2/rpc2.orderbook.hpp"
 #include "atomicdex/models/qt.orderbook.proxy.model.hpp"
 
@@ -80,7 +73,11 @@ namespace atomic_dex
             RawCEXRatesRole,
             RawPriceFiatRole,
             FormattedCEXRatesRole,
-            FormattedPriceFiatRole
+            FormattedPriceFiatRole,
+            FormattedOrderbookPriceRole,
+            FormattedOrderbookQtyRole,
+            FormattedOrderbookTotalRole,
+            RawOrderbookPriceRole
         };
 
         orderbook_model(kind orderbook_kind, ag::ecs::system_manager& system_mgr, QObject* parent = nullptr);

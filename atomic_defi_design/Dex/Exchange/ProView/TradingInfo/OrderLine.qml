@@ -2,7 +2,6 @@ import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 import "../../../Qaterial" as Qaterial
-import bignumberjs 1.0
 import App 1.0
 import "../../../Components"
 import Dex.Themes 1.0 as Dex
@@ -81,12 +80,10 @@ FloatingBackground
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                     font.pixelSize: 12
-                    text_value:
-                    {
-
-                        if (!details) return
-                        BigNumber.config({ DECIMAL_PLACES: 6 })
-                        return new BigNumber(details.base_amount).toString(10)
+                    text_value: {
+                        if (!details || !details.base_amount) return ""
+                        let val = parseFloat(details.base_amount)
+                        return isNaN(val) ? details.base_amount : Number(val.toFixed(6)).toString()
                     }
                     privacy: true
                     elide: Text.ElideRight
@@ -120,12 +117,10 @@ FloatingBackground
                     anchors.rightMargin: 3
                     anchors.verticalCenter: parent.verticalCenter
                     font.pixelSize: 12
-                    text_value:
-                    {
-                        if (!details) return
-
-                        BigNumber.config({ DECIMAL_PLACES: 6 })
-                        return new BigNumber(details.rel_amount).toString(10)
+                    text_value: {
+                        if (!details || !details.rel_amount) return ""
+                        let val = parseFloat(details.rel_amount)
+                        return isNaN(val) ? details.rel_amount : Number(val.toFixed(6)).toString()
                     }
                     privacy: true
                     elide: Text.ElideRight

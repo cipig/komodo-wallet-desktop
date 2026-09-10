@@ -2,7 +2,6 @@ import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
-import bignumberjs 1.0
 import "../Components"
 import "../Constants"
 import App 1.0
@@ -401,16 +400,16 @@ MultipageModal
                         id: maxButMouseArea
                         anchors.fill: parent
                         hoverEnabled: true
-                        onClicked:
-                        {
-                            if (_preparePage.cryptoSendMode)
-                            {
-                                input_amount.text = API.app.get_balance_info_qstr(api_wallet_page.ticker);
-                            }
-                            else
-                            {
-                                let cryptoBalance = new BigNumber(API.app.get_balance_info_qstr(api_wallet_page.ticker));
-                                input_amount.text = cryptoBalance.multipliedBy(current_ticker_infos.current_currency_ticker_price).toFixed(8);
+                        onClicked: {
+                            let balanceStr = API.app.get_balance_info_qstr(api_wallet_page.ticker)
+                            if (_preparePage.cryptoSendMode) {
+                                input_amount.text = balanceStr
+                            } else {
+                                let cryptoBalance = parseFloat(balanceStr)
+                                let price = parseFloat(current_ticker_infos.current_currency_ticker_price)
+                                if (!isNaN(cryptoBalance) && !isNaN(price)) {
+                                    input_amount.text = (cryptoBalance * price).toFixed(8)
+                                }
                             }
                         }
                     }
@@ -500,7 +499,10 @@ MultipageModal
             {
                 id: equivalentAmount
                 property string value: "0"
-                enabled: !(new BigNumber(current_ticker_infos.current_currency_ticker_price).isLessThanOrEqualTo(0))
+                enabled: {
+                    let price = parseFloat(current_ticker_infos.current_currency_ticker_price);
+                    return !isNaN(price) && price > 0;
+                }
                 visible: enabled
                 color: Dex.CurrentTheme.textPlaceholderColor
 
@@ -520,24 +522,28 @@ MultipageModal
                     }
                 }
 
-                Connections
-                {
+                Connections {
                     target: input_amount
 
-                    function onTextEdited()
-                    {
-                        let inputAmount = new BigNumber(input_amount.text);
-                        if (input_amount.text === "" || inputAmount.isLessThanOrEqualTo(0)) {
+                    function onTextEdited() {
+                        if (input_amount.text === "") {
+                            equivalentAmount.value = "0";
+                            return;
+                        }
+
+                        let inputVal = parseFloat(input_amount.text)
+                        let price = parseFloat(current_ticker_infos.current_currency_ticker_price)
+
+                        if (isNaN(inputVal) || isNaN(price) || inputVal <= 0 || price <= 0) {
                             equivalentAmount.value = "0";
                         } else if (_preparePage.cryptoSendMode) {
-                            equivalentAmount.value = inputAmount.multipliedBy(current_ticker_infos.current_currency_ticker_price).toFixed(8);
+                            equivalentAmount.value = (inputVal * price).toFixed(8);
                         } else {
-                            equivalentAmount.value = inputAmount.dividedBy(current_ticker_infos.current_currency_ticker_price).toFixed(8);
+                            equivalentAmount.value = (inputVal / price).toFixed(8);
                         }
                     }
 
-                    function onTextChanged()
-                    {
+                    function onTextChanged() {
                         onTextEdited()
                     }
                 }
@@ -660,15 +666,11 @@ MultipageModal
             AmountField
             {
                 visible: General.getCustomFeeType(current_ticker_infos) == "UTXO"
-
                 id: input_custom_fees
-
                 enabled: !root.is_send_busy
-
                 Layout.preferredWidth: 400
                 Layout.preferredHeight: 36
                 Layout.alignment: Qt.AlignHCenter
-
                 placeholderText: qsTr("Enter the custom fee") + " (" + api_wallet_page.ticker + "/kb)"
             }
 
@@ -788,7 +790,6 @@ MultipageModal
                 Layout.preferredHeight: 42
                 label.font.pixelSize: 16
                 radius: 18
-
                 onClicked: root.close()
             }
 
@@ -868,7 +869,6 @@ MultipageModal
         TextEditWithTitle
         {
             title: qsTr("Amount")
-
             text:
             {
                 let amount = getCryptoAmount()

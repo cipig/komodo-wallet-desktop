@@ -98,6 +98,12 @@ namespace atomic_dex
             return left < right;
         }
 
+        case orderbook_model::RawOrderbookPriceRole:
+            return left_data.toDouble() < right_data.toDouble();
+
+        case orderbook_model::PriceRole:
+            return safe_float(left_data.toString().toStdString()) < safe_float(right_data.toString().toStdString());
+
         case orderbook_model::TotalRole:
         case orderbook_model::UUIDRole:
         case orderbook_model::IsMineRole:

@@ -184,7 +184,7 @@ Item
                 Layout.fillHeight: true
                 Layout.minimumWidth: 100
                 Layout.alignment: Qt.AlignVCenter
-                text: General.reducedBignum(price, 8)
+                text: model.formatted_price
                 font.family: DexTypo.fontFamily
                 font.pixelSize: 12
                 color: isAsk ? Dex.CurrentTheme.warningColor : Dex.CurrentTheme.okColor
@@ -199,7 +199,7 @@ Item
                 Layout.fillHeight: true
                 Layout.minimumWidth: 100
                 Layout.alignment: Qt.AlignVCenter
-                text: General.reducedBignum(base_max_volume, 4)
+                text: model.formatted_qty
                 font.family: DexTypo.fontFamily
                 font.pixelSize: 12
                 horizontalAlignment: Text.AlignRight
@@ -217,12 +217,11 @@ Item
                 Layout.alignment: Qt.AlignVCenter
                 font.family: DexTypo.fontFamily
                 font.pixelSize: 12
-                text: General.reducedBignum(total, 6)
+                text: model.formatted_total
                 horizontalAlignment: Text.AlignRight
                 verticalAlignment: Text.AlignVCenter
                 wrapMode: Text.NoWrap
             }
-
 
             // Cancel button
             Item

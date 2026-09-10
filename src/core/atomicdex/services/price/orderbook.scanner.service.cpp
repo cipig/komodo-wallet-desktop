@@ -26,9 +26,7 @@ namespace atomic_dex
     orderbook_scanner_service::orderbook_scanner_service(entt::registry& registry, ag::ecs::system_manager& system_manager) :
         system(registry), m_system_manager(system_manager)
     {
-        m_update_clock      = std::chrono::high_resolution_clock::now();
         m_best_orders_infos = nlohmann::json::object();
-        SPDLOG_INFO("orderbook_scanner_service created");
     }
 } // namespace atomic_dex
 
@@ -89,16 +87,9 @@ namespace atomic_dex
 namespace atomic_dex
 {
     void
-    orderbook_scanner_service::update() 
+    orderbook_scanner_service::update()
     {
-        using namespace std::chrono_literals;
-        const auto now = std::chrono::high_resolution_clock::now();
-        const auto s   = std::chrono::duration_cast<std::chrono::seconds>(now - m_update_clock);
-        if (s >= 61s)
-        {
-            //process_best_orders();
-            m_update_clock = std::chrono::high_resolution_clock::now();
-        }
+        // no need to
     }
 
     bool

@@ -1,6 +1,5 @@
 pragma Singleton
 
-import bignumberjs 1.0
 import QtQuick 2.15
 import AtomicDEX.TradingError 1.0
 import AtomicDEX.MarketMode 1.0
@@ -391,15 +390,6 @@ QtObject {
         let fiat_text = General.getFiatText(amount, ticker, false)
         amount = formatDouble(amount, 8, false).toString()
         return feetype + " " + amount + " " + ticker + " (" + fiat_text + ")"
-    }
-
-    function reducedBignum(text, decimals=8, max_length=12) {
-        let val = new BigNumber(text).toFixed(decimals)
-        if (val.length > max_length)
-        {
-            return val.substring(0, max_length)
-        }
-        return val
     }
 
     function getSimpleFromPlaceholder(selectedTicker, selectedOrder, sell_ticker_balance) {
