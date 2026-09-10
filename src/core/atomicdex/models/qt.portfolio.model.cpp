@@ -145,21 +145,29 @@ namespace atomic_dex
             {
                 std::error_code    ec;
                 const QModelIndex& idx                         = res.at(0);
+
                 const std::string  main_currency_balance_raw   = price_service.get_price_in_fiat(currency, ticker, ec);
                 update_value(MainCurrencyBalanceRole, format_to_precision(main_currency_balance_raw, 2), idx, *this);
+
                 const std::string  currency_price_raw          = price_service.get_rate_conversion(currency, ticker, true);
                 update_value(MainCurrencyPriceForOneUnit, format_to_precision(currency_price_raw, 8), idx, *this);
+
                 const std::string  currency_fiat_raw           = price_service.get_rate_conversion(fiat, ticker, false);
                 update_value(MainFiatPriceForOneUnit, format_to_precision(currency_fiat_raw, 2), idx, *this);
+
                 const QString      price_provider              = QString::fromStdString(provider.get_price_provider(ticker));
                 update_value(PriceProvider, price_provider, idx, *this);
+
                 int last_price_timestamp = static_cast<int>(provider.get_last_price_timestamp(ticker));
                 update_value(LastPriceTimestamp, last_price_timestamp, idx, *this);
+
                 QString            change24_h_raw              = retrieve_change_24h(provider, coin, *m_config, m_system_manager);
                 update_value(Change24H, format_to_precision(change24_h_raw.toStdString(), 3), idx, *this);
+
                 const std::string  balance_raw                 = kdf_system.get_balance_info(coin.ticker, ec);
                 QString            formatted_balance           = format_to_precision(balance_raw, 8);
                 auto&& [prev_balance, new_balance, is_change_b] = update_value(BalanceRole, formatted_balance, idx, *this);
+
                 const QString display = QString::fromStdString(coin.ticker) + " (" + formatted_balance + ")";
                 update_value(Display, display, idx, *this);
 
@@ -310,14 +318,14 @@ namespace atomic_dex
             return item.price_provider;
         case LastPriceTimestamp:
             return item.price_last_timestamp;
-        case RawBalanceRole:
-            return item.raw_balance;
-        case RawMainCurrencyBalanceRole:
-            return item.raw_main_currency_balance;
-        case RawChange24HRole:
-            return item.raw_change_24h;
         case RawMainCurrencyPriceRole:
-            return item.raw_main_currency_price;
+            return safe_string_to_double(item.main_currency_price_for_one_unit.toStdString());
+        case RawBalanceRole:
+            return safe_string_to_double(item.balance.toStdString());
+        case RawMainCurrencyBalanceRole:
+            return safe_string_to_double(item.main_currency_balance.toStdString());
+        case RawChange24HRole:
+            return safe_string_to_double(item.change_24h.toStdString());
         }
         return {};
     }

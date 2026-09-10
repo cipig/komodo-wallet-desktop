@@ -34,8 +34,8 @@ namespace atomic_dex
         QVariant left_data  = sourceModel()->data(source_left, role);
         QVariant right_data = sourceModel()->data(source_right, role);
 
-        switch (static_cast<atomic_dex::portfolio_model::PortfolioRoles>(role))
-        {
+      switch (static_cast<atomic_dex::portfolio_model::PortfolioRoles>(role))
+      {
         case atomic_dex::portfolio_model::TickerRole:
             return left_data.toString() > right_data.toString();
         case atomic_dex::portfolio_model::NameRole:
@@ -88,7 +88,7 @@ namespace atomic_dex
         case portfolio_model::LastPriceTimestamp:
         default:
             return false;
-        }
+      }
     }
 
     bool
