@@ -40,7 +40,7 @@ namespace atomic_dex
             this->m_model_proxy->sort(0, Qt::DescendingOrder);
             break;
         case kind::best_orders:
-            this->m_model_proxy->setSortRole(CEXRatesRole);
+            this->m_model_proxy->setSortRole(RawCEXRatesRole);
             this->m_model_proxy->setFilterRole(NameAndTicker);
             this->m_model_proxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
             this->m_model_proxy->setDynamicSortFilter(false);
@@ -214,14 +214,15 @@ namespace atomic_dex
     bool
     orderbook_model::setData(const QModelIndex& index, const QVariant& value, int role)
     {
-        if (!hasIndex(index.row(), index.column(), index.parent()) || !value.isValid())
-        {
-            return false;
-        }
+      if (!hasIndex(index.row(), index.column(), index.parent()) || !value.isValid())
+      {
+          return false;
+      }
 
-        kdf::order_contents& order = m_model_data.at(index.row());
-        switch (static_cast<OrderbookRoles>(role))
-        {
+      kdf::order_contents& order = m_model_data.at(index.row());
+
+      switch (static_cast<OrderbookRoles>(role))
+      {
         case PriceRole:
             order.price = value.toString().toStdString();
             break;
@@ -297,9 +298,15 @@ namespace atomic_dex
         case RelMaxVolumeNumerRole:
             order.rel_max_volume_numer = value.toString().toStdString();
             break;
-        }
-        emit dataChanged(index, index, {role});
-        return true;
+        case RawCEXRatesRole:
+        case RawPriceFiatRole:
+        case FormattedCEXRatesRole:
+        case FormattedPriceFiatRole:
+            break;
+      }
+
+      emit dataChanged(index, index, {role});
+      return true;
     }
 
     QHash<int, QByteArray>
@@ -351,13 +358,11 @@ namespace atomic_dex
 
         for (auto& order : optimized_orderbook)
         {
-            double raw_cex_diff = 0.0;
             if (base != order.coin) {
                 t_float_50 cex_price = safe_float(price_service.get_cex_rates(base, order.coin));
                 if (cex_price > 0) {
                     t_float_50 price_diff = t_float_50(100) * (t_float_50(1) - safe_float(order.price) / cex_price) * (!is_buy ? t_float_50(1) : t_float_50(-1));
                     order.cached_price_diff = utils::format_float(price_diff);
-                    raw_cex_diff = price_diff.convert_to<double>();
                 } else {
                     order.cached_price_diff = "0";
                 }
@@ -365,14 +370,12 @@ namespace atomic_dex
                 order.cached_price_diff = "0";
             }
 
-            double raw_fiat_val = 0.0;
             if (m_current_orderbook_kind == kind::best_orders) {
                 t_float_50 volume_f = safe_float(trading_pg.get_volume().toStdString());
                 t_float_50 total_amount_f = volume_f * safe_float(order.price);
                 std::string total_amount = utils::format_float(total_amount_f);
                 std::string result = price_service.get_price_as_currency_from_amount(fiat, order.coin, total_amount);
                 order.cached_price_fiat = (safe_float(result) <= 0) ? "0.00" : result;
-                raw_fiat_val = safe_float(order.cached_price_fiat).convert_to<double>();
             } else {
                 order.cached_price_fiat = "0.00";
             }

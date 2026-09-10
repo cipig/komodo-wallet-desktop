@@ -200,7 +200,7 @@ namespace atomic_dex
     void
     portfolio_proxy_model::sort_by_currency_unit(bool is_ascending)
     {
-        this->setSortRole(atomic_dex::portfolio_model::RawChange24HRole);
+        this->setSortRole(atomic_dex::portfolio_model::RawMainCurrencyPriceRole);
         this->sort(0, is_ascending ? Qt::AscendingOrder : Qt::DescendingOrder);
     }
 
