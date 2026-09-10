@@ -214,6 +214,8 @@ QtObject {
                     return "https://hyperevmscan.io/token/" + coinContractAddress(ticker)
                 case "MNT":
                     return "https://mantlescan.xyz/token/" + coinContractAddress(ticker)
+                case "MON":
+                    return "https://monadscan.com/token/" + coinContractAddress(ticker)
                 case "XDAI":
                     return "https://gnosisscan.io/token/" + coinContractAddress(ticker)
                 case "XPL":
@@ -766,11 +768,12 @@ QtObject {
             || current_ticker_infos.type == "Bittensor"
             || current_ticker_infos.type == "HyperEVM"
             || current_ticker_infos.type == "Mantle"
+            || current_ticker_infos.type == "Monad"
             || current_ticker_infos.type == "Plasma"
     }
 
     function isParentCoin(ticker) {
-        return ["ETH", "ETH-ARB20", "ETH-BASE", "POL", "AVAX", "QTUM", "BNB", "ONE", "KCS", "TRX", "GLEEC", "XDAI", "TAO", "HYPE", "MNT", "XPL"].includes(ticker)
+        return ["ETH", "ETH-ARB20", "ETH-BASE", "POL", "AVAX", "QTUM", "BNB", "ONE", "KCS", "TRX", "GLEEC", "XDAI", "TAO", "HYPE", "MNT", "MON", "XPL"].includes(ticker)
     }
 
     function getFeesTicker(coin_info) {

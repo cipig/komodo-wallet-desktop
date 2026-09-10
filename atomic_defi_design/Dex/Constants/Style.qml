@@ -217,6 +217,7 @@ QtObject {
             case 'Polygon':           return dark_theme ? colorCoinDark["POL"] : colorCoin["POL"]
             case 'PLG-20':            return dark_theme ? colorCoinDark["POL"] : colorCoin["POL"]
             case 'Mantle':            return dark_theme ? colorCoinDark["MNT"] : colorCoin["MNT"]
+            case 'Monad':             return dark_theme ? colorCoinDark["MON"] : colorCoin["MON"]
             case 'Moonriver':         return dark_theme ? colorCoinDark["MOVR"] : colorCoin["MOVR"]
             case 'HRC-20':            return dark_theme ? colorCoinDark["ONE"] : colorCoin["ONE"]
             case 'SmartBCH':          return dark_theme ? colorCoinDark["SBCH"] : colorCoin["SBCH"]
@@ -307,6 +308,7 @@ QtObject {
                                           "KCS": "#25AF90",
                                           "KMD": "#2d4f86",
                                           "MNT": "#27584c",
+                                          "MON": "#6E54FF",
                                           "MOVR": "#52CCC9",
                                           "POL": "#804EE1",
                                           "ONE": "#00BEEE",
@@ -338,6 +340,7 @@ QtObject {
                                           "KCS": "#25AF90",
                                           "KMD": "#799bd2",
                                           "MNT": "#27584c",
+                                          "MON": "#6E54FF",
                                           "MOVR": "#52CCC9",
                                           "POL": "#804EE1",
                                           "ONE": "#00BEEE",

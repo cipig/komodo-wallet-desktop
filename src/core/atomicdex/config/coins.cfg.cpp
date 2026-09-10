@@ -38,7 +38,7 @@ namespace
         {
             return CoinType::GRC20;
         }
-        if ((coin_type == "TRC-20") || (coin_type == "TRX"))
+        if (coin_type == "TRX")
         {
             return CoinType::TRC20;
         }
@@ -57,10 +57,6 @@ namespace
         if (coin_type == "BEP-20")
         {
             return CoinType::BEP20;
-        }
-        if (coin_type == "PLG-20")
-        {
-            return CoinType::PLG20;
         }
         if (coin_type == "Polygon")
         {
@@ -105,6 +101,10 @@ namespace
         if (coin_type == "Mantle")
         {
             return CoinType::Mantle;
+        }
+        if (coin_type == "Monad")
+        {
+            return CoinType::Monad;
         }
         if (coin_type == "Moonriver")
         {
@@ -389,6 +389,11 @@ namespace atomic_dex
         case CoinType::Mantle:
             cfg.has_parent_fees_ticker = true;
             cfg.fees_ticker            = "MNT";
+            cfg.is_erc_family          = true;
+            break;
+        case CoinType::Monad:
+            cfg.has_parent_fees_ticker = true;
+            cfg.fees_ticker            = "MON";
             cfg.is_erc_family          = true;
             break;
         case CoinType::Moonriver:
