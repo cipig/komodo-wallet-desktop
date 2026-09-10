@@ -76,7 +76,7 @@ Item
             Layout.preferredWidth: 80
             horizontalAlignment: Text.AlignRight
             verticalAlignment: Text.AlignVCenter
-            text: General.formatDouble(price_fiat, 2, true) + API.app.settings_pg.current_fiat_sign
+            text: model.formatted_price_fiat + " " + API.app.settings_pg.current_fiat_sign
             font.family: App.DexTypo.fontFamily
             font.pixelSize: 12
         }
@@ -91,13 +91,10 @@ Item
             wrapMode: Text.NoWrap
             font.family: App.DexTypo.fontFamily
             font.pixelSize: 12
-
-            text: cex_rates === "0" ? "N/A" :
-                                      parseFloat(cex_rates) > 0 ? "+" + parseFloat(cex_rates).toFixed(2) + "%" :
-                                                                  parseFloat(cex_rates).toFixed(2) + "%"
+            text: model.formatted_cex_rates
             color: cex_rates === "0" ? Qt.darker(Dex.CurrentTheme.foregroundColor) :
-                                       parseFloat(cex_rates) < 0 ? Dex.CurrentTheme.okColor :
-                                                                   Dex.CurrentTheme.warningColor
+                   parseFloat(cex_rates) < 0 ? Dex.CurrentTheme.okColor :
+                                               Dex.CurrentTheme.warningColor
 
             Behavior on rightPadding
             {

@@ -1035,8 +1035,8 @@ namespace atomic_dex
                 balance_answer.address = wallet_balance.at("address").get<std::string>();
                 balance_answer.balance = wallet_balance.at("balance").at("spendable").get<std::string>();
 
-                SPDLOG_DEBUG("Parsed task activation balance -> Ticker: {} | Balance: {} | Address: {}",
-                             balance_answer.coin, balance_answer.balance, balance_answer.address);
+                //SPDLOG_DEBUG("Parsed task activation balance -> Ticker: {} | Balance: {} | Address: {}",
+                //             balance_answer.coin, balance_answer.balance, balance_answer.address);
                 {
                     std::unique_lock lock(m_balance_mutex);
                     m_balance_informations[balance_answer.coin] = std::move(balance_answer);

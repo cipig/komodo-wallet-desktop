@@ -58,13 +58,15 @@ namespace atomic_dex
     QVariant
     orderbook_model::data(const QModelIndex& index, int role) const
     {
-        if (!hasIndex(index.row(), index.column(), index.parent()) || this->rowCount() == 0)
-        {
-            return {};
-        }
+      if (!hasIndex(index.row(), index.column(), index.parent()) || this->rowCount() == 0)
+      {
+          return {};
+      }
 
-        switch (static_cast<OrderbookRoles>(role))
-        {
+      const auto& order_item = m_model_data.at(index.row());
+
+      switch (static_cast<OrderbookRoles>(role))
+      {
         case PriceRole:
             return QString::fromStdString(m_model_data.at(index.row()).price);
         case CoinRole:
@@ -164,10 +166,6 @@ namespace atomic_dex
                 return "0";
             }
         }
-        case CEXRatesRole:
-        {
-            return QString::fromStdString(m_model_data.at(index.row()).cached_price_diff);
-        }
         case PriceFiatRole:
         {
             if (m_current_orderbook_kind == kind::best_orders)
@@ -182,7 +180,37 @@ namespace atomic_dex
             const auto& infos      = global_cfg->get_coin_info(data(index, CoinRole).toString().toStdString());
             return infos.coingecko_id != "test-coin" || infos.coinpaprika_id != "test-coin";
         }
+        case CEXRatesRole:
+            return QString::fromStdString(order_item.cached_price_diff);
+        case FormattedCEXRatesRole:
+        {
+            if (order_item.cached_price_diff == "0" || order_item.cached_price_diff.empty()) {
+                return "N/A";
+            }
+            double val = safe_float(order_item.cached_price_diff).convert_to<double>();
+            QString prefix = (val > 0) ? "+" : "";
+            return prefix + QString::number(val, 'f', 2) + "%";
         }
+        case RawCEXRatesRole:
+            return safe_float(order_item.cached_price_diff).convert_to<double>();
+
+        case RawPriceFiatRole:
+            return safe_float(order_item.cached_price_fiat).convert_to<double>();
+        }
+        case FormattedPriceFiatRole:
+        {
+            if (m_current_orderbook_kind == kind::best_orders)
+            {
+                if (order_item.cached_price_fiat.empty() || order_item.cached_price_fiat == "0.00") {
+                    return "0.00";
+                }
+                double val = safe_float(order_item.cached_price_fiat).convert_to<double>();
+                return QString::number(val, 'f', 2);
+            }
+            return "0.00";
+        }
+      }
+      return {};
     }
 
     bool
@@ -291,8 +319,10 @@ namespace atomic_dex
             {MinVolumeRole, "min_volume"},
             {EnoughFundsToPayMinVolume, "enough_funds_to_pay_min_volume"},
             {CEXRatesRole, "cex_rates"},
+            {FormattedCEXRatesRole, "formatted_cex_rates"},
             {SendRole, "send"},
             {PriceFiatRole, "price_fiat"},
+            {FormattedPriceFiatRole, "formatted_price_fiat"},
             {BaseMinVolumeRole, "base_min_volume"},
             {BaseMinVolumeDenomRole, "base_min_volume_denom"},
             {BaseMinVolumeNumerRole, "base_min_volume_numer"},
@@ -323,24 +353,28 @@ namespace atomic_dex
 
         for (auto& order : optimized_orderbook)
         {
-            if (base == order.coin) {
-                order.cached_price_diff = "0";
-            } else {
+            double raw_cex_diff = 0.0;
+            if (base != order.coin) {
                 t_float_50 cex_price = safe_float(price_service.get_cex_rates(base, order.coin));
                 if (cex_price > 0) {
                     t_float_50 price_diff = t_float_50(100) * (t_float_50(1) - safe_float(order.price) / cex_price) * (!is_buy ? t_float_50(1) : t_float_50(-1));
                     order.cached_price_diff = utils::format_float(price_diff);
+                    raw_cex_diff = price_diff.convert_to<double>();
                 } else {
                     order.cached_price_diff = "0";
                 }
+            } else {
+                order.cached_price_diff = "0";
             }
 
+            double raw_fiat_val = 0.0;
             if (m_current_orderbook_kind == kind::best_orders) {
                 t_float_50 volume_f = safe_float(trading_pg.get_volume().toStdString());
                 t_float_50 total_amount_f = volume_f * safe_float(order.price);
                 std::string total_amount = utils::format_float(total_amount_f);
                 std::string result = price_service.get_price_as_currency_from_amount(fiat, order.coin, total_amount);
                 order.cached_price_fiat = (safe_float(result) <= 0) ? "0.00" : result;
+                raw_fiat_val = safe_float(order.cached_price_fiat).convert_to<double>();
             } else {
                 order.cached_price_fiat = "0.00";
             }
@@ -360,13 +394,19 @@ namespace atomic_dex
 
         if (m_current_orderbook_kind == kind::best_orders)
         {
-            if ((this->data(this->index(0, 0), CEXRatesRole).toString().toStdString() == "0") && ((this->m_model_proxy->sortRole()) != 269)) {
-                SPDLOG_DEBUG("orderbook_model::reset_orderbook CEXRatesRole is 0, switching to PriceFiatRole");
-                this->m_model_proxy->setSortRole(PriceFiatRole);
-            } else if ((this->data(this->index(0, 0), CEXRatesRole).toString().toStdString() != "0") && ((this->m_model_proxy->sortRole()) != 267)) {
-                SPDLOG_DEBUG("orderbook_model::reset_orderbook current SortRole is {}, setting it to CEXRatesRole", this->m_model_proxy->sortRole());
-                this->m_model_proxy->setSortRole(CEXRatesRole);
+            double top_item_cex_rate = this->data(this->index(0, 0), RawCEXRatesRole).toDouble();
+
+            if (top_item_cex_rate == 0.0 && (this->m_model_proxy->sortRole() != RawPriceFiatRole))
+            {
+                SPDLOG_DEBUG("orderbook_model::reset_orderbook RawCEXRatesRole is 0, switching to RawPriceFiatRole");
+                this->m_model_proxy->setSortRole(RawPriceFiatRole);
             }
+            else if (top_item_cex_rate != 0.0 && (this->m_model_proxy->sortRole() != RawCEXRatesRole))
+            {
+                SPDLOG_DEBUG("orderbook_model::reset_orderbook prioritizing raw data, setting to RawCEXRatesRole");
+                this->m_model_proxy->setSortRole(RawCEXRatesRole);
+            }
+
             if (m_system_mgr.get_system<trading_page>().get_market_mode() == MarketMode::Sell) {
                 this->m_model_proxy->sort(0, Qt::DescendingOrder);
             } else {
@@ -585,13 +625,19 @@ namespace atomic_dex
 
         if (m_current_orderbook_kind == kind::best_orders)
         {
-            if ((this->data(this->index(0, 0), CEXRatesRole).toString().toStdString() == "0") && ((this->m_model_proxy->sortRole()) != 269)) {
-                SPDLOG_DEBUG("orderbook_model::refresh_orderbook_model_data CEXRatesRole is 0, switching to PriceFiatRole");
-                this->m_model_proxy->setSortRole(PriceFiatRole);
-            } else if ((this->data(this->index(0, 0), CEXRatesRole).toString().toStdString() != "0") && ((this->m_model_proxy->sortRole()) != 267)) {
-                SPDLOG_DEBUG("orderbook_model::refresh_orderbook_model_data current SortRole is {} with CEXRatesRole value at (0,0) {}, setting it to CEXRatesRole", this->m_model_proxy->sortRole(), this->data(this->index(0, 0), CEXRatesRole).toString().toStdString());
-                this->m_model_proxy->setSortRole(CEXRatesRole);
+            double top_item_cex_rate = this->data(this->index(0, 0), RawCEXRatesRole).toDouble();
+
+            if (top_item_cex_rate == 0.0 && (this->m_model_proxy->sortRole() != RawPriceFiatRole))
+            {
+                SPDLOG_DEBUG("orderbook_model::reset_orderbook RawCEXRatesRole is 0, switching to RawPriceFiatRole");
+                this->m_model_proxy->setSortRole(RawPriceFiatRole);
             }
+            else if (top_item_cex_rate != 0.0 && (this->m_model_proxy->sortRole() != RawCEXRatesRole))
+            {
+                SPDLOG_DEBUG("orderbook_model::reset_orderbook prioritizing raw data, setting to RawCEXRatesRole");
+                this->m_model_proxy->setSortRole(RawCEXRatesRole);
+            }
+
             if (m_system_mgr.get_system<trading_page>().get_market_mode() == MarketMode::Sell) {
                 this->m_model_proxy->sort(0, Qt::DescendingOrder);
             } else {

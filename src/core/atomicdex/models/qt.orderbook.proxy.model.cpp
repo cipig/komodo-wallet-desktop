@@ -45,64 +45,36 @@ namespace atomic_dex
         {
         case orderbook_model::PriceRole:
             return safe_float(left_data.toString().toStdString()) < safe_float(right_data.toString().toStdString());
-        case orderbook_model::TotalRole:
-            break;
-        case orderbook_model::UUIDRole:
-            break;
-        case orderbook_model::IsMineRole:
-            break;
-        case orderbook_model::PriceDenomRole:
-            break;
-        case orderbook_model::PriceNumerRole:
-            break;
-        case orderbook_model::PercentDepthRole:
-            break;
-        case orderbook_model::CoinRole:
-            break;
-        case orderbook_model::MinVolumeRole:
-            break;
-        case orderbook_model::BaseMinVolumeRole:
-            break;
-        case orderbook_model::BaseMinVolumeDenomRole:
-            break;
-        case orderbook_model::BaseMinVolumeNumerRole:
-            break;
-        case orderbook_model::BaseMaxVolumeRole:
-            break;
-        case orderbook_model::BaseMaxVolumeDenomRole:
-            break;
-        case orderbook_model::BaseMaxVolumeNumerRole:
-            break;
-        case orderbook_model::RelMinVolumeRole:
-            break;
-        case orderbook_model::RelMinVolumeDenomRole:
-            break;
-        case orderbook_model::RelMinVolumeNumerRole:
-            break;
-        case orderbook_model::RelMaxVolumeRole:
-            break;
-        case orderbook_model::RelMaxVolumeDenomRole:
-            break;
-        case orderbook_model::RelMaxVolumeNumerRole:
-            break;
-        case orderbook_model::EnoughFundsToPayMinVolume:
-            break;
+
+        case orderbook_model::RawCEXRatesRole:
+        {
+            double left = left_data.toDouble();
+            double right = right_data.toDouble();
+
+            const bool is_buy = this->m_system_mgr.get_system<trading_page>().get_market_mode() == MarketMode::Buy;
+            if (!is_buy)
+            {
+                if (left == 0.0) return true;
+                if (right == 0.0) return false;
+                return left > right;
+            }
+            else
+            {
+                if (left == 0.0) return false;
+                if (right == 0.0) return true;
+                return left < right;
+            }
+        }
+
+        case orderbook_model::RawPriceFiatRole:
+        {
+            return left_data.toDouble() < right_data.toDouble();
+        }
+
         case orderbook_model::CEXRatesRole:
         {
-            // FAST PATH: Extract native primitives to completely bypass string parsing
-            t_float_50 left, right;
-
-            if (left_data.userType() == QMetaType::QString) {
-                left = safe_float(left_data.toString().toStdString());
-            } else {
-                left = t_float_50(left_data.toDouble());
-            }
-
-            if (right_data.userType() == QMetaType::QString) {
-                right = safe_float(right_data.toString().toStdString());
-            } else {
-                right = t_float_50(right_data.toDouble());
-            }
+            t_float_50 left  = safe_float(left_data.toString().toStdString());
+            t_float_50 right = safe_float(right_data.toString().toStdString());
 
             const bool is_buy = this->m_system_mgr.get_system<trading_page>().get_market_mode() == MarketMode::Buy;
             if (!is_buy)
@@ -118,33 +90,41 @@ namespace atomic_dex
                 return left < right;
             }
         }
-        case orderbook_model::SendRole:
-            break;
-        case orderbook_model::HaveCEXIDRole:
-            break;
-        case orderbook_model::NameAndTicker:
-            break;
+
         case orderbook_model::PriceFiatRole:
         {
-            // FAST PATH: Scope block addition handles zero-allocation numeric sorting
-            t_float_50 left, right;
-
-            if (left_data.userType() == QMetaType::QString) {
-                left = safe_float(left_data.toString().toStdString());
-            } else {
-                left = t_float_50(left_data.toDouble());
-            }
-
-            if (right_data.userType() == QMetaType::QString) {
-                right = safe_float(right_data.toString().toStdString());
-            } else {
-                right = t_float_50(right_data.toDouble());
-            }
-
+            t_float_50 left  = safe_float(left_data.toString().toStdString());
+            t_float_50 right = safe_float(right_data.toString().toStdString());
             return left < right;
         }
+
+        case orderbook_model::TotalRole:
+        case orderbook_model::UUIDRole:
+        case orderbook_model::IsMineRole:
+        case orderbook_model::PriceDenomRole:
+        case orderbook_model::PriceNumerRole:
+        case orderbook_model::PercentDepthRole:
+        case orderbook_model::CoinRole:
+        case orderbook_model::MinVolumeRole:
+        case orderbook_model::BaseMinVolumeRole:
+        case orderbook_model::BaseMinVolumeDenomRole:
+        case orderbook_model::BaseMinVolumeNumerRole:
+        case orderbook_model::BaseMaxVolumeRole:
+        case orderbook_model::BaseMaxVolumeDenomRole:
+        case orderbook_model::BaseMaxVolumeNumerRole:
+        case orderbook_model::RelMinVolumeRole:
+        case orderbook_model::RelMinVolumeDenomRole:
+        case orderbook_model::RelMinVolumeNumerRole:
+        case orderbook_model::RelMaxVolumeRole:
+        case orderbook_model::RelMaxVolumeDenomRole:
+        case orderbook_model::RelMaxVolumeNumerRole:
+        case orderbook_model::EnoughFundsToPayMinVolume:
+        case orderbook_model::SendRole:
+        case orderbook_model::HaveCEXIDRole:
+        case orderbook_model::NameAndTicker:
+        default:
+            return false;
         }
-        return true;
     }
 
     bool
