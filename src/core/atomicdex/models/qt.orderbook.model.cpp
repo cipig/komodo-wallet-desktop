@@ -193,10 +193,8 @@ namespace atomic_dex
         }
         case RawCEXRatesRole:
             return safe_float(order_item.cached_price_diff).convert_to<double>();
-
         case RawPriceFiatRole:
             return safe_float(order_item.cached_price_fiat).convert_to<double>();
-        }
         case FormattedPriceFiatRole:
         {
             if (m_current_orderbook_kind == kind::best_orders)
