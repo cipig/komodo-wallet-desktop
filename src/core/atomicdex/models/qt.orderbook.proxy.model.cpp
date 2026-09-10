@@ -41,11 +41,8 @@ namespace atomic_dex
         QVariant left_data  = sourceModel()->data(source_left, role);
         QVariant right_data = sourceModel()->data(source_right, role);
 
-        switch (static_cast<atomic_dex::orderbook_model::OrderbookRoles>(role))
-        {
-        case orderbook_model::PriceRole:
-            return safe_float(left_data.toString().toStdString()) < safe_float(right_data.toString().toStdString());
-
+      switch (static_cast<atomic_dex::orderbook_model::OrderbookRoles>(role))
+      {
         case orderbook_model::RawCEXRatesRole:
         {
             double left = left_data.toDouble();
@@ -130,7 +127,7 @@ namespace atomic_dex
         case orderbook_model::NameAndTicker:
         default:
             return false;
-        }
+      }
     }
 
     bool
