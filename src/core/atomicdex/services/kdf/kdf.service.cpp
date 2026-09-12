@@ -2126,10 +2126,14 @@ namespace atomic_dex
             filter_infos    = value_ptr->filtering_infos;
         }
 
+        // Background polling should stay lightweight.
+        // UI-driven refresh/pagination keeps full page-size behavior.
+        const std::size_t recent_swaps_limit = after_manual_reset ? limit : 5ull;
+
         //! First time fetch or current page
         nlohmann::json            my_swaps = kdf::template_request("my_recent_swaps");
         t_my_recent_swaps_request request{
-            .limit          = limit,
+            .limit          = recent_swaps_limit,
             .page_number    = current_page,
             .my_coin        = filter_infos.my_coin,
             .other_coin     = filter_infos.other_coin,
@@ -2138,7 +2142,7 @@ namespace atomic_dex
         };
         to_json(my_swaps, request);
         batch.push_back(my_swaps);
-        //SPDLOG_DEBUG("my_swaps req: {}", my_swaps.dump(4));
+        SPDLOG_DEBUG("my_recent_swaps req: [limit: {}], after_manual_reset: {}", recent_swaps_limit, after_manual_reset);
 
         //! Active swaps
         nlohmann::json         active_swaps = kdf::template_request("active_swaps");

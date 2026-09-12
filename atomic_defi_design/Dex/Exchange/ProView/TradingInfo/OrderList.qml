@@ -44,9 +44,9 @@ Item
             }
         }
 
-        // Pagination
         DexPaginator
         {
+            id: historyPaginator
             visible: is_history && list.count > 0
             enabled: list.enabled
             Layout.maximumHeight: 50
@@ -55,6 +55,21 @@ Item
             Layout.bottomMargin: 10
             itemsPerPageComboBox.mainBackgroundColor: Dex.CurrentTheme.comboBoxBackgroundColor
             itemsPerPageComboBox.popupBackgroundColor: Dex.CurrentTheme.comboBoxBackgroundColor
+
+            onCurrentValueChanged: {
+                if (API.app.orders_mdl.current_page !== historyPaginator.currentValue) {
+                    list.currentIndex = -1
+                    API.app.orders_mdl.current_page = historyPaginator.currentValue
+                }
+            }
+
+            Connections {
+                target: historyPaginator.itemsPerPageComboBox
+                function onCurrentValueChanged() {
+                    list.currentIndex = -1
+                    API.app.orders_mdl.limit_nb_elements = historyPaginator.itemsPerPageComboBox.currentValue
+                }
+            }
         }
     }
 

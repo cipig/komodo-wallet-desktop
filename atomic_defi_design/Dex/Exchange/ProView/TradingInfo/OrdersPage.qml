@@ -69,6 +69,9 @@ Item {
             list_model_proxy.is_history = is_history
             applyFilter()
             list_model_proxy.apply_all_filtering()
+            if (isHistoryTab) {
+                API.app.orders_mdl.current_page = 1
+            }
         }
     }
 
