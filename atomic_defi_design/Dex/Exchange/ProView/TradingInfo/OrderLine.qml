@@ -162,7 +162,7 @@ FloatingBackground
                     anchors.verticalCenter: parent.verticalCenter
                     font.weight: Font.Bold
                     font.pixelSize: 12
-                    text_value: !details ? "" : details.base_coin
+                    text_value: (details && typeof details.base_coin !== "undefined" && details.base_coin !== null) ? details.base_coin : ""
                     privacy: true
                     elide: Text.ElideRight
                     maximumLineCount: 1
@@ -187,7 +187,7 @@ FloatingBackground
                     anchors.verticalCenter: parent.verticalCenter
                     font.weight: Font.Bold
                     font.pixelSize: 12
-                    text_value: !details ? "" : details.rel_coin
+                    text_value: (details && typeof details.rel_coin !== "undefined" && details.rel_coin !== null) ? details.rel_coin : ""
                     privacy: true
                     elide: Text.ElideRight
                     maximumLineCount: 1

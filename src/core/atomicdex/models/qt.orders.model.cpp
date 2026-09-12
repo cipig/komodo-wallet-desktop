@@ -587,20 +587,20 @@ namespace atomic_dex
         m_model_data.nb_orders = contents.nb_orders;
         if (m_model_data.nb_pages != contents.nb_pages)
         {
-            SPDLOG_INFO("nb page changed");
+            SPDLOG_DEBUG("nb page changed");
             m_model_data.nb_pages = contents.nb_pages;
             emit nbPageChanged();
         }
 
         if (m_model_data.limit != contents.limit)
         {
-            SPDLOG_INFO("nb elements / page changed");
+            SPDLOG_DEBUG("nb elements / page changed");
             this->set_limit_nb_elements(static_cast<int>(contents.limit));
         }
 
         if (m_model_data.current_page != contents.current_page)
         {
-            SPDLOG_INFO("Page is different from kdf contents, force change");
+            SPDLOG_DEBUG("Page is different from kdf contents, force change");
             this->set_current_page(static_cast<int>(contents.current_page));
         }
     }

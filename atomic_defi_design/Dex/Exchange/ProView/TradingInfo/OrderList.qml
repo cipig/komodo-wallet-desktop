@@ -70,6 +70,15 @@ Item
                     API.app.orders_mdl.limit_nb_elements = historyPaginator.itemsPerPageComboBox.currentValue
                 }
             }
+
+            Connections {
+                target: API.app.orders_mdl
+                function onCurrentPageChanged() {
+                    if (historyPaginator.currentValue !== API.app.orders_mdl.current_page) {
+                        historyPaginator.currentValue = API.app.orders_mdl.current_page
+                    }
+                }
+            }
         }
     }
 
