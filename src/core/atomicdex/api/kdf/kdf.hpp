@@ -147,7 +147,7 @@ namespace atomic_dex::kdf
 
     struct my_recent_swaps_request
     {
-        std::size_t                limit{50ull};
+        std::size_t                limit{5ull};
         std::optional<std::size_t> page_number{1};
         std::optional<std::string> from_uuid;
 
