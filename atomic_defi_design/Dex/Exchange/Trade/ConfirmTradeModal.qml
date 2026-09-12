@@ -5,7 +5,6 @@ import "../../Qaterial" as Qaterial
 import AtomicDEX.TradingError 1.0
 import "../../Components"
 import "../../Constants"
-import ".."
 import "Orders/"
 import App 1.0
 import Dex.Themes 1.0 as Dex

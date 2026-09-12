@@ -17,8 +17,6 @@
 #include <QJsonDocument>
 #include <QSettings>
 #include <boost/algorithm/string/replace.hpp>
-
-//! Project Headers
 #include "atomicdex/api/kdf/rpc_v1/rpc.buy.hpp"
 #include "atomicdex/api/kdf/rpc_v1/rpc.sell.hpp"
 #include "atomicdex/api/kdf/rpc_v1/rpc.setprice.hpp"
@@ -836,21 +834,27 @@ namespace atomic_dex
     void
     trading_page::set_volume(QString volume)
     {
-        if (m_volume != volume && !volume.isEmpty())
+        if (volume.isEmpty())
         {
-            if (safe_float(volume.toStdString()) < 0)
-            {
-                volume = "0";
-            }
-            m_volume = std::move(volume);
-            // SPDLOG_DEBUG("volume is : [{}]", m_volume.toStdString());
-
-            this->determine_total_amount();
-            emit volumeChanged();
-            this->cap_volume();
-
-            this->get_orderbook_wrapper()->refresh_best_orders();
+            return;
         }
+
+        // Early exit guard block to kill rapid-fire duplicate event cascades
+        if (m_volume == volume)
+        {
+            return;
+        }
+
+        if (safe_float(volume.toStdString()) < 0)
+        {
+            volume = "0";
+        }
+
+        m_volume = std::move(volume);
+        this->determine_total_amount();
+        emit volumeChanged();
+        this->cap_volume();
+        this->get_orderbook_wrapper()->refresh_best_orders();
     }
 
     QString
@@ -1194,18 +1198,22 @@ namespace atomic_dex
         {
             m_preferred_order->operator[]("capped") = false;
             this->set_price(QString::fromStdString(utils::format_float(safe_float(m_preferred_order->at("price").get<std::string>()))));
-            this->determine_max_volume();
             QString min_vol = QString::fromStdString(utils::format_float(safe_float(m_preferred_order->at("base_min_volume").get<std::string>())));
-            this->set_min_trade_vol(min_vol);
+            this->m_minimal_trading_amount = std::move(min_vol);
+            emit minTradeVolChanged();
+            this->determine_max_volume();
 
             if (this->m_current_trading_mode == TradingModeGadget::Pro)
             {
                 auto available_quantity = m_preferred_order->at("base_max_volume").get<std::string>();
                 this->set_volume(QString::fromStdString(utils::extract_large_float(available_quantity)));
             }
+            else
+            {
+                // In non-pro mode, explicitly refresh here since set_volume isn't called above
+                this->get_orderbook_wrapper()->refresh_best_orders();
+            }
 
-            //already triggered automatically inside set_volume above!
-            //this->get_orderbook_wrapper()->refresh_best_orders();
             this->determine_fees();
             emit preferredOrderChangeFinished();
         }

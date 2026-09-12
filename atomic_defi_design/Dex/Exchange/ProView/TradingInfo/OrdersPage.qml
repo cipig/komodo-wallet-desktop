@@ -6,7 +6,6 @@ import "../../../Qaterial" as Qaterial
 import App 1.0
 import "../../../Components"
 import "../../../Constants"
-import "../../.."
 import Dex.Themes 1.0 as Dex
 
 Item {

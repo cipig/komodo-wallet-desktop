@@ -174,12 +174,6 @@ namespace atomic_dex
             }
             return "0.00";
         }
-        case HaveCEXIDRole:
-        {
-            const auto* global_cfg = m_system_mgr.get_system<portfolio_page>().get_global_cfg();
-            const auto& infos      = global_cfg->get_coin_info(data(index, CoinRole).toString().toStdString());
-            return infos.coingecko_id != "test-coin" || infos.coinpaprika_id != "test-coin";
-        }
         case CEXRatesRole:
             return QString::fromStdString(order_item.cached_price_diff);
         case FormattedCEXRatesRole:
@@ -270,18 +264,6 @@ namespace atomic_dex
         case MinVolumeRole:
             order.min_volume = value.toString().toStdString();
             break;
-        case NameAndTicker:
-            break;
-        case EnoughFundsToPayMinVolume:
-            break;
-        case CEXRatesRole:
-            break;
-        case SendRole:
-            break;
-        case PriceFiatRole:
-            break;
-        case HaveCEXIDRole:
-            break;
         case BaseMinVolumeRole:
             order.base_min_volume = value.toString().toStdString();
             break;
@@ -318,6 +300,11 @@ namespace atomic_dex
         case RelMaxVolumeNumerRole:
             order.rel_max_volume_numer = value.toString().toStdString();
             break;
+        case NameAndTicker:
+        case EnoughFundsToPayMinVolume:
+        case CEXRatesRole:
+        case SendRole:
+        case PriceFiatRole:
         case RawCEXRatesRole:
         case RawPriceFiatRole:
         case FormattedCEXRatesRole:

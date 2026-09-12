@@ -85,7 +85,6 @@ namespace atomic_dex
         std::optional<std::size_t>                        decimals{std::nullopt};
         std::optional<std::size_t>                        matic_gas_station_decimals{std::nullopt};
         std::optional<std::size_t>                        chain_id{std::nullopt};
-        std::optional<nlohmann::json>                     custom_backup;
         std::optional<std::set<CoinType>>                 other_types;
         std::optional<electrum_servers>                   electrum_urls;
         std::optional<nodes>                              urls;

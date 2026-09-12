@@ -38,7 +38,7 @@ namespace
         {
             return CoinType::GRC20;
         }
-        if (coin_type == "TRX")
+        if (coin_type == "TRX" || coin_type == "TRC-20")
         {
             return CoinType::TRC20;
         }

@@ -56,20 +56,19 @@ namespace atomic_dex
             CEXRatesRole,
             SendRole,
             PriceFiatRole,
-            HaveCEXIDRole,          // 270
             BaseMinVolumeRole,
             BaseMinVolumeDenomRole,
             BaseMinVolumeNumerRole,
             BaseMaxVolumeRole,
-            BaseMaxVolumeDenomRole, // 275
+            BaseMaxVolumeDenomRole,
             BaseMaxVolumeNumerRole,
             RelMinVolumeRole,
             RelMinVolumeDenomRole,
             RelMinVolumeNumerRole,
-            RelMaxVolumeRole,       // 280
+            RelMaxVolumeRole,
             RelMaxVolumeDenomRole,
             RelMaxVolumeNumerRole,
-            NameAndTicker,          // 283
+            NameAndTicker,
             RawCEXRatesRole,
             RawPriceFiatRole,
             FormattedCEXRatesRole,

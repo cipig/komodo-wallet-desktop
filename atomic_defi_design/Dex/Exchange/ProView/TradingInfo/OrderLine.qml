@@ -80,10 +80,10 @@ FloatingBackground
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                     font.pixelSize: 12
-                    text_value: {
-                        if (!details || !details.base_amount) return ""
-                        let val = parseFloat(details.base_amount)
-                        return isNaN(val) ? details.base_amount : Number(val.toFixed(6)).toString()
+                    text_value:
+                    {
+                        if (!details || typeof details.base_amount === "undefined" || details.base_amount === null) return "";
+                        return parseFloat(details.base_amount).toFixed(6);
                     }
                     privacy: true
                     elide: Text.ElideRight
@@ -117,10 +117,10 @@ FloatingBackground
                     anchors.rightMargin: 3
                     anchors.verticalCenter: parent.verticalCenter
                     font.pixelSize: 12
-                    text_value: {
-                        if (!details || !details.rel_amount) return ""
-                        let val = parseFloat(details.rel_amount)
-                        return isNaN(val) ? details.rel_amount : Number(val.toFixed(6)).toString()
+                    text_value:
+                    {
+                        if (!details || typeof details.rel_amount === "undefined" || details.rel_amount === null) return "";
+                        return parseFloat(details.rel_amount).toFixed(6);
                     }
                     privacy: true
                     elide: Text.ElideRight

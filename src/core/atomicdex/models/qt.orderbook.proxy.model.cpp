@@ -123,7 +123,6 @@ namespace atomic_dex
         case orderbook_model::RelMaxVolumeNumerRole:
         case orderbook_model::EnoughFundsToPayMinVolume:
         case orderbook_model::SendRole:
-        case orderbook_model::HaveCEXIDRole:
         case orderbook_model::NameAndTicker:
         default:
             return false;
