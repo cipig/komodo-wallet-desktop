@@ -585,6 +585,7 @@ namespace atomic_dex
     {
         this->set_average_events_time_registry(nlohmann_json_object_to_qt_json_object(contents.average_events_time));
         m_model_data.nb_orders = contents.nb_orders;
+
         if (m_model_data.nb_pages != contents.nb_pages)
         {
             SPDLOG_DEBUG("nb page changed");
@@ -594,14 +595,16 @@ namespace atomic_dex
 
         if (m_model_data.limit != contents.limit)
         {
-            SPDLOG_DEBUG("nb elements / page changed");
-            this->set_limit_nb_elements(static_cast<int>(contents.limit));
+            SPDLOG_DEBUG("limit changed from backend sync");
+            m_model_data.limit = contents.limit;
+            emit limitNbElementsChanged();
         }
 
         if (m_model_data.current_page != contents.current_page)
         {
-            SPDLOG_DEBUG("Page is different from kdf contents, force change");
-            this->set_current_page(static_cast<int>(contents.current_page));
+            SPDLOG_DEBUG("current page changed from backend sync");
+            m_model_data.current_page = contents.current_page;
+            emit currentPageChanged();
         }
     }
 } // namespace atomic_dex

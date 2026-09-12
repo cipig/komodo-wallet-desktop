@@ -18,7 +18,6 @@ Item {
     property alias title: order_list.title
     property alias items: order_list.items
     property bool is_history: false
-    property bool history_initialized_for_session: false
 
     function update()
     {
@@ -71,11 +70,6 @@ Item {
             list_model_proxy.is_history = is_history
             applyFilter()
             list_model_proxy.apply_all_filtering()
-
-            if (isHistoryTab && !history_initialized_for_session) {
-                API.app.orders_mdl.current_page = 1
-                history_initialized_for_session = true
-            }
         }
     }
 
