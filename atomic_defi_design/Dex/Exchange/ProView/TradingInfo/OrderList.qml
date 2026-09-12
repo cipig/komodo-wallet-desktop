@@ -55,8 +55,10 @@ Item
             Layout.bottomMargin: 10
             itemsPerPageComboBox.mainBackgroundColor: Dex.CurrentTheme.comboBoxBackgroundColor
             itemsPerPageComboBox.popupBackgroundColor: Dex.CurrentTheme.comboBoxBackgroundColor
+            property bool syncingFromModel: false
 
             onCurrentValueChanged: {
+                if (syncingFromModel) return
                 if (API.app.orders_mdl.current_page !== historyPaginator.currentValue) {
                     list.currentIndex = -1
                     API.app.orders_mdl.current_page = historyPaginator.currentValue
@@ -75,7 +77,9 @@ Item
                 target: API.app.orders_mdl
                 function onCurrentPageChanged() {
                     if (historyPaginator.currentValue !== API.app.orders_mdl.current_page) {
+                        historyPaginator.syncingFromModel = true
                         historyPaginator.currentValue = API.app.orders_mdl.current_page
+                        historyPaginator.syncingFromModel = false
                     }
                 }
             }
