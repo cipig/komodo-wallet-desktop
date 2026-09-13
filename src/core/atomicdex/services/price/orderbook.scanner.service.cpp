@@ -59,7 +59,7 @@ namespace atomic_dex
 
                     if (rpc.error)
                     {
-                        SPDLOG_ERROR("error: bad answer json for process_best_orders: {}", rpc.error->error);
+                        SPDLOG_WARN("orderbook_scanner_service::process_best_orders error from rpc: {}", rpc.error->error);
                         this->m_bestorders_busy = false;
                         emit trading_pg.get_orderbook_wrapper()->bestOrdersBusyChanged();
                     }

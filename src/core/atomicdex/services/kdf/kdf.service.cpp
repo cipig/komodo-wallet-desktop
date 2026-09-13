@@ -2142,7 +2142,7 @@ namespace atomic_dex
         };
         to_json(my_swaps, request);
         batch.push_back(my_swaps);
-        SPDLOG_DEBUG("my_recent_swaps req: [limit: {}], after_manual_reset: {}", recent_swaps_limit, after_manual_reset);
+        //SPDLOG_DEBUG("my_recent_swaps req: [limit: {}], after_manual_reset: {}", recent_swaps_limit, after_manual_reset);
 
         //! Active swaps
         nlohmann::json         active_swaps = kdf::template_request("active_swaps");

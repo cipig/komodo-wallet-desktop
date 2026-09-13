@@ -588,14 +588,14 @@ namespace atomic_dex
 
         if (m_model_data.limit != contents.limit)
         {
-            SPDLOG_DEBUG("limit changed from backend sync");
+            SPDLOG_DEBUG("UNUSED limit changed from backend sync");
             m_model_data.limit = contents.limit;
             emit limitNbElementsChanged();
         }
 
         if (m_model_data.current_page != contents.current_page)
         {
-            SPDLOG_DEBUG("current page changed from backend sync");
+            SPDLOG_DEBUG("UNUSED current page changed from backend sync");
             m_model_data.current_page = contents.current_page;
             emit currentPageChanged();
         }
