@@ -352,8 +352,9 @@ namespace atomic_dex
     }
 
     void
-    global_price_service::on_force_update_providers(const force_update_providers&)
+    global_price_service::on_force_update_providers(const force_update_providers&, [[maybe_unused]] atomic_dex::utils::caller_location location)
     {
+        SPDLOG_DEBUG("global_price_service::on_force_update_providers called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
         async_fetch_fiat_rates()
             .then(
                 [this](async::task<t_http_response> previous_task)

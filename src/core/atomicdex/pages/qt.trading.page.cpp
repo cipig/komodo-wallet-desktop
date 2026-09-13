@@ -590,8 +590,6 @@ namespace atomic_dex
                 
                 if (!ec)
                 {
-                    //SPDLOG_DEBUG("[process_action::post_process_orderbook_finished] Needs reset: {}", m_models_actions[orderbook_need_a_reset]);
-                    //SPDLOG_DEBUG(">>>> triggers: {}", m_models_actions[orderbook_need_a_reset] ? "reset_orderbook" : "refresh_orderbook_model_data");
                     auto* wrapper = get_orderbook_wrapper();
                     m_models_actions[orderbook_need_a_reset] ? wrapper->reset_orderbook(result) : wrapper->refresh_orderbook_model_data(result);
 
@@ -617,6 +615,7 @@ namespace atomic_dex
                         {
                             if (m_post_clear_forms && this->m_current_trading_mode == TradingModeGadget::Pro)
                             {
+                                SPDLOG_DEBUG("does this ever happen? or is this UNUSED?");
                                 this->determine_max_volume();
                                 this->set_volume(get_max_volume());
                                 this->set_min_trade_vol(wrapper->get_current_min_taker_vol());
@@ -754,8 +753,9 @@ namespace atomic_dex
     }
 
     void
-    trading_page::set_price(QString price)
+    trading_page::set_price(QString price, [[maybe_unused]] atomic_dex::utils::caller_location location)
     {
+        SPDLOG_DEBUG("trading_page::set_price called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
         if (price.isEmpty())
         {
             price = "0";

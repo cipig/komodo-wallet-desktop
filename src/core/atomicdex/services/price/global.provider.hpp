@@ -16,11 +16,10 @@
 
 #pragma once
 
-//! STD
 #include <unordered_set>
-
 #include "atomicdex/config/app.cfg.hpp"
 #include "atomicdex/services/kdf/kdf.service.hpp"
+#include "atomicdex/utilities/caller_location.hpp"
 
 namespace atomic_dex
 {
@@ -62,7 +61,7 @@ namespace atomic_dex
         bool is_currency_available(const std::string& currency) const;
 
         //! Events
-        void on_force_update_providers(const force_update_providers&);
+        void on_force_update_providers(const force_update_providers&, utils::caller_location location = utils::caller_location::current());
     };
 } // namespace atomic_dex
 

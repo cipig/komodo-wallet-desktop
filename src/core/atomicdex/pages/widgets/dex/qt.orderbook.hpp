@@ -16,16 +16,12 @@
 
 #pragma once
 
-//! QT
 #include <QJsonObject>
 #include <QObject>
-
-//! Deps
 #include <antara/gaming/ecs/system.manager.hpp>
 #include <boost/thread/synchronized_value.hpp>
-
-//! Project
 #include "atomicdex/models/qt.orderbook.model.hpp"
+#include "atomicdex/utilities/caller_location.hpp"
 
 namespace atomic_dex
 {
@@ -48,7 +44,7 @@ namespace atomic_dex
       public:
         void                           adjust_min_vol();
         void                           refresh_orderbook_model_data(kdf::orderbook_result_rpc answer);
-        void                           reset_orderbook(kdf::orderbook_result_rpc answer);
+        void                           reset_orderbook(kdf::orderbook_result_rpc answer, utils::caller_location location = utils::caller_location::current());
         void                           clear_orderbook();
         [[nodiscard]] orderbook_model* get_asks() const;
         [[nodiscard]] orderbook_model* get_bids() const;
@@ -60,7 +56,7 @@ namespace atomic_dex
         [[nodiscard]] QString          get_rel_min_taker_vol() const;
         [[nodiscard]] QString          get_current_min_taker_vol() const;
 
-        Q_INVOKABLE void refresh_best_orders();
+        Q_INVOKABLE void refresh_best_orders(utils::caller_location location = utils::caller_location::current());
         Q_INVOKABLE void select_best_order(const QString& order_uuid);
 
       signals:

@@ -192,7 +192,7 @@ namespace atomic_dex
         void                              set_selected_order_status(SelectedOrderStatus order_status);
         [[nodiscard]] QString             get_price_reversed() const;
         [[nodiscard]] QString             get_price() const;
-        void                              set_price(QString price);
+        void                              set_price(QString price, utils::caller_location location = utils::caller_location::current());
         [[nodiscard]] QString         get_min_trade_vol() const;
         void                          set_min_trade_vol(QString min_trade_vol);
         [[nodiscard]] QString         get_volume() const;
