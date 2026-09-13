@@ -81,7 +81,11 @@ RowLayout
 
         model: options
         currentIndex: options.indexOf(item_count)
-        onCurrentValueChanged: Constants.API.app.orders_mdl.limit_nb_elements = currentValue
+        onCurrentValueChanged: {
+            if (Constants.API.app.orders_mdl.limit_nb_elements !== currentValue) {
+                Constants.API.app.orders_mdl.limit_nb_elements = currentValue
+            }
+        }
     }
 
     DexLabel
@@ -140,8 +144,10 @@ RowLayout
             Layout.alignment: Qt.AlignVCenter
             color: modelData.number === currentValue ? 'transparent' : Dex.CurrentTheme.buttonColorEnabled
             onClicked: {
-                if (currentValue !== model.modelData) {
-                    Constants.API.app.orders_mdl.current_page = btnGroup.model[index].number
+                const page = btnGroup.model[index].number
+                if (page === -1) return
+                if (currentValue !== page) {
+                    Constants.API.app.orders_mdl.current_page = page
                     refreshBtn()
                 }
             }
