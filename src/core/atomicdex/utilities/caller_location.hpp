@@ -7,15 +7,16 @@
    }
 #else
    namespace atomic_dex::utils {
-       // Fallback structure for older macOS Xcode compilers
        struct caller_location {
-           const char* file;
-           int line;
-           const char* func;
+           const char* _file;
+           int         _line;
+           const char* _func;
+
            static constexpr caller_location current() { return { "unknown", 0, "unknown" }; }
-           constexpr const char* file_name() const { return file; }
-           constexpr const char* function_name() const { return func; }
-           constexpr int line() const { return line; }
+
+           constexpr const char* file_name() const { return _file; }
+           constexpr const char* function_name() const { return _func; }
+           constexpr int line() const { return _line; }
        };
    }
 #endif
