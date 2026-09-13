@@ -107,14 +107,6 @@ namespace atomic_dex
             this->m_is_history = is_history;
             emit isHistoryChanged();
             this->invalidate();
-            if (m_is_history)
-            {
-                qobject_cast<orders_model*>(this->sourceModel())->set_current_page(1);
-            }
-            else
-            {
-                emit qobject_cast<orders_model*>(this->sourceModel())->lengthChanged();
-            }
         }
     }
 

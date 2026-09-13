@@ -296,10 +296,16 @@ namespace atomic_dex
     void
     orders_model::set_current_page(int current_page)
     {
+        if (this->is_fetching_busy())
+        {
+            SPDLOG_DEBUG("set_current_page ignored (fetching busy), requested={}", current_page);
+            return;
+        }
+
         if (static_cast<std::size_t>(current_page) != m_model_data.current_page)
         {
             this->set_fetching_busy(true);
-            this->reset_backend("set_current_page"); ///< We change page, we need to clear, but do not notify the front-end
+            this->reset_backend("set_current_page");
             auto& kdf = this->m_system_manager.get_system<kdf_service>();
             kdf.set_orders_and_swaps_pagination_infos(static_cast<std::size_t>(current_page), m_model_data.limit, m_model_data.filtering_infos);
         }

@@ -48,12 +48,6 @@ Item {
         applyTickerFilter2(combo_base.currentTicker, combo_rel.currentTicker)
     }
 
-    Component.onCompleted: {
-        list_model_proxy.is_history = root.is_history
-        applyFilter()
-        list_model_proxy.apply_all_filtering()
-    }
-
     ColumnLayout
     {
         anchors.fill: parent
