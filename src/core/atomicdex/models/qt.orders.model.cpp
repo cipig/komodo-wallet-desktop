@@ -34,7 +34,6 @@ namespace atomic_dex
         this->m_model_proxy->setSortRole(UnixTimestampRole);
         this->m_model_proxy->setFilterRole(TickerPairRole);
         this->m_model_proxy->sort(0, Qt::DescendingOrder);
-        this->m_dispatcher.sink<current_currency_changed>().connect<&orders_model::on_current_currency_changed>(this);
     }
 } // namespace atomic_dex
 
@@ -387,18 +386,6 @@ namespace atomic_dex
     orders_model::get_nb_pages() const
     {
         return static_cast<int>(m_model_data.nb_pages);
-    }
-} // namespace atomic_dex
-
-//! Events
-namespace atomic_dex
-{
-    void
-    orders_model::on_current_currency_changed([[maybe_unused]] const current_currency_changed&)
-    {
-        auto& kdf = m_system_manager.get_system<kdf_service>();
-
-        kdf.batch_fetch_orders_and_swap();
     }
 } // namespace atomic_dex
 

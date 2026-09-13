@@ -168,8 +168,5 @@ namespace atomic_dex
         //! Private Swaps API
         void update_or_insert_swaps(const orders_and_swaps& contents);
         void update_swap(const t_order_swaps_data& contents);
-
-        //! Events
-        void on_current_currency_changed(const current_currency_changed&);
     };
 } // namespace atomic_dex

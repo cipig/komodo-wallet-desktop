@@ -645,7 +645,6 @@ namespace atomic_dex
     application::on_fiat_rate_updated(const fiat_rate_updated&)
     {
         this->dispatcher_.trigger<update_portfolio_values>();
-        this->dispatcher_.trigger<current_currency_changed>();
     }
 
     void
