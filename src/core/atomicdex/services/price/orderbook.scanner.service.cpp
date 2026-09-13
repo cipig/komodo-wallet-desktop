@@ -56,12 +56,12 @@ namespace atomic_dex
                 auto callback = [this, &trading_pg]<typename RpcRequest>(RpcRequest rpc)
                 {
                     nlohmann::json batch = nlohmann::json::array();
+
                     if (rpc.error)
                     {
                         SPDLOG_ERROR("error: bad answer json for process_best_orders: {}", rpc.error->error);
-                        using namespace std::chrono_literals; std::this_thread::sleep_for(3s);
                         this->m_bestorders_busy = false;
-                        this->dispatcher_.trigger<process_orderbook_finished>(process_orderbook_finished{.is_a_reset = true});
+                        emit trading_pg.get_orderbook_wrapper()->bestOrdersBusyChanged();
                     }
                     else
                     {
