@@ -18,14 +18,13 @@
 
 #include <string>
 #include <boost/lockfree/queue.hpp>
-
 #include <QObject>
-
 #include "atomicdex/constants/qt.actions.hpp"
 #include "atomicdex/constants/qt.trading.enums.hpp"
 #include "atomicdex/events/events.hpp"
 #include "atomicdex/events/qt.events.hpp"
 #include "atomicdex/models/qt.portfolio.model.hpp"
+#include "atomicdex/utilities/caller_location.hpp"
 #include "widgets/dex/qt.market.pairs.hpp"
 #include "widgets/dex/qt.orderbook.hpp"
 #include "widgets/dex/qt.orders.widget.hpp"
@@ -125,7 +124,7 @@ namespace atomic_dex
         bool                                   m_skip_taker{false};
 
         //! Private function
-        void                       determine_max_volume();
+        void                       determine_max_volume(utils::caller_location location = utils::caller_location::current());
         void                       determine_total_amount();
         void                       determine_cex_rates();
         void                       determine_pair_volume_24hr();

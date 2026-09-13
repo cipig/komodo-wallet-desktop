@@ -34,8 +34,10 @@ namespace atomic_dex
 namespace atomic_dex
 {
     void
-    orderbook_scanner_service::process_best_orders(std::source_location location)
+    orderbook_scanner_service::process_best_orders([[maybe_unused]] utils::caller_location location)
     {
+        SPDLOG_DEBUG("orderbook_scanner_service::process_best_orders triggered by: {} in {}:{}", location.function_name(), location.file_name(), location.line());
+
         if (m_bestorders_busy)
         {
             SPDLOG_DEBUG("orderbook_scanner_service::process_best_orders is busy - skipping. "

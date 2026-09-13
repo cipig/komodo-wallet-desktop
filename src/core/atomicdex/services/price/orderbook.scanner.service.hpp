@@ -16,12 +16,12 @@
 
 #pragma once
 
-#include <source_location>
 #include <antara/gaming/ecs/system.manager.hpp>
 #include <boost/thread/synchronized_value.hpp>
 #include <nlohmann/json.hpp>
 #include "atomicdex/api/kdf/kdf.client.hpp"
 #include "atomicdex/api/kdf/rpc_v2/rpc2.bestorders.hpp"
+#include "atomicdex/utilities/caller_location.hpp"
 
 //! Namespace declaration
 namespace atomic_dex
@@ -49,7 +49,7 @@ namespace atomic_dex
         void update() final;
 
         //! Public functions
-        void process_best_orders(std::source_location location = std::source_location::current());
+        void process_best_orders(utils::caller_location location = utils::caller_location::current());
 
         [[nodiscard]] bool is_best_orders_busy() const ;
 
