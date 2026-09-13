@@ -142,6 +142,14 @@ ColumnLayout {
                 } else if (currentIndex === tabView.history_idx && historyLoader.item) {
                     historyLoader.item.page_index = currentIndex
                     historyLoader.item.update()
+
+                    // explicit manual pagination fetch for History entry
+                    if (API.app.orders_mdl.current_page !== 1) {
+                        API.app.orders_mdl.current_page = 1
+                    } else {
+                        // force fetch when already on page 1
+                        API.app.orders_mdl.limit_nb_elements = API.app.orders_mdl.limit_nb_elements
+                    }
                 }
             }
         }
