@@ -16,12 +16,10 @@
 
 #pragma once
 
-//! Deps
+#include <source_location>
 #include <antara/gaming/ecs/system.manager.hpp>
 #include <boost/thread/synchronized_value.hpp>
 #include <nlohmann/json.hpp>
-
-//! Project Headers
 #include "atomicdex/api/kdf/kdf.client.hpp"
 #include "atomicdex/api/kdf/rpc_v2/rpc2.bestorders.hpp"
 
@@ -45,13 +43,13 @@ namespace atomic_dex
         explicit orderbook_scanner_service(entt::registry& registry, ag::ecs::system_manager& system_manager);
 
         //! Destructor
-        ~orderbook_scanner_service()  final = default;
+        ~orderbook_scanner_service() final = default;
 
         //! Public override
-        void update()  final;
+        void update() final;
 
         //! Public functions
-        void process_best_orders() ;
+        void process_best_orders(std::source_location location = std::source_location::current());
 
         [[nodiscard]] bool is_best_orders_busy() const ;
 
