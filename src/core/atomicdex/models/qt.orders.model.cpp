@@ -581,7 +581,6 @@ namespace atomic_dex
 
         if (m_model_data.nb_pages != contents.nb_pages)
         {
-            SPDLOG_DEBUG("nb page changed");
             m_model_data.nb_pages = contents.nb_pages;
             emit nbPageChanged();
         }

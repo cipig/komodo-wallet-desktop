@@ -53,21 +53,25 @@ QtObject {
 
     function canSend(ticker, progress=100)
     {
+        if (!ticker || ticker === "") return false
         return !API.app.wallet_pg.send_available ? false : progress < 100 ? false : true
     }
 
     function isWalletOnly(ticker)
     {
+        if (!ticker || ticker === "") return true
         return API.app.portfolio_pg.global_cfg_mdl.get_coin_info(ticker).is_wallet_only
     }
 
     function isFaucetCoin(ticker)
     {
+        if (!ticker || ticker === "") return false
         return API.app.portfolio_pg.global_cfg_mdl.get_coin_info(ticker).is_faucet_coin
     }
 
     function isVoteCoin(ticker)
     {
+        if (!ticker || ticker === "") return false
         return API.app.portfolio_pg.global_cfg_mdl.get_coin_info(ticker).is_vote_coin
     }
 
@@ -81,17 +85,20 @@ QtObject {
         return API.app.settings_pg.lang
     }
 
-    function isZhtlc(coin)
-    {
-        return API.app.portfolio_pg.global_cfg_mdl.get_coin_info(coin).is_zhtlc_family
-    }
     function isSia(coin)
     {
         return API.app.portfolio_pg.global_cfg_mdl.get_coin_info(coin).is_sia_family
     }
 
+    function isZhtlc(coin)
+    {
+        if (!coin || coin === "") return false
+        return API.app.portfolio_pg.global_cfg_mdl.get_coin_info(coin).is_zhtlc_family
+    }
+
     function isZhtlcReady(coin)
     {
+        if (!coin || coin === "") return false
         return !isZhtlc(coin) ? true : (zhtlcActivationProgress(coin) == 100) ? true : false
     }
 
