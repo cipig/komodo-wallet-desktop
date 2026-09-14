@@ -935,7 +935,8 @@ namespace atomic_dex
             }
             else
             {
-                SPDLOG_WARN("max_taker_vol cannot be empty, is it called before being determined ?");
+                this->set_max_volume("0");
+                return;
             }
         }
         else
@@ -944,7 +945,6 @@ namespace atomic_dex
             if (!m_price.isEmpty())
             {
                 t_float_50 price_f = safe_float(m_price.toStdString());
-                //! It's selected let's use rat price
                 if (m_preferred_order.has_value())
                 {
                     const auto& rel_max_taker_json_obj = get_orderbook_wrapper()->get_rel_max_taker_vol().toJsonObject();
@@ -1204,14 +1204,16 @@ namespace atomic_dex
         }
         m_preferred_order = std::move(preferred_order);
         emit preferredOrderChanged();
+
         if (!m_preferred_order->empty() && m_preferred_order->contains("price"))
         {
+            m_is_clearing_forms = true;
+
             m_preferred_order->operator[]("capped") = false;
             this->set_price(QString::fromStdString(utils::format_float(safe_float(m_preferred_order->at("price").get<std::string>()))));
             QString min_vol = QString::fromStdString(utils::format_float(safe_float(m_preferred_order->at("base_min_volume").get<std::string>())));
             this->m_minimal_trading_amount = std::move(min_vol);
             emit minTradeVolChanged();
-            //this->determine_max_volume();
 
             if (this->m_current_trading_mode == TradingModeGadget::Pro)
             {
@@ -1220,11 +1222,16 @@ namespace atomic_dex
             }
             else
             {
-                // In non-pro mode, explicitly refresh here since set_volume isn't called above
                 this->get_orderbook_wrapper()->refresh_best_orders();
             }
 
+            m_is_clearing_forms = false;
+
+            this->determine_max_volume();
+            this->cap_volume();
+            this->determine_total_amount();
             this->determine_fees();
+
             emit preferredOrderChangeFinished();
         }
     }
