@@ -137,22 +137,17 @@ namespace atomic_dex
             const auto& kdf_service_inst    = m_system_mgr.get_system<kdf_service>();
             const bool  is_asks             = m_current_orderbook_kind == kind::asks;
             const auto  min_volume_f        = safe_float(is_asks ? order_model_data.rel_min_volume : order_model_data.base_min_volume);
-
-            // Get the current single active pair tickers from the UI layout selector model
             const auto* market_selector     = trading_pg.get_market_pairs_mdl();
+
             if (!market_selector) {
                 return true;
             }
 
-            // If we buy an Ask, we spend Rel. If we buy a Bid, we spend Base.
             std::string coin_to_check = is_asks ?
                                         market_selector->get_right_selected_coin().toStdString() :
                                         market_selector->get_left_selected_coin().toStdString();
+            t_float_50 local_balance = kdf_service_inst.get_balance_info_f(coin_to_check);
 
-            // Direct local in-memory lookup. Zero network/JSON runtime translation cost.
-            t_float_50 local_balance = safe_float(kdf_service_inst.get_balance_info_f(coin_to_check));
-
-            // Fallback clause: If balance is missing/initializing, don't lock out the UI row
             if (local_balance <= 0 && min_volume_f > 0) {
                 if (kdf_service_inst.is_orderbook_thread_active()) {
                     return true;
