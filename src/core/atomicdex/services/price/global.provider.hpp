@@ -42,17 +42,17 @@ namespace atomic_dex
 
       public:
         explicit global_price_service(entt::registry& registry, ag::ecs::system_manager& system_manager, atomic_dex::cfg& cfg);
-        ~global_price_service()  final = default;
+        ~global_price_service() final = default;
 
         //! Public override
-        void update()  final;
+        void update() final;
 
         //! Public API
-        std::string get_price_as_currency_from_tx(const std::string& currency, const std::string& ticker, const tx_infos& tx) const ;
-        std::string get_price_in_fiat(const std::string& fiat, const std::string& ticker, std::error_code& ec, bool skip_precision = false) const ;
-        std::string get_price_in_fiat_all(const std::string& fiat, std::error_code& ec) const ;
-        std::string get_rate_conversion(const std::string& fiat, const std::string& ticker, bool adjusted = false) const ;
-        std::string get_price_as_currency_from_amount(const std::string& currency, const std::string& ticker, const std::string& amount) const ;
+        std::string get_price_as_currency_from_tx(const std::string& currency, const std::string& ticker, const tx_infos& tx) const;
+        std::string get_price_in_fiat(const std::string& fiat, const std::string& ticker, std::error_code& ec, bool skip_precision = false) const;
+        std::string get_price_in_fiat_all(const std::string& fiat, std::error_code& ec) const;
+        std::string get_rate_conversion(const std::string& fiat, const std::string& ticker, bool adjusted = false) const;
+        std::string get_price_as_currency_from_amount(const std::string& currency, const std::string& ticker, const std::string& amount) const;
         std::string get_cex_rates(const std::string& base, const std::string& rel) const;
         std::string get_fiat_rates(const std::string& fiat) const;
         std::string get_currency_rates(const std::string& currency) const;
@@ -61,7 +61,7 @@ namespace atomic_dex
         bool is_currency_available(const std::string& currency) const;
 
         //! Events
-        void on_force_update_providers(const force_update_providers&, utils::caller_location location = utils::caller_location::current());
+        void on_force_update_providers(const force_update_providers&);
     };
 } // namespace atomic_dex
 

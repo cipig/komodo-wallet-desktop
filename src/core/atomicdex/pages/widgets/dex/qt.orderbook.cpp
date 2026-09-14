@@ -102,7 +102,7 @@ namespace atomic_dex
     }
 
     void
-    qt_orderbook_wrapper::reset_orderbook(kdf::orderbook_result_rpc answer, [[maybe_unused]] atomic_dex::utils::caller_location location)
+    qt_orderbook_wrapper::reset_orderbook(kdf::orderbook_result_rpc answer, [[maybe_unused]] utils::caller_location location)
     {
         SPDLOG_DEBUG("qt_orderbook_wrapper::reset_orderbook called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
         this->m_asks->reset_orderbook(answer.asks);
@@ -168,7 +168,7 @@ namespace atomic_dex
 namespace atomic_dex
 {
     void
-    qt_orderbook_wrapper::refresh_best_orders([[maybe_unused]] atomic_dex::utils::caller_location location)
+    qt_orderbook_wrapper::refresh_best_orders([[maybe_unused]] utils::caller_location location)
     {
         SPDLOG_DEBUG("qt_orderbook_wrapper::refresh_best_orders called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
         if (safe_float(m_system_manager.get_system<trading_page>().get_volume().toStdString()) > 0)

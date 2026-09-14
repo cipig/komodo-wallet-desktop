@@ -753,7 +753,7 @@ namespace atomic_dex
     }
 
     void
-    trading_page::set_price(QString price, [[maybe_unused]] atomic_dex::utils::caller_location location)
+    trading_page::set_price(QString price, [[maybe_unused]] utils::caller_location location)
     {
         SPDLOG_DEBUG("trading_page::set_price called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
         if (price.isEmpty())
