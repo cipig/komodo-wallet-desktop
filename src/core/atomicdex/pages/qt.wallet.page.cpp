@@ -49,13 +49,27 @@ namespace atomic_dex
 //! Private API
 namespace atomic_dex
 {
+
     void
     wallet_page::check_send_availability()
     {
-        //spdlog::stopwatch sw; using namespace std::chrono;
-        auto& kdf              = m_system_manager.get_system<kdf_service>();
+        auto& kdf = m_system_manager.get_system<kdf_service>();
+
+        std::string current_ticker = kdf.get_current_ticker();
+        if (current_ticker.empty())
+        {
+            m_send_available                   = false;
+            m_send_availability_state          = "";
+            m_current_ticker_fees_coin_enabled = false;
+
+            emit sendAvailableChanged();
+            emit sendAvailabilityStateChanged();
+            emit currentTickerFeesCoinEnabledChanged();
+            return;
+        }
+
         auto  global_coins_cfg = m_system_manager.get_system<portfolio_page>().get_global_cfg();
-        const auto& ticker_info = global_coins_cfg->get_coin_info(kdf.get_current_ticker());
+        const auto& ticker_info = global_coins_cfg->get_coin_info(current_ticker);
 
         m_send_available                   = true;
         m_send_availability_state          = "";
@@ -91,7 +105,6 @@ namespace atomic_dex
         emit sendAvailableChanged();
         emit sendAvailabilityStateChanged();
         emit currentTickerFeesCoinEnabledChanged();
-        //SPDLOG_DEBUG("Time elapsed in wallet_page::check_send_availability for ticker {} with result {}: {}", ticker_info.ticker, m_send_available, duration_cast<milliseconds>(sw.elapsed()));
     }
 } // namespace atomic_dex
 
@@ -309,10 +322,19 @@ namespace atomic_dex
             }
             else
             {
-                obj["address"]        = QString::fromStdString(kdf_system.address(ticker, ec));
-                qrcodegen::QrCode qr0 = qrcodegen::QrCode::encodeText(kdf_system.address(ticker, ec).c_str(), qrcodegen::QrCode::Ecc::MEDIUM);
-                std::string       svg = qr0.toSvgString(2);
-                obj["qrcode_address"] = QString::fromStdString("data:image/svg+xml;base64,") + QString::fromStdString(svg).toLocal8Bit().toBase64();
+                std::string active_addr = kdf_system.address(ticker, ec);
+                if (ec || active_addr.empty() || active_addr == "Invalid Ticker")
+                {
+                    obj["address"]        = "activating";
+                    obj["qrcode_address"] = "";
+                }
+                else
+                {
+                    obj["address"]        = QString::fromStdString(active_addr);
+                    qrcodegen::QrCode qr0 = qrcodegen::QrCode::encodeText(active_addr.c_str(), qrcodegen::QrCode::Ecc::MEDIUM);
+                    std::string       svg = qr0.toSvgString(2);
+                    obj["qrcode_address"] = QString::fromStdString("data:image/svg+xml;base64,") + QString::fromStdString(svg).toLocal8Bit().toBase64();
+                }
             }
         }
         return obj;

@@ -354,7 +354,7 @@ Item
                 // Send Button
                 DefaultButton
                 {
-                    enabled: General.canSend(api_wallet_page.ticker, activation_pct)
+                    enabled: api_wallet_page.ticker !== "" && !api_wallet_page.tx_fetching_busy && General.canSend(api_wallet_page.ticker, activation_pct)
                     anchors.fill: parent
                     radius: 18
                     label.text: qsTr("Send")

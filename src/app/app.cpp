@@ -498,6 +498,12 @@ namespace atomic_dex
 
     QString application::get_balance_info_qstr(const QString& coin)
     {
+        if (coin.isEmpty())
+        {
+            SPDLOG_WARN("application::get_balance_info_qstr was queried with an empty ticker string.");
+            return QStringLiteral("0");
+        }
+
         std::error_code ec;
         auto            res = get_kdf().get_balance_info(coin.toStdString(), ec);
         return QString::fromStdString(res);

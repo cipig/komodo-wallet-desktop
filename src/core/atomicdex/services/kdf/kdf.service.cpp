@@ -2066,21 +2066,26 @@ namespace atomic_dex
     std::string
     kdf_service::get_balance_info(const std::string& ticker, t_kdf_ec& ec) const
     {
+        std::shared_lock config_lock(m_coin_cfg_mutex);
+
+        auto config_it = m_coins_informations.find(ticker);
+        if (config_it == m_coins_informations.cend())
+        {
+            SPDLOG_WARN("kdf_service::get_balance_info requested for unregistered ticker: '{}'", ticker);
+            ec = dextop_error::balance_of_a_non_enabled_coin;
+            return "0";
+        }
+
         std::shared_lock lock(m_balance_mutex);
         auto             it = m_balance_informations.find(ticker);
 
-        if (m_coins_informations.at(ticker).currently_enabled)
+        if (config_it->second.currently_enabled)
         {
             if (it == m_balance_informations.cend())
             {
                 if (!is_task_activation_ready(ticker))
                 {
-                    SPDLOG_WARN("ZHTLC coin {} not ready in kdf_service::get_balance_info", ticker);
                     return "0";
-                }
-                else
-                {
-                    SPDLOG_ERROR("kdf_service::get_balance_info not found for enabled coin: {}", ticker);
                 }
                 ec = dextop_error::balance_of_a_non_enabled_coin;
                 return "0";
