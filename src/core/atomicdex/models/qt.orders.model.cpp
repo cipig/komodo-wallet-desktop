@@ -297,7 +297,7 @@ namespace atomic_dex
     {
         if (this->is_fetching_busy())
         {
-            SPDLOG_DEBUG("set_current_page ignored (fetching busy), requested={}", current_page);
+            SPDLOG_WARN("set_current_page ignored (fetching busy), requested={}", current_page);
             return;
         }
 

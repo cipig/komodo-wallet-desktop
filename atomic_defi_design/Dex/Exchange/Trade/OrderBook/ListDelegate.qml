@@ -106,25 +106,22 @@ Item
         anchors.fill: parent
         hoverEnabled: true
 
-        // Populate buy/sell form with values from selected order
+        // Populate buy/sell form with values from selected order immediately
         onClicked:
         {
             if (General.privacy_mode) return
             if (is_mine) return
             if (API.app.trading_pg.maker_mode) return
 
-            if (enough_funds_to_pay_min_volume )
-            {
-                orderbook_list.currentIndex = index
+            orderbook_list.currentIndex = index
 
-                selectOrder(isAsk, coin, price, price_denom,
-                            price_numer, min_volume, base_min_volume, base_max_volume,
-                            rel_min_volume, rel_max_volume, base_max_volume_denom,
-                            base_max_volume_numer, uuid)
+            selectOrder(isAsk, coin, price, price_denom,
+                        price_numer, min_volume, base_min_volume, base_max_volume,
+                        rel_min_volume, rel_max_volume, base_max_volume_denom,
+                        base_max_volume_numer, uuid)
 
-                placeOrderForm.visible = General.flipFalse(placeOrderForm.visible)
-                orderSelected()
-            }
+            placeOrderForm.visible = General.flipFalse(placeOrderForm.visible)
+            orderSelected()
         }
 
         // Highlight row on mouseover

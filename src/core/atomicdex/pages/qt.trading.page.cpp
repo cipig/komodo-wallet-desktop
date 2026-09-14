@@ -756,22 +756,23 @@ namespace atomic_dex
     trading_page::set_price(QString price, [[maybe_unused]] utils::caller_location location)
     {
         SPDLOG_DEBUG("trading_page::set_price called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
-        if (price.isEmpty())
-        {
-            price = "0";
-        }
-        
+
+        if (price.isEmpty()) { price = "0"; }
+
         if (m_price != price)
         {
             m_price = std::move(price);
+
+            if (m_is_clearing_forms) {
+                return;
+            }
+
             if (this->m_preferred_order.has_value() && this->m_preferred_order->contains("locked"))
             {
-                //SPDLOG_INFO("releasing preferred order because price has been modified");
                 this->m_preferred_order = std::nullopt;
                 emit preferredOrderChanged();
             }
 
-            //! When price change in MarketMode::Buy you want to redetermine max_volume
             if (m_market_mode == MarketMode::Buy)
             {
                 this->determine_max_volume();
@@ -800,6 +801,8 @@ namespace atomic_dex
             return;
         }
 
+        m_is_clearing_forms = true;
+
         this->set_price("0");
         this->set_max_volume("0");
         m_minimal_trading_amount = "0.0001";
@@ -815,7 +818,13 @@ namespace atomic_dex
         this->m_post_clear_forms = true;
         this->set_selected_order_status(SelectedOrderStatus::None);
         this->reset_fees();
+
+        m_is_clearing_forms = false;
+
         this->determine_cex_rates();
+        this->determine_max_volume();
+        this->determine_total_amount();
+
         emit cexPriceChanged();
         emit invalidCexPriceChanged();
         emit cexPriceReversedChanged();
@@ -1202,7 +1211,7 @@ namespace atomic_dex
             QString min_vol = QString::fromStdString(utils::format_float(safe_float(m_preferred_order->at("base_min_volume").get<std::string>())));
             this->m_minimal_trading_amount = std::move(min_vol);
             emit minTradeVolChanged();
-            this->determine_max_volume();
+            //this->determine_max_volume();
 
             if (this->m_current_trading_mode == TradingModeGadget::Pro)
             {

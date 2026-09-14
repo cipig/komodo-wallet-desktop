@@ -132,23 +132,34 @@ namespace atomic_dex
         }
         case EnoughFundsToPayMinVolume:
         {
-            bool        i_have_enough_funds = true;
             const auto& order_model_data    = m_model_data.at(index.row());
             const auto& trading_pg          = m_system_mgr.get_system<trading_page>();
+            const auto& kdf_service_inst    = m_system_mgr.get_system<kdf_service>();
             const bool  is_asks             = m_current_orderbook_kind == kind::asks;
             const auto  min_volume_f        = safe_float(is_asks ? order_model_data.rel_min_volume : order_model_data.base_min_volume);
-            auto        taker_vol_std =
-                ((is_asks) ? trading_pg.get_orderbook_wrapper()->get_rel_max_taker_vol() : trading_pg.get_orderbook_wrapper()->get_base_max_taker_vol())
-                    .toJsonObject()["decimal"]
-                    .toString()
-                    .toStdString();
-            if (taker_vol_std.empty())
-            {
-                taker_vol_std = "0";
+
+            // Get the current single active pair tickers from the UI layout selector model
+            const auto* market_selector     = trading_pg.get_market_pairs_mdl();
+            if (!market_selector) {
+                return true;
             }
-            t_float_50 taker_vol = safe_float(taker_vol_std);
-            i_have_enough_funds  = min_volume_f > 0 && taker_vol > min_volume_f;
-            return i_have_enough_funds;
+
+            // If we buy an Ask, we spend Rel. If we buy a Bid, we spend Base.
+            std::string coin_to_check = is_asks ?
+                                        market_selector->get_right_selected_coin().toStdString() :
+                                        market_selector->get_left_selected_coin().toStdString();
+
+            // Direct local in-memory lookup. Zero network/JSON runtime translation cost.
+            t_float_50 local_balance = safe_float(kdf_service_inst.get_balance_info_f(coin_to_check));
+
+            // Fallback clause: If balance is missing/initializing, don't lock out the UI row
+            if (local_balance <= 0 && min_volume_f > 0) {
+                if (kdf_service_inst.is_orderbook_thread_active()) {
+                    return true;
+                }
+            }
+
+            return min_volume_f > 0 && local_balance >= min_volume_f;
         }
         case SendRole:
         {

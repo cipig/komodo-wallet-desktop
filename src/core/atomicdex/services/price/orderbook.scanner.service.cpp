@@ -40,7 +40,7 @@ namespace atomic_dex
 
         if (m_bestorders_busy)
         {
-            SPDLOG_DEBUG("orderbook_scanner_service::process_best_orders is busy - skipping.");
+            SPDLOG_WARN("orderbook_scanner_service::process_best_orders is busy - skipping.");
             return;
         }
 

@@ -103,6 +103,7 @@ namespace atomic_dex
         std::atomic_bool         m_rpc_buy_sell_busy{false};
         std::atomic_bool         m_rpc_preimage_busy{false};
         std::atomic_bool         m_post_clear_forms{false};
+        bool                     m_is_clearing_forms{false};
         t_qt_synchronized_json   m_rpc_buy_sell_result;
 
         //! Trading Logic
