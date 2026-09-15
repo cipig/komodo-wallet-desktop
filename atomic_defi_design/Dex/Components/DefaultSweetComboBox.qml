@@ -68,14 +68,12 @@ ComboBox
         icon: "qrc:/assets/images/qaterial/chevron-down.svg"
     }
 
-    // Dropdown itself
     popup: Popup
     {
         id: combo_popup
-        readonly property double max_height: 450
+        readonly property double max_height: 430
         width: control.width
-        implicitHeight: Math.min(contentLayout.implicitHeight + padding * 2, max_height)
-        height: Math.min(contentItem.implicitHeight, max_height) + 20
+        implicitHeight: Math.min(contentLayout.implicitHeight + padding * 2 + 10, max_height)
         padding: 1
 
         contentItem: ColumnLayout

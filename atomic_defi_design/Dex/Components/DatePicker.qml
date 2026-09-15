@@ -15,14 +15,14 @@ DefaultMouseArea {
     signal accepted()
 
     implicitWidth: 100
-    implicitHeight: column.implicitHeight
+    implicitHeight: 46
 
     onClicked: modal.open()
 
     Column {
         id: column
-        anchors.left: parent.left
-        anchors.right: parent.right
+        anchors.fill: parent
+        spacing: 2
 
         DexLabel {
             id: title
