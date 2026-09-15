@@ -26,16 +26,11 @@ RowLayout
     Layout.preferredHeight: 24
     Layout.maximumHeight: 24
 
-    Item
+    DefaultRectangle
     {
-        width: btn_width
-        height: parent.height
-
-        DefaultRectangle
-        {
-            anchors.fill: parent
-            color: Dex.CurrentTheme.inputModifierBackgroundColor
-        }
+        Layout.preferredWidth: btn_width
+        Layout.fillHeight: true
+        color: Dex.CurrentTheme.inputModifierBackgroundColor
 
         DexLabel
         {
@@ -83,75 +78,63 @@ RowLayout
         }
     }
 
-    Item
+    DefaultRectangle
     {
-        width: btn_width
-        height: parent.height
+        Layout.preferredWidth: btn_width
+        Layout.fillHeight: true
+        color: Dex.CurrentTheme.inputModifierBackgroundColor
 
-        DefaultRectangle
+        DefaultMouseArea
         {
-            id: middle_rect
+            id: _middle_btn
             anchors.fill: parent
-            color: Dex.CurrentTheme.inputModifierBackgroundColor
+            hoverEnabled: true
+        }
 
-            DefaultMouseArea
+        DexLabel
+        {
+            id: _middle_label
+            anchors.centerIn: parent
+            font.pixelSize: pixel_size
+            color: Dex.CurrentTheme.foregroundColor2
+            text: "0%"
+        }
+
+        DefaultTooltip
+        {
+            id: _middle_tooltip
+            visible: _middle_btn.containsMouse && middle_tooltip_text != ""
+
+            contentItem: FloatingBackground
             {
-                id: _middle_btn
-                anchors.fill: parent
-                hoverEnabled: true
-            }
+                anchors.top: parent.bottom
+                anchors.topMargin: 30
+                color: Dex.CurrentTheme.accentColor
 
-            DexLabel
-            {
-                id: _middle_label
-                anchors.centerIn: parent
-                font.pixelSize: pixel_size
-                color: Dex.CurrentTheme.foregroundColor2
-                text: "0%"
-            }
-
-            DefaultTooltip
-            {
-                id: _middle_tooltip
-                visible: _middle_btn.containsMouse && middle_tooltip_text != ""
-
-                contentItem: FloatingBackground
+                DexLabel
                 {
-                    anchors.top: parent.bottom
-                    anchors.topMargin: 30
-                    color: Dex.CurrentTheme.accentColor
-
-                    DexLabel
-                    {
-                        text: middle_tooltip_text
-                        font: Dex.DexTypo.caption
-                        leftPadding: 10
-                        rightPadding: 10
-                        topPadding: 6
-                        bottomPadding: 6
-                    }
+                    text: middle_tooltip_text
+                    font: Dex.DexTypo.caption
+                    leftPadding: 10
+                    rightPadding: 10
+                    topPadding: 6
+                    bottomPadding: 6
                 }
+            }
 
-                background: Rectangle {
-                    width: 0
-                    height: 0
-                    color: "transparent"
-                }
+            background: Rectangle {
+                width: 0
+                height: 0
+                color: "transparent"
             }
         }
     }
 
-    Item
+    DefaultRectangle
     {
-        width: btn_width
-        height: parent.height
-
-        DefaultRectangle
-        {
-            id: right_rect
-            anchors.fill: parent
-            color: Dex.CurrentTheme.inputModifierBackgroundColor
-        }
+        Layout.preferredWidth: btn_width
+        Layout.fillHeight: true
+        color: Dex.CurrentTheme.inputModifierBackgroundColor
 
         DexLabel
         {

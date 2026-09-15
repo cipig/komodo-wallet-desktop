@@ -310,8 +310,10 @@ ColumnLayout
         }
     }
 
-
-    Item { Layout.fillHeight: true }
+    Item {
+        Layout.preferredHeight: 12
+        Layout.fillWidth: true
+    }
 
     Item
     {
@@ -336,7 +338,10 @@ ColumnLayout
         }
     }
 
-    Item { Layout.fillHeight: true }
+    Item {
+        Layout.preferredHeight: 12
+        Layout.fillWidth: true
+    }
 
     Item
     {
