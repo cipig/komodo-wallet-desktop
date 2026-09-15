@@ -51,7 +51,7 @@ Item
             Layout.maximumHeight: 50
             Layout.preferredHeight: visible ? 50 : 0
             Layout.fillWidth: true
-            Layout.bottomMargin: 10
+            //Layout.bottomMargin: 10
             itemsPerPageComboBox.mainBackgroundColor: Dex.CurrentTheme.comboBoxBackgroundColor
             itemsPerPageComboBox.popupBackgroundColor: Dex.CurrentTheme.comboBoxBackgroundColor
 

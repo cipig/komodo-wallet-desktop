@@ -9,7 +9,7 @@ import Dex.Themes 1.0 as Dex
 RowLayout
 {
     id: root
-    spacing: 4
+    spacing: 8
 
     property var pageSize: Constants.API.app.orders_mdl.nb_pages
     property var currentValue: Constants.API.app.orders_mdl.current_page
@@ -74,8 +74,8 @@ RowLayout
         readonly property
         var options: [10, 15, 20, 25, 30]
 
-        Layout.preferredWidth: (root.width / 100) * 13
-        Layout.maximumWidth: 62
+        Layout.preferredWidth: 74
+        Layout.maximumWidth: 74
         Layout.preferredHeight: 35
         Layout.alignment: Qt.AlignLeft
 
@@ -90,7 +90,7 @@ RowLayout
 
     DexLabel
     {
-        Layout.preferredWidth: (root.width / 100) * 15
+        Layout.preferredWidth: 85
         Layout.alignment: Qt.AlignLeft
         font.pixelSize: 12
         text: qsTr("items per page")
@@ -104,11 +104,12 @@ RowLayout
 
     DefaultButton
     {
-        Layout.preferredWidth: (root.width / 100) * 5
-        Layout.preferredHeight: width
+        Layout.preferredWidth: 28
+        Layout.preferredHeight: 28
         font.pixelSize: 12
         radius: 18
         opacity: enabled ? 1 : .5
+
         Qaterial.ColorIcon
         {
             anchors.centerIn: parent
@@ -127,22 +128,18 @@ RowLayout
     Repeater
     {
         id: btnGroup
-
-        model:
-        [{
-            number: 1,
-            selected: true
-        }]
+        model: [{ number: 1, selected: true }]
 
         delegate: DefaultButton
         {
             text: modelData.number === -1 ? "..." : ("" + modelData.number)
             font.pixelSize: 12
             radius: 28
-            Layout.preferredWidth: (root.width / 100) * 4
-            Layout.preferredHeight: width
+            Layout.preferredWidth: 23
+            Layout.preferredHeight: 23
             Layout.alignment: Qt.AlignVCenter
             color: modelData.number === currentValue ? 'transparent' : Dex.CurrentTheme.buttonColorEnabled
+
             onClicked: {
                 const page = btnGroup.model[index].number
                 if (page === -1) return
@@ -156,11 +153,12 @@ RowLayout
 
     DefaultButton
     {
-        Layout.preferredWidth: (root.width / 100) * 5
-        Layout.preferredHeight: width
+        Layout.preferredWidth: 28
+        Layout.preferredHeight: 28
         font.pixelSize: 12
         radius: 18
         opacity: enabled ? 1 : .5
+
         Qaterial.ColorIcon
         {
             anchors.centerIn: parent
