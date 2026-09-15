@@ -126,7 +126,7 @@ namespace atomic_dex
 
         //! Private function
         void                       determine_max_volume(utils::caller_location location = utils::caller_location::current());
-        void                       determine_total_amount();
+        void                       determine_total_amount(utils::caller_location location = utils::caller_location::current());
         void                       determine_cex_rates();
         void                       determine_pair_volume_24hr();
         void                       cap_volume();
@@ -156,7 +156,7 @@ namespace atomic_dex
         Q_INVOKABLE void     on_gui_enter_dex();
         Q_INVOKABLE void     on_gui_leave_dex();
         Q_INVOKABLE QVariant get_raw_kdf_coin_cfg(const QString& ticker) const;
-        Q_INVOKABLE void     clear_forms(QString from);
+        Q_INVOKABLE void     clear_forms(QString from, utils::caller_location location = utils::caller_location::current());
 
         //! Trading business
         Q_INVOKABLE void swap_market_pair(bool involves_segwit = false); ///< market_selector (button to switch market selector and orderbook)
@@ -169,8 +169,8 @@ namespace atomic_dex
 
         Q_INVOKABLE void reset_order();
 
-        Q_INVOKABLE void determine_fees();
-        Q_INVOKABLE void determine_error_cases();
+        Q_INVOKABLE void determine_fees(utils::caller_location location = utils::caller_location::current());
+        Q_INVOKABLE void determine_error_cases(utils::caller_location location = utils::caller_location::current());
         Q_INVOKABLE void reset_fees();
 
         //! Properties

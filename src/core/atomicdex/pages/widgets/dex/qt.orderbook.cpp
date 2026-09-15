@@ -53,13 +53,14 @@ namespace atomic_dex
         m_best_orders(new orderbook_model(orderbook_model::kind::best_orders, system_manager, this)),
         m_debounce_timer(new QTimer(this))
     {
-        // Set the timer to only fire once per timeout window
         m_debounce_timer->setSingleShot(true);
-        m_debounce_timer->setInterval(350); // 350ms window is perfect for typing speeds
+        m_debounce_timer->setInterval(400);
 
-        // Connect the timer completion signal directly to the underlying scanner calculation function
         connect(m_debounce_timer, &QTimer::timeout, this, [this]() {
-            this->m_system_manager.get_system<orderbook_scanner_service>().process_best_orders();
+            if (safe_float(m_system_manager.get_system<trading_page>().get_volume().toStdString()) > 0)
+            {
+                this->m_system_manager.get_system<orderbook_scanner_service>().process_best_orders();
+            }
         });
     }
 
@@ -181,7 +182,6 @@ namespace atomic_dex
     {
         SPDLOG_DEBUG("qt_orderbook_wrapper::refresh_best_orders called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
 
-        // If a request is actively processing an in-flight network frame, stop early
         if (this->is_best_orders_busy())
         {
             return;
@@ -189,8 +189,6 @@ namespace atomic_dex
 
         if (safe_float(m_system_manager.get_system<trading_page>().get_volume().toStdString()) > 0)
         {
-            // DEBOUNCE FIX: Stop any running timer pass and push the execution window out.
-            // This resets the 350ms countdown every single time the user presses a key!
             m_debounce_timer->stop();
             m_debounce_timer->start();
         }

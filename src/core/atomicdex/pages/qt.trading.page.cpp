@@ -421,10 +421,6 @@ namespace atomic_dex
         
         if (is_selected_order)
         {
-            //SPDLOG_DEBUG(
-            //    "The order is a selected order, treating it, input_vol: {} orderbook_max_vol {}", m_volume.toStdString(),
-            //    orderbook_available_quantity.toStdString());
-
             const auto base_min_vol_orderbook = m_preferred_order->at("base_min_volume").get<std::string>();
 
             if (t_float_50 base_min_vol_orderbook_f = safe_float(base_min_vol_orderbook); cur_min_trade <= base_min_vol_orderbook_f)
@@ -793,11 +789,12 @@ namespace atomic_dex
     }
 
     void
-    trading_page::clear_forms([[maybe_unused]] QString from)
+    trading_page::clear_forms([[maybe_unused]] QString from, [[maybe_unused]] utils::caller_location location)
     {
+        SPDLOG_DEBUG("trading_page::clear_forms called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
+
         if (!this->m_system_manager.has_system<kdf_service>())
         {
-            SPDLOG_WARN("KDF service not available, required to clear forms - skipping");
             return;
         }
 
@@ -879,7 +876,6 @@ namespace atomic_dex
         {
             max_volume   = QString::fromStdString(utils::extract_large_float(max_volume.toStdString()));
             m_max_volume = std::move(max_volume);
-            // SPDLOG_DEBUG("max_volume is [{}]", m_max_volume.toStdString());
             emit maxVolumeChanged();
         }
     }
@@ -888,6 +884,7 @@ namespace atomic_dex
     trading_page::determine_max_volume([[maybe_unused]] utils::caller_location location)
     {
         SPDLOG_DEBUG("trading_page::determine_max_volume called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
+
         if (this->m_market_mode == MarketMode::Sell)
         {
             //! In MarketMode::Sell mode max volume is just the base_max_taker_vol
@@ -1000,17 +997,12 @@ namespace atomic_dex
     void
     trading_page::cap_volume()
     {
-        /*
-         * cap_volume is called only in MarketMode::Buy, and in Sell mode if preferred order
-         * if the current volume text field is > the new max_volume then set volume to max_volume
-         */
         auto max_volume = this->get_max_volume();
         auto std_volume = this->get_volume().toStdString();
         if (!std_volume.empty() && safe_float(std_volume) > safe_float(max_volume.toStdString()))
         {
             if (!max_volume.isEmpty() && max_volume != "0")
             {
-                // SPDLOG_DEBUG("capping volume because {} (volume) > {} (max_volume)", std_volume, max_volume.toStdString());
                 this->set_volume(get_max_volume());
             }
         }
@@ -1255,8 +1247,10 @@ namespace atomic_dex
     }
 
     void
-    trading_page::determine_total_amount()
+    trading_page::determine_total_amount([[maybe_unused]] utils::caller_location location)
     {
+        SPDLOG_DEBUG("trading_page::determine_total_amount called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
+
         if (!m_price.isEmpty() && !m_volume.isEmpty())
         {
             this->set_total_amount(calculate_total_amount(m_price, m_volume));
@@ -1301,11 +1295,12 @@ namespace atomic_dex
     }
 
     void
-    trading_page::determine_fees()
+    trading_page::determine_fees([[maybe_unused]] utils::caller_location location)
     {
+        SPDLOG_DEBUG("trading_page::determine_fees called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
+
         if (!this->m_system_manager.has_system<kdf_service>())
         {
-            SPDLOG_WARN("KDF Service not available, cannot determine fees - skipping");
             return;
         }
 
@@ -1420,8 +1415,10 @@ namespace atomic_dex
     }
 
     void
-    trading_page::determine_error_cases()
+    trading_page::determine_error_cases([[maybe_unused]] utils::caller_location location)
     {
+        SPDLOG_DEBUG("trading_page::determine_error_cases called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
+
         if (m_is_clearing_forms || !m_system_manager.has_system<kdf_service>())
             return;
 
