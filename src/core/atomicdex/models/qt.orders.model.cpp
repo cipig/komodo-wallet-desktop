@@ -636,8 +636,10 @@ namespace atomic_dex
     }
 
     void
-    orders_model::refresh_or_insert(bool after_manual_reset)
+    orders_model::refresh_or_insert(bool after_manual_reset, [[maybe_unused]] utils::caller_location location)
     {
+        SPDLOG_DEBUG("orders_model::refresh_or_insert called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
+
         if (after_manual_reset)
         {
             this->set_fetching_busy(false);
@@ -648,10 +650,10 @@ namespace atomic_dex
             SPDLOG_WARN("Fetching busy, skipping orders_model::refresh_or_insert");
             return;
         }
+
         const auto& kdf      = m_system_manager.get_system<kdf_service>();
         const auto  contents = kdf.get_orders_and_swaps();
 
-        //! If model is empty let's init it once
         if (m_model_data.orders_and_swaps.empty())
         {
             init_model(contents);

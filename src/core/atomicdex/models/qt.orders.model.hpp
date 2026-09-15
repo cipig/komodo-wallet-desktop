@@ -16,26 +16,18 @@
 
 #pragma once
 
-//! STD
 #include <unordered_set>
-
-//! Boost
 #include <boost/thread/synchronized_value.hpp>
-
-//! QT
 #include <QAbstractListModel>
 #include <QJsonObject>
 #include <QVariant>
 #include <QVector>
-
-//! Deps
 #include <antara/gaming/ecs/system.manager.hpp>
-
-//! Project
 #include "atomicdex/api/kdf/kdf.hpp"
 #include "atomicdex/data/dex/orders.and.swaps.data.hpp"
 #include "atomicdex/events/events.hpp"
 #include "atomicdex/models/qt.orders.proxy.model.hpp"
+#include "atomicdex/utilities/caller_location.hpp"
 
 namespace atomic_dex
 {
@@ -95,7 +87,7 @@ namespace atomic_dex
         bool                   setData(const QModelIndex& index, const QVariant& value, int role) final;
 
         //! Public api
-        void refresh_or_insert(bool after_manual_reset = false);
+        void refresh_or_insert(bool after_manual_reset = false, utils::caller_location location = utils::caller_location::current());
         void reset();
         void reset_backend(const std::string& from);
         bool swap_is_in_progress(const QString& coin) const;

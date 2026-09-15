@@ -22,8 +22,9 @@ RowLayout
     property int    pixel_size: 12
     property int    btn_width: 33
     spacing: 2
-    height: 20
     Layout.fillWidth: true
+    Layout.preferredHeight: 24
+    Layout.maximumHeight: 24
 
     Item
     {

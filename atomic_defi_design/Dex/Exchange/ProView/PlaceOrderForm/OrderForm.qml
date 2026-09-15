@@ -323,8 +323,8 @@ ColumnLayout
             id: dexErrors
             visible: dexErrors.text_value !== ""
             anchors.fill: parent
-            anchors.centerIn: parent
             horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
             font.pixelSize: Style.textSizeSmall4
             color: Dex.CurrentTheme.warningColor
             text_value: General.getTradingError(
