@@ -18,6 +18,7 @@
 
 #include <QJsonObject>
 #include <QObject>
+#include <QTimer>
 #include <antara/gaming/ecs/system.manager.hpp>
 #include <boost/thread/synchronized_value.hpp>
 #include "atomicdex/models/qt.orderbook.model.hpp"
@@ -74,6 +75,7 @@ namespace atomic_dex
         void                                                  set_both_taker_vol();
         ag::ecs::system_manager&                              m_system_manager;
         entt::dispatcher&                                     m_dispatcher;
+        QTimer*                                               m_debounce_timer{nullptr};
         orderbook_model*                                      m_asks;
         orderbook_model*                                      m_bids;
         orderbook_model*                                      m_best_orders;
