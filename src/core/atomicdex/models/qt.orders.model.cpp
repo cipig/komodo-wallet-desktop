@@ -638,7 +638,8 @@ namespace atomic_dex
     void
     orders_model::refresh_or_insert(bool after_manual_reset, [[maybe_unused]] utils::caller_location location)
     {
-        SPDLOG_DEBUG("orders_model::refresh_or_insert called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
+        //SPDLOG_DEBUG("orders_model::refresh_or_insert called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
+        //called by atomic_dex::application::tick every 17s
 
         if (after_manual_reset)
         {

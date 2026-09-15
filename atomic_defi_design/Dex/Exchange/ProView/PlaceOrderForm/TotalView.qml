@@ -12,7 +12,7 @@ ColumnLayout
 
     RowLayout
     {
-        Layout.preferredWidth: parent.width
+        Layout.fillWidth: true
         Layout.preferredHeight: 30
 
         DexLabel
@@ -40,14 +40,14 @@ ColumnLayout
     HorizontalLine
     {
         color: Dex.CurrentTheme.lineSeparatorColor
-        Layout.preferredWidth: parent.width
+        Layout.fillWidth: true
         Layout.preferredHeight: 1
         Layout.alignment: Qt.AlignHCenter
     }
 
     RowLayout
     {
-        Layout.preferredWidth: parent.width
+        Layout.fillWidth: true
         Layout.preferredHeight: 30
 
         DexLabel

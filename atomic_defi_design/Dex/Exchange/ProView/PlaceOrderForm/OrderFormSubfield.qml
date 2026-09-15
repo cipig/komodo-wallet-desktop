@@ -33,9 +33,7 @@ RowLayout
 
         DefaultRectangle
         {
-            anchors.centerIn: parent
-            width: parent.width
-            height: parent.height
+            anchors.fill: parent
             color: Dex.CurrentTheme.inputModifierBackgroundColor
         }
 
@@ -92,9 +90,8 @@ RowLayout
 
         DefaultRectangle
         {
-            anchors.centerIn: parent
-            width: parent.width
-            height: parent.height
+            id: middle_rect
+            anchors.fill: parent
             color: Dex.CurrentTheme.inputModifierBackgroundColor
 
             DefaultMouseArea
@@ -152,9 +149,7 @@ RowLayout
         DefaultRectangle
         {
             id: right_rect
-            anchors.centerIn: parent
-            width: parent.width
-            height: parent.height
+            anchors.fill: parent
             color: Dex.CurrentTheme.inputModifierBackgroundColor
         }
 
