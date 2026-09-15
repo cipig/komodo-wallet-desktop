@@ -1231,6 +1231,12 @@ namespace atomic_dex
             this->determine_cex_rates();
             this->determine_fees();
 
+            // Explicitly notify the QML engine about the property alterations
+            // to flush the UI caches and synchronize the comparison labels!
+            emit priceChanged();
+            emit priceReversedChanged();
+            emit volumeChanged();
+            emit totalAmountChanged();
             emit preferredOrderChangeFinished();
         }
     }
