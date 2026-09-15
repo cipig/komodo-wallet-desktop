@@ -37,9 +37,10 @@ MultipageModal
             RowLayout
             {
                 id: dex_pair_badges
+                Layout.fillWidth: true
                 Layout.preferredHeight: 70
                 Layout.topMargin: 10
-                Layout.fillWidth: true
+                Layout.bottomMargin: 10
 
                 PairItemBadge
                 {
@@ -47,14 +48,14 @@ MultipageModal
                     ticker: details ? details.base_coin : ""
                     fullname: details ? General.coinName(details.base_coin) : ""
                     amount: details ? details.base_amount : ""
-                    Layout.preferredHeight: 70
+                    Layout.fillHeight: true
                 }
 
                 Item { Layout.fillWidth: true }
 
                 Qaterial.Icon
                 {
-                    Layout.preferredHeight: 70
+                    Layout.fillHeight: true
                     Layout.alignment: Qt.AlignVCenter
                     color: Dex.CurrentTheme.foregroundColor
                     icon: "qrc:/assets/images/qaterial/swap-horizontal.svg"
@@ -67,9 +68,8 @@ MultipageModal
                     ticker: details ? details.rel_coin : ""
                     fullname: details ? General.coinName(details.rel_coin) : ""
                     amount: details ? details.rel_amount : ""
-                    Layout.preferredHeight: 70
+                    Layout.fillHeight: true
                 }
-
             },
 
             DexLabel
