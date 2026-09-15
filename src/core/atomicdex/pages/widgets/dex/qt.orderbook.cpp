@@ -89,9 +89,8 @@ namespace atomic_dex
     }
 
     void
-    qt_orderbook_wrapper::refresh_orderbook_model_data(kdf::orderbook_result_rpc answer, [[maybe_unused]] utils::caller_location location)
+    qt_orderbook_wrapper::refresh_orderbook_model_data(kdf::orderbook_result_rpc answer)
     {
-        SPDLOG_DEBUG("qt_orderbook_wrapper::refresh_orderbook_model_data called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
         this->m_asks->refresh_orderbook_model_data(answer.asks);
         this->m_bids->refresh_orderbook_model_data(answer.bids);
         const auto data = this->m_system_manager.get_system<orderbook_scanner_service>().get_bestorders_data();
@@ -148,8 +147,9 @@ namespace atomic_dex
     }
 
     void
-    atomic_dex::qt_orderbook_wrapper::set_both_taker_vol()
+    atomic_dex::qt_orderbook_wrapper::set_both_taker_vol([[maybe_unused]] utils::caller_location location)
     {
+        SPDLOG_DEBUG("qt_orderbook_wrapper::set_both_taker_vol called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
         auto&& [base, rel]         = m_system_manager.get_system<kdf_service>().get_taker_vol();
         this->m_base_max_taker_vol = QJsonObject{
             {"denom", QString::fromStdString(base.denom)},
