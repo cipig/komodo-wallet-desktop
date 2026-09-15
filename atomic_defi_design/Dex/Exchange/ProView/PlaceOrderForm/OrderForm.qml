@@ -310,21 +310,26 @@ ColumnLayout
         }
     }
 
-    Item {
-        Layout.preferredHeight: 12
+    Item
+    {
+        Layout.fillHeight: true
         Layout.fillWidth: true
     }
 
-    Item
+    ColumnLayout
     {
+        id: dynamicContentCenter
         Layout.fillWidth: true
-        height: 55
+        Layout.preferredHeight: childrenRect.height
+        Layout.alignment: Qt.AlignVCenter
+        spacing: 4
 
         Dex.Text
         {
             id: dexErrors
-            visible: dexErrors.text_value !== ""
-            anchors.fill: parent
+            Layout.fillWidth: true
+            Layout.preferredHeight: text_value !== "" ? 40 : 0
+            visible: text_value !== ""
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: Style.textSizeSmall4
@@ -336,9 +341,23 @@ ColumnLayout
                             rel_ticker, left_ticker, right_ticker)
             elide: Text.ElideRight
         }
+
+        Item
+        {
+            Layout.preferredHeight: 4
+            Layout.fillWidth: true
+            visible: dexErrors.visible
+        }
+
+        TotalView
+        {
+            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignHCenter
+        }
     }
 
-    Item {
+    Item
+    {
         Layout.preferredHeight: 12
         Layout.fillWidth: true
     }
@@ -395,13 +414,6 @@ ColumnLayout
             color: 'transparent'
             border.color: Dex.CurrentTheme.warningColor
         }
-    }
-
-    TotalView
-    {
-        Layout.fillWidth: true
-        Layout.alignment: Qt.AlignHCenter
-        height: 70
     }
 
     DefaultBusyIndicator
