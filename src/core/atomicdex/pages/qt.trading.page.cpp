@@ -751,7 +751,7 @@ namespace atomic_dex
     void
     trading_page::set_price(QString price, [[maybe_unused]] utils::caller_location location)
     {
-        SPDLOG_DEBUG("trading_page::set_price called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
+        //SPDLOG_DEBUG("trading_page::set_price called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
 
         if (price.isEmpty()) { price = "0"; }
 
@@ -780,6 +780,7 @@ namespace atomic_dex
             {
                 this->m_preferred_order.value()["locked"] = true;
             }
+
             this->determine_cex_rates();
             emit priceChanged();
             emit priceReversedChanged();
@@ -840,7 +841,7 @@ namespace atomic_dex
     void
     trading_page::set_volume(QString volume, [[maybe_unused]] utils::caller_location location)
     {
-        SPDLOG_DEBUG("trading_page::set_volume called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
+        //SPDLOG_DEBUG("trading_page::set_volume called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
 
         if (volume.isEmpty())
         {

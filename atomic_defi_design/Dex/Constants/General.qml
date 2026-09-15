@@ -346,12 +346,6 @@ QtObject {
         return text
     }
 
-    function logObject(obj) {
-        for (var key in obj) {
-            console.log(key + ": " + obj[key]);
-        }
-    }
-
     function flipFalse(obj) {
         if (obj === false) return true
         return obj

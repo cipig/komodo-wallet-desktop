@@ -1396,7 +1396,6 @@ namespace atomic_dex
                 nlohmann::json j = kdf::template_request("task::enable_sia::init", true);
                 kdf::to_json(j, request);
                 batch.push_back(j);
-                //SPDLOG_INFO("Enable task request: {}", batch.dump(4));
                 return {batch, {coin_info.ticker}};
             }
 
@@ -1516,7 +1515,6 @@ namespace atomic_dex
                                                     }
                                                     else
                                                     {
-                                                        // TODO: many unused variables
                                                         if (z_answers[0].at("result").at("details").contains("UpdatingBlocksCache"))
                                                         {
                                                             event = "UpdatingBlocksCache";
@@ -1564,8 +1562,8 @@ namespace atomic_dex
                                                 try {
                                                     if (z_error[0].at("result").at("details").contains("error"))
                                                     {
-                                                        SPDLOG_INFO("Error enabling {}: {} ", tickers[idx], event);
-                                                        SPDLOG_INFO(
+                                                        SPDLOG_WARN("Error enabling {}: {} ", tickers[idx], event);
+                                                        SPDLOG_WARN(
                                                             "Removing zhtlc from enabling, idx: {}, tickers size: {}, answers size: {}",
                                                             tickers[idx], idx, tickers.size(), answers.size()
                                                         );
@@ -1581,8 +1579,8 @@ namespace atomic_dex
                                                         // Either we force disable here, or schedule to check on it later
                                                         // If this happens, address will be "Invalid" and balance will be zero.
                                                         // We could save this ticker in a list to try `enable_z_coin_status` again on it periodically until complete.
-                                                        SPDLOG_INFO("Exited {} enable loop after 10000 tries ", tickers[idx]);
-                                                        SPDLOG_INFO(
+                                                        SPDLOG_WARN("Exited {} enable loop after 10000 tries ", tickers[idx]);
+                                                        SPDLOG_WARN(
                                                             "Bad answer for zhtlc_error: [{}] -> idx: {}, tickers size: {}, answers size: {}", tickers[idx], idx,
                                                             tickers.size(), answers.size()
                                                         );
@@ -1592,7 +1590,6 @@ namespace atomic_dex
                                                     }
                                                     else
                                                     {
-                                                        SPDLOG_INFO("{} enable loop complete!", tickers[idx]);
                                                         this->dispatcher_.trigger(enabling_task_status{.coin = tickers[idx], .reason = "Complete!"});
                                                     }
                                                 }
