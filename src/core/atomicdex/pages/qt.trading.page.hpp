@@ -127,7 +127,7 @@ namespace atomic_dex
         //! Private function
         void                       determine_max_volume(utils::caller_location location = utils::caller_location::current());
         void                       determine_total_amount(utils::caller_location location = utils::caller_location::current());
-        void                       determine_cex_rates();
+        void                       determine_cex_rates(utils::caller_location location = utils::caller_location::current());
         void                       determine_pair_volume_24hr();
         void                       cap_volume();
         [[nodiscard]] t_float_50   get_max_balance_without_dust(const std::optional<QString>& trade_with = std::nullopt) const;
@@ -197,7 +197,7 @@ namespace atomic_dex
         [[nodiscard]] QString         get_min_trade_vol() const;
         void                          set_min_trade_vol(QString min_trade_vol);
         [[nodiscard]] QString         get_volume() const;
-        void                          set_volume(QString volume);
+        void                          set_volume(QString volume, utils::caller_location location = utils::caller_location::current());
         [[nodiscard]] QString         get_max_volume() const;
         void                          set_max_volume(QString max_volume);
         [[nodiscard]] QString         get_total_amount() const;

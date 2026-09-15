@@ -44,7 +44,7 @@ namespace atomic_dex
 
       public:
         void                           adjust_min_vol();
-        void                           refresh_orderbook_model_data(kdf::orderbook_result_rpc answer);
+        void                           refresh_orderbook_model_data(kdf::orderbook_result_rpc answer, utils::caller_location location = utils::caller_location::current());
         void                           reset_orderbook(kdf::orderbook_result_rpc answer, utils::caller_location location = utils::caller_location::current());
         void                           clear_orderbook();
         [[nodiscard]] orderbook_model* get_asks() const;
@@ -75,10 +75,10 @@ namespace atomic_dex
         void                                                  set_both_taker_vol();
         ag::ecs::system_manager&                              m_system_manager;
         entt::dispatcher&                                     m_dispatcher;
-        QTimer*                                               m_debounce_timer{nullptr};
         orderbook_model*                                      m_asks;
         orderbook_model*                                      m_bids;
         orderbook_model*                                      m_best_orders;
+        QTimer*                                               m_debounce_timer{nullptr};
         QJsonObject                                           m_base_max_taker_vol;
         QJsonObject                                           m_rel_max_taker_vol;
         QString                                               m_base_min_taker_vol;

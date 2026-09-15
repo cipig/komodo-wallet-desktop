@@ -496,11 +496,11 @@ namespace atomic_dex
         return res;
     }
 
-    QString application::get_balance_info_qstr(const QString& coin)
+    QString application::get_balance_info_qstr(const QString& coin, [[maybe_unused]] utils::caller_location location)
     {
         if (coin.isEmpty())
         {
-            SPDLOG_WARN("application::get_balance_info_qstr was queried with an empty ticker string.");
+            SPDLOG_WARN("application::get_balance_info_qstr was queried with an empty ticker string by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
             return QStringLiteral("0");
         }
 
