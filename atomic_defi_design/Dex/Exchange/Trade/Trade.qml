@@ -46,12 +46,10 @@ Item
 
     function setPrice(v) {
         API.app.trading_pg.price = v
-        API.app.trading_pg.determine_error_cases()
     }
 
     function setVolume(v) {
         API.app.trading_pg.volume = v
-        API.app.trading_pg.determine_error_cases()
     }
                              
     function setMakerMode(v) {

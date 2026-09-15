@@ -1422,8 +1422,9 @@ namespace atomic_dex
     void
     trading_page::determine_error_cases()
     {
-        if (!m_system_manager.has_system<kdf_service>())
+        if (m_is_clearing_forms || !m_system_manager.has_system<kdf_service>())
             return;
+
         TradingError current_trading_error = TradingError::None;
 
         //! Check minimal trading amount
@@ -1476,36 +1477,35 @@ namespace atomic_dex
 
         if (current_trading_error == TradingError::None)
         {
-            if (max_balance_without_dust < safe_float(regular_min_taker_vol)) //<! Checking balance < minimal_trading_amount
-            {
-                current_trading_error = TradingError::BalanceIsLessThanTheMinimalTradingAmount;
-            }
-            else if (m_volume.isEmpty() || m_volume == "0") ///< Volume is not set correctly
+            if (m_volume.isEmpty() || m_volume == "0")
             {
                 current_trading_error = TradingError::VolumeFieldNotFilled;
             }
-            else if (m_price.isEmpty() || m_price == "0") ///< Price is not set correctly
+            else if (m_price.isEmpty() || m_price == "0")
             {
-                current_trading_error = TradingError::PriceFieldNotFilled; ///< need to have for multi ticker check
-            }
-            else if (safe_float(m_volume.toStdString()) < safe_float(cur_min_taker_vol) && !is_selected_min_max)
-            {
-                current_trading_error = TradingError::VolumeIsLowerThanTheMinimum;
-            }
-            else if (safe_float(m_total_amount.toStdString()) < safe_float(rel_min_taker_vol))
-            {
-                current_trading_error = TradingError::ReceiveVolumeIsLowerThanTheMinimum;
+                current_trading_error = TradingError::PriceFieldNotFilled;
             }
             else
             {
-                if (!get_fees().empty())
+                if (max_balance_without_dust < safe_float(regular_min_taker_vol))
+                {
+                    current_trading_error = TradingError::BalanceIsLessThanTheMinimalTradingAmount;
+                }
+                else if (safe_float(m_volume.toStdString()) < safe_float(cur_min_taker_vol) && !is_selected_min_max)
+                {
+                    current_trading_error = TradingError::VolumeIsLowerThanTheMinimum;
+                }
+                else if (safe_float(m_total_amount.toStdString()) < safe_float(rel_min_taker_vol))
+                {
+                    current_trading_error = TradingError::ReceiveVolumeIsLowerThanTheMinimum;
+                }
+                else if (!get_fees().empty())
                 {
                     current_trading_error = generate_fees_error(get_fees());
                 }
             }
         }
 
-        //! Check for base coin
         this->set_trading_error(current_trading_error);
     }
 
