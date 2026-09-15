@@ -14,8 +14,7 @@ Item
 
     ColumnLayout
     {
-        width: parent.width
-        height: parent.height
+        anchors.fill: parent
         anchors.horizontalCenter: parent.horizontalCenter
 
         HorizontalLine

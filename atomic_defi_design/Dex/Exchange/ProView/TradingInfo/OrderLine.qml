@@ -67,12 +67,12 @@ FloatingBackground
             Layout.fillHeight: true
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignCenter
-            spacing: 0
+            spacing: 2
 
             Item
             {
                 Layout.fillWidth: true
-                Layout.preferredHeight: childrenRect.height
+                Layout.preferredHeight: 18
 
                 DexLabel
                 {
@@ -143,7 +143,7 @@ FloatingBackground
             Item
             {
                 Layout.fillWidth: true
-                Layout.preferredHeight: childrenRect.height
+                Layout.preferredHeight: 18
 
                 DefaultImage
                 {

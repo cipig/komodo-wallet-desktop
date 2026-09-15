@@ -149,7 +149,8 @@ namespace atomic_dex
     void
     atomic_dex::qt_orderbook_wrapper::set_both_taker_vol([[maybe_unused]] utils::caller_location location)
     {
-        SPDLOG_DEBUG("qt_orderbook_wrapper::set_both_taker_vol called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
+        //SPDLOG_DEBUG("qt_orderbook_wrapper::set_both_taker_vol called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
+
         auto&& [base, rel]         = m_system_manager.get_system<kdf_service>().get_taker_vol();
         this->m_base_max_taker_vol = QJsonObject{
             {"denom", QString::fromStdString(base.denom)},
