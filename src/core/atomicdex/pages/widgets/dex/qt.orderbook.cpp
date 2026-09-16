@@ -112,23 +112,28 @@ namespace atomic_dex
     void
     qt_orderbook_wrapper::reset_orderbook(kdf::orderbook_result_rpc answer, [[maybe_unused]] utils::caller_location location)
     {
-        SPDLOG_DEBUG("qt_orderbook_wrapper::reset_orderbook called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
+        //SPDLOG_DEBUG("qt_orderbook_wrapper::reset_orderbook called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
+
         this->m_asks->reset_orderbook(answer.asks);
         this->m_bids->reset_orderbook(answer.bids);
         this->set_both_taker_vol();
+
         if (m_selected_best_order->has_value())
         {
             SPDLOG_INFO("selected best orders have a value - set preferred order");
             m_system_manager.get_system<trading_page>().set_preferred_order(m_selected_best_order->value());
             m_selected_best_order = std::nullopt;
         }
+
         m_best_orders->clear_orderbook();
         this->m_system_manager.get_system<orderbook_scanner_service>().process_best_orders();
     }
 
     void
-    qt_orderbook_wrapper::clear_orderbook()
+    qt_orderbook_wrapper::clear_orderbook([[maybe_unused]] utils::caller_location location)
     {
+        SPDLOG_DEBUG("qt_orderbook_wrapper::clear_orderbook called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
+
         this->m_asks->clear_orderbook();
         this->m_bids->clear_orderbook();
         this->m_best_orders->clear_orderbook();
@@ -180,7 +185,7 @@ namespace atomic_dex
     void
     qt_orderbook_wrapper::refresh_best_orders([[maybe_unused]] utils::caller_location location)
     {
-        SPDLOG_DEBUG("qt_orderbook_wrapper::refresh_best_orders called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
+        //SPDLOG_DEBUG("qt_orderbook_wrapper::refresh_best_orders called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
 
         if (this->is_best_orders_busy())
         {

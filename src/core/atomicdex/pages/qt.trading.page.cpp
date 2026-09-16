@@ -792,7 +792,7 @@ namespace atomic_dex
     void
     trading_page::clear_forms([[maybe_unused]] QString from, [[maybe_unused]] utils::caller_location location)
     {
-        SPDLOG_DEBUG("trading_page::clear_forms called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
+        //SPDLOG_DEBUG("trading_page::clear_forms called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
 
         if (!this->m_system_manager.has_system<kdf_service>())
         {
@@ -1212,10 +1212,6 @@ namespace atomic_dex
             {
                 auto available_quantity = m_preferred_order->at("base_max_volume").get<std::string>();
                 this->set_volume(QString::fromStdString(utils::extract_large_float(available_quantity)));
-            }
-            else
-            {
-                this->get_orderbook_wrapper()->refresh_best_orders();
             }
 
             m_is_clearing_forms = false;
