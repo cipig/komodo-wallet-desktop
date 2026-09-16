@@ -4,13 +4,6 @@ on:
   push:
     branches:
       - nogeo
-  # Allows a build to be started by hand against any branch, from the Actions
-  # tab or `gh workflow run`. Automatic runs are unchanged: only a push to the
-  # branches above starts one, so this costs nothing until somebody explicitly
-  # asks for a build.
-  #
-  # Mainly for producing a test artifact from a topic branch — notably the
-  # Windows build, which cannot be produced anywhere but a Windows runner.
   workflow_dispatch:
 
 env:
@@ -132,9 +125,9 @@ jobs:
         uses: crazy-max/ghaction-github-runtime@v4
 
       - name: Setup Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
-          python-version: '3.11'
+          python-version: '3.14'
 
       - name: Install MSVC
         if: runner.os == 'Windows'
@@ -181,6 +174,7 @@ jobs:
           target: 'desktop'
           modules: 'debug_info qtwebengine'
           tools: 'tools_ifw'
+          setup-python: 'false'
           cache: true
 
       - name: Create scoop cache seed file (Windows)
