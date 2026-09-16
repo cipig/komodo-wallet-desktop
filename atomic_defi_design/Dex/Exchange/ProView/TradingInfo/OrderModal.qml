@@ -41,39 +41,41 @@ MultipageModal
                 Layout.preferredHeight: 70
                 Layout.topMargin: 10
                 Layout.bottomMargin: 10
-                spacing: 12
+
+                Item { Layout.preferredWidth: 40 }
 
                 PairItemBadge
                 {
-                    id: outgoingBadge
                     is_left: true
                     ticker: details ? details.base_coin : ""
                     fullname: details ? General.coinName(details.base_coin) : ""
                     amount: details ? details.base_amount : ""
                     Layout.fillHeight: true
                     Layout.fillWidth: true
-                    Layout.preferredWidth: 240
                 }
+
+                Item { Layout.preferredWidth: 20 }
 
                 Qaterial.Icon
                 {
-                    Layout.fillHeight: true
-                    Layout.preferredWidth: 32
                     Layout.alignment: Qt.AlignVCenter
                     color: Dex.CurrentTheme.foregroundColor
                     icon: "qrc:/assets/images/qaterial/swap-horizontal.svg"
+                    Layout.fillHeight: true
                 }
+
+                Item { Layout.preferredWidth: 20 }
 
                 PairItemBadge
                 {
-                    id: incomingBadge
                     ticker: details ? details.rel_coin : ""
                     fullname: details ? General.coinName(details.rel_coin) : ""
                     amount: details ? details.rel_amount : ""
                     Layout.fillHeight: true
                     Layout.fillWidth: true
-                    Layout.preferredWidth: 240
                 }
+
+                Item { Layout.preferredWidth: 40 }
             },
 
             DexLabel
