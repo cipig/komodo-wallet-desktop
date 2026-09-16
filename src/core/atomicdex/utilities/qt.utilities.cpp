@@ -33,18 +33,55 @@ namespace atomic_dex
     QJsonArray
     nlohmann_json_array_to_qt_json_array(const nlohmann::json& j)
     {
-        QJsonArray    out;
-        QJsonDocument q_json = QJsonDocument::fromJson(QString::fromStdString(j.dump()).toUtf8());
-        out                  = q_json.array();
-        return out;
+        QJsonArray arr;
+        if (!j.is_array()) return arr;
+
+        for (const auto& val : j)
+        {
+            if (val.is_string())
+                arr.append(QString::fromStdString(val.get<std::string>()));
+            else if (val.is_number_integer())
+                arr.append(val.get<int64_t>());
+            else if (val.is_number_float())
+                arr.append(val.get<double>());
+            else if (val.is_boolean())
+                arr.append(val.get<bool>());
+            else if (val.is_object())
+                arr.append(nlohmann_json_object_to_qt_json_object(val));
+            else if (val.is_array())
+                arr.append(nlohmann_json_array_to_qt_json_array(val));
+            else if (val.is_null())
+                arr.append(QJsonValue::Null);
+        }
+        return arr;
     }
 
     QJsonObject
     nlohmann_json_object_to_qt_json_object(const nlohmann::json& j)
     {
-        QJsonObject   obj;
-        QJsonDocument q_json = QJsonDocument::fromJson(QString::fromStdString(j.dump()).toUtf8());
-        obj                  = q_json.object();
+        QJsonObject obj;
+        if (!j.is_object()) return obj;
+
+        for (auto it = j.begin(); it != j.end(); ++it)
+        {
+            QString key = QString::fromStdString(it.key());
+            const auto& val = it.value();
+
+            if (val.is_string())
+                obj.insert(key, QString::fromStdString(val.get<std::string>()));
+            else if (val.is_number_integer())
+                obj.insert(key, val.get<int64_t>());
+            else if (val.is_number_float())
+                obj.insert(key, val.get<double>());
+            else if (val.is_boolean())
+                obj.insert(key, val.get<bool>());
+            else if (val.is_object())
+                obj.insert(key, nlohmann_json_object_to_qt_json_object(val));
+            else if (val.is_array())
+                obj.insert(key, nlohmann_json_array_to_qt_json_array(val));
+            else if (val.is_null())
+                obj.insert(key, QJsonValue::Null);
+        }
         return obj;
     }
 
@@ -66,7 +103,7 @@ namespace atomic_dex
     {
         QStringList out;
         out.reserve(vec.size());
-        for (auto&& cur: vec) { out.append(QString::fromStdString(cur)); }
+        for (const auto& cur: vec) { out.append(QString::fromStdString(cur)); }
         return out;
     }
 
@@ -74,9 +111,8 @@ namespace atomic_dex
     qt_variant_list_to_qt_string_list(const QVariantList& variant_list)
     {
         QStringList out;
-
         out.reserve(variant_list.size());
-        for (auto&& cur: variant_list) { out.append(cur.value<QString>()); }
+        for (const auto& cur: variant_list) { out.append(cur.value<QString>()); }
         return out;
     }
 
@@ -95,7 +131,6 @@ namespace atomic_dex
     qt_utilities::copy_text_to_clipboard(const QString& text)
     {
         QClipboard* clipboard = QGuiApplication::clipboard();
-
         clipboard->setText(text);
     }
 
@@ -104,7 +139,6 @@ namespace atomic_dex
     {
         qrcodegen::QrCode qr0 = qrcodegen::QrCode::encodeText(str.toStdString().c_str(), qrcodegen::QrCode::Ecc::MEDIUM);
         std::string       svg = qr0.toSvgString(2);
-
         return QString::fromStdString("data:image/svg+xml;base64,") + QString::fromStdString(svg).toLocal8Bit().toBase64();
     }
 
@@ -113,10 +147,10 @@ namespace atomic_dex
     {
         QStringList    out;
         const std::filesystem::path theme_path = atomic_dex::utils::get_themes_path();
-        for (auto&& cur: std::filesystem::directory_iterator(theme_path)) 
+
+        for (const auto& cur: std::filesystem::directory_iterator(theme_path))
         {
             if (!std::filesystem::exists(cur.path() / "colors.json")) continue;
-
             out << std_path_to_qstring(cur.path().filename()); 
         }
         return out;
@@ -127,6 +161,7 @@ namespace atomic_dex
     {
         bool     result    = true;
         std::filesystem::path file_path = atomic_dex::utils::get_themes_path() / filename.toStdString() / "colors.json";
+
         if (!overwrite && std::filesystem::exists(file_path))
         {
             result = false;

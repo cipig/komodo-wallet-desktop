@@ -186,7 +186,8 @@ namespace atomic_dex
     {
         m_enabled_coins.clear();
         m_all_coin_types.clear();
-        for (auto&& cur: cfg)
+
+        for (const auto& cur: cfg)
         {
             // If a new coin type is detected, push the type to `m_all_coin_types` member.
             if (auto type = QString::fromStdString(cur.type); !m_all_coin_types.contains(type))
@@ -199,6 +200,7 @@ namespace atomic_dex
                 m_enabled_coins[cur.ticker] = cur;
             }
         }
+
         cfg.push_back(coin_config_t{.ticker = "All", .active = true, .currently_enabled = true});
         SPDLOG_INFO("Initializing global coin cfg model with size {}", cfg.size());
         set_checked_nb(0);
@@ -221,6 +223,7 @@ namespace atomic_dex
         for (auto&& ticker: tickers)
         {
             std::string target_ticker;
+
             if constexpr (std::is_same_v<std::string, std::decay_t<decltype(ticker)>>) {
                 target_ticker = ticker;
             } else if constexpr (std::is_same_v<QString, std::decay_t<decltype(ticker)>>) {
@@ -232,7 +235,7 @@ namespace atomic_dex
                 if (m_model_data[row].ticker == target_ticker)
                 {
                     QModelIndex idx = this->index(static_cast<int>(row), 0);
-                    update_functor({idx}, QString::fromStdString(target_ticker));
+                    update_functor({idx}, {});
                     break;
                 }
             }
@@ -251,7 +254,7 @@ namespace atomic_dex
     {
         QStringList result;
 
-        for (auto&& coin_cfg: m_model_data)
+        for (const auto& coin_cfg: m_model_data)
         {
             if (coin_cfg.checked)
             {
@@ -418,7 +421,7 @@ namespace atomic_dex
         return empty_cfg;
     }
 
-    global_coins_cfg_model::t_enabled_coins_registry
+    const global_coins_cfg_model::t_enabled_coins_registry&
     global_coins_cfg_model::get_enabled_coins() const 
     {
         return m_enabled_coins;
@@ -427,7 +430,7 @@ namespace atomic_dex
     QString
     global_coins_cfg_model::get_parent_coin(const QString& ticker) const
     {
-        auto cfg = get_coin_info(ticker.toStdString());
+        const auto& cfg = get_coin_info(ticker.toStdString());
         return QString::fromStdString(cfg.fees_ticker);
     }
 } // namespace atomic_dex

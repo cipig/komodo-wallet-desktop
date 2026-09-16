@@ -103,7 +103,7 @@ namespace atomic_dex
         for (int cur_idx = 0; cur_idx < nb_items; ++cur_idx)
         {
             QModelIndex idx = this->index(cur_idx, 0);
-            update_value(global_coins_cfg_model::CoinsRoles::Checked, checked, idx, *this);
+            (void)update_value(global_coins_cfg_model::CoinsRoles::Checked, checked, idx, *this);
         }
     }
 } // namespace atomic_dex

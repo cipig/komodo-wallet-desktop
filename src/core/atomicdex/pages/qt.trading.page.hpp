@@ -190,7 +190,7 @@ namespace atomic_dex
         [[nodiscard]] TradingMode         get_current_trading_mode() const;
         void                              set_current_trading_mode(TradingMode trading_mode);
         [[nodiscard]] SelectedOrderStatus get_selected_order_status() const;
-        void                              set_selected_order_status(SelectedOrderStatus order_status);
+        void                              set_selected_order_status(SelectedOrderStatus order_status, utils::caller_location location = utils::caller_location::current());
         [[nodiscard]] QString             get_price_reversed() const;
         [[nodiscard]] QString             get_price() const;
         void                              set_price(QString price, utils::caller_location location = utils::caller_location::current());

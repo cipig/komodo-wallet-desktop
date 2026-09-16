@@ -33,14 +33,14 @@
 namespace atomic_dex
 {
     template <typename QtModel>
-    inline auto update_value(int role, const QVariant& value, const QModelIndex& idx, QtModel& model)
+    inline bool update_value(int role, const QVariant& value, const QModelIndex& idx, QtModel& model)
     {
-        if (auto prev_value = model.data(idx, role); value != prev_value)
+        if (const auto prev_value = model.data(idx, role); value != prev_value)
         {
             model.setData(idx, value, role);
-            return std::make_tuple(prev_value, value, true);
+            return true;
         }
-        return std::make_tuple(value, value, false);
+        return false;
     }
 
     QString              std_path_to_qstring(const std::filesystem::path& path);

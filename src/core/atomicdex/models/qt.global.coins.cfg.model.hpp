@@ -70,7 +70,7 @@ namespace atomic_dex
         [[nodiscard]] const std::vector<coin_config_t>& get_model_data() const;
         [[nodiscard]] const coin_config_t&            get_coin_info(const std::string& ticker) const;
         [[nodiscard]] bool                            is_wallet_only(const std::string& ticker) const;
-        [[nodiscard]] t_enabled_coins_registry        get_enabled_coins() const;
+        [[nodiscard]] const t_enabled_coins_registry& get_enabled_coins() const;
         [[nodiscard]] global_coins_cfg_proxy_model*   get_all_disabled_proxy() const;
         [[nodiscard]] global_coins_cfg_proxy_model*   get_all_proxy() const;
         [[nodiscard]] global_coins_cfg_proxy_model*   get_all_qrc20_proxy() const;

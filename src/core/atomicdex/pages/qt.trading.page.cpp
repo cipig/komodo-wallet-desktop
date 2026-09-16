@@ -83,6 +83,7 @@ namespace atomic_dex
         {
             return;
         }
+
         if (bool is_wallet_only = m_system_manager.get_system<kdf_service>().get_coin_info(base.toStdString()).wallet_only; is_wallet_only)
         {
             SPDLOG_WARN("{} is wallet only - skipping", base.toStdString());
@@ -1302,7 +1303,7 @@ namespace atomic_dex
     void
     trading_page::determine_fees([[maybe_unused]] utils::caller_location location)
     {
-        SPDLOG_DEBUG("trading_page::determine_fees called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
+        //SPDLOG_DEBUG("trading_page::determine_fees called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
 
         if (!this->m_system_manager.has_system<kdf_service>())
         {
@@ -1321,14 +1322,18 @@ namespace atomic_dex
 
         if (base == rel) // trade_preimage::BaseEqualRel 
         {
+            SPDLOG_WARN("base == rel in trading_page::determine_fees called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
             return;
         }
+
         if (volume == "0") // trade_preimage::VolumeTooLow (can also occur if trade vol + fees is > balance)
         {
             return;
         }
+
         if (std::stof(price) < 0.00000001) // trade_preimage::PriceTooLow
         {
+            SPDLOG_WARN("price < 0.00000001 in trading_page::determine_fees called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
             return;
         }
 
@@ -1357,6 +1362,7 @@ namespace atomic_dex
                 auto           answers               = nlohmann::json::parse(body);
                 nlohmann::json answer                = answers[0];
                 auto           trade_preimage_answer = kdf::rpc_process_answer_batch<t_trade_preimage_answer>(answer, "trade_preimage");
+
                 if (trade_preimage_answer.error.has_value())
                 {
                     auto        error_answer = trade_preimage_answer.error.value();
@@ -1784,12 +1790,14 @@ namespace atomic_dex
     }
 
     void
-    trading_page::set_selected_order_status(SelectedOrderStatus order_status)
+    trading_page::set_selected_order_status(SelectedOrderStatus order_status, [[maybe_unused]] utils::caller_location location)
     {
+        SPDLOG_DEBUG("trading_page::set_selected_order_status called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
+
         if (m_selected_order_status != order_status)
         {
             m_selected_order_status = order_status;
-            //SPDLOG_DEBUG("Set selected order status to: {}", QMetaEnum::fromType<SelectedOrderStatus>().valueToKey(order_status));
+            SPDLOG_DEBUG("trading_page::set_selected_order_status to: {}", QMetaEnum::fromType<SelectedOrderStatus>().valueToKey(order_status));
             emit selectedOrderStatusChanged();
         }
     }
