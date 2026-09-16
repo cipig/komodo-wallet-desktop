@@ -1516,7 +1516,7 @@ namespace atomic_dex
     void
     trading_page::determine_cex_rates([[maybe_unused]] utils::caller_location location)
     {
-        SPDLOG_DEBUG("trading_page::determine_cex_rates called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
+        //SPDLOG_DEBUG("trading_page::determine_cex_rates called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
 
         const auto& price_service   = m_system_manager.get_system<global_price_service>();
         const auto* market_selector = get_market_pairs_mdl();
