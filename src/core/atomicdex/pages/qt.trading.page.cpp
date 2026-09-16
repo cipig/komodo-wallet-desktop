@@ -1219,25 +1219,19 @@ namespace atomic_dex
                 this->get_orderbook_wrapper()->refresh_best_orders();
             }
 
-            // Perform max calculations and auto-capping WHILE the property guard is still fully active.
-            // This ensures any adjustments made by cap_volume() do not trigger un-guarded property setter cascades!
-            this->determine_max_volume();
-            this->cap_volume();
-
-            // Disengage the modification guard now that fields are safely sized to the wallet bounds
             m_is_clearing_forms = false;
 
-            // Run a single consolidated evaluation pass with stabilized parameters
+            this->determine_max_volume();
+            this->cap_volume();
             this->determine_total_amount();
             this->determine_cex_rates();
             this->determine_fees();
 
-            // Explicitly notify the QML engine about the property alterations
-            // to flush the UI caches and synchronize the comparison labels!
             emit priceChanged();
             emit priceReversedChanged();
             emit volumeChanged();
             emit totalAmountChanged();
+
             emit preferredOrderChangeFinished();
         }
     }
