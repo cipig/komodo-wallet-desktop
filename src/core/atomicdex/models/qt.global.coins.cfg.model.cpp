@@ -224,7 +224,7 @@ namespace atomic_dex
             if constexpr (std::is_same_v<std::string, std::decay_t<decltype(ticker)>>) {
                 target_ticker = ticker;
             } else if constexpr (std::is_same_v<QString, std::decay_t<decltype(ticker)>>) {
-                target_ticker = ticker.toStdString();
+                target_ticker = ticker.toStdString(); // HOTSPOT 1%
             }
 
             for (size_t row = 0; row < m_model_data.size(); ++row)

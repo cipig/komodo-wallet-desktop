@@ -587,6 +587,7 @@ namespace atomic_dex
                 case CoinType::KRC20:
                 case CoinType::PLG20:
                 case CoinType::TRC20:
+                case CoinType::XDC:
                 case CoinType::Arbitrum:
                 case CoinType::Base:
                 case CoinType::Bittensor:
