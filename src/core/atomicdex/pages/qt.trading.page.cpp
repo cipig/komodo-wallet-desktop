@@ -843,26 +843,22 @@ namespace atomic_dex
     {
         //SPDLOG_DEBUG("trading_page::set_volume called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
 
-        if (volume.isEmpty())
-        {
-            return;
-        }
+        if (volume.isEmpty()) { volume = "0"; }
 
-        if (m_volume == volume)
+        if (m_volume != volume)
         {
-            return;
-        }
+            m_volume = std::move(volume);
 
-        if (safe_float(volume.toStdString()) < 0)
-        {
-            volume = "0";
-        }
+            if (m_is_clearing_forms)
+            {
+                return;
+            }
 
-        m_volume = std::move(volume);
-        this->determine_total_amount();
-        emit volumeChanged();
-        this->cap_volume();
-        this->get_orderbook_wrapper()->refresh_best_orders();
+            this->cap_volume();
+            this->determine_total_amount();
+            emit volumeChanged();
+            get_orderbook_wrapper()->refresh_best_orders();
+        }
     }
 
     QString
@@ -997,10 +993,13 @@ namespace atomic_dex
     }
 
     void
-    trading_page::cap_volume()
+    trading_page::cap_volume([[maybe_unused]] utils::caller_location location)
     {
+        SPDLOG_DEBUG("trading_page::cap_volume called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
+
         auto max_volume = this->get_max_volume();
         auto std_volume = this->get_volume().toStdString();
+
         if (!std_volume.empty() && safe_float(std_volume) > safe_float(max_volume.toStdString()))
         {
             if (!max_volume.isEmpty() && max_volume != "0")

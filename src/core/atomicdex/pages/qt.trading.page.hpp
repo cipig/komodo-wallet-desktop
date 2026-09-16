@@ -129,7 +129,7 @@ namespace atomic_dex
         void                       determine_total_amount(utils::caller_location location = utils::caller_location::current());
         void                       determine_cex_rates(utils::caller_location location = utils::caller_location::current());
         void                       determine_pair_volume_24hr();
-        void                       cap_volume();
+        void                       cap_volume(utils::caller_location location = utils::caller_location::current());
         [[nodiscard]] t_float_50   get_max_balance_without_dust(const std::optional<QString>& trade_with = std::nullopt) const;
         [[nodiscard]] TradingError generate_fees_error(QVariantMap fees) const;
         void                       set_preferred_settings();
