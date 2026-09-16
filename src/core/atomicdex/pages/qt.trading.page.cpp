@@ -881,7 +881,7 @@ namespace atomic_dex
     void
     trading_page::determine_max_volume([[maybe_unused]] utils::caller_location location)
     {
-        SPDLOG_DEBUG("trading_page::determine_max_volume called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
+        //SPDLOG_DEBUG("trading_page::determine_max_volume called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
 
         if (this->m_market_mode == MarketMode::Sell)
         {
@@ -995,7 +995,7 @@ namespace atomic_dex
     void
     trading_page::cap_volume([[maybe_unused]] utils::caller_location location)
     {
-        SPDLOG_DEBUG("trading_page::cap_volume called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
+        //SPDLOG_DEBUG("trading_page::cap_volume called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
 
         auto max_volume = this->get_max_volume();
         auto std_volume = this->get_volume().toStdString();
@@ -1256,7 +1256,7 @@ namespace atomic_dex
     void
     trading_page::determine_total_amount([[maybe_unused]] utils::caller_location location)
     {
-        SPDLOG_DEBUG("trading_page::determine_total_amount called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
+        //SPDLOG_DEBUG("trading_page::determine_total_amount called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
 
         if (!m_price.isEmpty() && !m_volume.isEmpty())
         {
