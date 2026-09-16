@@ -39,8 +39,7 @@ MultipageModal
                 id: dex_pair_badges
                 Layout.fillWidth: true
                 Layout.preferredHeight: 70
-                Layout.topMargin: 10
-                Layout.bottomMargin: 10
+                Layout.preferredWidth: 480
 
                 Item { Layout.preferredWidth: 40 }
 
@@ -51,7 +50,6 @@ MultipageModal
                     fullname: details ? General.coinName(details.base_coin) : ""
                     amount: details ? details.base_amount : ""
                     Layout.fillHeight: true
-                    Layout.fillWidth: true
                 }
 
                 Item { Layout.preferredWidth: 20 }
@@ -72,7 +70,6 @@ MultipageModal
                     fullname: details ? General.coinName(details.rel_coin) : ""
                     amount: details ? details.rel_amount : ""
                     Layout.fillHeight: true
-                    Layout.fillWidth: true
                 }
 
                 Item { Layout.preferredWidth: 40 }

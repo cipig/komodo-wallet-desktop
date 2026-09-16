@@ -1226,6 +1226,8 @@ namespace atomic_dex
             this->determine_cex_rates();
             this->determine_fees();
 
+            this->get_orderbook_wrapper()->refresh_best_orders();
+
             emit priceChanged();
             emit priceReversedChanged();
             emit volumeChanged();
