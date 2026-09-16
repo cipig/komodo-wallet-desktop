@@ -59,10 +59,11 @@ namespace atomic_dex
             Mantle          = 27,
             Monad           = 28,
             Plasma          = 29,
-            Disabled        = 30,
-            Invalid         = 31,
-            All             = 32,
-            Size            = 33
+            XDC             = 30,
+            Disabled        = 31,
+            Invalid         = 32,
+            All             = 33,
+            Size            = 34
         };
 
         Q_ENUM(CoinTypeEnum)

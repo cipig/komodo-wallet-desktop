@@ -438,7 +438,7 @@ namespace atomic_dex
         {
             if (value.currently_enabled)
             {
-                destination.push_back(value);
+                destination.push_back(value); // HOTSPOT 0.9%
             }
         }
 
@@ -2275,6 +2275,9 @@ namespace atomic_dex
                 break;
             case CoinTypeGadget::Gnosis:
                 out = construct_url_functor("XDAI", "XDAI", "xdai_tx_history", "gno_tx_history", ticker, address);
+                break;
+            case CoinTypeGadget::XDC:
+                out = construct_url_functor("XDC", "XDC", "xdc_tx_history", "xdc_tx_history", ticker, address);
                 break;
             case CoinTypeGadget::HyperEVM:
                 out = construct_url_functor("HYPE", "HYPE", "hype_tx_history", "hype_tx_history", ticker, address);

@@ -224,6 +224,8 @@ QtObject {
                     return "https://monadscan.com/token/" + coinContractAddress(ticker)
                 case "XDAI":
                     return "https://gnosisscan.io/token/" + coinContractAddress(ticker)
+                case "XDC":
+                    return "https://xdcscan.com/token/" + coinContractAddress(ticker)
                 case "XPL":
                     return "https://plasmascan.to/token/" + coinContractAddress(ticker)
                 case "TAO":
@@ -764,7 +766,7 @@ QtObject {
     }
 
     function isParentCoin(ticker) {
-        return ["ETH", "ETH-ARB20", "ETH-BASE", "POL", "AVAX", "QTUM", "BNB", "ONE", "KCS", "TRX", "GLEEC", "XDAI", "TAO", "HYPE", "MNT", "MON", "XPL"].includes(ticker)
+        return ["ETH", "ETH-ARB20", "ETH-BASE", "POL", "AVAX", "QTUM", "BNB", "ONE", "KCS", "TRX", "GLEEC", "XDAI", "XDC", "TAO", "HYPE", "MNT", "MON", "XPL"].includes(ticker)
     }
 
     function getFeesTicker(coin_info) {

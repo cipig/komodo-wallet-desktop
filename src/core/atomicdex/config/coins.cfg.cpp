@@ -126,6 +126,10 @@ namespace
         {
             return CoinType::SIA;
         }
+        if (coin_type == "XDC")
+        {
+            return CoinType::XDC;
+        }
         if (coin_type == "Ethereum Classic")
         {
             return CoinType::EthereumClassic;
@@ -354,6 +358,11 @@ namespace atomic_dex
         case CoinType::Gnosis:
             cfg.has_parent_fees_ticker = true;
             cfg.fees_ticker            = "XDAI";
+            cfg.is_erc_family          = true;
+            break;
+        case CoinType::XDC:
+            cfg.has_parent_fees_ticker = true;
+            cfg.fees_ticker            = "XDC";
             cfg.is_erc_family          = true;
             break;
         case CoinType::HyperEVM:

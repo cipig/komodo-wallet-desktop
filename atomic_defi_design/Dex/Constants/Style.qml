@@ -208,6 +208,7 @@ QtObject {
             case 'GRC-20':            return dark_theme ? colorCoinDark["GLEEC"] : colorCoin["GLEEC"]
             case 'TRC-20':            return dark_theme ? colorCoinDark["TRX"] : colorCoin["TRX"]
             case 'TRX':               return dark_theme ? colorCoinDark["TRX"] : colorCoin["TRX"]
+            case 'XDC':               return dark_theme ? colorCoinDark["XDC"] : colorCoin["XDC"]
             case 'EWT':               return dark_theme ? colorCoinDark["EWT"] : colorCoin["EWT"]
             case 'Moonbeam':          return dark_theme ? colorCoinDark["GLMR"] : colorCoin["GLMR"]
             case 'Plasma':            return dark_theme ? colorCoinDark["XPL"] : colorCoin["XPL"]
@@ -256,6 +257,7 @@ QtObject {
             case 'GRC-20':            return dark_theme ? colorCoinDark["GLEEC"] : colorCoin["GLEEC"]
             case 'TRC-20':            return dark_theme ? colorCoinDark["TRX"] : colorCoin["TRX"]
             case 'TRX':               return dark_theme ? colorCoinDark["TRX"] : colorCoin["TRX"]
+            case 'XDC':               return dark_theme ? colorCoinDark["XDC"] : colorCoin["XDC"]
             case 'EWT':               return dark_theme ? colorCoinDark["EWT"] : colorCoin["EWT"]
             case 'Mantle':            return dark_theme ? colorCoinDark["MNT"] : colorCoin["MNT"]
             case 'Moonbeam':          return dark_theme ? colorCoinDark["GLMR"] : colorCoin["GLMR"]
@@ -316,6 +318,7 @@ QtObject {
                                           "TAO": "#000000",
                                           "TRX": "#EF002F",
                                           "XDAI": "#00bad3",
+                                          "XDC": "#244b81",
                                           "XPL": "#295B4F",
                                           "UTXO": "#349d5f",
                                           "default": "#2f2f2f",
@@ -348,6 +351,7 @@ QtObject {
                                           "TAO": "#000000",
                                           "TRX": "#EF002F",
                                           "XDAI": "#00bad3",
+                                          "XDC": "#244b81",
                                           "XPL": "#295B4F",
                                           "UTXO": "#349d5f",
                                           "default": "#c8c8c8",
