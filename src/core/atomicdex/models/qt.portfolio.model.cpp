@@ -166,14 +166,14 @@ namespace atomic_dex
 
                 const std::string  balance_raw                 = kdf_system.get_balance_info(coin.ticker, ec);
                 QString            formatted_balance           = format_to_precision(balance_raw, 8);
-                auto&& [prev_balance, new_balance, is_change_b] = update_value(BalanceRole, formatted_balance, idx, *this);
+                auto&& [prev_balance, is_change_b] = update_value(BalanceRole, formatted_balance, idx, *this);
 
                 const QString display = QString::fromStdString(coin.ticker) + " (" + formatted_balance + ")";
                 update_value(Display, display, idx, *this);
 
                 if (is_change_b)
                 {
-                    balance_update_handler(prev_balance.toString(), new_balance.toString(), QString::fromStdString(ticker));
+                    balance_update_handler(prev_balance.toString(), formatted_balance, QString::fromStdString(ticker));
                 }
 
                 QJsonArray trend = nlohmann_json_array_to_qt_json_array(provider.get_ticker_historical(ticker));
@@ -215,13 +215,13 @@ namespace atomic_dex
 
                 const std::string  balance_raw                  = kdf_system.get_balance_info(ticker, ec);
                 QString            formatted_balance            = format_to_precision(balance_raw, 8);
-                auto&& [prev_balance, new_balance, is_change_b] = update_value(BalanceRole, formatted_balance, idx, *this);
+                auto&& [prev_balance, is_change_b]              = update_value(BalanceRole, formatted_balance, idx, *this);
 
                 const std::string  main_currency_balance_raw    = price_service.get_price_in_fiat(currency, ticker, ec);
-                auto&& [_1, _2, is_change_mc]                   = update_value(MainCurrencyBalanceRole, format_to_precision(main_currency_balance_raw, 2), idx, *this);
+                auto&& [_, is_change_mc]                        = update_value(MainCurrencyBalanceRole, format_to_precision(main_currency_balance_raw, 2), idx, *this);
 
                 const std::string  currency_price_raw           = price_service.get_rate_conversion(currency, ticker, true);
-                auto&& [_3, _4, is_change_mcpfo]                = update_value(MainCurrencyPriceForOneUnit, format_to_precision(currency_price_raw, 8), idx, *this);
+                auto&& [__, is_change_mcpfo]                    = update_value(MainCurrencyPriceForOneUnit, format_to_precision(currency_price_raw, 8), idx, *this);
 
                 const std::string  currency_fiat_raw            = price_service.get_rate_conversion(fiat, ticker, false);
                 update_value(MainFiatPriceForOneUnit, format_to_precision(currency_fiat_raw, 2), idx, *this);
@@ -240,7 +240,7 @@ namespace atomic_dex
 
                 if (is_change_b)
                 {
-                    balance_update_handler(prev_balance.toString(), new_balance.toString(), QString::fromStdString(ticker));
+                    balance_update_handler(prev_balance.toString(), formatted_balance, QString::fromStdString(ticker));
                 }
 
                 QJsonArray trend = nlohmann_json_array_to_qt_json_array(provider.get_ticker_historical(ticker));

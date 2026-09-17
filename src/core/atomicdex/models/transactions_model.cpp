@@ -156,14 +156,14 @@ namespace atomic_dex
         {
             QStringList out;
             out.reserve(item.from.size());
-            for (auto&& cur: item.from) { out.push_back(QString::fromStdString(cur)); }
+            for (const auto& cur: item.from) { out.push_back(QString::fromStdString(cur)); }
             return out;
         }
         case ToRole:
         {
             QStringList out;
             out.reserve(item.to.size());
-            for (auto&& cur: item.to) { out.push_back(QString::fromStdString(cur)); }
+            for (const auto& cur: item.to) { out.push_back(QString::fromStdString(cur)); }
             return out;
         }
         case BlockheightRole:
@@ -268,7 +268,8 @@ namespace atomic_dex
             // to_init = t_transactions(transactions.begin(), transactions.begin() + difference);
         }
 
-        std::for_each(begin(transactions) + difference, end(transactions), [this](const tx_infos& tx) { this->update_transaction(tx); });
+        std::for_each(begin(transactions) + difference, end(transactions), [this](const auto& tx) { this->update_transaction(tx); });
+
         if (not to_init.empty())
         {
             this->init_transactions(to_init);

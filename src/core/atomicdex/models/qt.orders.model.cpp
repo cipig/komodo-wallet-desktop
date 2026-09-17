@@ -420,11 +420,11 @@ namespace atomic_dex
         {
             const QModelIndex& idx = res.at(0);
             update_value(OrdersRoles::IsRecoverableRole, contents.is_recoverable, idx, *this);
-            auto&& [prev_value, new_value, is_change] = update_value(OrdersRoles::OrderStatusRole, contents.order_status, idx, *this);
+            auto&& [prev_value, is_change] = update_value(OrdersRoles::OrderStatusRole, contents.order_status, idx, *this);
 
             update_value(OrdersRoles::UnixTimestampRole, contents.unix_timestamp, idx, *this);
             update_value(OrdersRoles::PaymentLockRole, contents.paymentLock, idx, *this);
-            auto&& [prev_value_d, new_value_d, _] = update_value(OrdersRoles::HumanDateRole, contents.human_date, idx, *this);
+            auto&& [prev_value_d, __] = update_value(OrdersRoles::HumanDateRole, contents.human_date, idx, *this);
 
             if (is_change)
             {
@@ -433,10 +433,10 @@ namespace atomic_dex
                 m_dispatcher.trigger(
                     swap_status_notification{.uuid = contents.order_id,
                                              .prev_status = prev_value.toString(),
-                                             .new_status = new_value.toString(),
+                                             .new_status = contents.order_status,
                                              .base = base_coin,
                                              .rel = rel_coin,
-                                             .human_date = new_value_d.toString()});
+                                             .human_date = contents.human_date});
                 auto& kdf = m_system_manager.get_system<kdf_service>();
                 kdf.process_orderbook(true);
             }

@@ -147,10 +147,11 @@ namespace atomic_dex
             case orderbook_model::kind::best_orders:
             {
                 const std::string left_ticker = this->m_system_mgr.get_system<trading_page>().get_market_pairs_mdl()->get_left_selected_coin().toStdString();
-                const auto& left_coin_info = this->m_system_mgr.get_system<portfolio_page>().get_global_cfg()->get_coin_info(left_ticker);
-                const bool is_left_testnet = left_coin_info.is_testnet.value_or(false);
-                const std::string ticker = this->sourceModel()->data(idx, orderbook_model::CoinRole).toString().toStdString();
-                const auto& coin_info = this->m_system_mgr.get_system<portfolio_page>().get_global_cfg()->get_coin_info(ticker);
+                const auto& left_coin_info    = this->m_system_mgr.get_system<portfolio_page>().get_global_cfg()->get_coin_info(left_ticker);
+                const bool is_left_testnet    = left_coin_info.is_testnet.value_or(false);
+                const QString ticker_qt       = this->sourceModel()->data(idx, orderbook_model::CoinRole).toString();
+                const std::string ticker      = ticker_qt.toStdString();
+                const auto& coin_info         = this->m_system_mgr.get_system<portfolio_page>().get_global_cfg()->get_coin_info(ticker);
 
                 if (coin_info.ticker.empty() || coin_info.wallet_only)
                 {

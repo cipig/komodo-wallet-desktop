@@ -519,7 +519,8 @@ namespace atomic_dex
         if (const auto res = this->match(index(0, 0), UUIDRole, QString::fromStdString(order.uuid)); not res.isEmpty())
         {
             const QModelIndex& idx                  = res.at(0);
-            auto&& [_, new_price, is_price_changed] = update_value(OrderbookRoles::PriceRole, QString::fromStdString(order.price), idx, *this);
+            auto&& [_, is_price_changed] = update_value(OrderbookRoles::PriceRole, QString::fromStdString(order.price), idx, *this);
+
             update_value(OrderbookRoles::PriceNumerRole, QString::fromStdString(order.price_fraction_numer), idx, *this);
             update_value(OrderbookRoles::PriceDenomRole, QString::fromStdString(order.price_fraction_denom), idx, *this);
             update_value(OrderbookRoles::IsMineRole, order.is_mine, idx, *this);
@@ -586,8 +587,9 @@ namespace atomic_dex
                     const auto preferred_order = trading_pg.get_preferred_order();
                     if (!preferred_order.empty())
                     {
-                        const t_float_50 price_std       = safe_float(new_price.toString().toStdString());
+                        const t_float_50 price_std       = safe_float(order.price);
                         t_float_50       preferred_price = safe_float(preferred_order.value("price", "0").toString().toStdString());
+
                         if (price_std > preferred_price)
                         {
                             //SPDLOG_INFO("An order with a better price is available, uuid: {}, new_price: {}, current_price: {}", order.uuid, utils::format_float(price_std), utils::format_float(preferred_price));

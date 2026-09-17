@@ -143,7 +143,7 @@ namespace atomic_dex
     void addressbook_model::clear()
     {
         beginResetModel();
-        for (auto&& model : m_model_data)
+        for (auto* model : m_model_data)
         {
             delete model;
         }
