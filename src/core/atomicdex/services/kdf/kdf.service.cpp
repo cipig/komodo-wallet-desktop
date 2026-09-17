@@ -2158,53 +2158,112 @@ namespace atomic_dex
 
         auto answer_functor = [this, limit, filter_infos, after_manual_reset](t_http_response resp)
         {
-            //! Parsing Resp
-            orders_and_swaps result;
             auto             answers = kdf::basic_batch_answer(resp);
-
-            //! Extract
             const auto orders_answers      = kdf::rpc_process_answer_batch<t_my_orders_answer>(answers[0], "my_orders");
             const auto swap_answer         = kdf::rpc_process_answer_batch<t_my_recent_swaps_answer>(answers[1], "my_recent_swaps");
             const auto active_swaps_answer = kdf::rpc_process_answer_batch<t_active_swaps_answer>(answers[2], "active_swaps");
 
-            result.orders_and_swaps.reserve(orders_answers.orders.size() + limit);
-            result.nb_orders        = orders_answers.orders.size();
-            result.orders_and_swaps = std::move(orders_answers.orders);
-            result.orders_registry  = std::move(orders_answers.orders_id);
-            result.limit            = limit;
-            result.filtering_infos  = filter_infos;
-
-            //! Recent swaps
-            result.active_swaps = active_swaps_answer.uuids.size();
-            for (auto&& cur: active_swaps_answer.swaps)
+            // IF BACKGROUND PASS: Merge newly returned data into your existing live view state
+            // container object directly instead of discarding it and causing a UI layout explosion.
+            if (!after_manual_reset)
             {
-                const auto uuid = cur.order_id.toStdString();
-                result.swaps_registry.emplace(uuid);
-                result.orders_and_swaps.emplace_back(std::move(cur));
-            }
+                auto current_state_ptr = m_orders_and_swaps.synchronize();
 
-            //! Swaps
-            if (swap_answer.result.has_value())
-            {
-                const auto& swap_success_answer = swap_answer.result.value();
-                result.total_swaps              = swap_success_answer.total;
-                result.total_finished_swaps     = result.total_swaps - active_swaps_answer.uuids.size();
-                result.current_page             = swap_success_answer.page_number;
-                result.nb_pages                 = swap_success_answer.total_pages;
-                for (auto&& cur: swap_success_answer.swaps)
+                current_state_ptr->nb_orders       = orders_answers.orders.size();
+                current_state_ptr->orders_registry = std::move(orders_answers.orders_id);
+                current_state_ptr->active_swaps    = active_swaps_answer.uuids.size();
+
+                // 1. Maintain active orders natively
+                // Filter out non-swaps elements cleanly
+                current_state_ptr->orders_and_swaps.erase(
+                    std::remove_if(current_state_ptr->orders_and_swaps.begin(), current_state_ptr->orders_and_swaps.end(),
+                        [](const auto& item) { return std::holds_alternative<kdf::my_orders_order_entry_t>(item); }),
+                    current_state_ptr->orders_and_swaps.end()
+                );
+
+                // Prepend updated order maps
+                current_state_ptr->orders_and_swaps.insert(
+                    current_state_ptr->orders_and_swaps.begin(),
+                    orders_answers.orders.begin(),
+                    orders_answers.orders.end()
+                );
+
+                // 2. Merge active background loop swaps safely
+                for (auto&& cur : active_swaps_answer.swaps)
                 {
                     const auto uuid = cur.order_id.toStdString();
-                    if (!result.swaps_registry.contains(uuid))
+                    if (!current_state_ptr->swaps_registry.contains(uuid))
                     {
-                        result.swaps_registry.emplace(uuid);
-                        result.orders_and_swaps.emplace_back(std::move(cur));
+                        current_state_ptr->swaps_registry.emplace(uuid);
+                        current_state_ptr->orders_and_swaps.emplace_back(std::move(cur));
                     }
                 }
-                result.average_events_time = std::move(swap_success_answer.average_events_time);
-            }
 
-            //! Compute everything
-            m_orders_and_swaps = std::move(result);
+                // 3. Update swap metrics safely without inflating list lengths
+                if (swap_answer.result.has_value())
+                {
+                    const auto& swap_success_answer = swap_answer.result.value();
+                    current_state_ptr->total_swaps          = swap_success_answer.total;
+                    current_state_ptr->total_finished_swaps = swap_success_answer.total - active_swaps_answer.uuids.size();
+                    current_state_ptr->nb_pages             = swap_success_answer.total_pages;
+                    current_state_ptr->average_events_time  = std::move(swap_success_answer.average_events_time);
+
+                    // Merge new back-end entries without shifting active user-facing limits
+                    for (auto&& cur : swap_success_answer.swaps)
+                    {
+                        const auto uuid = cur.order_id.toStdString();
+                        if (!current_state_ptr->swaps_registry.contains(uuid))
+                        {
+                            current_state_ptr->swaps_registry.emplace(uuid);
+                            // Only append if we haven't maxed out our active UI pagination block limit bounds
+                            if (current_state_ptr->orders_and_swaps.size() < current_state_ptr->limit)
+                            {
+                                current_state_ptr->orders_and_swaps.emplace_back(std::move(cur));
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // USER-TRIGGERED MANUAL RESET PASS: Build container fresh from scratch natively
+                orders_and_swaps result;
+                result.orders_and_swaps.reserve(orders_answers.orders.size() + limit);
+                result.nb_orders        = orders_answers.orders.size();
+                result.orders_and_swaps = std::move(orders_answers.orders);
+                result.orders_registry  = std::move(orders_answers.orders_id);
+                result.limit            = limit;
+                result.filtering_infos  = filter_infos;
+                result.active_swaps     = active_swaps_answer.uuids.size();
+
+                for (auto&& cur : active_swaps_answer.swaps)
+                {
+                    const auto uuid = cur.order_id.toStdString();
+                    result.swaps_registry.emplace(uuid);
+                    result.orders_and_swaps.emplace_back(std::move(cur));
+                }
+
+                if (swap_answer.result.has_value())
+                {
+                    const auto& swap_success_answer = swap_answer.result.value();
+                    result.total_swaps              = swap_success_answer.total;
+                    result.total_finished_swaps     = result.total_swaps - active_swaps_answer.uuids.size();
+                    result.current_page             = swap_success_answer.page_number;
+                    result.nb_pages                 = swap_success_answer.total_pages;
+                    for (auto&& cur : swap_success_answer.swaps)
+                    {
+                        const auto uuid = cur.order_id.toStdString();
+                        if (!result.swaps_registry.contains(uuid))
+                        {
+                            result.swaps_registry.emplace(uuid);
+                            result.orders_and_swaps.emplace_back(std::move(cur));
+                        }
+                    }
+                    result.average_events_time = std::move(swap_success_answer.average_events_time);
+                }
+
+                m_orders_and_swaps = std::move(result);
+            }
 
             this->dispatcher_.trigger<process_swaps_and_orders_finished>(process_swaps_and_orders_finished{.after_manual_reset = after_manual_reset});
         };
