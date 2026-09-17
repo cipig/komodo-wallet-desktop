@@ -1477,7 +1477,7 @@ namespace atomic_dex
                                                         z_batch_array.push_back(j);
                                                     }
 
-                                                    t_http_response z_resp           = kdf_system.get_kdf_client().async_rpc_batch_standalone(std::move(z_batch_array)).get();
+                                                    t_http_response z_resp           = m_kdf_client.async_rpc_batch_standalone(std::move(z_batch_array)).get();
                                                     nlohmann::json  raw_z_answers    = kdf::basic_batch_answer(z_resp);
                                                     nlohmann::json  normalized_z_ans = raw_z_answers.is_array() ? raw_z_answers : nlohmann::json::array({raw_z_answers});
                                                     auto&&          current_answer   = normalized_z_ans[0];
