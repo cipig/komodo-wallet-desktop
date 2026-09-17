@@ -17,9 +17,7 @@
 #pragma once
 
 #include <QAbstractListModel>
-// TODO: When absl fix std::result_of switch to flat_hash_map
 #include <unordered_map>
-//#include <absl/container/flat_hash_map.h>
 #include <entt/config/config.h>
 #include <entt/entity/registry.hpp>
 #include "atomicdex/config/coins.cfg.hpp"

@@ -49,6 +49,7 @@ namespace atomic_dex
         coins_std.reserve(coins.size());
         atomic_dex::kdf_service& kdf = get_kdf();
         std::unordered_set<std::string> extra_coins;
+
         for (auto&& coin : coins)
         {
             auto coin_info = kdf.get_coin_info(coin.toStdString());
@@ -62,17 +63,18 @@ namespace atomic_dex
                 {
                     if (!coin_parent_info.currently_enabled && !coin_parent_info.active && extra_coins.insert(coin_parent_info.ticker).second)
                     {
-                        SPDLOG_DEBUG("UNUSED ?");
-                        SPDLOG_INFO("Adding extra coin: {} to enable", coin_parent_info.ticker);
+                        SPDLOG_DEBUG("UNUSED Adding extra coin: {} to enable", coin_parent_info.ticker);
                     }
                 }
             }
             coins_std.push_back(coin.toStdString());
         }
+
         for (auto&& extra_coin : extra_coins)
         {
             coins_std.push_back(extra_coin);
         }
+
         kdf.enable_coins(coins_std);
         return true;
     }
@@ -158,10 +160,9 @@ namespace atomic_dex
     bool application::has_coins_with_balance()
     {
         auto* portfolio_page = get_portfolio_page();
-        auto* portfolio_mdl = portfolio_page->get_portfolio();
-        auto portfolio_data = portfolio_mdl->get_underlying_data();
-
-        auto functor = [](const auto& coin) { return coin.balance.toFloat() > 0; };
+        auto* portfolio_mdl  = portfolio_page->get_portfolio();
+        auto  portfolio_data = portfolio_mdl->get_underlying_data();
+        auto  functor        = [](const auto& coin) { return coin.balance.toFloat() > 0; };
         return std::any_of(portfolio_data.begin(), portfolio_data.end(), functor);
     }
 
@@ -187,6 +188,7 @@ namespace atomic_dex
             if (fs::exists(path_to_remove))
             {
                 std::error_code ec;
+
                 if (fs::is_directory(path_to_remove))
                 {
                     fs::remove_all(path_to_remove, ec);
@@ -195,6 +197,7 @@ namespace atomic_dex
                 {
                     fs::remove(path_to_remove, ec);
                 }
+
                 if (ec)
                 {
                     LOG_PATH("error when removing {}", path_to_remove);
@@ -603,11 +606,9 @@ namespace atomic_dex
     QString application::recover_fund(const QString& uuid)
     {
         QString result;
-
         kdf::recover_funds_of_swap_request request{.swap_uuid = uuid.toStdString()};
-        auto                                      res = get_kdf().get_kdf_client().rpc_recover_funds(std::move(request));
-        result                                        = QString::fromStdString(res.raw_result);
-
+        auto res = get_kdf().get_kdf_client().rpc_recover_funds(std::move(request));
+        result = QString::fromStdString(res.raw_result);
         return result;
     }
 } // namespace atomic_dex
@@ -871,6 +872,7 @@ namespace atomic_dex
     {
         SPDLOG_INFO("restarting the application");
         const char* appimage{nullptr};
+
         if (appimage = std::getenv("APPIMAGE"); appimage != nullptr)
         {
             SPDLOG_INFO("APPIMAGE path is {}", appimage);

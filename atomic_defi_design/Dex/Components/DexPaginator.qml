@@ -12,7 +12,7 @@ RowLayout
     spacing: 8
 
     property int pageSize: {
-        let totalSwaps = Constants.API.app.orders_mdl.get_orders_proxy_mdl().sourceModel.get_orders_and_swaps().total_swaps
+        let totalSwaps = Constants.API.app.orders_mdl.orders_proxy_mdl.sourceModel.get_orders_and_swaps().total_swaps
         let currentLimit = Constants.API.app.orders_mdl.limit_nb_elements
         return Math.max(1, Math.ceil(totalSwaps / (currentLimit > 0 ? currentLimit : 20)))
     }

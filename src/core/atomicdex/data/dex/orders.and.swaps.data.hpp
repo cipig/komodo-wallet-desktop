@@ -1,6 +1,5 @@
 #pragma once
 
-//! Deps
 #include "atomicdex/data/dex/qt.orders.data.hpp"
 
 namespace atomic_dex

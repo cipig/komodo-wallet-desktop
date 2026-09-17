@@ -186,17 +186,19 @@ namespace atomic_dex
     }
 
     bool
-    portfolio_model::update_balance_values(const std::vector<std::string>& tickers)
+    portfolio_model::update_balance_values(const std::vector<std::string>& tickers, [[maybe_unused]] utils::caller_location location)
     {
         for (auto&& ticker: tickers)
         {
             if (ticker.empty())
             {
+                SPDLOG_WARN("portfolio_model::update_balance_values called with empty ticker by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
                 return false;
             }
+
             if (m_ticker_registry.find(ticker) == m_ticker_registry.end())
             {
-                SPDLOG_WARN("ticker: {} not inserted yet in the model, skipping", ticker);
+                SPDLOG_WARN("portfolio_model::update_balance_values | ticker: {} not inserted yet in the model | called by: {} ({}:{})", ticker, location.function_name(), location.file_name(), location.line());
                 return false;
             }
 
@@ -547,12 +549,12 @@ namespace atomic_dex
     void
     portfolio_model::clean_priv_keys()
     {
-        //SPDLOG_DEBUG("UNUSED ??");
         const auto coins = this->m_system_manager.get_system<portfolio_page>().get_global_cfg()->get_enabled_coins();
+
         for (auto&& [coin, cfg]: coins)
         {
             auto res = this->match(this->index(0, 0), TickerRole, QString::fromStdString(coin), 1, Qt::MatchFlag::MatchExactly);
-            // assert(not res.empty());
+
             if (not res.empty())
             {
                 update_value(PortfolioRoles::PrivKey, "", res.at(0), *this);
@@ -580,8 +582,7 @@ namespace atomic_dex
         QString    amount     = QString::fromStdString(amount_f.str(8, std::ios_base::fixed));
         qint64     timestamp  = duration_cast<seconds>(system_clock::now().time_since_epoch()).count();
         QString    human_date = QString::fromStdString(utils::to_human_date<std::chrono::seconds>(timestamp, "%e %b %Y, %H:%M"));
-        // Logs showed `balance update notification: am_i_sender: false amount: 0.00000000 ticker: USDT-SLP` sometimes, just before a crash.
-        // This is a temporary fix to see if it prevents the crash.
+
         if (amount_f > 0.0)
         {
             this->m_dispatcher.trigger(balance_update_notification{.am_i_sender = am_i_sender,

@@ -1,19 +1,12 @@
-//! STD Headers
 #include <random>
-
 #if defined(_WIN32) || defined(WIN32)
 # define _UNICODE
 # define UNICODE
 # include <Windows.h>
 #endif
-
-//! Qt Headers
 #include <QCryptographicHash>
 #include <QString>
 #include <QFile>
-
-
-//! Project Headers
 #include "atomicdex/utilities/global.utilities.hpp"
 #include "atomicdex/version/version.hpp"
 

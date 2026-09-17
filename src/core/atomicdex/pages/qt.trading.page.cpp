@@ -1100,6 +1100,7 @@ namespace atomic_dex
             SPDLOG_DEBUG("Trying to select a segwit self pair. Naughty boy!");
             involves_segwit = true;
         }
+
         bool is_swap = false;
         if (!requested_ticker.isEmpty())
         {
@@ -1166,6 +1167,7 @@ namespace atomic_dex
                 set_current_orderbook(base, rel);
             }
         }
+
         this->determine_cex_rates();
         this->determine_pair_volume_24hr();
         emit priceChanged();
@@ -1323,6 +1325,7 @@ namespace atomic_dex
 
         if (volume == "0") // trade_preimage::VolumeTooLow (can also occur if trade vol + fees is > balance)
         {
+            SPDLOG_WARN("volume == 0 in trading_page::determine_fees called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
             return;
         }
 
@@ -1426,7 +1429,8 @@ namespace atomic_dex
 
         if (m_is_clearing_forms || !m_system_manager.has_system<kdf_service>())
         {
-            SPDLOG_WARN("trading_page::determine_error_cases busy or kdf not running, called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
+            //SPDLOG_WARN("trading_page::determine_error_cases busy or kdf not running, called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
+            //called by atomic_dex::trading_page::reset_fees
             return;
         }
 

@@ -26,6 +26,7 @@
 #include "atomicdex/events/events.hpp"
 #include "atomicdex/models/qt.portfolio.proxy.filter.model.hpp"
 #include "atomicdex/services/kdf/kdf.service.hpp"
+#include "atomicdex/utilities/caller_location.hpp"
 
 namespace atomic_dex
 {
@@ -92,7 +93,7 @@ namespace atomic_dex
         //! Public api
         void                                  initialize_portfolio(const std::vector<std::string>& tickers);
         Q_INVOKABLE bool                      update_currency_values();
-        Q_INVOKABLE bool                      update_balance_values(const std::vector<std::string>& tickers);
+        Q_INVOKABLE bool                      update_balance_values(const std::vector<std::string>& tickers, utils::caller_location location = utils::caller_location::current());
         void                                  adjust_percent_current_currency(QString balance_all);
         void                                  disable_coins(const QStringList& coins);
         void                                  set_cfg(atomic_dex::cfg& cfg);

@@ -29,7 +29,6 @@ namespace atomic_dex
         emit portfolioChanged();
         this->dispatcher_.sink<update_portfolio_values>().connect<&portfolio_page::on_update_portfolio_values_event>(*this);
         this->dispatcher_.sink<coin_cfg_parsed>().connect<&portfolio_page::on_coin_cfg_parsed>(*this);
-        SPDLOG_INFO("portfolio_page created");
     }
 
     portfolio_model*
@@ -71,6 +70,7 @@ namespace atomic_dex
     portfolio_page::on_update_portfolio_values_event(const update_portfolio_values& evt)
     {
         bool res = true;
+
         if (evt.with_update_model)
         {
             res = m_portfolio_mdl->update_currency_values();
@@ -81,6 +81,7 @@ namespace atomic_dex
         const auto&     config           = m_system_manager.get_system<settings_page>().get_cfg();
         const auto&     price_service    = m_system_manager.get_system<global_price_service>();
         auto            fiat_balance_std = price_service.get_price_in_fiat_all(config.current_currency, ec);
+
         if (!ec && res)
         {
             set_current_balance_fiat_all(QString::fromStdString(fiat_balance_std));
@@ -117,7 +118,6 @@ namespace atomic_dex
     bool
     atomic_dex::portfolio_page::is_coin_enabled(const QString& coin_name) const
     {
-        // SPDLOG_DEBUG("UNUSED ??");
         return get_all_enabled_coins().contains(coin_name);
     }
 
@@ -153,5 +153,4 @@ namespace atomic_dex
     {
         return m_main_current_balance_all;
     }
-
 } // namespace atomic_dex

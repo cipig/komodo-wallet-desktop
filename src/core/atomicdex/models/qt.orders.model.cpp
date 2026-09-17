@@ -15,7 +15,6 @@
  ******************************************************************************/
 
 #include <algorithm>
-
 #include "atomicdex/api/kdf/rpc_v1/rpc.recover_funds_of_swap.hpp"
 #include "atomicdex/events/qt.events.hpp"
 #include "atomicdex/models/qt.orders.model.hpp"
@@ -641,7 +640,6 @@ namespace atomic_dex
     void
     orders_model::refresh_or_insert(bool after_manual_reset, [[maybe_unused]] utils::caller_location location)
     {
-        //SPDLOG_DEBUG("orders_model::refresh_or_insert called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
         //called by atomic_dex::application::tick every 17s
 
         if (after_manual_reset)
@@ -651,7 +649,7 @@ namespace atomic_dex
 
         if (is_fetching_busy())
         {
-            SPDLOG_WARN("Fetching busy, skipping orders_model::refresh_or_insert");
+            SPDLOG_WARN("orders_model::refresh_or_insert fetching busy called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
             return;
         }
 
@@ -715,10 +713,10 @@ namespace atomic_dex
         auto&                                   kdf_system = m_system_manager.get_system<kdf_service>();
         nlohmann::json                          batch      = nlohmann::json::array();
         nlohmann::json                          json_data  = kdf::template_request("recover_funds_of_swap");
+
         kdf::recover_funds_of_swap_request req{.swap_uuid = uuid.toStdString()};
         kdf::to_json(json_data, req);
         batch.push_back(json_data);
-
         // json_data["userpass"] = "*****";
         // SPDLOG_DEBUG("recover_funds_of_swap request: {}", json_data.dump(-1));
 
