@@ -14,12 +14,10 @@
  *                                                                            *
  ******************************************************************************/
 
-//! Project Headers
 #include "atomicdex/services/price/defi.stats.hpp"
 #include "atomicdex/services/price/komodo_prices/komodo.prices.provider.hpp"
 #include "atomicdex/pages/qt.settings.page.hpp"
 #include "atomicdex/services/price/global.provider.hpp"
-
 
 //! Constructor
 namespace atomic_dex
@@ -66,20 +64,18 @@ namespace
     }
 
     nlohmann::json
-    process_fetch_defi_stats_volumes_answer(t_http_response resp)
+    process_fetch_defi_stats_volumes_answer(t_http_response& resp)
     {
-        std::string body = (resp.extract_string(true).get());
         if (resp.status_code() == 200)
         {
-            nlohmann::json    answer = nlohmann::json::parse(body);
-            return answer;
+            // Extract directly into the json parser without generating a temporary body string copy
+            return nlohmann::json::parse(resp.extract_string(true).get());
         }
         else
         {
             SPDLOG_WARN("Failed to update defi_stats!");
-            return nlohmann::json::array();            
+            return nlohmann::json::array();
         }
-        
     }
 } // namespace
 
@@ -89,9 +85,9 @@ namespace atomic_dex
     global_defi_stats_service::update()
     {
         using namespace std::chrono_literals;
-
         const auto now = std::chrono::high_resolution_clock::now();
         const auto s   = std::chrono::duration_cast<std::chrono::seconds>(now - m_update_clock);
+
         if (s >= 3min)
         {
             process_update();
@@ -100,7 +96,6 @@ namespace atomic_dex
     }
 
 } // namespace atomic_dex
-
 
 // Events
 namespace atomic_dex
@@ -114,14 +109,14 @@ namespace atomic_dex
                 {
                     try
                     {
-                        this->m_defi_stats_volumes = process_fetch_defi_stats_volumes_answer(previous_task.get());
+                        auto resp = previous_task.get();
+                        this->m_defi_stats_volumes = process_fetch_defi_stats_volumes_answer(resp);
                     }
                     catch (const std::exception& e)
                     {
                         SPDLOG_ERROR("exception in global_defi_stats_service::process_update: {}", e.what());
                     }
-                })
-            ;
+                });
     }
 
     std::string
@@ -140,7 +135,7 @@ namespace atomic_dex
         }
 
         // Check if defi_stats_volumes is valid
-        auto defi_stats_volumes = m_defi_stats_volumes.get();
+        const nlohmann::json defi_stats_volumes = m_defi_stats_volumes.get();
         if (!defi_stats_volumes.is_object())
         {
             SPDLOG_WARN("Invalid defi stats volumes data.");
@@ -212,7 +207,7 @@ namespace atomic_dex
         }
 
         // Check if defi_stats_volumes is valid
-        auto defi_stats_volumes = m_defi_stats_volumes.get();
+        const nlohmann::json defi_stats_volumes = m_defi_stats_volumes.get();
         if (!defi_stats_volumes.is_object())
         {
             SPDLOG_WARN("Invalid defi stats volumes data.");
