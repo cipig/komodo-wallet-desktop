@@ -1454,91 +1454,79 @@ namespace atomic_dex
                                         {
                                             auto task_id = answer.at("result").at("task_id").get<std::int8_t>();
                                             {
-                                                using namespace std::chrono_literals;
-
-                                                static std::size_t z_nb_try      = 0;
-                                                nlohmann::json     z_error       = nlohmann::json::array();
-                                                nlohmann::json     z_batch_array = nlohmann::json::array();
-
-                                                SPDLOG_INFO("{} enable_task Task ID: {}", tickers[idx], task_id);
-
-                                                if (coin_info.is_zhtlc_family)
-                                                {
-                                                    t_enable_z_coin_status_request z_request{.task_id = task_id};
-                                                    nlohmann::json j = kdf::template_request("task::enable_z_coin::status", true);
-                                                    kdf::to_json(j, z_request);
-                                                    z_batch_array.push_back(j);
-                                                }
-                                                else if (coin_info.is_sia_family)
-                                                {
-                                                    t_enable_sia_coin_status_request z_request{.task_id = task_id};
-                                                    nlohmann::json j = kdf::template_request("task::enable_sia::status", true);
-                                                    kdf::to_json(j, z_request);
-                                                    z_batch_array.push_back(j);
-                                                }
-                                                std::string last_event = "none";
-                                                std::string event = "none";
+                                                std::size_t    z_nb_try   = 0;
+                                                nlohmann::json z_error    = nlohmann::json::array();
+                                                std::string    last_event = "none";
+                                                std::string    event      = "none";
 
                                                 do {
-                                                    t_http_response  z_resp      = m_kdf_client.async_rpc_batch_standalone(std::move(z_batch_array), t_http_priority::background).get();
-                                                    auto             z_answers   = kdf::basic_batch_answer(z_resp);
-                                                    z_error                      = z_answers;
-                                                    std::string      status      = z_answers[0].at("result").at("status").get<std::string>();
+                                                    nlohmann::json z_batch_array = nlohmann::json::array();
+
+                                                    if (coin_info.is_zhtlc_family)
+                                                    {
+                                                        t_enable_z_coin_status_request z_request{.task_id = task_id};
+                                                        nlohmann::json j = kdf::template_request("task::enable_z_coin::status", true);
+                                                        kdf::to_json(j, z_request);
+                                                        z_batch_array.push_back(j);
+                                                    }
+                                                    else if (coin_info.is_sia_family)
+                                                    {
+                                                        t_enable_sia_coin_status_request z_request{.task_id = task_id};
+                                                        nlohmann::json j = kdf::template_request("task::enable_sia::status", true);
+                                                        kdf::to_json(j, z_request);
+                                                        z_batch_array.push_back(j);
+                                                    }
+
+                                                    t_http_response z_resp           = kdf_system.get_kdf_client().async_rpc_batch_standalone(std::move(z_batch_array)).get();
+                                                    nlohmann::json  raw_z_answers    = kdf::basic_batch_answer(z_resp);
+                                                    nlohmann::json  normalized_z_ans = raw_z_answers.is_array() ? raw_z_answers : nlohmann::json::array({raw_z_answers});
+                                                    auto&&          current_answer   = normalized_z_ans[0];
+                                                    z_error                          = normalized_z_ans;
+                                                    std::string     status           = current_answer.at("result").at("status").get<std::string>();
+
+                                                    SPDLOG_DEBUG("[{}/10000] Waiting for {} activation status [{}]...", z_nb_try, ticker, status);
 
                                                     if (status == "Ok")
                                                     {
                                                         SPDLOG_INFO("{} activation ready, status is {}", tickers[idx], status);
                                                         {
                                                             std::unique_lock lock(m_coin_cfg_mutex);
-                                                            m_coins_informations[tickers[idx]].activation_status = z_answers[0];
+                                                            m_coins_informations[tickers[idx]].activation_status = current_answer;
 
-                                                            if (z_answers[0].at("result").at("details").contains("error"))
+                                                            if (current_answer.at("result").at("details").contains("error"))
                                                             {
-                                                                if (z_answers[0].at("result").at("details").at("error").contains("error_type"))
+                                                                if (current_answer.at("result").at("details").at("error").contains("error_type"))
                                                                 {
-                                                                    if (z_answers[0].at("result").at("details").at("error").at("error_type") == "CoinIsAlreadyActivated")
+                                                                    if (current_answer.at("result").at("details").at("error").at("error_type") == "CoinIsAlreadyActivated")
                                                                     {
                                                                         continue;
                                                                     }
                                                                 }
-                                                                event = z_answers[0].at("result").at("details").at("error").get<std::string>();
+                                                                event = current_answer.at("result").at("details").at("error").get<std::string>();
                                                                 SPDLOG_ERROR("Enabling [{}] error: {}", tickers[idx], event);
                                                                 break;
                                                             }
                                                             m_coins_informations[tickers[idx]].currently_enabled = true;
                                                         }
 
-                                                        this->process_task_balance_answer(z_answers[0]);
+                                                        this->process_task_balance_answer(current_answer);
                                                         this->dispatcher_.trigger<coin_fully_initialized>(coin_fully_initialized{.tickers = {tickers[idx]}});
                                                         break;
                                                     }
                                                     else if (status == "Error")
                                                     {
-                                                        event = z_answers[0].at("result").at("details").at("error_data").at("error").get<std::string>();
+                                                        event = current_answer.at("result").at("details").at("error_data").at("error").get<std::string>();
                                                         break;
                                                     }
                                                     else
                                                     {
-                                                        if (z_answers[0].at("result").at("details").contains("UpdatingBlocksCache"))
-                                                        {
-                                                            event = "UpdatingBlocksCache";
-                                                        }
-                                                        else if (z_answers[0].at("result").at("details").contains("BuildingWalletDb"))
-                                                        {
-                                                            event = "BuildingWalletDb";
-                                                        }
-                                                        else if (z_answers[0].at("result").at("details").contains("ActivatingCoin"))
-                                                        {
-                                                            event = "ActivatingCoin";
-                                                        }
-                                                        else if (z_answers[0].at("result").at("details").contains("TemporaryError"))
-                                                        {
-                                                            event = "TemporaryError";
-                                                        }
-                                                        else
-                                                        {
-                                                            event = z_answers[0].at("result").at("details").get<std::string>();
-                                                        }
+                                                        const auto& details = current_answer.at("result").at("details");
+                                                        if (details.contains("UpdatingBlocksCache"))      event = "UpdatingBlocksCache";
+                                                        else if (details.contains("BuildingWalletDb"))    event = "BuildingWalletDb";
+                                                        else if (details.contains("ActivatingCoin"))      event = "ActivatingCoin";
+                                                        else if (details.contains("TemporaryError"))      event = "TemporaryError";
+                                                        else                                              event = details.get<std::string>();
+
                                                         SPDLOG_DEBUG("{} activation event [{}]", event, tickers[idx]);
 
                                                         if (event != last_event)
@@ -1553,12 +1541,15 @@ namespace atomic_dex
                                                             this->dispatcher_.trigger(enabling_task_status{.coin = tickers[idx], .reason = event});
                                                             last_event = event;
                                                         }
-                                                        // TODO: refactor to a background task
+
+                                                        using namespace std::chrono_literals;
                                                         std::this_thread::sleep_for(4s);
                                                     }
+
                                                     std::unique_lock lock(m_coin_cfg_mutex);
-                                                    m_coins_informations[tickers[idx]].activation_status = z_answers[0];
-                                                    settings_system.set_zhtlc_status(z_answers[0]);
+                                                    m_coins_informations[tickers[idx]].activation_status = current_answer;
+                                                    settings_system.set_zhtlc_status(current_answer);
+
                                                     z_nb_try += 1;
 
                                                 } while (z_nb_try < 10000);
