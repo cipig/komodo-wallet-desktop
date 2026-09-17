@@ -1190,7 +1190,6 @@ namespace atomic_dex
     {
         auto&& [batch_array, tokens_to_fetch] = prepare_batch_balance_and_tx();
 
-        // If it's a token, there is no batch array payload to send to the standard rpc endpoint
         if (batch_array.empty())
         {
             if (!tokens_to_fetch.empty()) {
@@ -1199,9 +1198,11 @@ namespace atomic_dex
             return async::make_task();
         }
 
+        nlohmann::json tracked_request = batch_array[0];
+
         return m_kdf_client.async_rpc_batch_standalone(std::move(batch_array), t_http_priority::background)
             .then(
-                [this, tokens_to_fetch = tokens_to_fetch, batch_array = batch_array](async::task<t_http_response> previous_task)
+                [this, tokens_to_fetch = tokens_to_fetch, tracked_request = std::move(tracked_request)](async::task<t_http_response> previous_task)
                 {
                     try
                     {
@@ -1211,17 +1212,17 @@ namespace atomic_dex
                             auto&       answer = answers[0];
                             std::string ticker;
 
-                            if (batch_array[0].contains("mmrpc") && batch_array[0].at("mmrpc") == "2.0")
+                            if (tracked_request.contains("mmrpc") && tracked_request.at("mmrpc") == "2.0")
                             {
-                                if (batch_array[0].at("params").contains("coin")) {
-                                    ticker = batch_array[0].at("params").at("coin");
-                                } else if (batch_array[0].at("params").contains("ticker")) {
-                                    ticker = batch_array[0].at("params").at("ticker");
+                                if (tracked_request.at("params").contains("coin")) {
+                                    ticker = tracked_request.at("params").at("coin");
+                                } else if (tracked_request.at("params").contains("ticker")) {
+                                    ticker = tracked_request.at("params").at("ticker");
                                 }
                             }
                             else
                             {
-                                ticker = batch_array[0].at("coin");
+                                ticker = tracked_request.at("coin");
                             }
 
                             if (answer.contains("result"))
@@ -1244,7 +1245,11 @@ namespace atomic_dex
                     {
                         SPDLOG_ERROR("exception in kdf_service::batch_balance_and_tx: {}", error.what());
                         this->dispatcher_.trigger<tx_fetch_finished>(tx_fetch_finished{.with_error = true});
-                        this->handle_exception_async_task(std::current_exception(), "batch_balance_and_tx", batch_array);
+                        nlohmann::json masked_log_req = tracked_request;
+                        if (masked_log_req.contains("userpass")) {
+                            masked_log_req["userpass"] = "";
+                        }
+                        this->handle_exception_async_task(std::current_exception(), "batch_balance_and_tx", masked_log_req);
                     }
                 });
     }
