@@ -2163,43 +2163,35 @@ namespace atomic_dex
             const auto swap_answer         = kdf::rpc_process_answer_batch<t_my_recent_swaps_answer>(answers[1], "my_recent_swaps");
             const auto active_swaps_answer = kdf::rpc_process_answer_batch<t_active_swaps_answer>(answers[2], "active_swaps");
 
-            // IF BACKGROUND PASS: Merge newly returned data into your existing live view state
-            // container object directly instead of discarding it and causing a UI layout explosion.
             if (!after_manual_reset)
             {
-                auto current_state_ptr = m_orders_and_swaps.synchronize();
-
+                auto current_state_ptr             = m_orders_and_swaps.synchronize();
                 current_state_ptr->nb_orders       = orders_answers.orders.size();
                 current_state_ptr->orders_registry = std::move(orders_answers.orders_id);
                 current_state_ptr->active_swaps    = active_swaps_answer.uuids.size();
 
-                // 1. Maintain active orders natively
-                // Filter out non-swaps elements cleanly
                 current_state_ptr->orders_and_swaps.erase(
                     std::remove_if(current_state_ptr->orders_and_swaps.begin(), current_state_ptr->orders_and_swaps.end(),
-                        [](const auto& item) { return std::holds_alternative<kdf::my_orders_order_entry_t>(item); }),
+                        [](const t_order_swaps_data& item) { return !item.is_swap; }),
                     current_state_ptr->orders_and_swaps.end()
                 );
 
-                // Prepend updated order maps
                 current_state_ptr->orders_and_swaps.insert(
                     current_state_ptr->orders_and_swaps.begin(),
                     orders_answers.orders.begin(),
                     orders_answers.orders.end()
                 );
 
-                // 2. Merge active background loop swaps safely
                 for (auto&& cur : active_swaps_answer.swaps)
                 {
-                    const auto uuid = cur.order_id.toStdString();
-                    if (!current_state_ptr->swaps_registry.contains(uuid))
+                    const auto uuid_str = cur.order_id.toStdString();
+                    if (!current_state_ptr->swaps_registry.contains(uuid_str))
                     {
-                        current_state_ptr->swaps_registry.emplace(uuid);
-                        current_state_ptr->orders_and_swaps.emplace_back(std::move(cur));
+                        current_state_ptr->swaps_registry.emplace(uuid_str);
+                        current_state_ptr->orders_and_swaps.push_back(std::move(cur));
                     }
                 }
 
-                // 3. Update swap metrics safely without inflating list lengths
                 if (swap_answer.result.has_value())
                 {
                     const auto& swap_success_answer = swap_answer.result.value();
@@ -2208,17 +2200,18 @@ namespace atomic_dex
                     current_state_ptr->nb_pages             = swap_success_answer.total_pages;
                     current_state_ptr->average_events_time  = std::move(swap_success_answer.average_events_time);
 
-                    // Merge new back-end entries without shifting active user-facing limits
+                    // Integrity tracking: Only feed elements into the UI view if they
+                    // fit exactly within your requested paginated drop down limits (e.g., 20 elements max)
                     for (auto&& cur : swap_success_answer.swaps)
                     {
-                        const auto uuid = cur.order_id.toStdString();
-                        if (!current_state_ptr->swaps_registry.contains(uuid))
+                        const auto uuid_str = cur.order_id.toStdString();
+                        if (!current_state_ptr->swaps_registry.contains(uuid_str))
                         {
-                            current_state_ptr->swaps_registry.emplace(uuid);
-                            // Only append if we haven't maxed out our active UI pagination block limit bounds
+                            current_state_ptr->swaps_registry.emplace(uuid_str);
+
                             if (current_state_ptr->orders_and_swaps.size() < current_state_ptr->limit)
                             {
-                                current_state_ptr->orders_and_swaps.emplace_back(std::move(cur));
+                                current_state_ptr->orders_and_swaps.push_back(std::move(cur));
                             }
                         }
                     }
