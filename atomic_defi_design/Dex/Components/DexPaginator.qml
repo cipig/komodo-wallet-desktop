@@ -11,7 +11,12 @@ RowLayout
     id: root
     spacing: 8
 
-    property var pageSize: Constants.API.app.orders_mdl.nb_pages
+    property int pageSize: {
+        let totalSwaps = Constants.API.app.orders_mdl.get_orders_proxy_mdl().sourceModel.get_orders_and_swaps().total_swaps
+        let currentLimit = Constants.API.app.orders_mdl.limit_nb_elements
+        return Math.max(1, Math.ceil(totalSwaps / (currentLimit > 0 ? currentLimit : 20)))
+    }
+
     property var currentValue: Constants.API.app.orders_mdl.current_page
     property alias itemsPerPageComboBox: itemsPerPageComboBox
 
@@ -28,7 +33,6 @@ RowLayout
             var start = Math.max(2, currentValue - 1);
             var end = Math.min(pageSize - 1, currentValue + 1);
 
-            // Adjust bounds near endpoints to guarantee sizing constraints
             if (currentValue <= 3) {
                 end = 4;
             } else if (currentValue >= pageSize - 2) {

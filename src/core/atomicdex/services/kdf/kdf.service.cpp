@@ -356,7 +356,7 @@ namespace atomic_dex
 
             auto time_since_activation = std::chrono::duration_cast<std::chrono::seconds>(now - m_last_activation_fire_time);
 
-            // SECURITY GUARD: If new manual allocations sit in queue, or if an intense
+            // If new manual allocations sit in queue, or if an intense
             // activation pass went out less than 20 seconds ago, hold back balance network calls.
             if (!m_activation_queue.empty() || time_since_activation < 20s)
             {

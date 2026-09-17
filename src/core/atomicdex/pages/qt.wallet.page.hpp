@@ -1,11 +1,10 @@
 #pragma once
 
-//! Qt
 #include <QJsonObject>
 #include <QObject>
 #include <QVariant>
-
 #include "atomicdex/models/transactions_model.hpp"
+#include "atomicdex/utilities/caller_location.hpp"
 
 namespace atomic_dex
 {
@@ -23,14 +22,13 @@ namespace atomic_dex
         ~wallet_page() final = default;
 
         void refresh_ticker_infos();
-
         void on_tx_fetch_finished(const tx_fetch_finished&);
         void on_ticker_balance_updated(const ticker_balance_updated&);
 
         // Getters/Setters
         [[nodiscard]] transactions_model* get_transactions_mdl() const;
         [[nodiscard]] QString             get_current_ticker() const;
-        void                              set_current_ticker(const QString& ticker, bool force = false);
+        void                              set_current_ticker(const QString& ticker, bool force = false, utils::caller_location location = utils::caller_location::current());
         [[nodiscard]] QVariant            get_ticker_infos() const;
         [[nodiscard]] bool                is_broadcast_busy() const;
         void                              set_broadcast_busy(bool status);
@@ -84,10 +82,8 @@ namespace atomic_dex
         Q_INVOKABLE void claim_rewards();
         Q_INVOKABLE void claim_faucet();
         Q_INVOKABLE void broadcast(const QString& tx_hex, bool is_claiming, bool is_max, const QString& amount);
-        void             broadcast_on_auth_finished(
-                        bool is_auth, const QString& tx_hex, bool is_claiming, bool is_max,
-                        const QString& amount); // Broadcast requires OS local user credentials verification. This is called by the Q_INVOKABLE broadcast() method after
-                                                // entering credentials.
+        void             broadcast_on_auth_finished(bool is_auth, const QString& tx_hex, bool is_claiming, bool is_max, const QString& amount);
+                         // Broadcast requires OS local user credentials verification. This is called by the Q_INVOKABLE broadcast() method after entering credentials.
         Q_INVOKABLE void send(const QString& address, const QString& amount, bool max, bool with_fees, QVariantMap fees_data, const QString& memo, const QString& ibc_source_channel);
 
         // QML API Properties
@@ -167,7 +163,6 @@ namespace atomic_dex
         bool                                           m_send_available{true};
         QString                                        m_send_availability_state;
         bool                                           m_current_ticker_fees_coin_enabled{true}; // Tells if the current ticker's fees coin is enabled.
-        //std::chrono::high_resolution_clock::time_point m_update_clock;                           // Clock used to time the `update()` loop of this ecs system.
         bool                                           m_page_open{false};
     };
 } // namespace atomic_dex

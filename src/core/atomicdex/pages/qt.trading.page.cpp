@@ -237,6 +237,7 @@ namespace atomic_dex
         const bool is_selected_max  = is_selected_order && is_max;
         t_float_50 rel_min_trade    = safe_float(get_orderbook_wrapper()->get_rel_min_taker_vol().toStdString());
         t_float_50 rel_min_volume_f = safe_float(get_min_trade_vol().toStdString());
+
         if (is_selected_order)
         {
             //SPDLOG_DEBUG(
@@ -263,13 +264,11 @@ namespace atomic_dex
 
         if (good_until_canceled == "true")
         {
-            //SPDLOG_DEBUG("Good until cancelled order");
             req.order_type                 = nlohmann::json::object();
             req.order_type.value()["type"] = "GoodTillCancelled";
         }
         else
         {
-            //SPDLOG_DEBUG("Fill or kill order");
             req.order_type                 = nlohmann::json::object();
             req.order_type.value()["type"] = "FillOrKill";
         }
@@ -311,7 +310,6 @@ namespace atomic_dex
         buy_request["userpass"] = "*******";
 
         //! Answer
-        //SPDLOG_DEBUG("buy_request is : {}", buy_request.dump(4));
         auto answer_functor = [this](const t_http_response& resp)
         {
             std::string body = (resp.extract_string(true).get());
@@ -402,13 +400,11 @@ namespace atomic_dex
 
         if (good_until_canceled == "true")
         {
-            //SPDLOG_DEBUG("Good until cancelled order");
             req.order_type                 = nlohmann::json::object();
             req.order_type.value()["type"] = "GoodTillCancelled";
         }
         else
         {
-            //SPDLOG_DEBUG("Fill or kill order");
             req.order_type                 = nlohmann::json::object();
             req.order_type.value()["type"] = "FillOrKill";
         }
@@ -462,7 +458,6 @@ namespace atomic_dex
         nlohmann::json sell_request = kdf::template_request("sell");
         kdf::to_json(sell_request, req);
         batch.push_back(sell_request);
-
         //sell_request["userpass"] = "******";
         //SPDLOG_DEBUG("sell request: {}", sell_request.dump(4));
 
@@ -478,7 +473,6 @@ namespace atomic_dex
                     nlohmann::json answer  = answers[0];
                     this->set_buy_sell_last_rpc_data(nlohmann_json_object_to_qt_json_object(answer));
                     auto& cur_kdf_system = m_system_manager.get_system<kdf_service>();
-                    // SPDLOG_DEBUG("order successfully placed, refreshing orders and swap");
                     cur_kdf_system.batch_fetch_orders_and_swap();
                 }
                 else
@@ -619,6 +613,7 @@ namespace atomic_dex
                                 m_post_clear_forms = false;
                             }
                         };
+
                         if ((m_market_mode == MarketMode::Buy && rel_max_taker_vol > 0 && min_vol <= 0) ||
                             (m_market_mode == MarketMode::Sell && base_max_taker_vol > 0 && min_vol <= 0))
                         {
@@ -1428,10 +1423,12 @@ namespace atomic_dex
     void
     trading_page::determine_error_cases([[maybe_unused]] utils::caller_location location)
     {
-        //SPDLOG_DEBUG("trading_page::determine_error_cases called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
 
         if (m_is_clearing_forms || !m_system_manager.has_system<kdf_service>())
+        {
+            SPDLOG_WARN("trading_page::determine_error_cases busy or kdf not running, called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
             return;
+        }
 
         TradingError current_trading_error = TradingError::None;
 

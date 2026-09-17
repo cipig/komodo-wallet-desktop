@@ -62,6 +62,7 @@ namespace atomic_dex
                 {
                     if (!coin_parent_info.currently_enabled && !coin_parent_info.active && extra_coins.insert(coin_parent_info.ticker).second)
                     {
+                        SPDLOG_DEBUG("UNUSED ?");
                         SPDLOG_INFO("Adding extra coin: {} to enable", coin_parent_info.ticker);
                     }
                 }
@@ -765,7 +766,6 @@ namespace atomic_dex
     application::get_trading_page() const
     {
         auto ptr = const_cast<trading_page*>(std::addressof(system_manager_.get_system<trading_page>()));
-        //SPDLOG_DEBUG("application::get_trading_page");
         assert(ptr != nullptr);
         return ptr;
     }
@@ -778,7 +778,6 @@ namespace atomic_dex
     application::get_wallet_page() const
     {
         auto ptr = const_cast<wallet_page*>(std::addressof(system_manager_.get_system<wallet_page>()));
-        //SPDLOG_DEBUG("application::get_wallet_page");
         assert(ptr != nullptr);
         return ptr;
     }
@@ -791,7 +790,6 @@ namespace atomic_dex
     application::get_settings_page() const
     {
         auto ptr = const_cast<settings_page*>(std::addressof(system_manager_.get_system<settings_page>()));
-        //SPDLOG_DEBUG("application::get_settings_page");
         assert(ptr != nullptr);
         return ptr;
     }
@@ -804,7 +802,6 @@ namespace atomic_dex
     application::get_addressbook_page() const
     {
         auto ptr = const_cast<addressbook_page*>(std::addressof(system_manager_.get_system<addressbook_page>()));
-        //SPDLOG_DEBUG("application::get_addressbook_page");
         assert(ptr != nullptr);
         return ptr;
     }
@@ -826,7 +823,6 @@ namespace atomic_dex
     timesync_checker_service* application::get_timesync_checker_service() const
     {
         auto ptr = const_cast<timesync_checker_service*>(std::addressof(system_manager_.get_system<timesync_checker_service>()));
-        //SPDLOG_DEBUG("application::get_timesync_checker_service");
         assert(ptr != nullptr);
         return ptr;
     }
@@ -838,7 +834,6 @@ namespace atomic_dex
     zcash_params_service* application::get_zcash_params_service() const
     {
         auto ptr = const_cast<zcash_params_service*>(std::addressof(system_manager_.get_system<zcash_params_service>()));
-        //SPDLOG_DEBUG("application::get_zcash_params_service");
         assert(ptr != nullptr);
         return ptr;
     }
@@ -851,7 +846,6 @@ namespace atomic_dex
     application::get_exporter_service() const
     {
         auto ptr = const_cast<exporter_service*>(std::addressof(system_manager_.get_system<exporter_service>()));
-        //SPDLOG_DEBUG("application::get_exporter_service");
         assert(ptr != nullptr);
         return ptr;
     }
@@ -864,7 +858,6 @@ namespace atomic_dex
     application::get_wallet_mgr() const
     {
         auto ptr = const_cast<qt_wallet_manager*>(std::addressof(system_manager_.get_system<qt_wallet_manager>()));
-        //SPDLOG_DEBUG("application::get_wallet_mgr");
         assert(ptr != nullptr);
         return ptr;
     }

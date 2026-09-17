@@ -103,9 +103,11 @@ namespace atomic_dex
         return QString::fromStdString(kdf_system.get_current_ticker());
     }
 
-    void wallet_page::set_current_ticker(const QString& ticker, bool force)
+    void wallet_page::set_current_ticker(const QString& ticker, bool force, [[maybe_unused]] utils::caller_location location)
     {
+        SPDLOG_DEBUG("wallet_page::set_current_ticker to {} with force {} called by: {} ({}:{})", ticker.toStdString(), force, location.function_name(), location.file_name(), location.line());
         auto& kdf_system = m_system_manager.get_system<kdf_service>();
+
         if (kdf_system.set_current_ticker(ticker.toStdString()) || force)
         {
             m_transactions_mdl->reset();
@@ -1048,6 +1050,7 @@ namespace atomic_dex
             const auto& settings         = m_system_manager.get_system<settings_page>();
             t_transactions  transactions = m_system_manager.get_system<kdf_service>().get_tx_history(ec);
             t_transactions  to_init;
+
             if (settings.is_spamfilter_enabled())
             {
                 for (auto&& cur_tx: transactions)
@@ -1062,6 +1065,7 @@ namespace atomic_dex
             {
                 to_init = transactions;
             }
+
             if (m_transactions_mdl->rowCount() == 0)
             {
                 //! insert all transactions
@@ -1072,6 +1076,7 @@ namespace atomic_dex
                 //! Update tx (only unconfirmed) or insert (new tx)
                 m_transactions_mdl->update_or_insert_transactions(to_init);
             }
+
             if (ec)
             {
                 this->set_tx_fetching_failed(true);
