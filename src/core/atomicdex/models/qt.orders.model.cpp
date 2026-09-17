@@ -764,7 +764,7 @@ namespace atomic_dex
             this->set_recover_fund_busy(false);
         };
 
-        kdf_system.get_kdf_client().async_rpc_batch_standalone(batch).then(
+        kdf_system.get_kdf_client().async_rpc_batch_standalone(std::move(batch)).then(
             [this, answer_functor](async::task<t_http_response> previous_task)
             {
                 try
