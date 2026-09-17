@@ -163,11 +163,17 @@ namespace atomic_dex
                     return coin_info.is_testnet.value_or(false);
                 }
 
-                t_float_50 fiat_price = safe_float(this->sourceModel()->data(idx, orderbook_model::PriceFiatRole).toString().toStdString());
-                if (fiat_price <= 0)
+                QVariant raw_fiat_data = this->sourceModel()->data(idx, orderbook_model::PriceFiatRole);
+                if (raw_fiat_data.canConvert<double>())
                 {
-                    return false;
+                    if (raw_fiat_data.toDouble() <= 0.0) return false;
                 }
+                else
+                {
+                    t_float_50 fiat_price = safe_float(raw_fiat_data.toString().toStdString());
+                    if (fiat_price <= 0) return false;
+                }
+
                 return true;
             }
           }

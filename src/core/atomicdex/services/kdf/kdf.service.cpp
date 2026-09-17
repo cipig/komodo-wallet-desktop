@@ -1860,7 +1860,6 @@ namespace atomic_dex
 
     void kdf_service::fetch_current_orderbook_thread(bool is_a_reset)
     {
-        //! If thread is not active ex: we are not on the trading page anymore, we continue sleeping.
         if (!m_orderbook_thread_active)
         {
             return;
@@ -2033,6 +2032,7 @@ namespace atomic_dex
         const auto underlying_tx_history_map = m_tx_informations.synchronize();
         const auto coin_info                 = get_coin_info(ticker);
         const auto it                        = !(coin_info.is_erc_family) ? underlying_tx_history_map->find("result") : underlying_tx_history_map->find(ticker);
+
         if (it == underlying_tx_history_map->cend())
         {
             ec = dextop_error::tx_history_of_a_non_enabled_coin;

@@ -14,7 +14,6 @@
  *                                                                            *
  ******************************************************************************/
 
-//! Project headers
 #include "qt.orderbook.hpp"
 #include "atomicdex/pages/qt.trading.page.hpp"
 #include "atomicdex/services/kdf/kdf.service.hpp"
@@ -89,7 +88,7 @@ namespace atomic_dex
     }
 
     void
-    qt_orderbook_wrapper::refresh_orderbook_model_data(kdf::orderbook_result_rpc answer)
+    qt_orderbook_wrapper::refresh_orderbook_model_data(const kdf::orderbook_result_rpc& answer)
     {
         this->m_asks->refresh_orderbook_model_data(answer.asks);
         this->m_bids->refresh_orderbook_model_data(answer.bids);

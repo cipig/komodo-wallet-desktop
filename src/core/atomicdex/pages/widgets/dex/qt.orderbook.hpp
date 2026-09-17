@@ -44,7 +44,7 @@ namespace atomic_dex
 
       public:
         void                           adjust_min_vol();
-        void                           refresh_orderbook_model_data(kdf::orderbook_result_rpc answer);
+        void                           refresh_orderbook_model_data(const kdf::orderbook_result_rpc& answer);
         void                           reset_orderbook(kdf::orderbook_result_rpc answer, utils::caller_location location = utils::caller_location::current());
         void                           clear_orderbook(utils::caller_location location = utils::caller_location::current());
         [[nodiscard]] orderbook_model* get_asks() const;

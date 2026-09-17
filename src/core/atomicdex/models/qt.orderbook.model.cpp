@@ -615,7 +615,7 @@ namespace atomic_dex
             std::unordered_set<std::string> current_uuids;
             current_uuids.reserve(contents.size());
 
-            for (auto&& order: contents)
+            for (const auto& order : contents)
             {
                 current_uuids.emplace(order.uuid);
                 if (this->m_orders_id_registry.count(order.uuid) > 0u)
@@ -763,7 +763,8 @@ namespace atomic_dex
         {
             t_float_50 preferred_price = safe_float(preferred_order.value("price", "0").toString().toStdString());
             bool       hit             = false;
-            for (auto&& order: m_model_data)
+
+            for (const auto& order : m_model_data)
             {
                 const t_float_50 price_std = safe_float(order.price);
 
