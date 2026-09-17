@@ -211,33 +211,29 @@ namespace atomic_dex
         emit get_all_disabled_proxy()->lengthChanged();
     }
 
+    void global_coins_cfg_model::update_single_ticker_status(const std::string& target_ticker, bool status)
+    {
+        for (size_t row = 0; row < m_model_data.size(); ++row)
+        {
+            if (m_model_data[row].ticker == target_ticker)
+            {
+                QModelIndex idx = this->index(static_cast<int>(row), 0);
+                update_value(Active, status, idx, *this);
+                update_value(CurrentlyEnabled, status, idx, *this);
+                break;
+            }
+        }
+    }
+
     template <typename TArray>
     void global_coins_cfg_model::update_status(const TArray& tickers, bool status)
     {
-        auto update_functor = [this, status](QModelIndexList res, [[maybe_unused]] const QString& ticker) {
-            const QModelIndex& idx = res.at(0);
-            update_value(Active, status, idx, *this);
-            update_value(CurrentlyEnabled, status, idx, *this);
-        };
-
-        for (auto&& ticker: tickers)
+        for (const auto& ticker : tickers)
         {
-            std::string target_ticker;
-
             if constexpr (std::is_same_v<std::string, std::decay_t<decltype(ticker)>>) {
-                target_ticker = ticker;
+                update_single_ticker_status(ticker, status);
             } else if constexpr (std::is_same_v<QString, std::decay_t<decltype(ticker)>>) {
-                target_ticker = ticker.toStdString(); // HOTSPOT 1%
-            }
-
-            for (size_t row = 0; row < m_model_data.size(); ++row)
-            {
-                if (m_model_data[row].ticker == target_ticker)
-                {
-                    QModelIndex idx = this->index(static_cast<int>(row), 0);
-                    update_functor({idx}, {});
-                    break;
-                }
+                update_single_ticker_status(ticker.toStdString(), status);
             }
         }
     }

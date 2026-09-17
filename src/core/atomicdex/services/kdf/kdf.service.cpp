@@ -433,14 +433,14 @@ namespace atomic_dex
     t_coins kdf_service::get_enabled_coins() const
     {
         t_coins destination;
-
         std::shared_lock lock(m_coin_cfg_mutex);
         destination.reserve(m_coins_informations.size());
+
         for (const auto& [key, value] : m_coins_informations)
         {
             if (value.currently_enabled)
             {
-                destination.push_back(value);
+                destination.emplace_back(value);
             }
         }
 
@@ -457,7 +457,7 @@ namespace atomic_dex
         {
             if (value.active)
             {
-                destination.push_back(value);
+                destination.emplace_back(value);
             }
         }
 

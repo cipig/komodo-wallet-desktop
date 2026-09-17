@@ -133,7 +133,11 @@ namespace atomic_dex
     bool
     qt_wallet_manager::is_there_a_default_wallet()
     {
-        return std::filesystem::exists(utils::get_atomic_dex_config_folder() / "default.wallet");
+        // The disk check executes EXACTLY ONCE on the very first invocation,
+        // and reads instantly from the CPU cache register every time afterward.
+        static const bool file_exists_cache =
+            std::filesystem::exists(utils::get_atomic_dex_config_folder() / "default.wallet");
+        return file_exists_cache;
     }
 
     QString
@@ -279,20 +283,25 @@ namespace atomic_dex
     qt_wallet_manager::login(const QString& password, const QString& wallet_name, bool use_static_rpcpass)
     {
         SPDLOG_INFO("qt_wallet_manager::login");
+
         if (not load_wallet_cfg(wallet_name.toStdString()))
         {
             return false;
         }
+
         std::error_code ec;
         std::string     password_std = password.toStdString();
         bool            with_pin_cfg = false;
+
         if (password.contains(QString::fromStdString(m_wallet_cfg.protection_pass)))
         {
             password_std = password_std.substr(0, password.size() - m_wallet_cfg.protection_pass.size());
 
             with_pin_cfg = true;
         }
+
         auto key = atomic_dex::derive_password(password_std, ec);
+
         if (ec)
         {
             SPDLOG_WARN("{}", ec.message());

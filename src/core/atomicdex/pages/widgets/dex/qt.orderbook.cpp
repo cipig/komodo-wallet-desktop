@@ -104,7 +104,7 @@ namespace atomic_dex
         }
         else
         {
-            m_best_orders->refresh_orderbook_model_data(data);
+            m_best_orders->refresh_orderbook_model_data(data); // HOTSPOT 0.4%
         }
         this->set_both_taker_vol();
     }

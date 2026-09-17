@@ -461,6 +461,7 @@ namespace atomic_dex
         const auto size = contents.orders_and_swaps.size();
         if (size == 0)
             return;
+
         beginResetModel();
         m_model_data = contents;
         m_orders_id_registry = std::move(m_model_data.orders_registry);
@@ -496,6 +497,7 @@ namespace atomic_dex
     {
         const auto&                     data = contents.orders_and_swaps;
         std::vector<t_order_swaps_data> to_init;
+
         std::for_each(
             begin(data) + contents.nb_orders, end(data),
             [this, &to_init](const auto& cur)
@@ -514,6 +516,7 @@ namespace atomic_dex
                     }
                 }
             });
+
         if (!to_init.empty())
         {
             this->common_insert(to_init, "swaps");

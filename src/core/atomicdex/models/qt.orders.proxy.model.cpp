@@ -114,20 +114,27 @@ namespace atomic_dex
     orders_proxy_model::filterAcceptsRow(int source_row, const QModelIndex& source_parent) const
     {
         QModelIndex idx = this->sourceModel()->index(source_row, 0, source_parent);
+
         if (not this->sourceModel()->hasIndex(idx.row(), 0))
         {
             return false;
         }
+
         auto       data           = this->sourceModel()->data(idx, orders_model::OrdersRoles::OrderStatusRole).toString();
         auto       timestamp      = this->sourceModel()->data(idx, orders_model::OrdersRoles::UnixTimestampRole).toULongLong();
-        auto       date           = QDateTime::fromMSecsSinceEpoch(timestamp).date();
 
-        if (not this->m_is_history && not date_in_range(date))
+        if (not this->m_is_history)
         {
-            return false;
+            qint64 from_ts = m_min_date.isValid() ? m_min_date.startOfDay().toMSecsSinceEpoch() : 0;
+            qint64 to_ts   = m_max_date.isValid() ? m_max_date.endOfDay().toMSecsSinceEpoch() : std::numeric_limits<qint64>::max();
+            qint64 row_ts  = static_cast<qint64>(timestamp);
+
+            if (row_ts < from_ts || row_ts > to_ts)
+            {
+                return false;
+            }
         }
 
-        //assert(not data.isEmpty());
         if (data.isEmpty()) { SPDLOG_ERROR("orders_proxy_model::filterAcceptsRow data.isEmpty true"); }
 
         if (this->m_is_history)
@@ -148,12 +155,14 @@ namespace atomic_dex
         if (not this->m_is_history && this->filterRole() == orders_model::OrdersRoles::TickerPairRole)
         {
             const auto pattern = this->filterRegExp().pattern().toStdString();
+
             if (pattern.find("/") != std::string::npos)
             {
                 std::vector<std::string> out;
                 boost::algorithm::split(out, pattern, boost::is_any_of("/"));
                 auto base_coin = this->sourceModel()->data(idx, orders_model::OrdersRoles::BaseCoinRole).toString();
                 auto rel_coin  = this->sourceModel()->data(idx, orders_model::OrdersRoles::RelCoinRole).toString();
+
                 if (out.size() >= 2)
                 {
                     const auto& left_pattern  = out[0];
@@ -265,6 +274,7 @@ namespace atomic_dex
         std::ofstream ofs(csv_path.string(), std::ios::out | std::ios::trunc);
         int           nb_items = this->rowCount();
         ofs << "Date,BaseCoin,BaseAmount,Status,RelCoin,RelAmount,UUID,ErrorState" << std::endl;
+
         for (int cur_idx = 0; cur_idx < nb_items; ++cur_idx)
         {
             QModelIndex idx = this->index(cur_idx, 0);
@@ -276,6 +286,7 @@ namespace atomic_dex
             ofs << this->data(idx, orders_model::OrdersRoles::RelCoinRole).toString().toStdString() << ",";
             ofs << this->data(idx, orders_model::OrdersRoles::RelCoinAmountRole).toString().toStdString() << ",";
             ofs << this->data(idx, orders_model::OrdersRoles::OrderIdRole).toString().toStdString();
+
             if (status == "failed")
             {
                 ofs << "," << this->data(idx, orders_model::OrdersRoles::OrderErrorStateRole).toString().toStdString() << std::endl;
@@ -311,6 +322,7 @@ namespace atomic_dex
         {
             std::vector<std::string> out;
             boost::algorithm::split(out, pattern, boost::is_any_of("/"));
+
             if (out.size() >= 2)
             {
                 const auto& left_pattern  = out[0];
@@ -344,6 +356,7 @@ namespace atomic_dex
     {
         return m_is_filtering_applicable;
     }
+
     void
     orders_proxy_model::set_apply_filtering(bool status)
     {

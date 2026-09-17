@@ -339,11 +339,17 @@ namespace atomic_dex
             if (not to_init.empty())
             {
                 system_manager_.get_system<portfolio_page>().initialize_portfolio(to_init);
+
                 if (m_primary_coin_fully_enabled && m_secondary_coin_fully_enabled)
                 {
                     if (std::find(to_init.begin(), to_init.end(), g_primary_dex_coin) != to_init.end())
                     {
-                        get_wallet_page()->get_transactions_mdl()->reset();
+                        // Only trigger a hard reset if the row data model array is currently populated.
+                        // If it's already empty, calling .reset() wastefully thrashes UI thread allocations.
+                        if (get_wallet_page()->get_transactions_mdl()->rowCount() > 0)
+                        {
+                            get_wallet_page()->get_transactions_mdl()->reset();
+                        }
                         this->dispatcher_.trigger<tx_fetch_finished>();
                     }
                     get_wallet_page()->refresh_ticker_infos();

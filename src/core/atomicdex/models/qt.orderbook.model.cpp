@@ -368,8 +368,7 @@ namespace atomic_dex
     {
         this->beginResetModel();
 
-        auto optimized_orderbook = orderbook;
-
+        auto optimized_orderbook    = orderbook;
         const auto& price_service   = m_system_mgr.get_system<global_price_service>();
         const auto& trading_pg      = m_system_mgr.get_system<trading_page>();
         const auto* market_selector = trading_pg.get_market_pairs_mdl();
@@ -404,6 +403,7 @@ namespace atomic_dex
 
         m_model_data = std::move(optimized_orderbook);
         m_orders_id_registry.clear();
+
         for (auto&& order: m_model_data)
         {
             if (this->m_orders_id_registry.find(order.uuid) == m_orders_id_registry.end())
