@@ -210,6 +210,7 @@ QtObject {
             case 'TRX':               return dark_theme ? colorCoinDark["TRX"] : colorCoin["TRX"]
             case 'XDC':               return dark_theme ? colorCoinDark["XDC"] : colorCoin["XDC"]
             case 'EWT':               return dark_theme ? colorCoinDark["EWT"] : colorCoin["EWT"]
+            case 'Flare':             return dark_theme ? colorCoinDark["FLR"] : colorCoin["FLR"]
             case 'Moonbeam':          return dark_theme ? colorCoinDark["GLMR"] : colorCoin["GLMR"]
             case 'Plasma':            return dark_theme ? colorCoinDark["XPL"] : colorCoin["XPL"]
             case 'QRC-20':            return dark_theme ? colorCoinDark["QTUM"] : colorCoin["QTUM"]
@@ -259,6 +260,7 @@ QtObject {
             case 'TRX':               return dark_theme ? colorCoinDark["TRX"] : colorCoin["TRX"]
             case 'XDC':               return dark_theme ? colorCoinDark["XDC"] : colorCoin["XDC"]
             case 'EWT':               return dark_theme ? colorCoinDark["EWT"] : colorCoin["EWT"]
+            case 'Flare':             return dark_theme ? colorCoinDark["FLR"] : colorCoin["FLR"]
             case 'Mantle':            return dark_theme ? colorCoinDark["MNT"] : colorCoin["MNT"]
             case 'Moonbeam':          return dark_theme ? colorCoinDark["GLMR"] : colorCoin["GLMR"]
             case 'Plasma':            return dark_theme ? colorCoinDark["XPL"] : colorCoin["XPL"]
@@ -303,6 +305,7 @@ QtObject {
                                           "ETH-ARB20": "#12aaff",
                                           "ETH-BASE": "#1652F0",
                                           "EWT": "#A466FF",
+                                          "FLR": "#e42058",
                                           "GLEEC": "#6438ac",
                                           "GLMR": "#F6007C",
                                           "HYPE": "#0d3730",
@@ -336,6 +339,7 @@ QtObject {
                                           "ETH-ARB20": "#12aaff",
                                           "ETH-BASE": "#1652F0",
                                           "EWT": "#A466FF",
+                                          "FLR": "#e42058",
                                           "GLEEC": "#6438ac",
                                           "GLMR": "#F6007C",
                                           "HYPE": "#0d3730",

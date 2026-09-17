@@ -216,6 +216,8 @@ QtObject {
                     return "https://arbiscan.io/token/" + coinContractAddress(ticker)
                 case "ETH-BASE":
                     return "https://basescan.org/token/" + coinContractAddress(ticker)
+                case "FLR":
+                    return "https://flare-explorer.flare.network/token/" + coinContractAddress(ticker)
                 case "HYPE":
                     return "https://hyperevmscan.io/token/" + coinContractAddress(ticker)
                 case "MNT":
@@ -766,7 +768,7 @@ QtObject {
     }
 
     function isParentCoin(ticker) {
-        return ["ETH", "ETH-ARB20", "ETH-BASE", "POL", "AVAX", "QTUM", "BNB", "ONE", "KCS", "TRX", "GLEEC", "XDAI", "XDC", "TAO", "HYPE", "MNT", "MON", "XPL"].includes(ticker)
+        return ["ETH", "ETH-ARB20", "ETH-BASE", "POL", "AVAX", "QTUM", "BNB", "ONE", "KCS", "TRX", "GLEEC", "XDAI", "XDC", "TAO", "FLR", "HYPE", "MNT", "MON", "XPL"].includes(ticker)
     }
 
     function getFeesTicker(coin_info) {

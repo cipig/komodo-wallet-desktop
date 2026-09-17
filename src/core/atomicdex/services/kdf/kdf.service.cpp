@@ -440,7 +440,7 @@ namespace atomic_dex
         {
             if (value.currently_enabled)
             {
-                destination.emplace_back(value);
+                destination.emplace_back(value); // HOTSPOT 0.4%
             }
         }
 
@@ -595,6 +595,7 @@ namespace atomic_dex
                 case CoinType::Base:
                 case CoinType::Bittensor:
                 case CoinType::EthereumClassic:
+                case CoinType::Flare:
                 case CoinType::Gnosis:
                 case CoinType::HyperEVM:
                 case CoinType::Mantle:
@@ -2286,6 +2287,9 @@ namespace atomic_dex
                 break;
             case CoinTypeGadget::Bittensor:
                 out = construct_url_functor("TAO", "TAO", "tao_tx_history", "tao_tx_history", ticker, address);
+                break;
+            case CoinTypeGadget::Flare:
+                out = construct_url_functor("FLR", "FLR", "flr_tx_history", "flr_tx_history", ticker, address);
                 break;
             case CoinTypeGadget::Optimism:
                 out = construct_url_functor("ETH-OPT20", "ETHK-OPT20", "opt_tx_history", "opt20_tx_history", ticker, address);

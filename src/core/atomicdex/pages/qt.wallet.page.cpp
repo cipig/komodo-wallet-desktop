@@ -30,26 +30,12 @@ namespace atomic_dex
 
     void
     wallet_page::update()
-    {
-//        if (!m_page_open)
-//        {
-//            return;
-//        }
-//        using namespace std::chrono_literals;
-//        const auto now = std::chrono::high_resolution_clock::now();
-//        const auto s   = std::chrono::duration_cast<std::chrono::seconds>(now - m_update_clock);
-//        if (s >= 5s)
-//        {
-//            check_send_availability();
-//            m_update_clock = std::chrono::high_resolution_clock::now();
-//        }
-    }
+    {}
 } // namespace atomic_dex
 
 //! Private API
 namespace atomic_dex
 {
-
     void
     wallet_page::check_send_availability()
     {
@@ -283,7 +269,6 @@ namespace atomic_dex
         auto&           kdf_system = m_system_manager.get_system<kdf_service>();
         if (kdf_system.is_kdf_running())
         {
-            // SPDLOG_DEBUG("get_ticker_infos for {} wallet page", kdf_system.get_current_ticker());
             auto&       price_service                 = m_system_manager.get_system<global_price_service>();
             const auto& settings_system               = m_system_manager.get_system<settings_page>();
             const auto& provider                      = m_system_manager.get_system<komodo_prices_provider>();
@@ -330,10 +315,18 @@ namespace atomic_dex
                 }
                 else
                 {
-                    obj["address"]        = QString::fromStdString(active_addr);
-                    qrcodegen::QrCode qr0 = qrcodegen::QrCode::encodeText(active_addr.c_str(), qrcodegen::QrCode::Ecc::MEDIUM);
-                    std::string       svg = qr0.toSvgString(2);
-                    obj["qrcode_address"] = QString::fromStdString("data:image/svg+xml;base64,") + QString::fromStdString(svg).toLocal8Bit().toBase64();
+                    obj["address"] = QString::fromStdString(active_addr);
+                    static std::string  cached_address;
+                    static QString      cached_qrcode;
+
+                    if (active_addr != cached_address)
+                    {
+                        qrcodegen::QrCode qr0 = qrcodegen::QrCode::encodeText(active_addr.c_str(), qrcodegen::QrCode::Ecc::MEDIUM);
+                        std::string       svg = qr0.toSvgString(2);
+                        cached_qrcode  = QStringLiteral("data:image/svg+xml;base64,") + QString::fromStdString(svg).toLocal8Bit().toBase64();
+                        cached_address = active_addr;
+                    }
+                    obj["qrcode_address"] = cached_qrcode;
                 }
             }
         }

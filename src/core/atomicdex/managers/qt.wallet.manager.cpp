@@ -135,8 +135,7 @@ namespace atomic_dex
     {
         // The disk check executes EXACTLY ONCE on the very first invocation,
         // and reads instantly from the CPU cache register every time afterward.
-        static const bool file_exists_cache =
-            std::filesystem::exists(utils::get_atomic_dex_config_folder() / "default.wallet");
+        static const bool file_exists_cache = std::filesystem::exists(utils::get_atomic_dex_config_folder() / "default.wallet");
         return file_exists_cache;
     }
 

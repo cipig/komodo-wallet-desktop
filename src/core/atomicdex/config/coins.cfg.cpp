@@ -78,6 +78,10 @@ namespace
         {
             return CoinType::Base;
         }
+        if (coin_type == "Flare")
+        {
+            return CoinType::Flare;
+        }
         if (coin_type == "Gnosis")
         {
             return CoinType::Gnosis;
@@ -363,6 +367,11 @@ namespace atomic_dex
         case CoinType::XDC:
             cfg.has_parent_fees_ticker = true;
             cfg.fees_ticker            = "XDC";
+            cfg.is_erc_family          = true;
+            break;
+        case CoinType::Flare:
+            cfg.has_parent_fees_ticker = true;
+            cfg.fees_ticker            = "FLR";
             cfg.is_erc_family          = true;
             break;
         case CoinType::HyperEVM:

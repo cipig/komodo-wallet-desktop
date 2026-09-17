@@ -100,11 +100,11 @@ namespace atomic_dex
         }
         else if (m_best_orders->rowCount() == 0)
         {
-            m_best_orders->reset_orderbook(data);
+            m_best_orders->reset_orderbook(data); // HOTSPOT 0.5%
         }
         else
         {
-            m_best_orders->refresh_orderbook_model_data(data); // HOTSPOT 0.4%
+            m_best_orders->refresh_orderbook_model_data(data); // HOTSPOT 0.6%
         }
         this->set_both_taker_vol();
     }
