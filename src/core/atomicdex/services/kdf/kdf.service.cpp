@@ -1484,7 +1484,7 @@ namespace atomic_dex
                                                     z_error                          = normalized_z_ans;
                                                     std::string     status           = current_answer.at("result").at("status").get<std::string>();
 
-                                                    SPDLOG_DEBUG("[{}/10000] Waiting for {} activation status [{}]...", z_nb_try, ticker, status);
+                                                    SPDLOG_DEBUG("[{}/10000] Waiting for {} activation status [{}]...", z_nb_try, coin_info.ticker, status);
 
                                                     if (status == "Ok")
                                                     {
