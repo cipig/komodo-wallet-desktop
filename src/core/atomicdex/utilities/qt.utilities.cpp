@@ -14,17 +14,12 @@
  *                                                                            *
  ******************************************************************************/
 
-//! QT Headers
 #include <QClipboard>
 #include <QGuiApplication>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QFile>
-
-//! Deps
 #include <QrCode.hpp>
-
-//! Project headers
 #include "atomicdex/utilities/qt.utilities.hpp"
 #include "global.utilities.hpp"
 
@@ -41,7 +36,7 @@ namespace atomic_dex
             if (val.is_string())
                 arr.append(QString::fromStdString(val.get<std::string>()));
             else if (val.is_number_integer())
-                arr.append(val.get<int64_t>());
+                arr.append(static_cast<double>(val.get<int64_t>()));
             else if (val.is_number_float())
                 arr.append(val.get<double>());
             else if (val.is_boolean())
@@ -70,7 +65,7 @@ namespace atomic_dex
             if (val.is_string())
                 obj.insert(key, QString::fromStdString(val.get<std::string>()));
             else if (val.is_number_integer())
-                obj.insert(key, val.get<int64_t>());
+                obj.insert(key, static_cast<double>(val.get<int64_t>()));
             else if (val.is_number_float())
                 obj.insert(key, val.get<double>());
             else if (val.is_boolean())
