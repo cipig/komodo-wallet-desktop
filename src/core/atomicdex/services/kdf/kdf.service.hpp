@@ -129,7 +129,7 @@ namespace atomic_dex
        void process_balance_answer(const nlohmann::json& answer);
        void process_tx_answer(const nlohmann::json& answer_json, std::string ticker);
        void process_tx_tokenscan(const std::string& ticker);
-       void fetch_single_balance(const coin_config_t& cfg_infos);
+       async::task<void> fetch_single_balance(const coin_config_t& cfg_infos);
 
        //!
        std::pair<bool, std::string>                        process_batch_enable_answer(const nlohmann::json& answer);

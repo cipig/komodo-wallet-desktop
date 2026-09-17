@@ -1792,8 +1792,6 @@ namespace atomic_dex
     void
     trading_page::set_selected_order_status(SelectedOrderStatus order_status, [[maybe_unused]] utils::caller_location location)
     {
-        SPDLOG_DEBUG("trading_page::set_selected_order_status called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
-
         if (m_selected_order_status != order_status)
         {
             m_selected_order_status = order_status;

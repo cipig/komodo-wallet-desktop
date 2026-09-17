@@ -17,9 +17,8 @@ namespace atomic_dex::kdf
         kdf_client()  = default;
         ~kdf_client() = default;
 
-        //! API
         async::task<t_http_response> async_rpc_batch_standalone(
-            nlohmann::json batch_array,
+            nlohmann::json&& batch_array,
             t_http_priority prio = t_http_priority::interactive
         );
 

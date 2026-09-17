@@ -14,10 +14,7 @@
  *                                                                            *
  ******************************************************************************/
 
-//! Deps
 #include <boost/algorithm/string/case_conv.hpp>
-
-//! Project Headers
 #include "atomicdex/api/kdf/kdf.hpp"
 #include "atomicdex/api/kdf/rpc_v1/rpc.convertaddress.hpp"
 #include "atomicdex/api/kdf/rpc_v1/rpc.min_trading_vol.hpp"
@@ -248,29 +245,29 @@ namespace atomic_dex::kdf
     void
     from_json(const nlohmann::json& j, my_orders_answer& answer)
     {
-        // answer.orders.reserve(j.at("result").at("maker_orders").size() + j.at("result").at("taker_orders").size());
-
         auto filler_functor = [&answer](const std::string& key, const nlohmann::json& value, bool is_maker)
         {
             using namespace date;
             const auto time_key = value.at("created_at").get<std::size_t>();
-
             std::string action = "";
+
             if (not is_maker)
             {
                 value.at("request").at("action").get_to(action);
             }
+
             using namespace atomic_dex;
-            const auto     price       = is_maker ? atomic_dex::utils::adjust_precision(value.at("price").get<std::string>()) : "0";
-            const auto     base_coin   = is_maker ? QString::fromStdString(value.at("base").get<std::string>())
-                                                  : QString::fromStdString(value.at("request").at("base").get<std::string>());
-            const auto     rel_coin    = is_maker ? QString::fromStdString(value.at("rel").get<std::string>())
-                                                  : QString::fromStdString(value.at("request").at("rel").get<std::string>());
-            const auto     base_amount = is_maker ? QString::fromStdString(value.at("available_amount").get<std::string>())
-                                                  : QString::fromStdString(value.at("request").at("base_amount").get<std::string>());
-            const auto     rel_amount = is_maker ? QString::fromStdString((safe_float(price) * safe_float(base_amount.toStdString())).convert_to<std::string>())
-                                                 : QString::fromStdString(value.at("request").at("rel_amount").get<std::string>());
+            const auto     price         = is_maker ? atomic_dex::utils::adjust_precision(value.at("price").get<std::string>()) : "0";
+            const auto     base_coin     = is_maker ? QString::fromStdString(value.at("base").get<std::string>())
+                                                    : QString::fromStdString(value.at("request").at("base").get<std::string>());
+            const auto     rel_coin      = is_maker ? QString::fromStdString(value.at("rel").get<std::string>())
+                                                    : QString::fromStdString(value.at("request").at("rel").get<std::string>());
+            const auto     base_amount   = is_maker ? QString::fromStdString(value.at("available_amount").get<std::string>())
+                                                    : QString::fromStdString(value.at("request").at("base_amount").get<std::string>());
+            const auto     rel_amount    = is_maker ? QString::fromStdString((safe_float(price) * safe_float(value.at("available_amount").get<std::string>())).convert_to<std::string>())
+                                                    : QString::fromStdString(value.at("request").at("rel_amount").get<std::string>());
             nlohmann::json conf_settings = is_maker ? value.at("conf_settings") : nlohmann::json();
+
             order_swaps_data contents{
                 .is_maker       = is_maker,
                 .base_coin      = action == "Sell" ? base_coin : rel_coin,
@@ -288,6 +285,7 @@ namespace atomic_dex::kdf
                 .min_volume     = is_maker ? QString::fromStdString(value.at("min_base_vol").get<std::string>()) : "",
                 .max_volume     = is_maker ? QString::fromStdString(value.at("max_base_vol").get<std::string>()) : "",
                 .conf_settings  = conf_settings};
+
             if (action.empty() && contents.order_type == "maker")
             {
                 contents.base_coin   = base_coin;
@@ -295,6 +293,7 @@ namespace atomic_dex::kdf
                 contents.base_amount = base_amount;
                 contents.rel_amount  = rel_amount;
             }
+
             auto&& [base_fiat_value, rel_fiat_value] = determine_amounts_in_current_currency(
                 contents.base_coin.toStdString(), contents.base_amount.toStdString(), contents.rel_coin.toStdString(), contents.rel_amount.toStdString());
             contents.base_amount_fiat = QString::fromStdString(base_fiat_value);
@@ -515,16 +514,19 @@ namespace atomic_dex::kdf
         const auto&                                          swaps = j.at("swaps");
         results.swaps.reserve(swaps.size());
         results.swaps_id.reserve(swaps.size());
-        for (auto&& cur: swaps)
+
+        for (const auto& cur : swaps)
         {
             if (cur.is_null())
             {
                 SPDLOG_WARN("Current swap object is null - skipping");
                 continue;
             }
+
             order_swaps_data to_add;
             from_json(cur, to_add);
-            for (auto&& cur_event: to_add.events)
+
+            for (const auto& cur_event : to_add.events)
             {
                 if (cur_event.isObject())
                 {
@@ -534,9 +536,11 @@ namespace atomic_dex::kdf
                     }
                 }
             }
+
             results.swaps_id.emplace(to_add.order_id.toStdString());
             results.swaps.emplace_back(std::move(to_add));
         }
+
         j.at("limit").get_to(results.limit);
         j.at("skipped").get_to(results.skipped);
         j.at("total").get_to(results.total);

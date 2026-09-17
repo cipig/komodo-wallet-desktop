@@ -434,11 +434,12 @@ namespace atomic_dex
         t_coins destination;
 
         std::shared_lock lock(m_coin_cfg_mutex);
-        for (auto&& [key, value]: m_coins_informations)
+        destination.reserve(m_coins_informations.size());
+        for (const auto& [key, value] : m_coins_informations)
         {
             if (value.currently_enabled)
             {
-                destination.push_back(value); // HOTSPOT 0.9%
+                destination.push_back(value);
             }
         }
 
@@ -448,13 +449,14 @@ namespace atomic_dex
     t_coins kdf_service::get_active_coins() const
     {
         t_coins destination;
-
         std::shared_lock lock(m_coin_cfg_mutex);
-        for (auto&& [key, value]: m_coins_informations)
+        destination.reserve(m_coins_informations.size());
+
+        for (const auto& [key, value] : m_coins_informations)
         {
             if (value.active)
             {
-                destination.emplace_back(value);
+                destination.push_back(value);
             }
         }
 
@@ -1869,7 +1871,7 @@ namespace atomic_dex
         process_orderbook(is_a_reset);
     }
 
-    void kdf_service::fetch_single_balance(const coin_config_t& cfg_infos)
+    async::task<void> kdf_service::fetch_single_balance(const coin_config_t& cfg_infos)
     {
         nlohmann::json batch_array = nlohmann::json::array();
 
@@ -1879,7 +1881,7 @@ namespace atomic_dex
             if (m_balance_informations.find(cfg_infos.ticker) != m_balance_informations.cend())
             {
                 SPDLOG_WARN("m_balance_informations not found for {} ", cfg_infos.ticker);
-                return;
+                return async::make_task();
             }
         }
 
@@ -1904,35 +1906,38 @@ namespace atomic_dex
             }
         };
 
-        m_kdf_client.async_rpc_batch_standalone(batch_array, t_http_priority::background)
-            .then([this, batch = batch_array, answer_functor](t_http_response resp) {
-                try
-                {
-                    answer_functor(resp);
-                }
-                catch (const std::exception& e)
-                {
-                    this->handle_exception_async_task(std::current_exception(), "fetch_single_balance", batch);
-                }
+        // Return the task chain directly up to the bulk batch dispatcher loop
+        return m_kdf_client.async_rpc_batch_standalone(std::move(batch_array), t_http_priority::background)
+            .then([this, answer_functor](t_http_response resp) {
+                answer_functor(resp);
             });
     }
 
     void kdf_service::fetch_balances_thread()
     {
-        const auto& enabled_coins = get_enabled_coins();
+        // Retrieve enabled coins as a clean, local container value
+        const auto enabled_coins = get_enabled_coins();
         auto& scheduler = atomic_dex::http::client::get_background_scheduler();
 
-        for (const auto& coin : enabled_coins) {
-            async::spawn(scheduler, [this, coin]() {
-                fetch_single_balance(coin);
-            });
-        }
+        // Spawns exactly ONE scheduling task block
+        async::spawn(scheduler, [this, enabled_coins = std::move(enabled_coins)]() {
+            std::vector<async::task<void>> network_tasks;
+            network_tasks.reserve(enabled_coins.size());
 
-        if (m_wallet_page_active) {
-            async::spawn(scheduler, [this]() {
-                batch_balance_and_tx();
-            });
-        }
+            // 1. Instantly fire all 280 requests concurrently into localhost sockets
+            for (const auto& coin : enabled_coins) {
+                network_tasks.push_back(fetch_single_balance(coin));
+            }
+
+            // 2. Yield until all requests pass through the localhost keep-alive pool
+            auto all_balances = async::when_all(network_tasks.begin(), network_tasks.end());
+            all_balances.get();
+
+            // 3. Process the sequential transaction update block if on the active tab
+            if (m_wallet_page_active) {
+                batch_balance_and_tx().get();
+            }
+        });
     }
 
     void kdf_service::spawn_kdf_instance(std::string wallet_name, std::string passphrase, bool with_pin_cfg, std::string rpcpass)

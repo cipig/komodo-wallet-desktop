@@ -94,6 +94,7 @@ namespace atomic_dex
         this->m_asks->refresh_orderbook_model_data(answer.asks);
         this->m_bids->refresh_orderbook_model_data(answer.bids);
         const auto data = this->m_system_manager.get_system<orderbook_scanner_service>().get_bestorders_data();
+
         if (data.empty())
         {
             m_best_orders->clear_orderbook();
@@ -132,7 +133,7 @@ namespace atomic_dex
     void
     qt_orderbook_wrapper::clear_orderbook([[maybe_unused]] utils::caller_location location)
     {
-        SPDLOG_DEBUG("qt_orderbook_wrapper::clear_orderbook called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
+        //SPDLOG_DEBUG("qt_orderbook_wrapper::clear_orderbook called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
 
         this->m_asks->clear_orderbook();
         this->m_bids->clear_orderbook();

@@ -156,9 +156,8 @@ namespace atomic_dex::http
     async::threadpool_scheduler&
     client::get_interactive_scheduler()
     {
-        // Agile: Min 4 threads, Max 16, or scales 1:1 with logical cores.
         static unsigned int cores = std::max(4u, std::thread::hardware_concurrency());
-        static unsigned int size = std::min(16u, cores);
+        static unsigned int size = std::clamp(cores, 8u, 16u);
         static async::threadpool_scheduler pool(size);
         return pool;
     }
@@ -166,9 +165,8 @@ namespace atomic_dex::http
     async::threadpool_scheduler&
     client::get_background_scheduler()
     {
-        // Batch: Scaled to 4x logical cores. Min 16 threads, Max 64 threads.
         static unsigned int cores = std::max(4u, std::thread::hardware_concurrency());
-        static unsigned int size = std::clamp(cores * 4, 16u, 64u);
+        static unsigned int size = std::clamp(cores, 8u, 32u);
         static async::threadpool_scheduler pool(size);
         return pool;
     }
