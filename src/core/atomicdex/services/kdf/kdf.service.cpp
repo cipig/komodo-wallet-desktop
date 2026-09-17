@@ -1371,7 +1371,6 @@ namespace atomic_dex
                 //SPDLOG_INFO("Enable task request: {}", batch.dump(4));
                 return {batch, {coin_info.ticker}};
             }
-
             else if (coin_info.is_sia_family)
             {
                 //! `.value().at(0)` threw straight out of this lambda for a coin
@@ -1407,8 +1406,7 @@ namespace atomic_dex
             //! carrying either family flag. The empty pair is skipped by the
             //! caller; name the coin so it is findable in a log.
             SPDLOG_ERROR("{} uses neither the zhtlc nor the sia activation task, cannot enable it", coin_info.ticker);
-            this->dispatcher_.trigger(
-                enabling_coin_failed{.coin = coin_info.ticker, .reason = fmt::format("{} has no supported activation task", coin_info.ticker)});
+            this->dispatcher_.trigger(enabling_coin_failed{.coin = coin_info.ticker, .reason = fmt::format("{} has no supported activation task", coin_info.ticker)});
             return {nlohmann::json::array(), {}};
         };
 
@@ -1425,9 +1423,11 @@ namespace atomic_dex
 
                             if (answers.count("error") == 0)
                             {
+                                nlohmann::json normalized_answers = answers.is_array() ? answers : nlohmann::json::array({answers});
                                 std::size_t                     idx = 0;
                                 std::unordered_set<std::string> to_remove;
-                                for (auto&& answer: answers)
+
+                                for (auto&& answer: normalized_answers)
                                 {
                                     auto [res, error] = this->process_batch_enable_answer(answer);
 
@@ -1907,9 +1907,8 @@ namespace atomic_dex
             }
         };
 
-        // Return the task chain directly up to the bulk batch dispatcher loop
         return m_kdf_client.async_rpc_batch_standalone(std::move(batch_array), t_http_priority::background)
-            .then([this, answer_functor](t_http_response resp) {
+            .then([answer_functor](t_http_response resp) {
                 answer_functor(resp);
             });
     }
