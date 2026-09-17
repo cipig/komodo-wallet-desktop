@@ -124,8 +124,9 @@ namespace atomic_dex
         void checked_nbChanged();
 
       private:
-        std::vector<coin_config_t> m_model_data;    // Contains all the data
-        t_enabled_coins_registry m_enabled_coins;   // Currently enabled_coins
+        void update_single_ticker_status(const std::string& target_ticker, bool status);
+        std::vector<coin_config_t> m_model_data;
+        t_enabled_coins_registry m_enabled_coins;
 
         std::array<global_coins_cfg_proxy_model*, ::CoinType::Size> m_proxies;
 

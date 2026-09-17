@@ -41,16 +41,14 @@ namespace
     }
 
     nlohmann::json
-    process_fetch_fiat_answer(t_http_response resp)
+    process_fetch_fiat_answer(t_http_response& resp)
     {
-        nlohmann::json answer;
         if (resp.status_code() == 200)
         {
-            answer = nlohmann::json::parse((resp.extract_string(true).get()));
-            return answer;
+            return nlohmann::json::parse(resp.extract_string(true).get());
         }
         SPDLOG_WARN("unable to fetch last open rates");
-        return answer;
+        return nlohmann::json::object();
     }
 } // namespace
 
@@ -360,14 +358,14 @@ namespace atomic_dex
                 {
                     try
                     {
-                        this->m_other_fiats_rates = process_fetch_fiat_answer(previous_task.get());
+                        auto resp = previous_task.get();
+                        this->m_other_fiats_rates = process_fetch_fiat_answer(resp);
                     }
                     catch (const std::exception& e)
                     {
                         SPDLOG_ERROR("exception in global_price_service::on_force_update_providers: {}", e.what());
                     }
-                })
-            ;
+                });
     }
 
     std::string
