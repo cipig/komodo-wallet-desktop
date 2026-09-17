@@ -14,10 +14,7 @@
  *                                                                            *
  ******************************************************************************/
 
-//! Deps
 #include <nlohmann/json.hpp>
-
-//! Project Headers
 #include "../../qt.settings.page.hpp"
 #include "../../qt.trading.page.hpp"
 #include "atomicdex/api/kdf/kdf.hpp"
@@ -43,6 +40,7 @@ namespace atomic_dex
     {
         nlohmann::json batch          = nlohmann::json::array();
         nlohmann::json cancel_request = kdf::template_request("cancel_all_orders");
+
         if (by_coin && not ticker.isEmpty())
         {
             kdf::cancel_data cd;
@@ -60,8 +58,9 @@ namespace atomic_dex
 
         batch.push_back(cancel_request);
         auto& kdf_system = m_system_mgr.get_system<kdf_service>();
+
         kdf_system.get_kdf_client()
-            .async_rpc_batch_standalone(batch)
+            .async_rpc_batch_standalone(std::move(batch))
             .then([this](async::task<t_http_response> previous_task) {
                 try
                 {
@@ -97,7 +96,7 @@ namespace atomic_dex
 
         auto& kdf_system = m_system_mgr.get_system<kdf_service>();
         kdf_system.get_kdf_client()
-            .async_rpc_batch_standalone(batch)
+            .async_rpc_batch_standalone(std::move(batch))
             .then([this](async::task<t_http_response> previous_task) {
                 try
                 {

@@ -600,12 +600,14 @@ namespace atomic_dex
                             z_batch_array.push_back(j);
 
                             do {
-                                t_http_response             z_resp      = kdf_system.get_kdf_client().async_rpc_batch_standalone(z_batch_array).get();
-                                auto                                 z_answers   = kdf::basic_batch_answer(z_resp);
+                                t_http_response             z_resp      = kdf_system.get_kdf_client().async_rpc_batch_standalone(std::move(z_batch_array)).get();
+                                auto                        z_answers   = kdf::basic_batch_answer(z_resp);
+
                                 z_error = z_answers;
                                 z_status = QString::fromStdString(z_answers[0].at("result").at("status").get<std::string>());
 
                                 SPDLOG_DEBUG("[{}/{}] Waiting for {} withdraw status [{}]...", z_nb_try, loop_limit, ticker, z_status.toUtf8().constData());
+
                                 if (z_status == "Ok")
                                 {
                                     break;
@@ -614,6 +616,7 @@ namespace atomic_dex
                                 {
                                     set_withdraw_status("Generating transaction");
                                 }
+
                                 std::this_thread::sleep_for(3s);
                                 z_nb_try += 1;
 
@@ -703,7 +706,7 @@ namespace atomic_dex
             };
 
             //! Process
-            kdf_system.get_kdf_client().async_rpc_batch_standalone(batch).then(
+            kdf_system.get_kdf_client().async_rpc_batch_standalone(std::move(batch)).then(
                 [this, answer_functor](async::task<t_http_response> previous_task)
                 {
                     try
@@ -854,7 +857,7 @@ namespace atomic_dex
             };
 
             //! Process
-            kdf_system.get_kdf_client().async_rpc_batch_standalone(batch).then(
+            kdf_system.get_kdf_client().async_rpc_batch_standalone(std::move(batch)).then(
                 [this, answer_functor](async::task<t_http_response> previous_task)
                 {
                     try
@@ -934,7 +937,7 @@ namespace atomic_dex
             this->set_broadcast_busy(false);
         };
 
-        kdf_system.get_kdf_client().async_rpc_batch_standalone(batch).then(
+        kdf_system.get_kdf_client().async_rpc_batch_standalone(std::move(batch)).then(
             [this, answer_functor](async::task<t_http_response> previous_task)
             {
                 try
@@ -986,7 +989,7 @@ namespace atomic_dex
             this->set_claiming_is_busy(false);
         };
 
-        kdf_system.get_kdf_client().async_rpc_batch_standalone(batch).then(
+        kdf_system.get_kdf_client().async_rpc_batch_standalone(std::move(batch)).then(
             [this, answer_functor](async::task<t_http_response> previous_task)
             {
                 try
@@ -1154,7 +1157,8 @@ namespace atomic_dex
                 this->set_validate_address_data(nlohmann_json_object_to_qt_json_object(j_out));
                 this->set_validate_address_busy(false);
             };
-            kdf_system.get_kdf_client().async_rpc_batch_standalone(batch).then(
+
+            kdf_system.get_kdf_client().async_rpc_batch_standalone(std::move(batch)).then(
                 [answer_functor](async::task<t_http_response> previous_task)
                 {
                     try
@@ -1209,7 +1213,8 @@ namespace atomic_dex
                 }
                 this->set_convert_address_busy(false);
             };
-            kdf_system.get_kdf_client().async_rpc_batch_standalone(batch).then(
+
+            kdf_system.get_kdf_client().async_rpc_batch_standalone(std::move(batch)).then(
                 [answer_functor](async::task<t_http_response> previous_task)
                 {
                     try

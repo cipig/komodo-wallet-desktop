@@ -201,7 +201,7 @@ namespace atomic_dex
 
         //! Async call
         kdf_system.get_kdf_client()
-            .async_rpc_batch_standalone(batch)
+            .async_rpc_batch_standalone(std::move(batch))
             .then(
                 [this, answer_functor](async::task<t_http_response> previous_task)
                 {
@@ -344,7 +344,7 @@ namespace atomic_dex
 
         //! Async call
         kdf_system.get_kdf_client()
-            .async_rpc_batch_standalone(batch)
+            .async_rpc_batch_standalone(std::move(batch))
             .then(
                 [this, answer_functor](async::task<t_http_response> previous_task)
                 {
@@ -498,7 +498,7 @@ namespace atomic_dex
 
         //! Async call
         kdf_system.get_kdf_client()
-            .async_rpc_batch_standalone(batch)
+            .async_rpc_batch_standalone(std::move(batch))
             .then(
                 [this, answer_functor](async::task<t_http_response> previous_task)
                 {
@@ -1411,7 +1411,7 @@ namespace atomic_dex
             this->set_preimage_busy(false);
         };
 
-        kdf.get_kdf_client().async_rpc_batch_standalone(batch).then(
+        kdf.get_kdf_client().async_rpc_batch_standalone(std::move(batch)).then(
             [answer_functor](async::task<t_http_response> previous_task)
             {
                 try

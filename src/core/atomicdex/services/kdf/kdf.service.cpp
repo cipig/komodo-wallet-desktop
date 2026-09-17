@@ -382,6 +382,7 @@ namespace atomic_dex
         dispatcher_.sink<refresh_orderbook_model_data>().disconnect<&kdf_service::on_refresh_orderbook_model_data>(*this);
         SPDLOG_INFO("kdf signals successfully disconnected");
         bool kdf_stopped = false;
+
         if (m_kdf_running)
         {
             SPDLOG_INFO("preparing kdf stop batch request");
@@ -389,7 +390,7 @@ namespace atomic_dex
             nlohmann::json batch        = nlohmann::json::array();
             batch.push_back(stop_request);
             SPDLOG_INFO("processing kdf stop batch request");
-            t_http_response resp = m_kdf_client.async_rpc_batch_standalone(batch).get();
+            t_http_response resp = m_kdf_client.async_rpc_batch_standalone(std::move(batch)).get();
             SPDLOG_INFO("kdf stop batch answer received");
             auto answers = kdf::basic_batch_answer(resp);
             if (answers[0].contains("result"))
@@ -761,7 +762,7 @@ namespace atomic_dex
             batch_array.push_back(j);
         }
 
-        m_kdf_client.async_rpc_batch_standalone(batch_array, t_http_priority::background)
+        m_kdf_client.async_rpc_batch_standalone(std::move(batch_array), t_http_priority::background)
             .then([this, batch = batch_array, callback](async::task<t_http_response> previous_task) mutable {
                 try
                 {
@@ -1198,7 +1199,7 @@ namespace atomic_dex
             return async::make_task();
         }
 
-        return m_kdf_client.async_rpc_batch_standalone(batch_array, t_http_priority::background)
+        return m_kdf_client.async_rpc_batch_standalone(std::move(batch_array), t_http_priority::background)
             .then(
                 [this, tokens_to_fetch = tokens_to_fetch, batch_array = batch_array](async::task<t_http_response> previous_task)
                 {
@@ -1413,7 +1414,7 @@ namespace atomic_dex
 
         auto answer_functor = [this](coin_config_t coin_info, nlohmann::json batch, std::vector<std::string> tickers)
         {
-            m_kdf_client.async_rpc_batch_standalone(batch, t_http_priority::background)
+            m_kdf_client.async_rpc_batch_standalone(std::move(batch), t_http_priority::background)
                 .then(
                     [this, coin_info, tickers, batch](async::task<t_http_response> previous_task) mutable
                     {
@@ -1479,7 +1480,7 @@ namespace atomic_dex
                                                 std::string event = "none";
 
                                                 do {
-                                                    t_http_response  z_resp      = m_kdf_client.async_rpc_batch_standalone(z_batch_array, t_http_priority::background).get();
+                                                    t_http_response  z_resp      = m_kdf_client.async_rpc_batch_standalone(std::move(z_batch_array), t_http_priority::background).get();
                                                     auto             z_answers   = kdf::basic_batch_answer(z_resp);
                                                     z_error                      = z_answers;
                                                     std::string      status      = z_answers[0].at("result").at("status").get<std::string>();
@@ -1848,7 +1849,7 @@ namespace atomic_dex
             }
         };
 
-        m_kdf_client.async_rpc_batch_standalone(batch)
+        m_kdf_client.async_rpc_batch_standalone(std::move(batch))
             .then([this, batch, answer_functor](async::task<t_http_response> previous_task) {
                 try
                 {
@@ -2212,7 +2213,7 @@ namespace atomic_dex
             this->dispatcher_.trigger<process_swaps_and_orders_finished>(process_swaps_and_orders_finished{.after_manual_reset = after_manual_reset});
         };
 
-        m_kdf_client.async_rpc_batch_standalone(batch, t_http_priority::interactive)
+        m_kdf_client.async_rpc_batch_standalone(std::move(batch), t_http_priority::interactive)
             .then([this, batch, answer_functor](async::task<t_http_response> previous_task) {
                 try
                 {

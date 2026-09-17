@@ -429,6 +429,7 @@ namespace atomic_dex
         auto           seed      = atomic_dex::decrypt(seed_path, key.data(), ec);
         const std::filesystem::path rpcpass_path = utils::get_atomic_dex_config_folder() / (wallet_name.toStdString() + ".rpcpass"s);
         auto           rpcpass   = atomic_dex::decrypt(rpcpass_path, key.data(), ec);
+
         if (ec == dextop_error::corrupted_file_or_wrong_password)
         {
             SPDLOG_ERROR("cannot decrypt the seed with the derived password: {}", ec.message());
@@ -442,6 +443,7 @@ namespace atomic_dex
             nlohmann::json batch   = nlohmann::json::array();
             const auto*    cfg_mdl = m_system_manager.get_system<portfolio_page>().get_global_cfg();
             const auto     coins   = cfg_mdl->get_enabled_coins();
+
             for (auto&& [coin, coin_cfg]: coins)
             {
                 kdf::show_priv_key_request req{.coin = coin};
@@ -477,7 +479,8 @@ namespace atomic_dex
                 }
                 this->set_fetching_priv_key_busy(false);
             };
-            kdf_system.get_kdf_client().async_rpc_batch_standalone(batch).then(
+
+            kdf_system.get_kdf_client().async_rpc_batch_standalone(std::move(batch)).then(
                 [answer_functor](async::task<t_http_response> previous_task)
                 {
                     try

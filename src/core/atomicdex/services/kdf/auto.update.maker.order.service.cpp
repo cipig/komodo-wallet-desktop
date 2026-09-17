@@ -75,6 +75,7 @@ namespace atomic_dex
         const bool max                = settings.value("Max", false).toBool();
         t_float_50 min_volume_percent = settings.value("MinVolume", 10.0).toDouble() / 100; ///< min volume is always 10% of the order or more
         settings.endGroup();
+
         if (base_coin_info.coingecko_id != "test-coin" && rel_coin_info.coingecko_id != "test-coin" && !is_disabled)
         {
             SPDLOG_INFO("Updating maker order: {}", data.order_id.toStdString());
@@ -96,13 +97,15 @@ namespace atomic_dex
                 request.base_confs = conf_settings.at("base_confs").get<std::size_t>();
                 request.rel_confs  = conf_settings.at("rel_confs").get<std::size_t>();
             }
+
             kdf::to_json(update_maker_order_json, request);
             batch.push_back(update_maker_order_json);
             update_maker_order_json["userpass"] = "";
             SPDLOG_INFO("request: {}", update_maker_order_json.dump(1));
             auto& kdf = this->m_system_manager.get_system<kdf_service>();
+
             kdf.get_kdf_client()
-                .async_rpc_batch_standalone(batch)
+                .async_rpc_batch_standalone(std::move(batch))
                 .then(
                     []([[maybe_unused]] async::task<t_http_response> previous_task)
                     {

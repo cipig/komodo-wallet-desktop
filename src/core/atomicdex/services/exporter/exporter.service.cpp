@@ -14,16 +14,9 @@
  *                                                                            *
  ******************************************************************************/
 
-//! Std
 #include <sstream>
-
-//! Qt
 #include <QFile>
-
-//! Deps
 #include <nlohmann/json.hpp>
-
-//! Project
 #include "atomicdex/api/kdf/kdf.hpp"
 #include "atomicdex/services/exporter/exporter.service.hpp"
 #include "atomicdex/services/kdf/kdf.service.hpp"
@@ -123,7 +116,7 @@ namespace atomic_dex
             }
         };
 
-        kdf.get_kdf_client().async_rpc_batch_standalone(batch).then(
+        kdf.get_kdf_client().async_rpc_batch_standalone(std::move(batch)).then(
             [answer_functor](async::task<t_http_response> previous_task)
             {
                 try
