@@ -43,7 +43,9 @@ namespace atomic_dex
         Q_PROPERTY(int nb_pages READ get_nb_pages NOTIFY nbPageChanged)
         Q_PROPERTY(bool recover_fund_busy READ is_recover_fund_busy WRITE set_recover_fund_busy NOTIFY recoverFundBusyChanged)
         Q_PROPERTY(QVariant recover_fund_data READ get_recover_fund_data WRITE set_recover_fund_data NOTIFY recoverFundDataChanged)
+        Q_PROPERTY(int total_swaps READ get_total_swaps NOTIFY totalSwapsChanged);
         Q_ENUMS(OrdersRoles)
+
       public:
         enum OrdersRoles
         {
@@ -107,10 +109,11 @@ namespace atomic_dex
         [[nodiscard]] QVariant            get_recover_fund_data() const;
         void                              set_recover_fund_data(QVariant rpc_data);
         [[nodiscard]] int                 get_nb_pages() const;
+        [[nodiscard]] int                 get_total_swaps() const;
 
         //! getter
         [[nodiscard]] t_filtering_infos get_filtering_infos() const;
-        void                            set_filtering_infos(t_filtering_infos infos);
+        void                            set_filtering_infos(t_filtering_infos infos, utils::caller_location location = utils::caller_location::current());
 
         //! Q_INVOKABLE
         Q_INVOKABLE void recover_fund(QString uuid);
@@ -125,6 +128,7 @@ namespace atomic_dex
         void currentPageChanged();
         void limitNbElementsChanged();
         void nbPageChanged();
+        void totalSwapsChanged();
 
       private:
         void set_average_events_time_registry(const QVariant& average_time_registry);

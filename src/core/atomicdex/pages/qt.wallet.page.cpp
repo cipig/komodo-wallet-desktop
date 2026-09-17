@@ -105,7 +105,9 @@ namespace atomic_dex
 
     void wallet_page::set_current_ticker(const QString& ticker, bool force, [[maybe_unused]] utils::caller_location location)
     {
-        SPDLOG_DEBUG("wallet_page::set_current_ticker to {} with force {} called by: {} ({}:{})", ticker.toStdString(), force, location.function_name(), location.file_name(), location.line());
+        //SPDLOG_DEBUG("wallet_page::set_current_ticker to {} with force {} called by: {} ({}:{})", ticker.toStdString(), force, location.function_name(), location.file_name(), location.line());
+        //called by atomic_dex::wallet_page::qt_static_metacall
+
         auto& kdf_system = m_system_manager.get_system<kdf_service>();
 
         if (kdf_system.set_current_ticker(ticker.toStdString()) || force)
@@ -267,8 +269,10 @@ namespace atomic_dex
             {"is_vote_coin", false},
             {"qrcode_address", ""},
             {"segwit_supported", false}};
+
         std::error_code ec;
         auto&           kdf_system = m_system_manager.get_system<kdf_service>();
+
         if (kdf_system.is_kdf_running())
         {
             auto&       price_service                 = m_system_manager.get_system<global_price_service>();

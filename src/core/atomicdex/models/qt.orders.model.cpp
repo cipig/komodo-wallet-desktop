@@ -335,6 +335,12 @@ namespace atomic_dex
         }
     }
 
+    int
+    orders_model::get_total_swaps() const
+    {
+        return static_cast<int>(m_model_data.total_swaps);
+    }
+
     QVariant
     orders_model::get_recover_fund_data() const
     {
@@ -470,6 +476,7 @@ namespace atomic_dex
         emit currentPageChanged();
         emit limitNbElementsChanged();
         emit nbPageChanged();
+        emit totalSwapsChanged();
         this->set_average_events_time_registry(nlohmann_json_object_to_qt_json_object(m_model_data.average_events_time));
     }
 
@@ -527,6 +534,7 @@ namespace atomic_dex
     {
         const auto&                     data = contents.orders_and_swaps;
         std::unordered_set<std::string> are_present;
+
         if (contents.nb_orders > 0)
         {
             std::vector<t_order_swaps_data> to_init;
@@ -557,6 +565,7 @@ namespace atomic_dex
     orders_model::remove_orders(const t_orders_id_registry& are_present)
     {
         std::vector<std::string> to_remove;
+
         for (auto&& id: this->m_orders_id_registry)
         {
             if (!are_present.contains(id))
@@ -599,6 +608,12 @@ namespace atomic_dex
             SPDLOG_DEBUG("UNUSED current page changed from backend sync");
             m_model_data.current_page = contents.current_page;
             emit currentPageChanged();
+        }
+
+        if (m_model_data.total_swaps != contents.total_swaps)
+        {
+            m_model_data.total_swaps = contents.total_swaps;
+            emit totalSwapsChanged();
         }
     }
 } // namespace atomic_dex
@@ -669,11 +684,11 @@ namespace atomic_dex
     }
 
     void
-    orders_model::set_filtering_infos(t_filtering_infos infos)
+    orders_model::set_filtering_infos(t_filtering_infos infos, [[maybe_unused]] utils::caller_location location)
     {
         if (this->is_fetching_busy())
         {
-            SPDLOG_WARN("Fetching busy, skipping orders_model::set_filtering_infos");
+            SPDLOG_WARN("orders_model::set_filtering_infos is busy called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
             return;
         }
 
@@ -688,10 +703,6 @@ namespace atomic_dex
             {
                 auto& kdf = this->m_system_manager.get_system<kdf_service>();
                 kdf.set_orders_and_swaps_pagination_infos(m_model_data.current_page, m_model_data.limit, m_model_data.filtering_infos);
-            }
-            else
-            {
-                SPDLOG_WARN("KDF is not available, skipping orders and swaps pagination reset");
             }
         }
         else
