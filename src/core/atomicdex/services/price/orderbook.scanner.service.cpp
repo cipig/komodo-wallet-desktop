@@ -99,14 +99,10 @@ namespace atomic_dex
         return m_bestorders_busy.load();
     }
 
-    const t_orders_contents&
+    t_orders_contents
     orderbook_scanner_service::get_bestorders_data() const
     {
-        // We add a thread-local static fallback to return if the synchronized wrapper maps to empty status
-        static const t_orders_contents empty_fallback{};
-
-        // Using .synchronize() or accessing the direct internal memory bucket view
-        // depending on the synchronization lock structure setup
-        return m_best_orders_infos.get().result;
+        t_orders_contents data = m_best_orders_infos.get().result;
+        return data;
     }
 } // namespace atomic_dex

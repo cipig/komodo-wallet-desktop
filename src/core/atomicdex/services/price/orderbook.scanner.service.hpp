@@ -52,7 +52,7 @@ namespace atomic_dex
         void process_best_orders(utils::caller_location location = utils::caller_location::current());
 
         [[nodiscard]] bool is_best_orders_busy() const;
-        [[nodiscard]] const t_orders_contents& get_bestorders_data() const;
+        [[nodiscard]] t_orders_contents get_bestorders_data() const;
     };
 } // namespace atomic_dex
 
