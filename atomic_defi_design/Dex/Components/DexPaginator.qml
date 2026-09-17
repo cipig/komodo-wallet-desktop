@@ -18,43 +18,38 @@ RowLayout
     function refreshBtn()
     {
         currentValue = Constants.API.app.orders_mdl.current_page
-        var model = []
-        if (pageSize < 7) {
-            for (var i = 0; i < pageSize; i++) {
-                model.push({
-                    number: i + 1,
-                    selected: currentValue === i + 1
-                })
-            }
+        var rawPages = []
+
+        if (pageSize <= 7) {
+            for (var i = 1; i <= pageSize; i++) rawPages.push(i);
         } else {
+            rawPages.push(1);
 
-            [1, 2].map(v => model.push({
-                number: v,
-                selected: currentValue === v
-            }));
+            var start = Math.max(2, currentValue - 1);
+            var end = Math.min(pageSize - 1, currentValue + 1);
 
-            model.push({
-                number: currentValue - 2 > 1 + 3 ? -1 : 1 + 2,
-                selected: currentValue === 3
-            });
-
-            for (var k = Math.max(1 + 3, currentValue - 2); k <= Math.min(pageSize - 3, currentValue + 2); k++) {
-                model.push({
-                    number: k,
-                    selected: currentValue === k
-                });
+            // Adjust bounds near endpoints to guarantee sizing constraints
+            if (currentValue <= 3) {
+                end = 4;
+            } else if (currentValue >= pageSize - 2) {
+                start = pageSize - 3;
             }
 
-            model.push({
-                number: currentValue + 2 < pageSize - 3 ? -1 : pageSize - 2,
-                selected: currentValue === pageSize - 2
-            });
-            [pageSize - 1, pageSize].map(v => model.push({
-                number: v,
-                selected: currentValue === v
-            }));
+            if (start > 2) rawPages.push(-1);
+            for (var k = start; k <= end; k++) rawPages.push(k);
+            if (end < pageSize - 1) rawPages.push(-1);
+
+            rawPages.push(pageSize);
         }
-        btnGroup.model = model
+
+        var cleanModel = []
+        for (var m = 0; m < rawPages.length; m++) {
+            cleanModel.push({
+                number: rawPages[m],
+                selected: currentValue === rawPages[m]
+            })
+        }
+        btnGroup.model = cleanModel
     }
 
     onPageSizeChanged:
@@ -63,6 +58,10 @@ RowLayout
         if (pageSize < 1) {
             pageSize = 1
         }
+        refreshBtn()
+    }
+
+    Component.onCompleted: {
         refreshBtn()
     }
 
@@ -90,10 +89,10 @@ RowLayout
 
     DexLabel
     {
-        Layout.preferredWidth: 85
+        Layout.preferredWidth: 60
         Layout.alignment: Qt.AlignLeft
         font.pixelSize: 12
-        text: qsTr("items per page")
+        text: qsTr("Per page")
         color: Dex.CurrentTheme.foregroundColor2
     }
 
