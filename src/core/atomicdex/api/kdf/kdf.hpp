@@ -67,6 +67,11 @@ namespace atomic_dex::kdf
     {
         std::string tx_hex;
         std::string coin;
+        /// A Sia transaction's native serialisation is JSON, not a binary form, so a
+        /// KDF may carry it as a `tx_json` object instead of `tx_hex`. Holds the JSON
+        /// text of that object, and is used only when `tx_hex` is empty. Empty for
+        /// every other coin.
+        std::string tx_json;
     };
 
     void to_json(nlohmann::json& j, const send_raw_transaction_request& cfg);

@@ -162,8 +162,28 @@ namespace atomic_dex::kdf
     void
     to_json(nlohmann::json& j, const send_raw_transaction_request& cfg)
     {
-        j["coin"]   = cfg.coin;
-        j["tx_hex"] = cfg.tx_hex;
+        j["coin"] = cfg.coin;
+
+        // Exactly one carrier is sent, never both. KDF resolves a request that
+        // carries both in favour of `tx_hex`, so sending both would be harmless
+        // but pointless; sending the one we actually have keeps the request
+        // honest and works against a KDF that only understands either one.
+        if (!cfg.tx_hex.empty() || cfg.tx_json.empty())
+        {
+            j["tx_hex"] = cfg.tx_hex;
+        }
+        else
+        {
+            try
+            {
+                j["tx_json"] = nlohmann::json::parse(cfg.tx_json);
+            }
+            catch (const std::exception& ex)
+            {
+                SPDLOG_ERROR("Could not parse tx_json for {}: {}", cfg.coin, ex.what());
+                j["tx_hex"] = cfg.tx_hex;
+            }
+        }
     }
 
     void
