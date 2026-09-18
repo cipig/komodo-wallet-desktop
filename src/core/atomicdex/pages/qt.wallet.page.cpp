@@ -875,13 +875,14 @@ namespace atomic_dex
     }
 
     void
-    wallet_page::broadcast(const QString& tx_hex, bool is_claiming, bool is_max, const QString& amount)
+    wallet_page::broadcast(const QString& tx_hex, bool is_claiming, bool is_max, const QString& amount, const QString& tx_json)
     {
-        broadcast_on_auth_finished(true, tx_hex, is_claiming, is_max, amount);
+        broadcast_on_auth_finished(true, tx_hex, is_claiming, is_max, amount, tx_json);
     }
 
     void
-    wallet_page::broadcast_on_auth_finished(bool is_auth, const QString& tx_hex, bool is_claiming, bool is_max, const QString& amount)
+    wallet_page::broadcast_on_auth_finished(
+        bool is_auth, const QString& tx_hex, bool is_claiming, bool is_max, const QString& amount, const QString& tx_json)
     {
         if (!is_auth)
         {
@@ -896,7 +897,8 @@ namespace atomic_dex
         auto&               kdf_system = m_system_manager.get_system<kdf_service>();
         const auto&         ticker     = kdf_system.get_current_ticker();
         nlohmann::json      batch      = nlohmann::json::array();
-        t_broadcast_request broadcast_request{.tx_hex = tx_hex.toStdString(), .coin = ticker};
+        t_broadcast_request broadcast_request{
+            .tx_hex = tx_hex.toStdString(), .coin = ticker, .tx_json = tx_json.toStdString()};
         nlohmann::json      json_data = kdf::template_request("send_raw_transaction");
         kdf::to_json(json_data, broadcast_request);
         batch.push_back(json_data);

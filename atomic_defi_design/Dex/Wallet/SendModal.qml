@@ -19,7 +19,7 @@ MultipageModal
     property var address_data
     readonly property var default_send_result: ({ has_error: false, error_message: "",
                                                     withdraw_answer: {
-                                                        total_amount_fiat: "", tx_hex: "",
+                                                        total_amount_fiat: "", tx_hex: "", tx_json: null,
                                                         memo: "", date: "",
                                                         "fee_details": { total_fee: "" }
                                                     },
@@ -57,7 +57,18 @@ MultipageModal
     }
 
     function sendCoin() {
-        api_wallet_page.broadcast(send_result.withdraw_answer.tx_hex, false, send_result.withdraw_answer.max, input_amount.text)
+        // A withdraw answer carries the signed transaction as `tx_hex` for every coin
+        // whose transactions have a binary wire form. Sia's native serialisation is
+        // JSON instead, and a KDF may carry it either hex-encoded in `tx_hex` or as a
+        // `tx_json` object -- KDF Reloaded returns both, Gleec KDF returns only
+        // `tx_json` and no `tx_hex` at all. Prefer `tx_hex` whenever it is there, so
+        // nothing changes for any other coin or for a KDF that returns both, and fall
+        // back to `tx_json` rather than broadcasting the empty string, which is what
+        // used to happen against a KDF that omits `tx_hex`.
+        const answer = send_result.withdraw_answer
+        const tx_hex = answer.tx_hex || ""
+        const tx_json = (tx_hex === "" && answer.tx_json) ? JSON.stringify(answer.tx_json) : ""
+        api_wallet_page.broadcast(tx_hex, false, answer.max, input_amount.text, tx_json)
     }
 
     function hasErc20CaseIssue(addr) {

@@ -81,8 +81,13 @@ namespace atomic_dex
         Q_INVOKABLE void convert_address(QString from, QString ticker, QVariant to_address_format); // https://developers.atomicdex.io/basic-docs/atomicdex/komodo-defi-framework.html#convertaddress
         Q_INVOKABLE void claim_rewards();
         Q_INVOKABLE void claim_faucet();
-        Q_INVOKABLE void broadcast(const QString& tx_hex, bool is_claiming, bool is_max, const QString& amount);
-        void             broadcast_on_auth_finished(bool is_auth, const QString& tx_hex, bool is_claiming, bool is_max, const QString& amount);
+        //! `tx_json` is the JSON text of a withdraw answer's `tx_json` object, for a coin
+        //! whose transactions are serialised as JSON rather than a binary form (Sia). It is
+        //! used only when `tx_hex` is empty, which is how a KDF that carries a Sia
+        //! transaction solely as `tx_json` presents it. Defaulted, so every existing caller
+        //! (and every binary-transaction coin) is unaffected.
+        Q_INVOKABLE void broadcast(const QString& tx_hex, bool is_claiming, bool is_max, const QString& amount, const QString& tx_json = {});
+        void             broadcast_on_auth_finished(bool is_auth, const QString& tx_hex, bool is_claiming, bool is_max, const QString& amount, const QString& tx_json = {});
                          // Broadcast requires OS local user credentials verification. This is called by the Q_INVOKABLE broadcast() method after entering credentials.
         Q_INVOKABLE void send(const QString& address, const QString& amount, bool max, bool with_fees, QVariantMap fees_data, const QString& memo, const QString& ibc_source_channel);
 
