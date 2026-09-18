@@ -514,6 +514,14 @@ namespace atomic_dex
                     if (this->m_swaps_id_registry.contains(uuid))
                     {
                         this->update_swap(cur);
+
+                        // Instantly force Qt View layout to re-filter row allocations
+                        // If a swap updates to a terminal historical state during a background tick,
+                        // force the proxy filter engine to invalidate and move it to the History tab.
+                        if (cur.order_status == "successful" || cur.order_status == "failed")
+                        {
+                            this->m_model_proxy->invalidate();
+                        }
                     }
                     else
                     {

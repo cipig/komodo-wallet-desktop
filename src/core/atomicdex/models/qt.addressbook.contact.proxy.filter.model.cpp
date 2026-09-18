@@ -31,7 +31,6 @@ namespace atomic_dex
     bool addressbook_contact_proxy_filter_model::filterAcceptsRow(int source_row, const QModelIndex& source_parent) const
     {
         QModelIndex idx = sourceModel()->index(source_row, 0, source_parent);
-        assert(sourceModel()->hasIndex(idx.row(), 0));
         const auto address_type = idx.data(addressbook_contact_model::AddressTypeRole).toString();
         
         // Checks if type filter corresponds to address entry's type.

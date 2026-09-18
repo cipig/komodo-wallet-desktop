@@ -161,7 +161,6 @@ namespace atomic_dex::kdf
                 return answer;
             }
 
-            assert(not body.empty());
             auto json_answer       = nlohmann::json::parse(body);
             answer.rpc_result_code = resp.status_code();
             answer.raw_result      = body;

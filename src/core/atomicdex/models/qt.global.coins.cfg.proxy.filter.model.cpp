@@ -35,9 +35,7 @@ namespace atomic_dex
     bool
     global_coins_cfg_proxy_model::filterAcceptsRow(int source_row, const QModelIndex& source_parent) const
     {
-        //SPDLOG_DEBUG("global_coins_cfg_proxy_model::filterAcceptsRow");
         [[maybe_unused]] QModelIndex idx = this->sourceModel()->index(source_row, 0, source_parent);
-        assert(this->sourceModel()->hasIndex(idx.row(), 0));
 
         if (this->sourceModel()->data(idx, global_coins_cfg_model::CoinType) == static_cast<int>(CoinType::Invalid))
         {

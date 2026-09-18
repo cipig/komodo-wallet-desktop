@@ -1,0 +1,137 @@
+diff --git a/src/core/atomicdex/models/qt.orders.model.cpp b/src/core/atomicdex/models/qt.orders.model.cpp
+index 478109fd7..3b0f27516 100644
+--- a/src/core/atomicdex/models/qt.orders.model.cpp
++++ b/src/core/atomicdex/models/qt.orders.model.cpp
+@@ -514,6 +514,14 @@ namespace atomic_dex
+                     if (this->m_swaps_id_registry.contains(uuid))
+                     {
+                         this->update_swap(cur);
++
++                        // Instantly force Qt View layout to re-filter row allocations
++                        // If a swap updates to a terminal historical state during a background tick,
++                        // force the proxy filter engine to invalidate and move it to the History tab.
++                        if (cur.order_status == "successful" || cur.order_status == "failed")
++                        {
++                            this->m_model_proxy->invalidate();
++                        }
+                     }
+                     else
+                     {
+diff --git a/src/core/atomicdex/models/qt.orders.proxy.model.cpp b/src/core/atomicdex/models/qt.orders.proxy.model.cpp
+index af945a8c7..f4ad6f472 100644
+--- a/src/core/atomicdex/models/qt.orders.proxy.model.cpp
++++ b/src/core/atomicdex/models/qt.orders.proxy.model.cpp
+@@ -129,6 +129,12 @@ namespace atomic_dex
+             qint64 to_ts   = m_max_date.isValid() ? m_max_date.endOfDay().toMSecsSinceEpoch() : std::numeric_limits<qint64>::max();
+             qint64 row_ts  = static_cast<qint64>(timestamp);
+ 
++            // Normalize seconds to milliseconds to ensure date filter consistency
++            // 3250368000000 is Jan 1, 3100 in ms. If it's less than 32503680000, it's definitely in seconds.
++            if (row_ts < 32503680000LL) {
++                row_ts *= 1000LL;
++            }
++
+             if (row_ts < from_ts || row_ts > to_ts)
+             {
+                 return false;
+diff --git a/src/core/atomicdex/services/kdf/kdf.service.cpp b/src/core/atomicdex/services/kdf/kdf.service.cpp
+index 18c5c0e92..87fcc87ad 100644
+--- a/src/core/atomicdex/services/kdf/kdf.service.cpp
++++ b/src/core/atomicdex/services/kdf/kdf.service.cpp
+@@ -2170,52 +2170,63 @@ namespace atomic_dex
+                 current_state_ptr->orders_registry = std::move(orders_answers.orders_id);
+                 current_state_ptr->active_swaps    = active_swaps_answer.uuids.size();
+ 
++                // Purge completed swaps from the active view state container
++                // Gather all fresh active swap UUID strings for quick validation lookup
++                std::unordered_set<std::string> latest_active_uuids;
++                for (auto&& cur : active_swaps_answer.uuids)
++                {
++                    latest_active_uuids.insert(cur.toStdString());
++                }
++
++                // Erase any swap from the container that has finished (i.e. no longer in the active list)
+                 current_state_ptr->orders_and_swaps.erase(
+                     std::remove_if(current_state_ptr->orders_and_swaps.begin(), current_state_ptr->orders_and_swaps.end(),
+-                        [](const t_order_swaps_data& item) { return !item.is_swap; }),
++                        [&latest_active_uuids](const t_order_swaps_data& item) {
++                            // Only drop it if it is a swap, was previously tracking active/ongoing, and is gone from the node's active list
++                            if (item.is_swap && (item.order_status == "matching" || item.order_status == "ongoing" ||
++                                                 item.order_status == "matched" || item.order_status == "refunding"))
++                            {
++                                std::string uuid_str = item.order_id.toStdString();
++                                return latest_active_uuids.find(uuid_str) == latest_active_uuids.end();
++                            }
++                            return false;
++                        }),
+                     current_state_ptr->orders_and_swaps.end()
+                 );
+ 
+-                current_state_ptr->orders_and_swaps.insert(
+-                    current_state_ptr->orders_and_swaps.begin(),
+-                    orders_answers.orders.begin(),
+-                    orders_answers.orders.end()
+-                );
+-
+-                for (auto&& cur : active_swaps_answer.swaps)
++                // Re-sync our registry index by removing completed entries so they can be re-evaluated
++                for (auto it = current_state_ptr->swaps_registry.begin(); it != current_state_ptr->swaps_registry.end(); )
+                 {
+-                    const auto uuid_str = cur.order_id.toStdString();
+-                    if (!current_state_ptr->swaps_registry.contains(uuid_str))
++                    if (latest_active_uuids.find(*it) == latest_active_uuids.end())
+                     {
+-                        current_state_ptr->swaps_registry.emplace(uuid_str);
+-                        current_state_ptr->orders_and_swaps.push_back(std::move(cur));
+-                    }
+-                }
+-
+-                if (swap_answer.result.has_value())
+-                {
+-                    const auto& swap_success_answer = swap_answer.result.value();
+-                    current_state_ptr->total_swaps          = swap_success_answer.total;
+-                    current_state_ptr->total_finished_swaps = swap_success_answer.total - active_swaps_answer.uuids.size();
+-                    current_state_ptr->nb_pages             = swap_success_answer.total_pages;
+-                    current_state_ptr->average_events_time  = std::move(swap_success_answer.average_events_time);
+-
+-                    // Integrity tracking: Only feed elements into the UI view if they
+-                    // fit exactly within your requested paginated drop down limits (e.g., 20 elements max)
+-                    for (auto&& cur : swap_success_answer.swaps)
+-                    {
+-                        const auto uuid_str = cur.order_id.toStdString();
+-                        if (!current_state_ptr->swaps_registry.contains(uuid_str))
++                        // Check if this finished swap is present in the top 5 history items we just fetched.
++                        // If it's NOT in the top 5 history, remove it from registry entirely so it leaves the cache.
++                        bool found_in_history = false;
++                        if (swap_answer.result.has_value())
+                         {
+-                            current_state_ptr->swaps_registry.emplace(uuid_str);
+-
+-                            if (current_state_ptr->orders_and_swaps.size() < current_state_ptr->limit)
++                            for (auto&& h_swap : swap_answer.result.value().swaps)
+                             {
+-                                current_state_ptr->orders_and_swaps.push_back(std::move(cur));
++                                if (h_swap.order_id.toStdString() == *it) {
++                                    found_in_history = true;
++                                    break;
++                                }
+                             }
+                         }
++
++                        if (!found_in_history)
++                        {
++                            it = current_state_ptr->swaps_registry.erase(it);
++                            continue;
++                        }
+                     }
++                    ++it;
+                 }
++
++                current_state_ptr->orders_and_swaps.erase(
++                    std::remove_if(current_state_ptr->orders_and_swaps.begin(), current_state_ptr->orders_and_swaps.end(),
++                        [](const t_order_swaps_data& item) { return !item.is_swap; }),
++                    current_state_ptr->orders_and_swaps.end()
++                );
+             }
+             else
+             {

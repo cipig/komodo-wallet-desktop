@@ -129,6 +129,12 @@ namespace atomic_dex
             qint64 to_ts   = m_max_date.isValid() ? m_max_date.endOfDay().toMSecsSinceEpoch() : std::numeric_limits<qint64>::max();
             qint64 row_ts  = static_cast<qint64>(timestamp);
 
+            // Normalize seconds to milliseconds to ensure date filter consistency
+            // 3250368000000 is Jan 1, 3100 in ms. If it's less than 32503680000, it's definitely in seconds.
+            if (row_ts < 32503680000LL) {
+                row_ts *= 1000LL;
+            }
+
             if (row_ts < from_ts || row_ts > to_ts)
             {
                 return false;

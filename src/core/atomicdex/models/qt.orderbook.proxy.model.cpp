@@ -133,7 +133,6 @@ namespace atomic_dex
     orderbook_proxy_model::filterAcceptsRow(int source_row, const QModelIndex& source_parent) const
     {
         [[maybe_unused]] QModelIndex idx = this->sourceModel()->index(source_row, 0, source_parent);
-        assert(this->sourceModel()->hasIndex(idx.row(), 0));
         auto* orderbook = qobject_cast<orderbook_model*>(this->sourceModel());
 
         if (orderbook != nullptr)
