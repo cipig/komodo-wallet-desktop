@@ -1232,8 +1232,8 @@ namespace atomic_dex
                             }
                             else
                             {
-                                const std::string error = answer.dump(4);
-                                SPDLOG_ERROR("error answer for tx history: {}", error);
+                                const std::string error = answer.is_object() ? answer.dump(4) : "Empty/Malformed response element";
+                                SPDLOG_WARN("Muted batch entry error for tx history tracking: {}", error);
                                 this->dispatcher_.trigger<tx_fetch_finished>(tx_fetch_finished{.with_error = true});
                             }
                         }
@@ -2433,6 +2433,11 @@ namespace atomic_dex
 
                             m_tx_informations->insert_or_assign(ticker, std::make_pair(out, state));
                             this->dispatcher_.trigger<tx_fetch_finished>(tx_fetch_finished{.with_error = false, .ticker = ticker});
+                        }
+                        else
+                        {
+                            SPDLOG_WARN("tx_history endpoint returned status 200 but payload could not be parsed for ticker {}", ticker);
+                            this->dispatcher_.trigger<tx_fetch_finished>(tx_fetch_finished{.with_error = true, .ticker = ticker});
                         }
                     }
                     catch (...)

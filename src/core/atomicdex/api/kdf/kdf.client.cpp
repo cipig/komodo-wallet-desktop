@@ -72,31 +72,45 @@ namespace
         std::string body = (answer.extract_string(true).get());
         nlohmann::json json_answer;
         Rpc rpc;
-        try
+
+        if (!body.empty() && nlohmann::json::accept(body))
         {
-            json_answer = nlohmann::json::parse(body);
+            try
+            {
+                json_answer = nlohmann::json::parse(body);
+            }
+            catch (const nlohmann::json::parse_error& error)
+            {
+                SPDLOG_ERROR("exception in process_rpc_answer parsing: {}", error.what());
+                return rpc;
+            }
         }
-        catch (const nlohmann::json::parse_error& error)
+        else
         {
-            SPDLOG_ERROR("exception in process_rpc_answer: {}", error.what());
+            SPDLOG_DEBUG("process_rpc_answer: Plaintext or empty payload skipped structural processing (Status {})", answer.status_code());
+            rpc.raw_result = body;
+            return rpc;
         }
 
         if (Rpc::is_v2)
         {
-            if (answer.status_code() == 200)
+            if (answer.status_code() == 200 && json_answer.contains("result"))
             {
                 rpc.result = json_answer.at("result").get<typename Rpc::expected_result_type>();
                 rpc.raw_result = json_answer.at("result").dump();
             }
             else
             {
-                rpc.error = json_answer.get<typename Rpc::expected_error_type>();
+                // Gracefully fallback instead of throwing out_of_range
+                if (answer.status_code() not_eq 200) {
+                    try { rpc.error = json_answer.get<typename Rpc::expected_error_type>(); } catch (...) {}
+                }
                 rpc.raw_result = json_answer.dump();
             }
         }
         else
         {
-            rpc.result = json_answer.get<typename Rpc::expected_result_type>();
+            try { rpc.result = json_answer.get<typename Rpc::expected_result_type>(); } catch (...) {}
         }
         return rpc;
     }
@@ -114,28 +128,36 @@ namespace atomic_dex::kdf
         {
             if (resp.status_code() not_eq 200)
             {
+                answer.rpc_result_code = resp.status_code();
+                answer.raw_result      = body;
+
+                // Only attempt logic if it's metadata-detectable and valid JSON
                 if constexpr (doom::meta::is_detected_v<have_error_field, RpcReturnType>)
                 {
-                    // SPDLOG_DEBUG("kdf_client::rpc_process_answer: error field detected inside the RpcReturnType of rpc_command {} with resp.status_code {}: {}", rpc_command, resp.status_code(), body);
-                    // kdf_client::rpc_process_answer: error field detected inside the RpcReturnType of rpc_command tx_history with resp.status_code 404: Not Found
-                    // kdf_client::rpc_process_answer: error field detected inside the RpcReturnType of rpc_command tx_history with resp.status_code 500:
                     if constexpr (std::is_same_v<std::optional<std::string>, decltype(answer.error)>)
                     {
-                        // SPDLOG_DEBUG("kdf_client::rpc_process_answer before trying parse(body) on body {}", body);
-                        // kdf_client::rpc_process_answer before trying parse(body) on body Not Found
-                        // kdf_client::rpc_process_answer before trying parse(body) on body
-                        if (auto json_data = nlohmann::json::parse(body); json_data.at("error").is_string())
+                        // Check if the body contains valid JSON without throwing exceptions
+                        if (!body.empty() && nlohmann::json::accept(body))
                         {
-                            answer.error = json_data.at("error").get<std::string>();
+                            auto json_data = nlohmann::json::parse(body);
+                            if (json_data.contains("error") && json_data.at("error").is_string())
+                            {
+                                answer.error = json_data.at("error").get<std::string>();
+                            }
+                            else
+                            {
+                                answer.error = body;
+                            }
                         }
                         else
                         {
-                            answer.error = body;
+                            // It's plain text (like "Not Found") or empty, assign directly
+                            answer.error = body.empty() ? "HTTP Status " + std::to_string(resp.status_code()) : body;
                         }
                     }
                 }
-                answer.rpc_result_code = resp.status_code();
-                answer.raw_result      = body;
+
+                SPDLOG_DEBUG("kdf_client::rpc_process_answer: gracefully handled status {} for command {}", resp.status_code(), rpc_command);
                 return answer;
             }
 
@@ -150,8 +172,6 @@ namespace atomic_dex::kdf
             answer.rpc_result_code = -1;
             answer.raw_result      = error.what();
             SPDLOG_ERROR("exception in kdf_client::rpc_process_answer for rpc_command {} with body {} and answer.raw_result: {}", rpc_command, body, answer.raw_result);
-            // exception in kdf_client::rpc_process_answer for rpc_command tx_history with body Not Found and answer.raw_result: [json.exception.parse_error.101] parse error at line 1, column 1: syntax error while parsing value - invalid literal; last read: 'N'
-            // exception in kdf_client::rpc_process_answer for rpc_command tx_history with body  and answer.raw_result: [json.exception.parse_error.101] parse error at line 1, column 1: attempting to parse an empty input; check that your input string or stream contains the expected JSON
         }
 
         return answer;
