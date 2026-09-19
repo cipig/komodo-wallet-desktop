@@ -2171,28 +2171,47 @@ namespace atomic_dex
                     current_state_ptr->orders_registry = std::move(orders_answers.orders_id);
                     current_state_ptr->active_swaps    = active_swaps_answer.uuids.size();
 
-                    // 1. Gather all fresh active swap UUID strings for quick validation lookup
+                    // 1. Extract fresh active swap ID references
                     std::unordered_set<std::string> latest_active_uuids;
                     for (auto&& cur : active_swaps_answer.uuids)
                     {
-                        latest_active_uuids.insert(cur);
+                        latest_active_uuids.insert(cur.toStdString());
                     }
 
-                    // 2. Erase swaps that are no longer active according to the backend
+                    // 2. Wipe unmatched limit orders out first so they don't duplicate
                     current_state_ptr->orders_and_swaps.erase(
                         std::remove_if(current_state_ptr->orders_and_swaps.begin(), current_state_ptr->orders_and_swaps.end(),
-                            [&latest_active_uuids](const t_order_swaps_data& item) {
-                                if (item.is_swap && (item.order_status == "matching" || item.order_status == "ongoing" ||
-                                                     item.order_status == "matched" || item.order_status == "refunding"))
-                                {
-                                    return latest_active_uuids.find(item.order_id.toStdString()) == latest_active_uuids.end();
-                                }
-                                return false;
-                            }),
+                            [](const t_order_swaps_data& item) { return !item.is_swap; }),
                         current_state_ptr->orders_and_swaps.end()
                     );
 
-                    // 3. Keep the swaps registry clean from stale entries
+                    // 3. Re-insert fresh unmatched limit orders at the top position
+                    current_state_ptr->orders_and_swaps.insert(
+                        current_state_ptr->orders_and_swaps.begin(),
+                        orders_answers.orders.begin(),
+                        orders_answers.orders.end()
+                    );
+
+                    // 4. Update or merge live ongoing active swaps in-place to protect memory anchors
+                    for (auto&& cur : active_swaps_answer.swaps)
+                    {
+                        const auto uuid_str = cur.order_id.toStdString();
+                        current_state_ptr->swaps_registry.emplace(uuid_str);
+
+                        auto it = std::find_if(current_state_ptr->orders_and_swaps.begin(), current_state_ptr->orders_and_swaps.end(),
+                            [&uuid_str](const t_order_swaps_data& item) { return item.order_id.toStdString() == uuid_str; });
+
+                        if (it != current_state_ptr->orders_and_swaps.end())
+                        {
+                            *it = std::move(cur); // In-place update preserves memory references!
+                        }
+                        else
+                        {
+                            current_state_ptr->orders_and_swaps.push_back(std::move(cur)); // Clean append if brand new
+                        }
+                    }
+
+                    // 5. Clean historical records out of the cache registry
                     for (auto it = current_state_ptr->swaps_registry.begin(); it != current_state_ptr->swaps_registry.end(); )
                     {
                         if (latest_active_uuids.find(*it) == latest_active_uuids.end())
@@ -2218,33 +2237,7 @@ namespace atomic_dex
                         ++it;
                     }
 
-                    // 4. Wipe unmatched orders out first so we don't duplicate them
-                    current_state_ptr->orders_and_swaps.erase(
-                        std::remove_if(current_state_ptr->orders_and_swaps.begin(), current_state_ptr->orders_and_swaps.end(),
-                            [](const t_order_swaps_data& item) { return !item.is_swap; }),
-                        current_state_ptr->orders_and_swaps.end()
-                    );
-
-                    // 5. Re-insert fresh unmatched orders
-                    current_state_ptr->orders_and_swaps.insert(
-                        current_state_ptr->orders_and_swaps.begin(),
-                        orders_answers.orders.begin(),
-                        orders_answers.orders.end()
-                    );
-
-                    // 6. Local registry to track history deduplication on this tick independently of active swaps
-                    std::unordered_set<std::string> tick_history_registry;
-
-                    // 7. Always append live active ongoing swaps to the container frame
-                    for (auto&& cur : active_swaps_answer.swaps)
-                    {
-                        const auto uuid_str = cur.order_id.toStdString();
-                        current_state_ptr->swaps_registry.emplace(uuid_str);
-                        tick_history_registry.insert(uuid_str);
-                        current_state_ptr->orders_and_swaps.push_back(std::move(cur));
-                    }
-
-                    // 8. Process the background history cache update (using lightweight limit=5)
+                    // 6. Process historical updates safely (using lightweight limit=5)
                     if (swap_answer.result.has_value())
                     {
                         const auto& swap_success_answer = swap_answer.result.value();
@@ -2257,12 +2250,15 @@ namespace atomic_dex
                         {
                             const auto uuid_str = cur.order_id.toStdString();
 
-                            // Check against our local tick registry instead of the locked active tokens list
-                            if (tick_history_registry.find(uuid_str) == tick_history_registry.end())
-                            {
-                                current_state_ptr->swaps_registry.emplace(uuid_str);
-                                tick_history_registry.insert(uuid_str);
+                            auto it = std::find_if(current_state_ptr->orders_and_swaps.begin(), current_state_ptr->orders_and_swaps.end(),
+                                [&uuid_str](const t_order_swaps_data& item) { return item.order_id.toStdString() == uuid_str; });
 
+                            if (it != current_state_ptr->orders_and_swaps.end())
+                            {
+                                *it = std::move(cur); // Safely update finished states
+                            }
+                            else
+                            {
                                 if (current_state_ptr->orders_and_swaps.size() < current_state_ptr->limit)
                                 {
                                     current_state_ptr->orders_and_swaps.push_back(std::move(cur));
