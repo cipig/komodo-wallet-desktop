@@ -2230,11 +2230,8 @@ namespace atomic_dex
                     for (auto&& cur : active_swaps_answer.swaps)
                     {
                         const auto uuid_str = cur.order_id.toStdString();
-                        if (!current_state_ptr->swaps_registry.contains(uuid_str))
-                        {
-                            current_state_ptr->swaps_registry.emplace(uuid_str);
-                            current_state_ptr->orders_and_swaps.push_back(std::move(cur));
-                        }
+                        current_state_ptr->swaps_registry.emplace(uuid_str);
+                        current_state_ptr->orders_and_swaps.push_back(std::move(cur));
                     }
 
                     if (swap_answer.result.has_value())
