@@ -492,6 +492,26 @@ namespace atomic_dex
         }
         endInsertRows();
         emit lengthChanged();
+
+        // Fire notifications for newly initialized active swaps
+        if (kind == "swaps")
+        {
+            for (auto&& cur : contents)
+            {
+                // Trigger notification instantly on discovery for new uncompleted tracking loops
+                if (cur.order_status == "matching" || cur.order_status == "ongoing" || cur.order_status == "matched")
+                {
+                    m_dispatcher.trigger(
+                        swap_status_notification{.uuid = cur.order_id,
+                                                 .prev_status = "None",
+                                                 .new_status = cur.order_status,
+                                                 .base = cur.base_coin,
+                                                 .rel = cur.rel_coin,
+                                                 .human_date = cur.human_date});
+                }
+            }
+        }
+
         if (m_system_manager.has_system<kdf_service>())
         {
             this->m_system_manager.get_system<kdf_service>().process_orderbook(true);
@@ -505,7 +525,7 @@ namespace atomic_dex
         std::vector<t_order_swaps_data> to_init;
 
         std::for_each(
-            begin(data) + contents.nb_orders, end(data),
+            begin(data), end(data),
             [this, &to_init](const auto& cur)
             {
                 if (cur.is_swap)

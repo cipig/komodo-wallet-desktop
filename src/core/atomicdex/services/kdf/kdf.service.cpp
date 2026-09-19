@@ -2170,12 +2170,14 @@ namespace atomic_dex
                 current_state_ptr->orders_registry = std::move(orders_answers.orders_id);
                 current_state_ptr->active_swaps    = active_swaps_answer.uuids.size();
 
+                // 1. Gather all fresh active swap UUID strings for quick validation lookup
                 std::unordered_set<std::string> latest_active_uuids;
                 for (auto&& cur : active_swaps_answer.uuids)
                 {
                     latest_active_uuids.insert(cur);
                 }
 
+                // 2. Erase swaps that are no longer active according to the backend
                 current_state_ptr->orders_and_swaps.erase(
                     std::remove_if(current_state_ptr->orders_and_swaps.begin(), current_state_ptr->orders_and_swaps.end(),
                         [&latest_active_uuids](const t_order_swaps_data& item) {
@@ -2189,6 +2191,7 @@ namespace atomic_dex
                     current_state_ptr->orders_and_swaps.end()
                 );
 
+                // 3. Keep the swaps registry clean
                 for (auto it = current_state_ptr->swaps_registry.begin(); it != current_state_ptr->swaps_registry.end(); )
                 {
                     if (latest_active_uuids.find(*it) == latest_active_uuids.end())
@@ -2214,18 +2217,21 @@ namespace atomic_dex
                     ++it;
                 }
 
+                // 4. Wipe unmatched orders out first so we don't duplicate them
                 current_state_ptr->orders_and_swaps.erase(
                     std::remove_if(current_state_ptr->orders_and_swaps.begin(), current_state_ptr->orders_and_swaps.end(),
                         [](const t_order_swaps_data& item) { return !item.is_swap; }),
                     current_state_ptr->orders_and_swaps.end()
                 );
 
+                // 5. Re-insert fresh unmatched orders
                 current_state_ptr->orders_and_swaps.insert(
                     current_state_ptr->orders_and_swaps.begin(),
                     orders_answers.orders.begin(),
                     orders_answers.orders.end()
                 );
 
+                // 6. Merge active swaps into the vector so they populate the Orders tab
                 for (auto&& cur : active_swaps_answer.swaps)
                 {
                     const auto uuid_str = cur.order_id.toStdString();
@@ -2236,6 +2242,7 @@ namespace atomic_dex
                     }
                 }
 
+                // 7. Process the background history cache update (using lightweight limit=5)
                 if (swap_answer.result.has_value())
                 {
                     const auto& swap_success_answer = swap_answer.result.value();
