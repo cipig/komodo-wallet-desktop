@@ -118,6 +118,7 @@ ColumnLayout
     // Simulated countdown time until refund unlocked
     property double paymentLockCountdownTime: -1    // First we wait for locktime expiry
     property double waitUntilCountdownTime: -1      // Then we count down to 'wait_until' time
+
     function updateCountdownTime()
     {
         if (current_event_idx == -1 || !details)

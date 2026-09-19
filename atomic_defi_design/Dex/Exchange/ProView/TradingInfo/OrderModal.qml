@@ -17,10 +17,12 @@ MultipageModal
     property var details
 
     onDetailsChanged: {
-        // Only close the modal if the details object disappears permanently,
-        // but do not close it if the wallet is simply loading or fetching data in the background.
-        if (!details && !API.app.orders_mdl.fetching_busy) {
-            root.close()
+        // Only trigger a hard close if details is genuinely missing or empty,
+        // and if it does not contain a valid transaction order identifier string.
+        if (!details || !details.order_id || details.order_id === "") {
+            if (!API.app.orders_mdl.fetching_busy) {
+                root.close()
+            }
         }
     }
 
