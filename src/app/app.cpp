@@ -377,7 +377,7 @@ namespace atomic_dex
             case action::post_process_orders_and_swaps_finished:
                 if (kdf.is_kdf_running())
                 {
-                    qobject_cast<orders_model*>(m_manager_models.at("orders"))->refresh_or_insert();
+                    qobject_cast<orders_model*>(m_manager_models.at("orders"))->refresh_or_insert(); // HOTSPOT 10%
                 }
                 break;
             case action::post_process_orders_and_swaps_finished_reset:

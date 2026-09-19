@@ -2165,110 +2165,101 @@ namespace atomic_dex
 
             if (!after_manual_reset)
             {
-                auto current_state_ptr             = m_orders_and_swaps.synchronize();
-                current_state_ptr->nb_orders       = orders_answers.orders.size();
-                current_state_ptr->orders_registry = std::move(orders_answers.orders_id);
-                current_state_ptr->active_swaps    = active_swaps_answer.uuids.size();
-
-                // 1. Gather all fresh active swap UUID strings for quick validation lookup
-                std::unordered_set<std::string> latest_active_uuids;
-                for (auto&& cur : active_swaps_answer.uuids)
                 {
-                    latest_active_uuids.insert(cur);
-                }
+                    auto current_state_ptr             = m_orders_and_swaps.synchronize();
+                    current_state_ptr->nb_orders       = orders_answers.orders.size();
+                    current_state_ptr->orders_registry = std::move(orders_answers.orders_id);
+                    current_state_ptr->active_swaps    = active_swaps_answer.uuids.size();
 
-                // 2. Erase swaps that are no longer active according to the backend
-                current_state_ptr->orders_and_swaps.erase(
-                    std::remove_if(current_state_ptr->orders_and_swaps.begin(), current_state_ptr->orders_and_swaps.end(),
-                        [&latest_active_uuids](const t_order_swaps_data& item) {
-                            if (item.is_swap && (item.order_status == "matching" || item.order_status == "ongoing" ||
-                                                 item.order_status == "matched" || item.order_status == "refunding"))
-                            {
-                                return latest_active_uuids.find(item.order_id.toStdString()) == latest_active_uuids.end();
-                            }
-                            return false;
-                        }),
-                    current_state_ptr->orders_and_swaps.end()
-                );
-
-                // 3. Keep the swaps registry clean
-                for (auto it = current_state_ptr->swaps_registry.begin(); it != current_state_ptr->swaps_registry.end(); )
-                {
-                    if (latest_active_uuids.find(*it) == latest_active_uuids.end())
+                    std::unordered_set<std::string> latest_active_uuids;
+                    for (auto&& cur : active_swaps_answer.uuids)
                     {
-                        bool found_in_history = false;
-                        if (swap_answer.result.has_value())
+                        latest_active_uuids.insert(cur);
+                    }
+
+                    current_state_ptr->orders_and_swaps.erase(
+                        std::remove_if(current_state_ptr->orders_and_swaps.begin(), current_state_ptr->orders_and_swaps.end(),
+                            [&latest_active_uuids](const t_order_swaps_data& item) {
+                                if (item.is_swap && (item.order_status == "matching" || item.order_status == "ongoing" ||
+                                                     item.order_status == "matched" || item.order_status == "refunding"))
+                                {
+                                    return latest_active_uuids.find(item.order_id.toStdString()) == latest_active_uuids.end();
+                                }
+                                return false;
+                            }),
+                        current_state_ptr->orders_and_swaps.end()
+                    );
+
+                    for (auto it = current_state_ptr->swaps_registry.begin(); it != current_state_ptr->swaps_registry.end(); )
+                    {
+                        if (latest_active_uuids.find(*it) == latest_active_uuids.end())
                         {
-                            for (auto&& h_swap : swap_answer.result.value().swaps)
+                            bool found_in_history = false;
+                            if (swap_answer.result.has_value())
                             {
-                                if (h_swap.order_id.toStdString() == *it) {
-                                    found_in_history = true;
-                                    break;
+                                for (auto&& h_swap : swap_answer.result.value().swaps)
+                                {
+                                    if (h_swap.order_id.toStdString() == *it) {
+                                        found_in_history = true;
+                                        break;
+                                    }
                                 }
                             }
+
+                            if (!found_in_history)
+                            {
+                                it = current_state_ptr->swaps_registry.erase(it);
+                                continue;
+                            }
                         }
-
-                        if (!found_in_history)
-                        {
-                            it = current_state_ptr->swaps_registry.erase(it);
-                            continue;
-                        }
+                        ++it;
                     }
-                    ++it;
-                }
 
-                // 4. Wipe unmatched orders out first so we don't duplicate them
-                current_state_ptr->orders_and_swaps.erase(
-                    std::remove_if(current_state_ptr->orders_and_swaps.begin(), current_state_ptr->orders_and_swaps.end(),
-                        [](const t_order_swaps_data& item) { return !item.is_swap; }),
-                    current_state_ptr->orders_and_swaps.end()
-                );
+                    current_state_ptr->orders_and_swaps.erase(
+                        std::remove_if(current_state_ptr->orders_and_swaps.begin(), current_state_ptr->orders_and_swaps.end(),
+                            [](const t_order_swaps_data& item) { return !item.is_swap; }),
+                        current_state_ptr->orders_and_swaps.end()
+                    );
 
-                // 5. Re-insert fresh unmatched orders
-                current_state_ptr->orders_and_swaps.insert(
-                    current_state_ptr->orders_and_swaps.begin(),
-                    orders_answers.orders.begin(),
-                    orders_answers.orders.end()
-                );
+                    current_state_ptr->orders_and_swaps.insert(
+                        current_state_ptr->orders_and_swaps.begin(),
+                        orders_answers.orders.begin(),
+                        orders_answers.orders.end()
+                    );
 
-                // 6. Merge active swaps into the vector so they populate the Orders tab
-                for (auto&& cur : active_swaps_answer.swaps)
-                {
-                    const auto uuid_str = cur.order_id.toStdString();
-                    if (!current_state_ptr->swaps_registry.contains(uuid_str))
-                    {
-                        current_state_ptr->swaps_registry.emplace(uuid_str);
-                        current_state_ptr->orders_and_swaps.push_back(std::move(cur));
-                    }
-                }
-
-                // 7. Process the background history cache update (using lightweight limit=5)
-                if (swap_answer.result.has_value())
-                {
-                    const auto& swap_success_answer = swap_answer.result.value();
-                    current_state_ptr->total_swaps          = swap_success_answer.total;
-                    current_state_ptr->total_finished_swaps = swap_success_answer.total - active_swaps_answer.uuids.size();
-                    current_state_ptr->nb_pages             = swap_success_answer.total_pages;
-                    current_state_ptr->average_events_time  = std::move(swap_success_answer.average_events_time);
-
-                    for (auto&& cur : swap_success_answer.swaps)
+                    for (auto&& cur : active_swaps_answer.swaps)
                     {
                         const auto uuid_str = cur.order_id.toStdString();
                         if (!current_state_ptr->swaps_registry.contains(uuid_str))
                         {
                             current_state_ptr->swaps_registry.emplace(uuid_str);
+                            current_state_ptr->orders_and_swaps.push_back(std::move(cur));
+                        }
+                    }
 
-                            if (current_state_ptr->orders_and_swaps.size() < current_state_ptr->limit)
+                    if (swap_answer.result.has_value())
+                    {
+                        const auto& swap_success_answer = swap_answer.result.value();
+                        current_state_ptr->total_swaps          = swap_success_answer.total;
+                        current_state_ptr->total_finished_swaps = swap_success_answer.total - active_swaps_answer.uuids.size();
+                        current_state_ptr->nb_pages             = swap_success_answer.total_pages;
+                        current_state_ptr->average_events_time  = std::move(swap_success_answer.average_events_time);
+
+                        for (auto&& cur : swap_success_answer.swaps)
+                        {
+                            const auto uuid_str = cur.order_id.toStdString();
+                            if (!current_state_ptr->swaps_registry.contains(uuid_str))
                             {
-                                current_state_ptr->orders_and_swaps.push_back(std::move(cur));
+                                current_state_ptr->swaps_registry.emplace(uuid_str);
+
+                                if (current_state_ptr->orders_and_swaps.size() < current_state_ptr->limit)
+                                {
+                                    current_state_ptr->orders_and_swaps.push_back(std::move(cur));
+                                }
                             }
                         }
                     }
                 }
-
-                // Safely unlock the mutex before dispatching UI framework updates
-                // This eliminates the deadlock by cleanly clearing the thread's ownership anchor
-                current_state_ptr.unlock();
             }
             else
             {

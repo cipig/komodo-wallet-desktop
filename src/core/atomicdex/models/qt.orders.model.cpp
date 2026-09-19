@@ -523,24 +523,36 @@ namespace atomic_dex
     {
         const auto&                     data = contents.orders_and_swaps;
         std::vector<t_order_swaps_data> to_init;
+        bool                            requires_tab_filter_update = false;
 
         std::for_each(
             begin(data), end(data),
-            [this, &to_init](const auto& cur)
+            [this, &to_init, &requires_tab_filter_update](const auto& cur)
             {
                 if (cur.is_swap)
                 {
                     const auto& uuid = cur.order_id.toStdString();
                     if (this->m_swaps_id_registry.contains(uuid))
                     {
-                        this->update_swap(cur);
-
-                        // Instantly force Qt View layout to re-filter row allocations
-                        // If a swap updates to a terminal historical state during a background tick,
-                        // force the proxy filter engine to invalidate and move it to the History tab.
-                        if (cur.order_status == "successful" || cur.order_status == "failed")
+                        // 1. Efficient In-Place Update
+                        if (const auto res = this->match(index(0, 0), OrderIdRole, cur.order_id); !res.isEmpty())
                         {
-                            this->m_model_proxy->invalidate();
+                            const QModelIndex& idx = res.at(0);
+
+                            // Check if status actually transitioned before triggering modifications
+                            QString old_status = this->data(idx, OrdersRoles::OrderStatusRole).toString();
+                            this->update_swap(cur);
+
+                            if (old_status != cur.order_status)
+                            {
+                                // Trigger precise role update bounds to avoid thrashing full views
+                                emit dataChanged(idx, idx, {OrdersRoles::OrderStatusRole});
+
+                                if (cur.order_status == "successful" || cur.order_status == "failed")
+                                {
+                                    requires_tab_filter_update = true;
+                                }
+                            }
                         }
                     }
                     else
@@ -550,6 +562,12 @@ namespace atomic_dex
                     }
                 }
             });
+
+        // 2. Batch the invalidation pass exactly ONCE outside the loop if a swap finished
+        if (requires_tab_filter_update)
+        {
+            this->m_model_proxy->invalidate();
+        }
 
         if (!to_init.empty())
         {
