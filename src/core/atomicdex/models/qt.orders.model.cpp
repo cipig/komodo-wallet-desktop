@@ -556,11 +556,8 @@ namespace atomic_dex
                     }
                     else
                     {
-                        if (!this->m_swaps_id_registry.contains(uuid))
-                        {
-                            to_init.emplace_back(cur);
-                            m_swaps_id_registry.emplace(uuid);
-                        }
+                        to_init.emplace_back(cur);
+                        m_swaps_id_registry.emplace(uuid);
                     }
                 }
             });
@@ -582,39 +579,38 @@ namespace atomic_dex
     {
         const auto&                     data = contents.orders_and_swaps;
         std::unordered_set<std::string> are_present;
+        std::vector<t_order_swaps_data> to_init;
         bool                            was_updated = false;
 
-        if (contents.nb_orders > 0)
-        {
-            std::vector<t_order_swaps_data> to_init;
-            std::for_each(
-                begin(data), begin(data) + contents.nb_orders,
-                [this, &to_init, &are_present, &was_updated](const auto& cur)
+        auto& model_array = this->m_model_data.orders_and_swaps;
+
+        std::for_each(
+            begin(data), end(data),
+            [this, &to_init, &are_present, &was_updated, &model_array](const auto& cur)
+            {
+                if (!cur.is_swap)
                 {
                     std::string uuid_str = cur.order_id.toStdString();
-                    if (this->m_orders_id_registry.contains(uuid_str))
-                    {
-                        auto& model_array = this->m_model_data.orders_and_swaps;
-                        auto it = std::find_if(model_array.begin(), model_array.end(),
-                            [&cur](const t_order_swaps_data& item) { return item.order_id == cur.order_id; });
+                    auto it = std::find_if(model_array.begin(), model_array.end(),
+                        [&cur](const t_order_swaps_data& item) { return item.order_id == cur.order_id; });
 
-                        if (it != model_array.end())
-                        {
-                            *it = cur;
-                            was_updated = true;
-                        }
+                    if (it != model_array.end())
+                    {
+                        *it = cur;
+                        was_updated = true;
                     }
                     else
                     {
-                        m_orders_id_registry.emplace(to_init.emplace_back(cur).order_id.toStdString());
+                        to_init.emplace_back(cur);
+                        m_orders_id_registry.emplace(uuid_str);
                     }
                     are_present.emplace(uuid_str);
-                });
+                }
+            });
 
-            if (!to_init.empty())
-            {
-                this->common_insert(to_init, "orders");
-            }
+        if (!to_init.empty())
+        {
+            this->common_insert(to_init, "orders");
         }
 
         if (was_updated)
@@ -652,7 +648,6 @@ namespace atomic_dex
     orders_model::set_common_data(const orders_and_swaps& contents)
     {
         this->set_average_events_time_registry(nlohmann_json_object_to_qt_json_object(contents.average_events_time));
-        m_model_data.nb_orders = contents.nb_orders;
 
         if (m_model_data.nb_pages != contents.nb_pages)
         {
@@ -662,14 +657,14 @@ namespace atomic_dex
 
         if (m_model_data.limit != contents.limit)
         {
-            SPDLOG_DEBUG("UNUSED limit changed from backend sync");
+            SPDLOG_DEBUG("UNUSED");
             m_model_data.limit = contents.limit;
             emit limitNbElementsChanged();
         }
 
         if (m_model_data.current_page != contents.current_page)
         {
-            SPDLOG_DEBUG("UNUSED current page changed from backend sync");
+            SPDLOG_DEBUG("UNUSED");
             m_model_data.current_page = contents.current_page;
             emit currentPageChanged();
         }
@@ -741,9 +736,10 @@ namespace atomic_dex
         }
         else
         {
-            this->set_common_data(contents);
             update_or_insert_orders(contents);
             update_or_insert_swaps(contents);
+            this->set_common_data(contents);
+            m_model_data.nb_orders = contents.nb_orders;
         }
     }
 
