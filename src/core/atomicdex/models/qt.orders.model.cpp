@@ -556,10 +556,7 @@ namespace atomic_dex
                     }
                     else
                     {
-                        bool is_active_state = (cur.order_status == "matching" || cur.order_status == "ongoing" ||
-                                                cur.order_status == "matched"  || cur.order_status == "refunding");
-
-                        if (is_active_state || !this->m_swaps_id_registry.contains(uuid))
+                        if (!this->m_swaps_id_registry.contains(uuid))
                         {
                             to_init.emplace_back(cur);
                             m_swaps_id_registry.emplace(uuid);
@@ -636,12 +633,19 @@ namespace atomic_dex
         {
             if (!are_present.contains(id))
             {
-                //! If it's the case retrieve the index of the row that match this id
                 auto res_list = this->match(index(0, 0), OrderIdRole, QString::fromStdString(id));
                 if (!res_list.empty())
                 {
-                    //! And then delete it
-                    this->removeRow(res_list.at(0).row());
+                    int target_row = res_list.at(0).row();
+                    if (target_row >= 0 && target_row < rowCount())
+                    {
+                        if (m_model_data.orders_and_swaps[target_row].is_swap)
+                        {
+                            continue;
+                        }
+                    }
+
+                    this->removeRow(target_row);
                     m_model_data.nb_orders -= 1;
                     to_remove.emplace_back(id);
                 }
