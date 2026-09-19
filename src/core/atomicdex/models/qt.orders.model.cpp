@@ -525,40 +525,42 @@ namespace atomic_dex
         std::vector<t_order_swaps_data> to_init;
         bool                            was_updated = false;
 
+        auto& model_array = this->m_model_data.orders_and_swaps;
+
         std::for_each(
             begin(data), end(data),
-            [this, &to_init, &was_updated](const auto& cur)
+            [this, &to_init, &was_updated, &model_array](const auto& cur)
             {
                 if (cur.is_swap)
                 {
                     const auto& uuid = cur.order_id.toStdString();
-                    if (this->m_swaps_id_registry.contains(uuid))
+
+                    auto it = std::find_if(model_array.begin(), model_array.end(),
+                        [&cur](const t_order_swaps_data& item) { return item.order_id == cur.order_id; });
+
+                    if (it != model_array.end())
                     {
-                        auto& model_array = this->m_model_data.orders_and_swaps;
-                        auto it = std::find_if(model_array.begin(), model_array.end(),
-                            [&cur](const t_order_swaps_data& item) { return item.order_id == cur.order_id; });
-
-                        if (it != model_array.end())
+                        if (it->order_status != cur.order_status)
                         {
-                            if (it->order_status != cur.order_status)
-                            {
-                                m_dispatcher.trigger(
-                                    swap_status_notification{.uuid = cur.order_id,
-                                                             .prev_status = it->order_status,
-                                                             .new_status = cur.order_status,
-                                                             .base = it->base_coin,
-                                                             .rel = it->rel_coin,
-                                                             .human_date = cur.human_date});
-                            }
-
-                            *it = cur;
-                            was_updated = true;
+                            m_dispatcher.trigger(
+                                swap_status_notification{.uuid = cur.order_id,
+                                                         .prev_status = it->order_status,
+                                                         .new_status = cur.order_status,
+                                                         .base = it->base_coin,
+                                                         .rel = it->rel_coin,
+                                                         .human_date = cur.human_date});
                         }
+
+                        *it = cur;
+                        was_updated = true;
                     }
                     else
                     {
-                        to_init.emplace_back(cur);
-                        m_swaps_id_registry.emplace(uuid);
+                        if (!this->m_swaps_id_registry.contains(uuid))
+                        {
+                            to_init.emplace_back(cur);
+                            m_swaps_id_registry.emplace(uuid);
+                        }
                     }
                 }
             });
