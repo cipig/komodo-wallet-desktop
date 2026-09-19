@@ -2266,9 +2266,9 @@ namespace atomic_dex
                     }
                 }
 
-                // Commit the synchronized wrapper state back to the root cache variable
-                // Without this, get_orders_and_swaps() continues to return stale data during background tasks.
-                m_orders_and_swaps = *current_state_ptr;
+                // Safely unlock the mutex before dispatching UI framework updates
+                // This eliminates the deadlock by cleanly clearing the thread's ownership anchor
+                current_state_ptr.unlock();
             }
             else
             {
