@@ -85,6 +85,7 @@ namespace atomic_dex
     {
         SPDLOG_INFO("cancel order");
         nlohmann::json batch = nlohmann::json::array();
+
         for (auto&& order_id: orders_id)
         {
             kdf::cancel_all_orders_request req;

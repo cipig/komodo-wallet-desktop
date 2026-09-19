@@ -2265,6 +2265,10 @@ namespace atomic_dex
                         }
                     }
                 }
+
+                // Commit the synchronized wrapper state back to the root cache variable
+                // Without this, get_orders_and_swaps() continues to return stale data during background tasks.
+                m_orders_and_swaps = *current_state_ptr;
             }
             else
             {

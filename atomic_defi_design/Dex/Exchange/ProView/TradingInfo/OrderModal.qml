@@ -16,12 +16,20 @@ MultipageModal
 
     property var details
 
-    onDetailsChanged: { if (!details) root.close() }
+    onDetailsChanged: {
+        // Only close the modal if the details object disappears permanently,
+        // but do not close it if the wallet is simply loading or fetching data in the background.
+        if (!details && !API.app.orders_mdl.fetching_busy) {
+            root.close()
+        }
+    }
+
     onOpened:
     {
         swapProgress.updateSimulatedTime()
         swapProgress.updateCountdownTime()
     }
+
     onClosed: details = undefined
 
     MultipageModalContent
