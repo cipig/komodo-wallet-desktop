@@ -2175,7 +2175,7 @@ namespace atomic_dex
                     std::unordered_set<std::string> latest_active_uuids;
                     for (auto&& cur : active_swaps_answer.uuids)
                     {
-                        latest_active_uuids.insert(cur.toStdString());
+                        latest_active_uuids.insert(cur);
                     }
 
                     // 2. Wipe unmatched limit orders out first so they don't duplicate
