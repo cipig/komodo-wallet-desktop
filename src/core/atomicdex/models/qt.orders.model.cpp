@@ -551,15 +551,12 @@ namespace atomic_dex
                                                          .human_date = cur.human_date});
                         }
 
-                        *it = cur;
+                        *it = cur; // Update fields in place to preserve view modal hooks
                         was_updated = true;
                     }
                     else
                     {
-                        bool is_active_state = (cur.order_status == "matching" || cur.order_status == "ongoing" ||
-                                                cur.order_status == "matched"  || cur.order_status == "refunding");
-
-                        if (is_active_state || !this->m_swaps_id_registry.contains(uuid))
+                        if (!this->m_swaps_id_registry.contains(uuid))
                         {
                             to_init.emplace_back(cur);
                             m_swaps_id_registry.emplace(uuid);

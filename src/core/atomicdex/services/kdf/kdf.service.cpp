@@ -2171,12 +2171,14 @@ namespace atomic_dex
                     current_state_ptr->orders_registry = std::move(orders_answers.orders_id);
                     current_state_ptr->active_swaps    = active_swaps_answer.uuids.size();
 
+                    // 1. Gather all fresh active swap UUID strings for quick validation lookup
                     std::unordered_set<std::string> latest_active_uuids;
                     for (auto&& cur : active_swaps_answer.uuids)
                     {
                         latest_active_uuids.insert(cur);
                     }
 
+                    // 2. Erase swaps that are no longer active according to the backend
                     current_state_ptr->orders_and_swaps.erase(
                         std::remove_if(current_state_ptr->orders_and_swaps.begin(), current_state_ptr->orders_and_swaps.end(),
                             [&latest_active_uuids](const t_order_swaps_data& item) {
@@ -2190,6 +2192,7 @@ namespace atomic_dex
                         current_state_ptr->orders_and_swaps.end()
                     );
 
+                    // 3. Keep the swaps registry clean from stale entries
                     for (auto it = current_state_ptr->swaps_registry.begin(); it != current_state_ptr->swaps_registry.end(); )
                     {
                         if (latest_active_uuids.find(*it) == latest_active_uuids.end())
@@ -2215,25 +2218,33 @@ namespace atomic_dex
                         ++it;
                     }
 
+                    // 4. Wipe unmatched orders out first so we don't duplicate them
                     current_state_ptr->orders_and_swaps.erase(
                         std::remove_if(current_state_ptr->orders_and_swaps.begin(), current_state_ptr->orders_and_swaps.end(),
                             [](const t_order_swaps_data& item) { return !item.is_swap; }),
                         current_state_ptr->orders_and_swaps.end()
                     );
 
+                    // 5. Re-insert fresh unmatched orders
                     current_state_ptr->orders_and_swaps.insert(
                         current_state_ptr->orders_and_swaps.begin(),
                         orders_answers.orders.begin(),
                         orders_answers.orders.end()
                     );
 
+                    // 6. Local registry to track history deduplication on this tick independently of active swaps
+                    std::unordered_set<std::string> tick_history_registry;
+
+                    // 7. Always append live active ongoing swaps to the container frame
                     for (auto&& cur : active_swaps_answer.swaps)
                     {
                         const auto uuid_str = cur.order_id.toStdString();
                         current_state_ptr->swaps_registry.emplace(uuid_str);
+                        tick_history_registry.insert(uuid_str);
                         current_state_ptr->orders_and_swaps.push_back(std::move(cur));
                     }
 
+                    // 8. Process the background history cache update (using lightweight limit=5)
                     if (swap_answer.result.has_value())
                     {
                         const auto& swap_success_answer = swap_answer.result.value();
@@ -2245,9 +2256,12 @@ namespace atomic_dex
                         for (auto&& cur : swap_success_answer.swaps)
                         {
                             const auto uuid_str = cur.order_id.toStdString();
-                            if (!current_state_ptr->swaps_registry.contains(uuid_str))
+
+                            // Check against our local tick registry instead of the locked active tokens list
+                            if (tick_history_registry.find(uuid_str) == tick_history_registry.end())
                             {
                                 current_state_ptr->swaps_registry.emplace(uuid_str);
+                                tick_history_registry.insert(uuid_str);
 
                                 if (current_state_ptr->orders_and_swaps.size() < current_state_ptr->limit)
                                 {
