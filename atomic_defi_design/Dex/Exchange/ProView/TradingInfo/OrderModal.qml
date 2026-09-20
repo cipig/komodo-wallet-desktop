@@ -16,16 +16,6 @@ MultipageModal
 
     property var details
 
-    onDetailsChanged: {
-        // Only trigger a hard close if details is genuinely missing or empty,
-        // and if it does not contain a valid transaction order identifier string.
-        if (!details || !details.order_id || details.order_id === "") {
-            if (!API.app.orders_mdl.fetching_busy) {
-                root.close()
-            }
-        }
-    }
-
     onOpened:
     {
         swapProgress.updateSimulatedTime()
