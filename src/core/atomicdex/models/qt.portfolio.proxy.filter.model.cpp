@@ -110,38 +110,38 @@ namespace atomic_dex
     bool
     portfolio_proxy_model::filterAcceptsRow(int source_row, const QModelIndex& source_parent) const
     {
-        QModelIndex idx       = this->sourceModel()->index(source_row, 0, source_parent);
-
-        if (!this->sourceModel()->hasIndex(idx.row(), 0))
+        auto* model = this->sourceModel();
+        if (!model || source_row < 0 || source_row >= model->rowCount(source_parent)) [[unlikely]]
         {
-            SPDLOG_WARN("Invalid index in filterAcceptsRow: row={}", source_row);
             return false;
         }
 
-        QString     ticker    = this->sourceModel()->data(idx, atomic_dex::portfolio_model::TickerRole).toString();
-        QString     type      = this->sourceModel()->data(idx, atomic_dex::portfolio_model::CoinType).toString();
+        QModelIndex idx = model->index(source_row, 0, source_parent);
+
+        QString ticker = model->data(idx, atomic_dex::portfolio_model::TickerRole).toString();
 
         if (this->filterRole() == atomic_dex::portfolio_model::MultiTickerCurrentlyEnabled)
         {
-            bool is_enabled = this->sourceModel()->data(idx, atomic_dex::portfolio_model::MultiTickerCurrentlyEnabled).toBool();
-            if (not is_enabled)
+            if (!model->data(idx, atomic_dex::portfolio_model::MultiTickerCurrentlyEnabled).toBool())
             {
                 return false;
             }
         }
 
-        // Filter by ticker name if `m_search_exp` is not empty.
         if (!m_search_exp.isEmpty())
         {
-            if (not ticker.contains(m_search_exp, Qt::CaseInsensitive))
+            if (!ticker.contains(m_search_exp, Qt::CaseInsensitive))
             {
                 return false;
             }
         }
 
-        if (am_i_a_market_selector && m_system_mgr.get_system<portfolio_page>().get_global_cfg()->is_wallet_only(ticker.toStdString()))
+        if (am_i_a_market_selector)
         {
-            return false;
+            if (m_system_mgr.get_system<portfolio_page>().get_global_cfg()->is_wallet_only(ticker.toStdString()))
+            {
+                return false;
+            }
         }
 
         if (m_excluded_coin == ticker)
@@ -151,7 +151,8 @@ namespace atomic_dex
 
         if (m_with_balance)
         {
-            if (this->sourceModel()->data(idx, portfolio_model::BalanceRole).toString().toFloat() == 0.F)
+            double raw_balance = model->data(idx, portfolio_model::RawBalanceRole).toDouble();
+            if (qFuzzyIsNull(raw_balance) || raw_balance <= 0.0)
             {
                 return false;
             }
@@ -159,13 +160,14 @@ namespace atomic_dex
 
         if (m_with_fiat_balance)
         {
-            if (this->sourceModel()->data(idx, portfolio_model::MainCurrencyBalanceRole).toFloat() == 0.F)
+            double raw_fiat = model->data(idx, portfolio_model::RawMainCurrencyBalanceRole).toDouble();
+            if (qFuzzyIsNull(raw_fiat) || raw_fiat <= 0.0)
             {
                 return false;
             }
         }
 
-        return QSortFilterProxyModel::filterAcceptsRow(source_row, source_parent);
+        return true;
     }
 
     void
@@ -195,29 +197,29 @@ namespace atomic_dex
     void
     portfolio_proxy_model::sort_by_name(bool is_ascending)
     {
-        this->setSortRole(atomic_dex::portfolio_model::NameRole);
-        this->sort(0, is_ascending ? Qt::AscendingOrder : Qt::DescendingOrder);
+        this->setSortRole(atomic_dex::portfolio_model::NameRole); // HOTSPOT 0.2%
+        this->sort(0, is_ascending ? Qt::AscendingOrder : Qt::DescendingOrder); // HOTSPOT 0.6%
     }
 
     void
     portfolio_proxy_model::sort_by_currency_balance(bool is_ascending)
     {
-        this->setSortRole(atomic_dex::portfolio_model::RawMainCurrencyBalanceRole);
-        this->sort(0, is_ascending ? Qt::AscendingOrder : Qt::DescendingOrder); // HOTSPOT 0.5%
+        this->setSortRole(atomic_dex::portfolio_model::RawMainCurrencyBalanceRole); // HOTSPOT 0.6%
+        this->sort(0, is_ascending ? Qt::AscendingOrder : Qt::DescendingOrder); // HOTSPOT 0.7%
     }
 
     void
     portfolio_proxy_model::sort_by_change_last24h(bool is_ascending)
     {
-        this->setSortRole(atomic_dex::portfolio_model::RawChange24HRole);
-        this->sort(0, is_ascending ? Qt::AscendingOrder : Qt::DescendingOrder);
+        this->setSortRole(atomic_dex::portfolio_model::RawChange24HRole); // HOTSPOT 0.4%
+        this->sort(0, is_ascending ? Qt::AscendingOrder : Qt::DescendingOrder); // HOTSPOT 0.6%
     }
 
     void
     portfolio_proxy_model::sort_by_currency_unit(bool is_ascending)
     {
-        this->setSortRole(atomic_dex::portfolio_model::RawMainCurrencyPriceRole);
-        this->sort(0, is_ascending ? Qt::AscendingOrder : Qt::DescendingOrder);
+        this->setSortRole(atomic_dex::portfolio_model::RawMainCurrencyPriceRole); // HOTSPOT 0.4%
+        this->sort(0, is_ascending ? Qt::AscendingOrder : Qt::DescendingOrder); // HOTSPOT 0.6%
     }
 
     bool

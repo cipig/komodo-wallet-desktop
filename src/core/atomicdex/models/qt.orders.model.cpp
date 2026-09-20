@@ -471,7 +471,7 @@ namespace atomic_dex
         m_model_data = contents;
         m_orders_id_registry = std::move(m_model_data.orders_registry);
         m_swaps_id_registry  = std::move(m_model_data.swaps_registry);
-        endResetModel(); // HOTSPOT 0.5%
+        endResetModel(); // HOTSPOT 0.3%
         emit lengthChanged();
         emit currentPageChanged();
         emit limitNbElementsChanged();

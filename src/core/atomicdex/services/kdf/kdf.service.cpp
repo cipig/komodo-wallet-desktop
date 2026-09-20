@@ -147,7 +147,7 @@ namespace
         //! longer parses. The registry mutation below needs exclusivity anyway.
         std::unique_lock lock(registry_mtx);
 
-        nlohmann::json config_json_data = atomic_dex::utils::read_json_file(filepath);
+        nlohmann::json config_json_data = atomic_dex::utils::read_json_file(filepath); // HOTSPOT 0.2%
 
         //! `read_json_file` yields a default-constructed (null) json when the
         //! file is missing or does not parse. Indexing that throws, and this
@@ -302,13 +302,13 @@ namespace atomic_dex
         const auto s_activation = std::chrono::duration_cast<std::chrono::seconds>(now - m_activation_clock);
         const auto s_orders     = std::chrono::duration_cast<std::chrono::seconds>(now - m_orders_clock);
 
-        if (s_orderbook >= 11s)
+        if (s_orderbook >= 5s)
         {
             fetch_current_orderbook_thread(false); // process_orderbook if on trading page
             m_orderbook_clock = std::chrono::high_resolution_clock::now();
         }
 
-        if (s_orders >= 17s)
+        if (s_orders >= 7s)
         {
             batch_fetch_orders_and_swap(); // gets 'my_orders', 'my_recent_swaps' & 'active_swaps'
             m_orders_clock = std::chrono::high_resolution_clock::now();
@@ -350,7 +350,7 @@ namespace atomic_dex
             }
         }
 
-        if (s_balances >= 43s)
+        if (s_balances >= 61s)
         {
             std::unique_lock lock(m_activation_mutex);
 
@@ -440,7 +440,7 @@ namespace atomic_dex
         {
             if (value.currently_enabled)
             {
-                destination.emplace_back(value); // HOTSPOT 0.4%
+                destination.emplace_back(value); // HOTSPOT 0.2%
             }
         }
 
