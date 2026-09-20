@@ -305,12 +305,14 @@ namespace atomic_dex
     void application::tick()
     {
         this->process_one_frame();
+
         if (m_event_actions[events_action::need_a_full_refresh_of_kdf])
         {
             system_manager_.create_system<kdf_service>(system_manager_);
             connect_signals();
             m_event_actions[events_action::need_a_full_refresh_of_kdf] = false;
         }
+
         auto& kdf = get_kdf();
         if (kdf.is_kdf_running())
         {
@@ -364,6 +366,7 @@ namespace atomic_dex
         }
 
         system_manager_.get_system<trading_page>().process_action();
+
         while (not this->m_actions_queue.empty())
         {
             if (m_event_actions[events_action::about_to_exit_app])
@@ -377,7 +380,7 @@ namespace atomic_dex
             case action::post_process_orders_and_swaps_finished:
                 if (kdf.is_kdf_running())
                 {
-                    qobject_cast<orders_model*>(m_manager_models.at("orders"))->refresh_or_insert(); // HOTSPOT 10%
+                    qobject_cast<orders_model*>(m_manager_models.at("orders"))->refresh_or_insert(); // HOTSPOT 3%
                 }
                 break;
             case action::post_process_orders_and_swaps_finished_reset:

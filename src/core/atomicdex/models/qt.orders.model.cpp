@@ -568,7 +568,7 @@ namespace atomic_dex
         if (was_updated)
         {
             emit dataChanged(index(0, 0), index(rowCount() - 1, 0));
-            this->m_model_proxy->invalidate();
+            this->m_model_proxy->invalidate(); // HOTSPOT 2.9%
         }
 
         if (!to_init.empty())

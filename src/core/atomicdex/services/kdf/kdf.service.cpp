@@ -440,7 +440,7 @@ namespace atomic_dex
         {
             if (value.currently_enabled)
             {
-                destination.emplace_back(value); // HOTSPOT 0.4%
+                destination.emplace_back(value);
             }
         }
 
@@ -2171,73 +2171,36 @@ namespace atomic_dex
                     current_state_ptr->orders_registry = std::move(orders_answers.orders_id);
                     current_state_ptr->active_swaps    = active_swaps_answer.uuids.size();
 
-                    // 1. Extract fresh active swap ID references
                     std::unordered_set<std::string> latest_active_uuids;
                     for (auto&& cur : active_swaps_answer.uuids)
                     {
                         latest_active_uuids.insert(cur);
                     }
 
-                    // 2. Wipe unmatched limit orders out first so they don't duplicate
-                    current_state_ptr->orders_and_swaps.erase(
-                        std::remove_if(current_state_ptr->orders_and_swaps.begin(), current_state_ptr->orders_and_swaps.end(),
-                            [](const t_order_swaps_data& item) { return !item.is_swap; }),
-                        current_state_ptr->orders_and_swaps.end()
-                    );
+                    // 1. Maintain a collection vector layout for active items on this frame
+                    std::vector<t_order_swaps_data> consolidated_frame;
+                    consolidated_frame.reserve(orders_answers.orders.size() + active_swaps_answer.swaps.size() + 5);
 
-                    // 3. Re-insert fresh unmatched limit orders at the top position
-                    current_state_ptr->orders_and_swaps.insert(
-                        current_state_ptr->orders_and_swaps.begin(),
+                    // 2. Insert the fresh unmatched limit orders first
+                    consolidated_frame.insert(
+                        consolidated_frame.end(),
                         orders_answers.orders.begin(),
                         orders_answers.orders.end()
                     );
 
-                    // 4. Update or merge live ongoing active swaps in-place to protect memory anchors
+                    // 3. Track deduplication using a unique local tick map
+                    std::unordered_set<std::string> tick_history_registry;
+
+                    // 4. Merge live ongoing active swaps safely into the frame vector
                     for (auto&& cur : active_swaps_answer.swaps)
                     {
                         const auto uuid_str = cur.order_id.toStdString();
                         current_state_ptr->swaps_registry.emplace(uuid_str);
-
-                        auto it = std::find_if(current_state_ptr->orders_and_swaps.begin(), current_state_ptr->orders_and_swaps.end(),
-                            [&uuid_str](const t_order_swaps_data& item) { return item.order_id.toStdString() == uuid_str; });
-
-                        if (it != current_state_ptr->orders_and_swaps.end())
-                        {
-                            *it = std::move(cur); // In-place update preserves memory references!
-                        }
-                        else
-                        {
-                            current_state_ptr->orders_and_swaps.push_back(std::move(cur)); // Clean append if brand new
-                        }
+                        tick_history_registry.insert(uuid_str);
+                        consolidated_frame.push_back(std::move(cur));
                     }
 
-                    // 5. Clean historical records out of the cache registry
-                    for (auto it = current_state_ptr->swaps_registry.begin(); it != current_state_ptr->swaps_registry.end(); )
-                    {
-                        if (latest_active_uuids.find(*it) == latest_active_uuids.end())
-                        {
-                            bool found_in_history = false;
-                            if (swap_answer.result.has_value())
-                            {
-                                for (auto&& h_swap : swap_answer.result.value().swaps)
-                                {
-                                    if (h_swap.order_id.toStdString() == *it) {
-                                        found_in_history = true;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if (!found_in_history)
-                            {
-                                it = current_state_ptr->swaps_registry.erase(it);
-                                continue;
-                            }
-                        }
-                        ++it;
-                    }
-
-                    // 6. Process historical updates safely (using lightweight limit=5)
+                    // 5. Sync history metrics without creating overlapping rows
                     if (swap_answer.result.has_value())
                     {
                         const auto& swap_success_answer = swap_answer.result.value();
@@ -2250,20 +2213,34 @@ namespace atomic_dex
                         {
                             const auto uuid_str = cur.order_id.toStdString();
 
-                            auto it = std::find_if(current_state_ptr->orders_and_swaps.begin(), current_state_ptr->orders_and_swaps.end(),
-                                [&uuid_str](const t_order_swaps_data& item) { return item.order_id.toStdString() == uuid_str; });
+                            if (tick_history_registry.find(uuid_str) == tick_history_registry.end())
+                            {
+                                current_state_ptr->swaps_registry.emplace(uuid_str);
+                                tick_history_registry.insert(uuid_str);
 
-                            if (it != current_state_ptr->orders_and_swaps.end())
-                            {
-                                *it = std::move(cur); // Safely update finished states
-                            }
-                            else
-                            {
-                                if (current_state_ptr->orders_and_swaps.size() < current_state_ptr->limit)
+                                if (consolidated_frame.size() < current_state_ptr->limit)
                                 {
-                                    current_state_ptr->orders_and_swaps.push_back(std::move(cur));
+                                    consolidated_frame.push_back(std::move(cur));
                                 }
                             }
+                        }
+                    }
+
+                    // 6. SWAP ENTIRE CONTAINER IN-PLACE AT THE VERY END OF PROCESSING
+                    // This atomic operation guarantees that main thread queries never catch
+                    // a half-empty or cleared array frame during sync executions.
+                    current_state_ptr->orders_and_swaps = std::move(consolidated_frame);
+
+                    // 7. Clean up the stale cache token registry
+                    for (auto it = current_state_ptr->swaps_registry.begin(); it != current_state_ptr->swaps_registry.end(); )
+                    {
+                        if (latest_active_uuids.find(*it) == latest_active_uuids.end() && tick_history_registry.find(*it) == tick_history_registry.end())
+                        {
+                            it = current_state_ptr->swaps_registry.erase(it);
+                        }
+                        else
+                        {
+                            ++it;
                         }
                     }
                 }
