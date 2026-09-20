@@ -19,7 +19,6 @@
 #include <string>
 #include <boost/lockfree/queue.hpp>
 #include <QObject>
-#include "atomicdex/constants/qt.actions.hpp"
 #include "atomicdex/constants/qt.trading.enums.hpp"
 #include "atomicdex/events/events.hpp"
 #include "atomicdex/events/qt.events.hpp"
