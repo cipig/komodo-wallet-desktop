@@ -568,7 +568,6 @@ namespace atomic_dex
         if (was_updated)
         {
             emit dataChanged(index(0, 0), index(rowCount() - 1, 0));
-            this->m_model_proxy->invalidate(); // HOTSPOT 2.9%
         }
 
         if (!to_init.empty())
@@ -724,8 +723,6 @@ namespace atomic_dex
     void
     orders_model::refresh_or_insert(bool after_manual_reset, [[maybe_unused]] utils::caller_location location)
     {
-        //called by atomic_dex::application::tick every 17s
-
         if (after_manual_reset)
         {
             this->set_fetching_busy(false);
@@ -740,6 +737,7 @@ namespace atomic_dex
         const auto& kdf      = m_system_manager.get_system<kdf_service>();
         const auto  contents = kdf.get_orders_and_swaps();
 
+        // Much cleaner: If the cache is empty, initialize it. Otherwise, perform our optimized updates!
         if (m_model_data.orders_and_swaps.empty())
         {
             init_model(contents);

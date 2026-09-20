@@ -2117,28 +2117,20 @@ namespace atomic_dex
         batch.push_back(my_orders_request);
 
         //! Swaps preparation
-        [[maybe_unused]]  std::size_t       total           = 0;
-        [[maybe_unused]]  std::size_t       nb_active_swaps = 0;
         std::size_t       current_page    = 0;
         std::size_t       limit           = 0;
         t_filtering_infos filter_infos;
         {
             auto value_ptr  = m_orders_and_swaps.synchronize();
-            total           = value_ptr->total_swaps;
-            nb_active_swaps = value_ptr->active_swaps;
             current_page    = value_ptr->current_page;
             limit           = value_ptr->limit;
             filter_infos    = value_ptr->filtering_infos;
         }
 
-        // Background polling should stay lightweight.
-        // UI-driven refresh/pagination keeps full page-size behavior.
-        const std::size_t recent_swaps_limit = after_manual_reset ? limit : 5ull;
-
         //! First time fetch or current page
         nlohmann::json            my_swaps = kdf::template_request("my_recent_swaps");
         t_my_recent_swaps_request request{
-            .limit          = recent_swaps_limit,
+            .limit          = limit, // Always trust the paginator limit!
             .page_number    = current_page,
             .my_coin        = filter_infos.my_coin,
             .other_coin     = filter_infos.other_coin,
@@ -2147,143 +2139,96 @@ namespace atomic_dex
         };
         to_json(my_swaps, request);
         batch.push_back(my_swaps);
-        //SPDLOG_DEBUG("my_recent_swaps req: [limit: {}], after_manual_reset: {}", recent_swaps_limit, after_manual_reset);
 
         //! Active swaps
         nlohmann::json         active_swaps = kdf::template_request("active_swaps");
         t_active_swaps_request active_swaps_request{.statuses = true};
         to_json(active_swaps, active_swaps_request);
         batch.push_back(active_swaps);
-        //SPDLOG_DEBUG("active_swaps req: {}", active_swaps.dump(4));
 
         auto answer_functor = [this, limit, filter_infos, after_manual_reset](t_http_response resp)
         {
-            auto             answers = kdf::basic_batch_answer(resp);
-            const auto orders_answers      = kdf::rpc_process_answer_batch<t_my_orders_answer>(answers[0], "my_orders");
-            const auto swap_answer         = kdf::rpc_process_answer_batch<t_my_recent_swaps_answer>(answers[1], "my_recent_swaps");
+            auto       answers        = kdf::basic_batch_answer(resp);
+            const auto orders_answers = kdf::rpc_process_answer_batch<t_my_orders_answer>(answers[0], "my_orders");
+            const auto swap_answer    = kdf::rpc_process_answer_batch<t_my_recent_swaps_answer>(answers[1], "my_recent_swaps");
             const auto active_swaps_answer = kdf::rpc_process_answer_batch<t_active_swaps_answer>(answers[2], "active_swaps");
 
-            if (!after_manual_reset)
             {
+                auto current_state_ptr             = m_orders_and_swaps.synchronize();
+                current_state_ptr->nb_orders       = orders_answers.orders.size();
+                current_state_ptr->orders_registry = std::move(orders_answers.orders_id);
+                current_state_ptr->active_swaps    = active_swaps_answer.uuids.size();
+
+                std::unordered_set<std::string> latest_active_uuids;
+                for (auto&& cur : active_swaps_answer.uuids)
                 {
-                    auto current_state_ptr             = m_orders_and_swaps.synchronize();
-                    current_state_ptr->nb_orders       = orders_answers.orders.size();
-                    current_state_ptr->orders_registry = std::move(orders_answers.orders_id);
-                    current_state_ptr->active_swaps    = active_swaps_answer.uuids.size();
-
-                    std::unordered_set<std::string> latest_active_uuids;
-                    for (auto&& cur : active_swaps_answer.uuids)
-                    {
-                        latest_active_uuids.insert(cur);
-                    }
-
-                    // 1. Maintain a collection vector layout for active items on this frame
-                    std::vector<t_order_swaps_data> consolidated_frame;
-                    consolidated_frame.reserve(orders_answers.orders.size() + active_swaps_answer.swaps.size() + 5);
-
-                    // 2. Insert the fresh unmatched limit orders first
-                    consolidated_frame.insert(
-                        consolidated_frame.end(),
-                        orders_answers.orders.begin(),
-                        orders_answers.orders.end()
-                    );
-
-                    // 3. Track deduplication using a unique local tick map
-                    std::unordered_set<std::string> tick_history_registry;
-
-                    // 4. Merge live ongoing active swaps safely into the frame vector
-                    for (auto&& cur : active_swaps_answer.swaps)
-                    {
-                        const auto uuid_str = cur.order_id.toStdString();
-                        current_state_ptr->swaps_registry.emplace(uuid_str);
-                        tick_history_registry.insert(uuid_str);
-                        consolidated_frame.push_back(std::move(cur));
-                    }
-
-                    // 5. Sync history metrics without creating overlapping rows
-                    if (swap_answer.result.has_value())
-                    {
-                        const auto& swap_success_answer = swap_answer.result.value();
-                        current_state_ptr->total_swaps          = swap_success_answer.total;
-                        current_state_ptr->total_finished_swaps = swap_success_answer.total - active_swaps_answer.uuids.size();
-                        current_state_ptr->nb_pages             = swap_success_answer.total_pages;
-                        current_state_ptr->average_events_time  = std::move(swap_success_answer.average_events_time);
-
-                        for (auto&& cur : swap_success_answer.swaps)
-                        {
-                            const auto uuid_str = cur.order_id.toStdString();
-
-                            if (tick_history_registry.find(uuid_str) == tick_history_registry.end())
-                            {
-                                current_state_ptr->swaps_registry.emplace(uuid_str);
-                                tick_history_registry.insert(uuid_str);
-
-                                if (consolidated_frame.size() < current_state_ptr->limit)
-                                {
-                                    consolidated_frame.push_back(std::move(cur));
-                                }
-                            }
-                        }
-                    }
-
-                    // 6. SWAP ENTIRE CONTAINER IN-PLACE AT THE VERY END OF PROCESSING
-                    // This atomic operation guarantees that main thread queries never catch
-                    // a half-empty or cleared array frame during sync executions.
-                    current_state_ptr->orders_and_swaps = std::move(consolidated_frame);
-
-                    // 7. Clean up the stale cache token registry
-                    for (auto it = current_state_ptr->swaps_registry.begin(); it != current_state_ptr->swaps_registry.end(); )
-                    {
-                        if (latest_active_uuids.find(*it) == latest_active_uuids.end() && tick_history_registry.find(*it) == tick_history_registry.end())
-                        {
-                            it = current_state_ptr->swaps_registry.erase(it);
-                        }
-                        else
-                        {
-                            ++it;
-                        }
-                    }
+                    latest_active_uuids.insert(cur);
                 }
-            }
-            else
-            {
-                // USER-TRIGGERED MANUAL RESET PASS: Build container fresh from scratch natively
-                orders_and_swaps result;
-                result.orders_and_swaps.reserve(orders_answers.orders.size() + limit);
-                result.nb_orders        = orders_answers.orders.size();
-                result.orders_and_swaps = std::move(orders_answers.orders);
-                result.orders_registry  = std::move(orders_answers.orders_id);
-                result.limit            = limit;
-                result.filtering_infos  = filter_infos;
-                result.active_swaps     = active_swaps_answer.uuids.size();
 
+                // 1. Maintain a single unified, clean frame vector for this sync tick
+                std::vector<t_order_swaps_data> consolidated_frame;
+                consolidated_frame.reserve(orders_answers.orders.size() + active_swaps_answer.swaps.size() + limit);
+
+                // 2. Insert fresh unmatched limit orders
+                consolidated_frame.insert(
+                    consolidated_frame.end(),
+                    orders_answers.orders.begin(),
+                    orders_answers.orders.end()
+                );
+
+                // 3. Track deduplication using a unique local tick map
+                std::unordered_set<std::string> tick_history_registry;
+
+                // 4. Merge live ongoing active swaps safely into the frame vector
                 for (auto&& cur : active_swaps_answer.swaps)
                 {
-                    const auto uuid = cur.order_id.toStdString();
-                    result.swaps_registry.emplace(uuid);
-                    result.orders_and_swaps.emplace_back(std::move(cur));
+                    const auto uuid_str = cur.order_id.toStdString();
+                    current_state_ptr->swaps_registry.emplace(uuid_str);
+                    tick_history_registry.insert(uuid_str);
+                    consolidated_frame.push_back(std::move(cur));
                 }
 
+                // 5. Process historical updates cleanly using the real page size limit
                 if (swap_answer.result.has_value())
                 {
                     const auto& swap_success_answer = swap_answer.result.value();
-                    result.total_swaps              = swap_success_answer.total;
-                    result.total_finished_swaps     = result.total_swaps - active_swaps_answer.uuids.size();
-                    result.current_page             = swap_success_answer.page_number;
-                    result.nb_pages                 = swap_success_answer.total_pages;
+                    current_state_ptr->total_swaps          = swap_success_answer.total;
+                    current_state_ptr->total_finished_swaps = swap_success_answer.total - active_swaps_answer.uuids.size();
+                    current_state_ptr->nb_pages             = swap_success_answer.total_pages;
+                    current_state_ptr->average_events_time  = std::move(swap_success_answer.average_events_time);
+
                     for (auto&& cur : swap_success_answer.swaps)
                     {
-                        const auto uuid = cur.order_id.toStdString();
-                        if (!result.swaps_registry.contains(uuid))
+                        const auto uuid_str = cur.order_id.toStdString();
+
+                        if (tick_history_registry.find(uuid_str) == tick_history_registry.end())
                         {
-                            result.swaps_registry.emplace(uuid);
-                            result.orders_and_swaps.emplace_back(std::move(cur));
+                            current_state_ptr->swaps_registry.emplace(uuid_str);
+                            tick_history_registry.insert(uuid_str);
+
+                            if (consolidated_frame.size() < current_state_ptr->limit)
+                            {
+                                consolidated_frame.push_back(std::move(cur));
+                            }
                         }
                     }
-                    result.average_events_time = std::move(swap_success_answer.average_events_time);
                 }
 
-                m_orders_and_swaps = std::move(result);
+                // 6. Commit the stable array frame atomically
+                current_state_ptr->orders_and_swaps = std::move(consolidated_frame);
+
+                // 7. Clear old cache identifiers out of the master tracking registry
+                for (auto it = current_state_ptr->swaps_registry.begin(); it != current_state_ptr->swaps_registry.end(); )
+                {
+                    if (latest_active_uuids.find(*it) == latest_active_uuids.end() && tick_history_registry.find(*it) == tick_history_registry.end())
+                    {
+                        it = current_state_ptr->swaps_registry.erase(it);
+                    }
+                    else
+                    {
+                        ++it;
+                    }
+                }
             }
 
             this->dispatcher_.trigger<process_swaps_and_orders_finished>(process_swaps_and_orders_finished{.after_manual_reset = after_manual_reset});
