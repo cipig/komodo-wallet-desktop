@@ -87,6 +87,8 @@ namespace atomic_dex
             post_process_orderbook_finished = 0,
         };
 
+        static constexpr std::size_t trading_max_actions_size = 128;
+
         //! Private typedefs
         using t_models               = std::array<QObject*, models_size>;
         using t_models_actions       = std::array<std::atomic_bool, models_actions_size>;
@@ -98,7 +100,7 @@ namespace atomic_dex
         std::atomic_bool&        m_about_to_exit_the_app;
         t_models                 m_models;
         t_models_actions         m_models_actions{};
-        t_actions_queue          m_actions_queue{g_max_actions_size};
+        t_actions_queue          m_actions_queue{trading_max_actions_size};
         std::atomic_bool         m_rpc_buy_sell_busy{false};
         std::atomic_bool         m_rpc_preimage_busy{false};
         std::atomic_bool         m_post_clear_forms{false};
