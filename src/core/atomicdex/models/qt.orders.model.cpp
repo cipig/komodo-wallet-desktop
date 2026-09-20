@@ -324,7 +324,7 @@ namespace atomic_dex
             if (m_model_data.current_page == 1)
             {
                 this->set_fetching_busy(true);
-                this->reset_backend("set_limit_nb_elements"); ///< We change page, we need to clear, but do not notify the front-end
+                this->reset_backend("set_limit_nb_elements");
                 auto& kdf = this->m_system_manager.get_system<kdf_service>();
                 kdf.set_orders_and_swaps_pagination_infos(m_model_data.current_page, static_cast<std::size_t>(limit), m_model_data.filtering_infos);
             }

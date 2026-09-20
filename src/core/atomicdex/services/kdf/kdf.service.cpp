@@ -43,7 +43,6 @@
 #include "atomicdex/config/coins.cfg.hpp"
 #include "atomicdex/constants/dex.constants.hpp"
 #include "atomicdex/managers/qt.wallet.manager.hpp"
-#include "atomicdex/models/qt.orders.model.hpp"
 #include "atomicdex/pages/qt.settings.page.hpp"
 #include "atomicdex/services/kdf/kdf.coin.activation.policy.hpp"
 #include "atomicdex/services/kdf/kdf.service.hpp"
@@ -2728,11 +2727,6 @@ namespace atomic_dex
     {
         {
             m_orders_and_swaps = orders_and_swaps{.current_page = current_page, .limit = limit, .filtering_infos = std::move(filter_infos)};
-        }
-
-        auto* model = qobject_cast<orders_model*>(m_system_manager.get_system_object("orders"));
-        if (model) {
-            model->set_fetching_busy(false);
         }
 
         this->batch_fetch_orders_and_swap();
