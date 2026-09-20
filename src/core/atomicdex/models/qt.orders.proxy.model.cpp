@@ -106,7 +106,7 @@ namespace atomic_dex
         {
             this->m_is_history = is_history;
             emit isHistoryChanged();
-            this->invalidate(); // HOTSPOT 0.8%
+            this->invalidate(); // HOTSPOT 0.7%
         }
     }
 
@@ -179,7 +179,7 @@ namespace atomic_dex
                     }
                     if (left_pattern == "All" && right_pattern == rel_coin.toStdString())
                     {
-                        return true; // HOTSPOT 0.8%
+                        return true;
                     }
                     if (right_pattern == "All" && left_pattern == base_coin.toStdString())
                     {

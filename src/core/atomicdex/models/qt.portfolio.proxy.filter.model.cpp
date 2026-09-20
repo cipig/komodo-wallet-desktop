@@ -34,41 +34,57 @@ namespace atomic_dex
         QVariant left_data  = sourceModel()->data(source_left, role);
         QVariant right_data = sourceModel()->data(source_right, role);
 
-      switch (static_cast<atomic_dex::portfolio_model::PortfolioRoles>(role))
-      {
+        switch (static_cast<atomic_dex::portfolio_model::PortfolioRoles>(role))
+        {
         case atomic_dex::portfolio_model::TickerRole:
             return left_data.toString() > right_data.toString();
         case atomic_dex::portfolio_model::NameRole:
             return left_data.toString().toLower() < right_data.toString().toLower();
-        case atomic_dex::portfolio_model::RawMainCurrencyBalanceRole:
+
+        // Optimize standard balance sorting tracks to prevent recursive string conversions
+        case atomic_dex::portfolio_model::BalanceRole:
+        case atomic_dex::portfolio_model::RawBalanceRole:
         {
-            double left_val = left_data.toDouble();
-            double right_val = right_data.toDouble();
+            double left_val  = sourceModel()->data(source_left, atomic_dex::portfolio_model::RawBalanceRole).toDouble();
+            double right_val = sourceModel()->data(source_right, atomic_dex::portfolio_model::RawBalanceRole).toDouble();
+            return left_val < right_val;
+        }
+
+        case atomic_dex::portfolio_model::RawMainCurrencyBalanceRole:
+        case atomic_dex::portfolio_model::MainCurrencyBalanceRole:
+        {
+            double left_val = sourceModel()->data(source_left, atomic_dex::portfolio_model::RawMainCurrencyBalanceRole).toDouble();
+            double right_val = sourceModel()->data(source_right, atomic_dex::portfolio_model::RawMainCurrencyBalanceRole).toDouble();
+
+            // Tie-breaker: If fiat values match exactly (e.g., both are $0.00), sort by native coin balance quantity
             if (qFuzzyCompare(left_val, right_val) || left_val == right_val)
             {
-                left_val = sourceModel()->data(source_left, atomic_dex::portfolio_model::RawBalanceRole).toDouble();
+                left_val  = sourceModel()->data(source_left, atomic_dex::portfolio_model::RawBalanceRole).toDouble();
                 right_val = sourceModel()->data(source_right, atomic_dex::portfolio_model::RawBalanceRole).toDouble();
             }
             return left_val < right_val;
         }
-        case atomic_dex::portfolio_model::RawBalanceRole:
+
         case atomic_dex::portfolio_model::RawChange24HRole:
-        case atomic_dex::portfolio_model::RawMainCurrencyPriceRole:
-            return left_data.toDouble() < right_data.toDouble();
-        case atomic_dex::portfolio_model::BalanceRole:
-            return safe_float(left_data.toString().toStdString()) < safe_float(right_data.toString().toStdString());
-        case atomic_dex::portfolio_model::MainCurrencyBalanceRole:
-            if (left_data.toFloat() == right_data.toFloat())
-            {
-                left_data  = sourceModel()->data(source_left, atomic_dex::portfolio_model::BalanceRole);
-                right_data = sourceModel()->data(source_right, atomic_dex::portfolio_model::BalanceRole);
-            }
-            return left_data.toFloat() < right_data.toFloat();
         case atomic_dex::portfolio_model::Change24H:
-            return left_data.toFloat() < right_data.toFloat();
+        {
+            double left_val  = sourceModel()->data(source_left, atomic_dex::portfolio_model::RawChange24HRole).toDouble();
+            double right_val = sourceModel()->data(source_right, atomic_dex::portfolio_model::RawChange24HRole).toDouble();
+            return left_val < right_val;
+        }
+
         case atomic_dex::portfolio_model::MainCurrencyPriceForOneUnit:
-            return safe_float(left_data.toString().toStdString()) < safe_float(right_data.toString().toStdString());
+        case atomic_dex::portfolio_model::RawMainCurrencyPriceRole:
+        {
+            double left_val  = sourceModel()->data(source_left, atomic_dex::portfolio_model::RawMainCurrencyPriceRole).toDouble();
+            double right_val = sourceModel()->data(source_right, atomic_dex::portfolio_model::RawMainCurrencyPriceRole).toDouble();
+            return left_val < right_val;
+        }
+
         case portfolio_model::MainFiatPriceForOneUnit:
+            return sourceModel()->data(source_left, atomic_dex::portfolio_model::MainFiatPriceForOneUnit).toDouble() <
+                   sourceModel()->data(source_right, atomic_dex::portfolio_model::MainFiatPriceForOneUnit).toDouble();
+
         case portfolio_model::Trend7D:
         case portfolio_model::ActivationStatus:
         case portfolio_model::Excluded:
@@ -88,7 +104,7 @@ namespace atomic_dex
         case portfolio_model::LastPriceTimestamp:
         default:
             return false;
-      }
+        }
     }
 
     bool
@@ -187,7 +203,7 @@ namespace atomic_dex
     portfolio_proxy_model::sort_by_currency_balance(bool is_ascending)
     {
         this->setSortRole(atomic_dex::portfolio_model::RawMainCurrencyBalanceRole);
-        this->sort(0, is_ascending ? Qt::AscendingOrder : Qt::DescendingOrder);
+        this->sort(0, is_ascending ? Qt::AscendingOrder : Qt::DescendingOrder); // HOTSPOT 0.5%
     }
 
     void
