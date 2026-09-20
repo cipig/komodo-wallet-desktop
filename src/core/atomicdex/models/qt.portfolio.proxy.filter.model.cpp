@@ -128,14 +128,6 @@ namespace atomic_dex
             }
         }
 
-        if (!m_search_exp.isEmpty())
-        {
-            if (!ticker.contains(m_search_exp, Qt::CaseInsensitive))
-            {
-                return false;
-            }
-        }
-
         if (am_i_a_market_selector)
         {
             if (m_system_mgr.get_system<portfolio_page>().get_global_cfg()->is_wallet_only(ticker.toStdString()))
@@ -167,7 +159,7 @@ namespace atomic_dex
             }
         }
 
-        return true;
+        return QSortFilterProxyModel::filterAcceptsRow(source_row, source_parent);
     }
 
     void
