@@ -321,6 +321,7 @@ namespace atomic_dex
         if (static_cast<std::size_t>(limit) != m_model_data.limit)
         {
             this->m_model_data.limit = limit;
+
             if (m_model_data.current_page == 1)
             {
                 this->set_fetching_busy(true);
@@ -414,7 +415,6 @@ namespace atomic_dex
                 update_value(OrdersRoles::BaseCoinAmountRole, contents.base_amount, idx, *this);
                 update_value(OrdersRoles::RelCoinAmountRole, contents.rel_amount, idx, *this);
             }
-            //emit lengthChanged();
         }
     }
 
@@ -735,12 +735,6 @@ namespace atomic_dex
     void
     orders_model::refresh_or_insert([[maybe_unused]] utils::caller_location location)
     {
-        if (is_fetching_busy())
-        {
-            SPDLOG_WARN("orders_model::refresh_or_insert fetching busy called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
-            return;
-        }
-
         const auto& kdf      = m_system_manager.get_system<kdf_service>();
         const auto  contents = kdf.get_orders_and_swaps();
 
@@ -754,6 +748,11 @@ namespace atomic_dex
             update_or_insert_swaps(contents);
             this->set_common_data(contents);
             m_model_data.nb_orders = contents.nb_orders;
+        }
+
+        if (this->is_fetching_busy())
+        {
+            this->set_fetching_busy(false);
         }
     }
 
