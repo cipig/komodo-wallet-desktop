@@ -576,10 +576,9 @@ namespace atomic_dex
         {
             emit dataChanged(index(0, 0), index(rowCount() - 1, 0));
 
-            // Execute a lightweight proxy filter re-evaluation pass only when a swap finishes
             if (requires_filter_invalidation)
             {
-                this->m_model_proxy->invalidateFilter();
+                this->m_model_proxy->refresh_filter();
             }
         }
 

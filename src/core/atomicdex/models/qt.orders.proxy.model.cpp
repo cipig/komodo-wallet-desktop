@@ -372,4 +372,10 @@ namespace atomic_dex
             emit filteringStatusChanged();
         }
     }
+
+    void
+    orders_proxy_model::refresh_filter()
+    {
+        this->invalidateFilter();
+    }
 } // namespace atomic_dex

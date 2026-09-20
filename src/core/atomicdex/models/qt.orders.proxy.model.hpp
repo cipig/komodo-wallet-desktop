@@ -54,9 +54,8 @@ namespace atomic_dex
         Q_INVOKABLE void        export_csv_visible_history(const QString& path);
         Q_INVOKABLE void        apply_all_filtering(); ///< call it only once
 
-
+        void refresh_filter();
         void on_layout_changed();
-
 
       signals:
         void isHistoryChanged();
