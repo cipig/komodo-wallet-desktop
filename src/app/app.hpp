@@ -81,6 +81,8 @@ namespace atomic_dex
             size                       = 2
         };
 
+        static constexpr std::size_t portfolio_max_queue_size = 128;
+
         //! Private typedefs
         using t_portfolio_coins_to_initialize_queue = boost::lockfree::queue<const char*>;
         using t_manager_model_registry              = std::unordered_map<std::string, QObject*>;
@@ -88,7 +90,7 @@ namespace atomic_dex
 
         //! Private members fields
         std::shared_ptr<QApplication>         m_app;
-        t_portfolio_coins_to_initialize_queue m_portfolio_queue{g_max_actions_size};
+        t_portfolio_coins_to_initialize_queue m_portfolio_queue{portfolio_max_queue_size};
         t_manager_model_registry              m_manager_models;
         t_events_actions                      m_event_actions{{false}};
         std::atomic_bool                      m_secondary_coin_fully_enabled{false};
