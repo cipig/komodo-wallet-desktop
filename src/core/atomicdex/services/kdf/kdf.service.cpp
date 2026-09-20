@@ -43,6 +43,7 @@
 #include "atomicdex/config/coins.cfg.hpp"
 #include "atomicdex/constants/dex.constants.hpp"
 #include "atomicdex/managers/qt.wallet.manager.hpp"
+#include "atomicdex/models/qt.orders.model.hpp"
 #include "atomicdex/pages/qt.settings.page.hpp"
 #include "atomicdex/services/kdf/kdf.coin.activation.policy.hpp"
 #include "atomicdex/services/kdf/kdf.service.hpp"
