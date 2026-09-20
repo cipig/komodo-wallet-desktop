@@ -36,7 +36,7 @@ MultipageModal
 
         // If we are on the Orders tab and the swap transitions to a completed state,
         // close the view so it doesn't stay open over empty hidden fields.
-        if (!API.app.orders_mdl.get_orders_proxy_mdl().am_i_in_history) {
+        if (!API.app.orders_mdl.orders_proxy_mdl.is_history) {
             if (details.order_status === "successful" || details.order_status === "failed") {
                 root.close()
             }
