@@ -524,12 +524,13 @@ namespace atomic_dex
         const auto&                     data = contents.orders_and_swaps;
         std::vector<t_order_swaps_data> to_init;
         bool                            was_updated = false;
+        bool                            requires_filter_invalidation = false; // Track tab transitions
 
         auto& model_array = this->m_model_data.orders_and_swaps;
 
         std::for_each(
             begin(data), end(data),
-            [this, &to_init, &was_updated, &model_array](const auto& cur)
+            [this, &to_init, &was_updated, &requires_filter_invalidation, &model_array](const auto& cur)
             {
                 if (cur.is_swap)
                 {
@@ -549,9 +550,15 @@ namespace atomic_dex
                                                          .base = it->base_coin,
                                                          .rel = it->rel_coin,
                                                          .human_date = cur.human_date});
+
+                            // If a swap shifts to finished, flag it for a tab migration pass
+                            if (cur.order_status == "successful" || cur.order_status == "failed")
+                            {
+                                requires_filter_invalidation = true;
+                            }
                         }
 
-                        *it = cur; // Update fields in place to preserve view modal hooks
+                        *it = cur;
                         was_updated = true;
                     }
                     else
@@ -568,6 +575,12 @@ namespace atomic_dex
         if (was_updated)
         {
             emit dataChanged(index(0, 0), index(rowCount() - 1, 0));
+
+            // Execute a lightweight proxy filter re-evaluation pass only when a swap finishes
+            if (requires_filter_invalidation)
+            {
+                this->m_model_proxy->invalidateFilter();
+            }
         }
 
         if (!to_init.empty())

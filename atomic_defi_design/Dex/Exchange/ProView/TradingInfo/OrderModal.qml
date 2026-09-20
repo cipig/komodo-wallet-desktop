@@ -24,6 +24,25 @@ MultipageModal
 
     onClosed: details = undefined
 
+    // Automatically dismiss the modal window if it is an active swap that just finished,
+    // but keep it open safely if the user explicitly opened it from the History tab.
+    onDetailsChanged: {
+        if (!details) {
+            if (!API.app.orders_mdl.fetching_busy) {
+                root.close()
+            }
+            return
+        }
+
+        // If we are on the Orders tab and the swap transitions to a completed state,
+        // close the view so it doesn't stay open over empty hidden fields.
+        if (!API.app.orders_mdl.get_orders_proxy_mdl().am_i_in_history) {
+            if (details.order_status === "successful" || details.order_status === "failed") {
+                root.close()
+            }
+        }
+    }
+
     MultipageModalContent
     {
         titleText: qsTr("")
