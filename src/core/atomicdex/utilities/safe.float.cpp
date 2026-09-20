@@ -14,7 +14,7 @@ safe_float(const std::string& from)
         {
             return t_float_50(0);
         }
-        t_float_50 out(boost::algorithm::replace_all_copy(from, ",", ".")); // HOTSPOT 0.2%
+        t_float_50 out(boost::algorithm::replace_all_copy(from, ",", "."));
         return out;
     }
     catch (const std::exception& error)

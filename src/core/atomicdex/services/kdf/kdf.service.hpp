@@ -272,7 +272,7 @@ namespace atomic_dex
        [[nodiscard]] bool is_pin_cfg_enabled() const;
        void               reset_fake_balance_to_zero(const std::string& ticker);
        void               decrease_fake_balance(const std::string& ticker, const std::string& amount);
-       void               batch_fetch_orders_and_swap(bool after_manual_reset = false);
+       void               batch_fetch_orders_and_swap();
 
        //! Async API
        kdf::kdf_client& get_kdf_client();

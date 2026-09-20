@@ -89,7 +89,7 @@ namespace atomic_dex
         bool                   setData(const QModelIndex& index, const QVariant& value, int role) final;
 
         //! Public api
-        void refresh_or_insert(bool after_manual_reset = false, utils::caller_location location = utils::caller_location::current());
+        void refresh_or_insert(utils::caller_location location = utils::caller_location::current());
         void reset();
         void reset_backend(const std::string& from);
         bool swap_is_in_progress(const QString& coin) const;

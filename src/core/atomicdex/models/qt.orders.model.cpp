@@ -471,7 +471,7 @@ namespace atomic_dex
         m_model_data = contents;
         m_orders_id_registry = std::move(m_model_data.orders_registry);
         m_swaps_id_registry  = std::move(m_model_data.swaps_registry);
-        endResetModel(); // HOTSPOT 0.3%
+        endResetModel(); // HOTSPOT 0.5%
         emit lengthChanged();
         emit currentPageChanged();
         emit limitNbElementsChanged();
@@ -733,13 +733,8 @@ namespace atomic_dex
     }
 
     void
-    orders_model::refresh_or_insert(bool after_manual_reset, [[maybe_unused]] utils::caller_location location)
+    orders_model::refresh_or_insert([[maybe_unused]] utils::caller_location location)
     {
-        if (after_manual_reset)
-        {
-            this->set_fetching_busy(false);
-        }
-
         if (is_fetching_busy())
         {
             SPDLOG_WARN("orders_model::refresh_or_insert fetching busy called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
@@ -749,7 +744,6 @@ namespace atomic_dex
         const auto& kdf      = m_system_manager.get_system<kdf_service>();
         const auto  contents = kdf.get_orders_and_swaps();
 
-        // Much cleaner: If the cache is empty, initialize it. Otherwise, perform our optimized updates!
         if (m_model_data.orders_and_swaps.empty())
         {
             init_model(contents);

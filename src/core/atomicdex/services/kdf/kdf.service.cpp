@@ -147,7 +147,7 @@ namespace
         //! longer parses. The registry mutation below needs exclusivity anyway.
         std::unique_lock lock(registry_mtx);
 
-        nlohmann::json config_json_data = atomic_dex::utils::read_json_file(filepath); // HOTSPOT 0.2%
+        nlohmann::json config_json_data = atomic_dex::utils::read_json_file(filepath);
 
         //! `read_json_file` yields a default-constructed (null) json when the
         //! file is missing or does not parse. Indexing that throws, and this
@@ -440,7 +440,7 @@ namespace atomic_dex
         {
             if (value.currently_enabled)
             {
-                destination.emplace_back(value); // HOTSPOT 0.2%
+                destination.emplace_back(value); // HOTSPOT 0.3%
             }
         }
 
@@ -2104,7 +2104,7 @@ namespace atomic_dex
     }
 
     void
-    kdf_service::batch_fetch_orders_and_swap(bool after_manual_reset)
+    kdf_service::batch_fetch_orders_and_swap()
     {
         if (not m_kdf_running)
         {
@@ -2146,7 +2146,7 @@ namespace atomic_dex
         to_json(active_swaps, active_swaps_request);
         batch.push_back(active_swaps);
 
-        auto answer_functor = [this, limit, filter_infos, after_manual_reset](t_http_response resp)
+        auto answer_functor = [this, limit, filter_infos](t_http_response resp)
         {
             auto       answers        = kdf::basic_batch_answer(resp);
             const auto orders_answers = kdf::rpc_process_answer_batch<t_my_orders_answer>(answers[0], "my_orders");
@@ -2231,7 +2231,7 @@ namespace atomic_dex
                 }
             }
 
-            this->dispatcher_.trigger<process_swaps_and_orders_finished>(process_swaps_and_orders_finished{.after_manual_reset = after_manual_reset});
+            this->dispatcher_.trigger<process_swaps_and_orders_finished>();
         };
 
         m_kdf_client.async_rpc_batch_standalone(std::move(batch), t_http_priority::interactive)
@@ -2728,7 +2728,13 @@ namespace atomic_dex
         {
             m_orders_and_swaps = orders_and_swaps{.current_page = current_page, .limit = limit, .filtering_infos = std::move(filter_infos)};
         }
-        this->batch_fetch_orders_and_swap(true);
+
+        auto* model = qobject_cast<orders_model*>(m_system_manager.get_system_object("orders"));
+        if (model) {
+            model->set_fetching_busy(false);
+        }
+
+        this->batch_fetch_orders_and_swap();
     }
 
     void

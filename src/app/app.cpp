@@ -366,31 +366,6 @@ namespace atomic_dex
         }
 
         system_manager_.get_system<trading_page>().process_action();
-
-        while (not this->m_actions_queue.empty())
-        {
-            if (m_event_actions[events_action::about_to_exit_app])
-            {
-                break;
-            }
-            action last_action;
-            this->m_actions_queue.pop(last_action);
-            switch (last_action)
-            {
-            case action::post_process_orders_and_swaps_finished:
-                if (kdf.is_kdf_running())
-                {
-                    qobject_cast<orders_model*>(m_manager_models.at("orders"))->refresh_or_insert();
-                }
-                break;
-            case action::post_process_orders_and_swaps_finished_reset:
-                if (kdf.is_kdf_running())
-                {
-                    qobject_cast<orders_model*>(m_manager_models.at("orders"))->refresh_or_insert(true);
-                }
-                break;
-            }
-        }
     }
 
     kdf_service& application::get_kdf()
@@ -529,13 +504,6 @@ namespace atomic_dex
 
     bool application::disconnect()
     {
-        //! Clears pending events
-        while (not this->m_actions_queue.empty())
-        {
-            [[maybe_unused]] action act;
-            this->m_actions_queue.pop(act);
-        }
-
         while (not this->m_portfolio_queue.empty())
         {
             const char* ticker = nullptr;
@@ -691,12 +659,11 @@ namespace atomic_dex
 namespace atomic_dex
 {
     void
-    application::on_process_orders_and_swaps_finished_event([[maybe_unused]] const process_swaps_and_orders_finished& evt)
+    application::on_process_orders_and_swaps_finished_event(const process_swaps_and_orders_finished&)
     {
         if (not m_event_actions[events_action::about_to_exit_app])
         {
-            this->m_actions_queue.push(
-                evt.after_manual_reset ? action::post_process_orders_and_swaps_finished_reset : action::post_process_orders_and_swaps_finished);
+            get_orders()->refresh_or_insert();
         }
     }
 

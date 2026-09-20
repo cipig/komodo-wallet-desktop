@@ -411,7 +411,7 @@ namespace atomic_dex
                 this->m_orders_id_registry.emplace(order.uuid);
             }
         }
-        this->endResetModel(); // HOTSPOT 0.2%
+        this->endResetModel(); // HOTSPOT 0.3%
         emit lengthChanged();
 
         if (m_current_orderbook_kind == kind::best_orders)

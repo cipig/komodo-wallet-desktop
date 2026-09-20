@@ -88,14 +88,12 @@ namespace atomic_dex
         };
 
         //! Private typedefs
-        using t_actions_queue                       = boost::lockfree::queue<action>;
         using t_portfolio_coins_to_initialize_queue = boost::lockfree::queue<const char*>;
         using t_manager_model_registry              = std::unordered_map<std::string, QObject*>;
         using t_events_actions                      = std::array<std::atomic_bool, events_action::size>;
 
         //! Private members fields
         std::shared_ptr<QApplication>         m_app;
-        t_actions_queue                       m_actions_queue{g_max_actions_size};
         t_portfolio_coins_to_initialize_queue m_portfolio_queue{g_max_actions_size};
         t_manager_model_registry              m_manager_models;
         t_events_actions                      m_event_actions{{false}};

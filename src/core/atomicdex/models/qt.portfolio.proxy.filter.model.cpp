@@ -190,21 +190,21 @@ namespace atomic_dex
     portfolio_proxy_model::sort_by_name(bool is_ascending)
     {
         this->setSortRole(atomic_dex::portfolio_model::NameRole); // HOTSPOT 0.2%
-        this->sort(0, is_ascending ? Qt::AscendingOrder : Qt::DescendingOrder); // HOTSPOT 0.6%
+        this->sort(0, is_ascending ? Qt::AscendingOrder : Qt::DescendingOrder); // HOTSPOT 0.4%
     }
 
     void
     portfolio_proxy_model::sort_by_currency_balance(bool is_ascending)
     {
-        this->setSortRole(atomic_dex::portfolio_model::RawMainCurrencyBalanceRole); // HOTSPOT 0.6%
-        this->sort(0, is_ascending ? Qt::AscendingOrder : Qt::DescendingOrder); // HOTSPOT 0.7%
+        this->setSortRole(atomic_dex::portfolio_model::RawMainCurrencyBalanceRole); // HOTSPOT 0.3%
+        this->sort(0, is_ascending ? Qt::AscendingOrder : Qt::DescendingOrder); // HOTSPOT 0.4%
     }
 
     void
     portfolio_proxy_model::sort_by_change_last24h(bool is_ascending)
     {
-        this->setSortRole(atomic_dex::portfolio_model::RawChange24HRole); // HOTSPOT 0.4%
-        this->sort(0, is_ascending ? Qt::AscendingOrder : Qt::DescendingOrder); // HOTSPOT 0.6%
+        this->setSortRole(atomic_dex::portfolio_model::RawChange24HRole); // HOTSPOT 0.2%
+        this->sort(0, is_ascending ? Qt::AscendingOrder : Qt::DescendingOrder); // HOTSPOT 0.2%
     }
 
     void

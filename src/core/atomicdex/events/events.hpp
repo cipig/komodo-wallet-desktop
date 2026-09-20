@@ -43,10 +43,7 @@ namespace atomic_dex
         std::string ticker;
     };
 
-    struct process_swaps_and_orders_finished
-    {
-        bool after_manual_reset{false};
-    };
+    struct process_swaps_and_orders_finished {};
 
     struct enabling_task_status
     {
