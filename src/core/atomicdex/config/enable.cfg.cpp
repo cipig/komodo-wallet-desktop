@@ -14,11 +14,7 @@
  *                                                                            *
  ******************************************************************************/
 
-
-//! Deps
 #include <nlohmann/json.hpp>
-
-//! Project Headers
 #include "atomicdex/config/enable.cfg.hpp"
 
 namespace atomic_dex

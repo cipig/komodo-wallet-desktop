@@ -101,6 +101,7 @@ namespace atomic_dex
         t_models                 m_models;
         t_models_actions         m_models_actions{};
         t_actions_queue          m_actions_queue{trading_max_actions_size};
+        QTimer*                  m_fees_debounce_timer{nullptr};
         std::atomic_bool         m_rpc_buy_sell_busy{false};
         std::atomic_bool         m_rpc_preimage_busy{false};
         std::atomic_bool         m_post_clear_forms{false};

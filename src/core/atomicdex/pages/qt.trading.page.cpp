@@ -16,6 +16,7 @@
 
 #include <QJsonDocument>
 #include <QSettings>
+#include <QTimer>
 #include <boost/algorithm/string/replace.hpp>
 #include "atomicdex/api/kdf/rpc_v1/rpc.buy.hpp"
 #include "atomicdex/api/kdf/rpc_v1/rpc.sell.hpp"
@@ -42,10 +43,16 @@ namespace atomic_dex
                                                   {new qt_orderbook_wrapper(m_system_manager, dispatcher_, this),
                                                    new market_pairs(m_system_manager, portfolio, this), new qt_orders_widget(m_system_manager, this)}}
     {
-        //! Sets default trading mode to the last saved one.
-        //set_current_trading_mode((TradingMode)entity_registry_.template ctx<QSettings>().value("DefaultTradingMode", 0).toInt());
-        //! Sets default trading mode to Pro
         set_current_trading_mode(TradingModeGadget::Pro);
+
+        m_fees_debounce_timer = new QTimer(this);
+        m_fees_debounce_timer->setSingleShot(true);
+        m_fees_debounce_timer->setInterval(350);
+
+        // When the user pauses typing, trigger the actual heavy EVM gas calculations
+        connect(m_fees_debounce_timer, &QTimer::timeout, this, [this]() {
+            this->determine_fees();
+        });
     }
 } // namespace atomic_dex
 
@@ -1217,7 +1224,7 @@ namespace atomic_dex
             this->cap_volume();
             this->determine_total_amount();
             this->determine_cex_rates();
-            this->determine_fees();
+            m_fees_debounce_timer->start();
 
             this->get_orderbook_wrapper()->refresh_best_orders();
 
@@ -1225,7 +1232,6 @@ namespace atomic_dex
             emit priceReversedChanged();
             emit volumeChanged();
             emit totalAmountChanged();
-
             emit preferredOrderChangeFinished();
         }
     }

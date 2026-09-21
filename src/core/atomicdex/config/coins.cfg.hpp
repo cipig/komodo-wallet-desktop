@@ -18,9 +18,7 @@
 
 #include <optional>
 #include <set>
-
 #include <nlohmann/json.hpp>
-
 #include "atomicdex/api/kdf/kdf.constants.hpp"
 #include "atomicdex/api/kdf/utxo_merge_params.hpp"
 #include "atomicdex/config/electrum.cfg.hpp"

@@ -73,7 +73,6 @@ namespace atomic_dex
         return get_optional<T>(j, property.data());
     }
 
-
     struct coin_element
     {
         using addr_fmt = kdf::address_format_t;

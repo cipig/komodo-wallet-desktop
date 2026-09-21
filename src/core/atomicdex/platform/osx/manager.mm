@@ -15,13 +15,9 @@
  ******************************************************************************/
 
 #include "atomicdex/pch.hpp"
-
-//! STD
 #include <string>
-
 #include <Availability.h>
 #include "manager.hpp"
-
 #import <AppKit/AppKit.h>
 
 void atomic_dex::mac_window_setup(long winid, bool fullscreen)

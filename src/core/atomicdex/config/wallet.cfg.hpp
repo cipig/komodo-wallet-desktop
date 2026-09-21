@@ -16,10 +16,7 @@
 
 #pragma once
 
-//! STD
 #include <unordered_map>
-
-//! Deps
 #include <nlohmann/json_fwd.hpp>
 #include <boost/thread/synchronized_value.hpp>
 

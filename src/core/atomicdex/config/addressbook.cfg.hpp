@@ -16,12 +16,10 @@
  
 #pragma once
 
-//! Deps.
 #include <nlohmann/json.hpp>
 
 namespace atomic_dex
 {
     nlohmann::json load_addressbook_cfg(const std::string& wallet_name);
-    
     void update_addressbook_cfg(const nlohmann::json& json, const std::string& wallet_name);
 }

@@ -17,7 +17,6 @@
 
 #pragma once
 
-//! STD
 #include <optional>
 #include <string>
 

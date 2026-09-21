@@ -14,10 +14,7 @@
  *                                                                            *
  ******************************************************************************/
 
-//! Deps
 #include <nlohmann/json.hpp>
-
-//! Project Headers
 #include "atomicdex/config/wallet.cfg.hpp"
 
 namespace atomic_dex

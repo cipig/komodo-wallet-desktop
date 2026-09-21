@@ -14,10 +14,7 @@
  *                                                                            *
  ******************************************************************************/
 
-//! Qt
 #include <QFile>
-
-//! Project Headers
 #include "addressbook.cfg.hpp"
 #include "atomicdex/utilities/global.utilities.hpp"
 #include "atomicdex/utilities/qt.utilities.hpp"

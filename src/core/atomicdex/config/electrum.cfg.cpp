@@ -15,10 +15,7 @@
  ******************************************************************************/
 
 
-//! Deps
 #include <nlohmann/json.hpp>
-
-//! Project Headers
 #include "atomicdex/config/electrum.cfg.hpp"
 
 namespace atomic_dex

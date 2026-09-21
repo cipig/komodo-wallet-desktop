@@ -15,10 +15,8 @@
  ******************************************************************************/
 
 #include <stdexcept>
-
 #include <nlohmann/json.hpp>
 #include <sstream>
-
 #include "coins.cfg.hpp"
 
 namespace
@@ -156,7 +154,6 @@ namespace
         }
         SPDLOG_ERROR("Invalid coin type: {}", coin_type);
         return CoinType::Invalid;
-        // throw std::invalid_argument{"Undefined given coin type."};
     }
 } // namespace
 
@@ -216,18 +213,22 @@ namespace atomic_dex
             cfg.other_types = std::set<CoinType>();
             for (const auto& other_type: other_types) { cfg.other_types->emplace(get_coin_type_from_str(other_type)); }
         }
+
         if (j.contains("merge_utxos"))
         {
             cfg.merge_utxos = j.at("merge_utxos");
         }
+
         if (j.contains("activation_status"))
         {
             cfg.activation_status = j.at("activation_status").get<nlohmann::json>();
         }
+
         if (j.contains("electrum"))
         {
             cfg.electrum_urls = j.at("electrum").get<std::vector<electrum_server>>();
         }
+
         if (j.contains("nodes"))
         {
             // TODO: this is bad, we are using 2 times the required memory. Something can be improved here.
@@ -245,45 +246,55 @@ namespace atomic_dex
                 for (const auto& url: cfg.urls.value()) { cfg.eth_family_urls->push_back(url.url); }
             }
         }
+
         if (j.contains("rpc_urls"))
         {
             cfg.rpc_urls = j.at("rpc_urls").get<std::vector<node>>();
         }
+
         // Used for ZHTLC coins
         if (j.contains("light_wallet_d_servers"))
         {
             cfg.z_urls = j.at("light_wallet_d_servers").get<std::vector<std::string>>();
         }
+
         if (j.contains("checkpoint_blocktime"))
         {
             cfg.checkpoint_blocktime = j.at("checkpoint_blocktime").get<int>();
         }
+
         if (j.contains("checkpoint_height"))
         {
             cfg.checkpoint_height = j.at("checkpoint_height").get<int>();
         }
+
         if (j.contains("alias_ticker"))
         {
             cfg.alias_ticker = j.at("alias_ticker").get<std::string>();
         }
+
         // Explorer url suffixes
         if (j.contains("explorer_tx_url"))
         {
             j.at("explorer_tx_url").get_to(cfg.tx_uri);
         }
+
         if (j.contains("explorer_block_url"))
         {
             j.at("explorer_block_url").get_to(cfg.block_uri);
         }
+
         if (j.contains("explorer_address_url"))
         {
             j.at("explorer_address_url").get_to(cfg.address_uri);
         }
+
         // Swap contract addresses
         if (j.contains("swap_contract_address"))
         {
             cfg.swap_contract_address = j["swap_contract_address"];
         }
+
         if (j.contains("fallback_swap_contract"))
         {
             cfg.fallback_swap_contract = j["fallback_swap_contract"];
@@ -294,19 +305,21 @@ namespace atomic_dex
         {
             cfg.gas_station_url = j.at("gas_station_url").get<std::string>();
         }
+
         if (j.contains("matic_gas_station_url"))
         {
             cfg.matic_gas_station_url = j.at("matic_gas_station_url").get<std::string>();
         }
+
         if (j.contains("testnet_matic_gas_station_url"))
         {
             cfg.testnet_matic_gas_station_url = j.at("testnet_matic_gas_station_url").get<std::string>();
         }
+
         if (j.contains("matic_gas_station_decimals"))
         {
             cfg.matic_gas_station_decimals = j.at("matic_gas_station_decimals").get<std::size_t>();
         }
-
 
         switch (cfg.coin_type)
         {

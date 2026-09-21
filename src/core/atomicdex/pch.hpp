@@ -20,10 +20,7 @@
 
 constexpr std::size_t operator"" _sz(unsigned long long n) { return n; }
 
-//! Boost Headers
 #include <boost/algorithm/string/trim.hpp>
-
-//! Prerequisites Headers
 #include "atomicdex/utilities/log.prerequisites.hpp"
 
 namespace antara::gaming
