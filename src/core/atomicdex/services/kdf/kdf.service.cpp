@@ -1533,7 +1533,7 @@ namespace atomic_dex
                                                         else if (details.contains("TemporaryError"))      event = "TemporaryError";
                                                         else                                              event = details.get<std::string>();
 
-                                                        SPDLOG_DEBUG("{} activation event [{}]", event, tickers[idx]);
+                                                        //SPDLOG_DEBUG("{} activation event [{}]", event, tickers[idx]);
 
                                                         if (event != last_event)
                                                         {

@@ -187,15 +187,6 @@ QtObject {
         return ""
     }
 
-    function platformIcon(ticker) {
-        if(ticker === "" || ticker === "All" || ticker===undefined) {
-            return ""
-        } else {
-            const coin_info = API.app.portfolio_pg.global_cfg_mdl.get_coin_info(ticker)
-            return coin_icons_path + atomic_qt_utilities.retrieve_main_ticker(ticker.toString()).toLowerCase() + ".png"
-        }
-    }
-
     function contractURL(ticker) {
         if(ticker === "" || ticker === "All" || ticker===undefined) {
             return ""

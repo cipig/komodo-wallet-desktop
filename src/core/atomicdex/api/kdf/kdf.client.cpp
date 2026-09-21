@@ -157,7 +157,7 @@ namespace atomic_dex::kdf
                     }
                 }
 
-                SPDLOG_DEBUG("kdf_client::rpc_process_answer: gracefully handled status {} for command {}", resp.status_code(), rpc_command);
+                //SPDLOG_DEBUG("kdf_client::rpc_process_answer: gracefully handled status {} for command {}", resp.status_code(), rpc_command);
                 return answer;
             }
 

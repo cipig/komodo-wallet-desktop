@@ -1,6 +1,5 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
-
 import App 1.0
 import Dex.Themes 1.0 as Dex
 import AtomicDEX.MarketMode 1.0 as Dex
@@ -10,7 +9,7 @@ Rectangle
 {
     property int    marketMode: Dex.MarketMode.Sell
     property string ticker: ""
-    property string protocolIcon: General.platformIcon(General.coinPlatform(left_ticker))
+    property string protocolIcon: General.coinIcon(General.coinPlatform(left_ticker))
 
     radius: 18
     opacity: marketMode != API.app.trading_pg.market_mode ? 0.25: 1
@@ -34,6 +33,7 @@ Rectangle
             position: 1
         }
     }
+
     RowLayout
     {
         anchors.centerIn: parent

@@ -8,7 +8,6 @@ import App 1.0
 import "../Exchange/Trade"
 import Dex.Themes 1.0 as Dex
 
-// Right side, main
 Item
 {
     id: root
@@ -283,7 +282,7 @@ Item
                             DefaultImage
                             {
                                 id: protocol_img
-                                source: General.platformIcon(General.coinPlatform(api_wallet_page.ticker))
+                                source: General.coinIcon(General.coinPlatform(api_wallet_page.ticker))
                                 Layout.preferredHeight: 18
                                 Layout.preferredWidth: Layout.preferredHeight
                             }

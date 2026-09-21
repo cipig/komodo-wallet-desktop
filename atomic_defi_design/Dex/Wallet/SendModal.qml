@@ -456,15 +456,6 @@ MultipageModal
                         anchors.centerIn: parent
                         text: API.app.settings_pg.current_currency_sign
                     }
-
-                    DefaultImage
-                    {
-                        visible: !fiat_symbol.visible
-                        anchors.centerIn: parent
-                        width: 16
-                        height: 16
-                        source: _preparePage.cryptoSendMode ? General.coinIcon(API.app.settings_pg.current_currency_sign) : General.coinIcon(API.app.wallet_pg.ticker)
-                    }
                 }
 
                 // Crypto/fiat switch
