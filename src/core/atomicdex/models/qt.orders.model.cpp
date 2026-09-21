@@ -15,6 +15,7 @@
  ******************************************************************************/
 
 #include <algorithm>
+#include <QTimer>
 #include "atomicdex/api/kdf/rpc_v1/rpc.recover_funds_of_swap.hpp"
 #include "atomicdex/events/qt.events.hpp"
 #include "atomicdex/models/qt.orders.model.hpp"
@@ -578,7 +579,12 @@ namespace atomic_dex
 
             if (requires_filter_invalidation)
             {
-                this->m_model_proxy->refresh_filter();
+                // Use a single-shot timer to delay the filter invalidation by 10ms.
+                // This lets the current QML rendering cycle complete smoothly,
+                // eliminating the QQmlChangeSet warning entirely without blocking the thread.
+                QTimer::singleShot(10, this->m_model_proxy, [this]() {
+                    this->m_model_proxy->refresh_filter();
+                });
             }
         }
 
