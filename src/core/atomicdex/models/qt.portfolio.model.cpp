@@ -188,16 +188,14 @@ namespace atomic_dex
     bool
     portfolio_model::update_balance_values(const std::vector<std::string>& tickers, [[maybe_unused]] utils::caller_location location)
     {
-        const auto& kdf_system    = this->m_system_manager.get_system<kdf_service>();
-        const auto* global_cfg    = this->m_system_manager.get_system<portfolio_page>().get_global_cfg();
-        const auto& price_service = this->m_system_manager.get_system<global_price_service>();
-        const auto& provider      = this->m_system_manager.get_system<komodo_prices_provider>();
-
+        const auto& kdf_system      = this->m_system_manager.get_system<kdf_service>();
+        const auto* global_cfg      = this->m_system_manager.get_system<portfolio_page>().get_global_cfg();
+        const auto& price_service   = this->m_system_manager.get_system<global_price_service>();
+        const auto& provider        = this->m_system_manager.get_system<komodo_prices_provider>();
         const std::string& currency = m_config->current_currency;
         const std::string& fiat     = m_config->current_fiat;
         const std::string  current_active_ticker = kdf_system.get_current_ticker();
-
-        bool active_ticker_changed = false;
+        bool active_ticker_changed  = false;
 
         for (auto&& ticker: tickers)
         {
@@ -213,7 +211,6 @@ namespace atomic_dex
                 continue;
             }
 
-            // 1. O(1) Quick direct inline lookup across our raw data vector container
             auto it = std::find_if(m_model_data.begin(), m_model_data.end(),
                 [&ticker](const portfolio_data& item) { return item.ticker.toStdString() == ticker; });
 
@@ -226,7 +223,6 @@ namespace atomic_dex
                 const std::string balance_raw = kdf_system.get_balance_info(ticker, ec);
                 QString formatted_balance     = format_to_precision(balance_raw, 8);
 
-                // Track modifications directly on the struct object without intermediate signaling
                 bool is_balance_altered = (it->balance != formatted_balance);
                 QString prev_balance    = it->balance;
 
@@ -238,7 +234,6 @@ namespace atomic_dex
                 QString formatted_price              = format_to_precision(currency_price_raw, 8);
                 bool is_price_altered                = (it->main_currency_price_for_one_unit != formatted_price);
 
-                // Update internal struct data in-place
                 it->balance                          = formatted_balance;
                 it->main_currency_balance            = formatted_fiat_balance;
                 it->main_currency_price_for_one_unit = formatted_price;
@@ -252,13 +247,11 @@ namespace atomic_dex
                 it->trend_7d                         = nlohmann_json_array_to_qt_json_array(provider.get_ticker_historical(ticker));
                 it->activation_status                = nlohmann_json_object_to_qt_json_object(coin.activation_status);
 
-                // Update floating double equivalents for sorting optimization
                 it->raw_balance               = safe_string_to_double(balance_raw);
                 it->raw_main_currency_balance = safe_string_to_double(main_currency_balance_raw);
                 it->raw_main_currency_price   = safe_string_to_double(currency_price_raw);
                 it->raw_change_24h            = safe_string_to_double(it->change_24h.toStdString());
 
-                // 2. Broadcast exactly ONCE for this entire row's modifications
                 emit dataChanged(idx, idx);
 
                 if (is_balance_altered)
@@ -266,14 +259,13 @@ namespace atomic_dex
                     balance_update_handler(prev_balance, formatted_balance, QString::fromStdString(ticker));
                 }
 
-                if (ticker == current_active_ticker && (is_balance_altered || is_fiat_balance_altered || is_price_altered))
+                if (ticker == current_active_ticker)
                 {
                     active_ticker_changed = true;
                 }
             }
         }
 
-        // 3. Trigger a single consolidated wallet view refresh outside the loop if needed
         if (active_ticker_changed)
         {
             m_system_manager.get_system<wallet_page>().refresh_ticker_infos();
