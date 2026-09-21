@@ -71,13 +71,18 @@ MultipageModal
                 Item { Layout.preferredWidth: 20 }
             },
 
-            PriceLineSimplified
+            Item
             {
-                id: price_line
+                Layout.alignment: Qt.AlignHCenter
                 Layout.topMargin: 10
-                Layout.leftMargin: 40
-                Layout.rightMargin: 40
-                Layout.fillWidth: true
+                Layout.preferredWidth: 640
+                Layout.preferredHeight: 35
+
+                PriceLineSimplified
+                {
+                    id: price_line
+                    anchors.fill: parent
+                }
             }
         ]
 
