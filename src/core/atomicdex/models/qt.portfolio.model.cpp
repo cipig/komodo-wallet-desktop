@@ -194,7 +194,7 @@ namespace atomic_dex
         const auto& provider        = this->m_system_manager.get_system<komodo_prices_provider>();
         const std::string& currency = m_config->current_currency;
         const std::string& fiat     = m_config->current_fiat;
-        const std::string  current_active_ticker = kdf_system.get_current_ticker();
+        const std::string current_active_ticker = kdf_system.get_current_ticker();
         bool active_ticker_changed  = false;
 
         for (auto&& ticker: tickers)
@@ -228,11 +228,9 @@ namespace atomic_dex
 
                 const std::string main_currency_balance_raw = price_service.get_price_in_fiat(currency, ticker, ec);
                 QString formatted_fiat_balance              = format_to_precision(main_currency_balance_raw, 2);
-                bool is_fiat_balance_altered                = (it->main_currency_balance != formatted_fiat_balance);
 
                 const std::string currency_price_raw = price_service.get_rate_conversion(currency, ticker, true);
                 QString formatted_price              = format_to_precision(currency_price_raw, 8);
-                bool is_price_altered                = (it->main_currency_price_for_one_unit != formatted_price);
 
                 it->balance                          = formatted_balance;
                 it->main_currency_balance            = formatted_fiat_balance;
@@ -241,16 +239,14 @@ namespace atomic_dex
                 it->price_provider                   = QString::fromStdString(provider.get_price_provider(ticker));
                 it->price_last_timestamp             = static_cast<int>(provider.get_last_price_timestamp(ticker));
                 it->display                          = QString::fromStdString(ticker) + " (" + formatted_balance + ")";
-
                 const auto& coin                     = global_cfg->get_coin_info(ticker);
                 it->change_24h                       = format_to_precision(retrieve_change_24h(provider, coin, *m_config, m_system_manager).toStdString(), 3);
                 it->trend_7d                         = nlohmann_json_array_to_qt_json_array(provider.get_ticker_historical(ticker));
                 it->activation_status                = nlohmann_json_object_to_qt_json_object(coin.activation_status);
-
-                it->raw_balance               = safe_string_to_double(balance_raw);
-                it->raw_main_currency_balance = safe_string_to_double(main_currency_balance_raw);
-                it->raw_main_currency_price   = safe_string_to_double(currency_price_raw);
-                it->raw_change_24h            = safe_string_to_double(it->change_24h.toStdString());
+                it->raw_balance                      = safe_string_to_double(balance_raw);
+                it->raw_main_currency_balance        = safe_string_to_double(main_currency_balance_raw);
+                it->raw_main_currency_price          = safe_string_to_double(currency_price_raw);
+                it->raw_change_24h                   = safe_string_to_double(it->change_24h.toStdString());
 
                 emit dataChanged(idx, idx);
 
