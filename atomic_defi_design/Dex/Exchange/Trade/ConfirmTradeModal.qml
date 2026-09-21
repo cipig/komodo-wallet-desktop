@@ -98,23 +98,27 @@ MultipageModal
                 id: feesAreaBox
                 Layout.alignment: Qt.AlignCenter
                 Layout.preferredWidth: parent.width - 20
-                Layout.preferredHeight: 185 // Centered height allocation safely accommodates up to 8 lines
+
+                // Calculate height dynamically based on the font boundaries + healthy inner padding
+                Layout.preferredHeight: inner_fees_column.implicitHeight + 20
                 color: DexTheme.contentColorTop
                 visible: !buy_sell_rpc_busy
 
                 ColumnLayout {
+                    id: inner_fees_column
                     anchors.centerIn: parent
-                    width: parent.width - 40 // Explicit boundary prevents layout loop feedback recursion
+                    width: parent.width - 40
                     spacing: 2
 
+                    // 1. Centered Loading Panel
                     ColumnLayout {
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignCenter
                         visible: !fees_detail.visible && !fees_error.visible
 
                         DefaultBusyIndicator {
-                            Layout.preferredHeight: 40
-                            Layout.preferredWidth: 40
+                            Layout.preferredHeight: 36
+                            Layout.preferredWidth: 36
                             Layout.alignment: Qt.AlignHCenter
                             scale: 0.65
                         }
@@ -122,10 +126,11 @@ MultipageModal
                         DexLabel {
                             text_value: qsTr("Loading fees...")
                             Layout.alignment: Qt.AlignHCenter
-                            font.pixelSize: Style.textSize
+                            font.pixelSize: Style.textSizeSmall4
                         }
                     }
 
+                    // 2. Centered Error Panel
                     ColumnLayout {
                         id: fees_error
                         Layout.fillWidth: true
@@ -136,7 +141,7 @@ MultipageModal
                             Layout.fillWidth: true
                             color: Dex.CurrentTheme.warningColor
                             horizontalAlignment: DexLabel.AlignHCenter
-                            font.pixelSize: Style.textSize
+                            font.pixelSize: Style.textSizeSmall4
                             text_value: root.fees.hasOwnProperty("error") ? root.fees["error"].split("] ").slice(-1) : ""
                         }
                     }
@@ -146,7 +151,7 @@ MultipageModal
                         id: fees_detail
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignCenter
-                        spacing: 1
+                        spacing: 2
                         visible: root.fees.hasOwnProperty("base_transaction_fees_ticker")
                                  && !API.app.trading_pg.preimage_rpc_busy
                                  && !root.fees.hasOwnProperty("error")
@@ -157,7 +162,7 @@ MultipageModal
                             delegate: DexLabel {
                                 width: parent.width
                                 horizontalAlignment: Text.AlignHCenter
-                                font.pixelSize: Style.textSize // HIGH-DPI UPGRADE: Elevated text scale
+                                font.pixelSize: Style.textSizeSmall4
                                 text: General.getFeesDetailText(modelData.label, modelData.fee, modelData.ticker)
                             }
                         }
@@ -179,11 +184,12 @@ MultipageModal
                             delegate: DexLabel {
                                 width: parent.width
                                 horizontalAlignment: Text.AlignHCenter
-                                font.pixelSize: Style.textSize
+                                font.pixelSize: Style.textSizeSmall4
                                 text: General.getFeesDetailText(qsTr("<b>Total %1 fees:</b>").arg(modelData.coin), modelData.required_balance, modelData.coin)
                             }
                         }
 
+                        // Block Validation Errors Label
                         DexLabel {
                             id: errors
                             visible: text_value !== ""
