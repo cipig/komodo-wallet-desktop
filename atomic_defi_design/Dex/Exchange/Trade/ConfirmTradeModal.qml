@@ -107,7 +107,6 @@ MultipageModal
                     width: parent.width - 40 // Explicit boundary prevents layout loop feedback recursion
                     spacing: 2
 
-                    // 1. Loading State Panel (RESTORED)
                     ColumnLayout {
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignCenter
@@ -127,7 +126,6 @@ MultipageModal
                         }
                     }
 
-                    // 2. Error State Panel (RESTORED)
                     ColumnLayout {
                         id: fees_error
                         Layout.fillWidth: true
@@ -181,12 +179,11 @@ MultipageModal
                             delegate: DexLabel {
                                 width: parent.width
                                 horizontalAlignment: Text.AlignHCenter
-                                font.pixelSize: Style.textSize // HIGH-DPI UPGRADE: Elevated text scale
+                                font.pixelSize: Style.textSize
                                 text: General.getFeesDetailText(qsTr("<b>Total %1 fees:</b>").arg(modelData.coin), modelData.required_balance, modelData.coin)
                             }
                         }
 
-                        // Block Validation Errors Label (RESTORED)
                         DexLabel {
                             id: errors
                             visible: text_value !== ""
@@ -281,8 +278,6 @@ MultipageModal
                     label.wrapMode: Label.NoWrap
                 }
 
-                // FIXED SWITCH INTERFACE BRIDGE: Externally wrapping the switch component
-                // breaks the anchor-to-layout feedback loop on High-DPI displays completely.
                 RowLayout
                 {
                     Layout.alignment: Qt.AlignCenter
