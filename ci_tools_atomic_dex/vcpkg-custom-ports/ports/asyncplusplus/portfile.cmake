@@ -5,7 +5,7 @@ vcpkg_from_github(
     REPO cipig/asyncplusplus
     HEAD_REF master
     REF 2472b4f49dc50dab3f362cef9823e5c5636abe78
-    SHA512 0
+    SHA512 afe3374204d6b9e2aa5504bf81eba85f580536b5e87d764c516632f5222748133a74583a5441bef6cfe6983bd1436931de56b7e65950466778079a14a1a61bc8
 )
 
 vcpkg_cmake_configure(
