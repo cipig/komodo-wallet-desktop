@@ -16,7 +16,7 @@ MultipageModal
     readonly property var fees: API.app.trading_pg.fees
     width: 720
     horizontalPadding: 10
-    verticalPadding: 20
+    verticalPadding: 10
     closePolicy: Popup.NoAutoClose
 
     MultipageModalContent
@@ -24,16 +24,16 @@ MultipageModal
         titleText: qsTr("")
         titleAlignment: Qt.AlignHCenter
         titleTopMargin: 0
-        topMarginAfterTitle: 10
+        topMarginAfterTitle: 5
         flickMax: window.height - 20
 
-        // 1. HEADER FLOW: Keep ONLY the pair badges here to ensure clean vertical geometry.
+        // 1. HEADER FLOW
         header: [
             RowLayout
             {
                 id: dex_pair_badges
                 Layout.alignment: Qt.AlignHCenter
-                Layout.preferredHeight: 70
+                Layout.preferredHeight: 65
                 Layout.preferredWidth: 540
 
                 Item { Layout.preferredWidth: 20 }
@@ -81,8 +81,8 @@ MultipageModal
             Layout.fillWidth: true
             Layout.leftMargin: 4
             Layout.rightMargin: 4
-            Layout.topMargin: 5
-            spacing: 8
+            Layout.topMargin: 2
+            spacing: 2
 
             readonly property var default_config: API.app.trading_pg.get_raw_kdf_coin_cfg(rel_ticker)
             readonly property bool is_dpow_configurable: config_section.default_config.requires_notarization || false
@@ -90,8 +90,8 @@ MultipageModal
             PriceLineSimplified
             {
                 id: price_line
-                Layout.topMargin: 5
-                Layout.bottomMargin: 10
+                Layout.topMargin: 2
+                Layout.bottomMargin: 4
                 Layout.preferredWidth: 640
                 Layout.alignment: Qt.AlignHCenter
             }
@@ -101,13 +101,13 @@ MultipageModal
                 id: feesAreaBox
                 Layout.alignment: Qt.AlignCenter
                 Layout.preferredWidth: parent.width - 20
-                Layout.preferredHeight: 185 // Static height allocation eliminates layout loop feedbacks entirely
+                Layout.preferredHeight: 185
                 color: DexTheme.contentColorTop
                 visible: !buy_sell_rpc_busy
 
                 ColumnLayout {
                     anchors.centerIn: parent
-                    width: parent.width - 40 // Hardcoded horizontal limit halts recursive size queries
+                    width: parent.width - 40
                     spacing: 2
 
                     // Loading State Panel
@@ -208,7 +208,7 @@ MultipageModal
             {
                 Layout.alignment: Qt.AlignCenter
                 Layout.preferredWidth: margin_row.implicitWidth + 30
-                Layout.preferredHeight: margin_row.implicitHeight + 8
+                Layout.preferredHeight: margin_row.implicitHeight + 6
                 color: Style.colorRed2
                 visible: Math.abs(parseFloat(API.app.trading_pg.cex_price_diff)) >= 50
 
@@ -244,7 +244,7 @@ MultipageModal
                 id: use_custom
                 Layout.alignment: Qt.AlignCenter
                 Layout.preferredWidth: parent.width - 10
-                spacing: 5
+                spacing: 2
                 visible: !buy_sell_rpc_busy
 
                 DefaultCheckBox
@@ -254,7 +254,7 @@ MultipageModal
                     boxWidth: 20
                     boxHeight: 20
                     checked: true
-                    Layout.preferredHeight: 40
+                    Layout.preferredHeight: 32
                     Layout.alignment: Qt.AlignCenter
                     text: qsTr("Cancel all existing orders for %1/%2?").arg(base_ticker).arg(rel_ticker)
                 }
@@ -266,7 +266,7 @@ MultipageModal
                     boxWidth: 20
                     boxHeight: 20
                     checked: true
-                    Layout.preferredHeight: 40
+                    Layout.preferredHeight: 32
                     Layout.alignment: Qt.AlignCenter
                     text: qsTr("Good until cancelled (order will remain on orderbook until filled or cancelled)")
                     label.wrapMode: Text.WordWrap
@@ -278,7 +278,7 @@ MultipageModal
                     spacing: 2
                     boxWidth: 20
                     boxHeight: 20
-                    Layout.preferredHeight: 40
+                    Layout.preferredHeight: 32
                     Layout.alignment: Qt.AlignCenter
                     text: qsTr("Use custom protection settings for incoming %1 transactions", "TICKER").arg(rel_ticker)
                     label.wrapMode: Label.NoWrap
@@ -288,7 +288,7 @@ MultipageModal
                 {
                     Layout.alignment: Qt.AlignCenter
                     Layout.preferredWidth: 380
-                    Layout.preferredHeight: 50
+                    Layout.preferredHeight: 44
                     visible: enable_custom_config.checked && config_section.is_dpow_configurable
 
                     DexSwitch
@@ -305,13 +305,12 @@ MultipageModal
 
                 ColumnLayout
                 {
-                    height: 50
+                    Layout.preferredHeight: 40
                     Layout.alignment: Qt.AlignCenter
-                    spacing: 5
+                    spacing: 2
 
                     DexLabel
                     {
-                        height: 16
                         Layout.alignment: Qt.AlignCenter
                         visible: !enable_custom_config.checked
                         text_value: qsTr("Security configuration")
@@ -320,7 +319,6 @@ MultipageModal
 
                     DexLabel
                     {
-                        height: 12
                         font: DexTypo.caption
                         Layout.alignment: Qt.AlignCenter
                         horizontalAlignment: Text.AlignHCenter
@@ -336,29 +334,28 @@ MultipageModal
                 }
             }
 
-            // Configuration settings
+            // Configuration settings Slider
             Item
             {
                 Layout.alignment: Qt.AlignCenter
                 Layout.preferredWidth: parent.width - 10
-                Layout.preferredHeight: 160
+                Layout.preferredHeight: 70
                 visible: !buy_sell_rpc_busy
 
                 ColumnLayout
                 {
                     id: security_config
                     anchors.horizontalCenter: parent.horizontalCenter
-                    height: 60
-                    spacing: 3
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
 
                     ColumnLayout
                     {
                         Layout.alignment: Qt.AlignCenter
-                        spacing: 3
+                        spacing: 2
 
                         DexLabel
                         {
-                            height: 30
                             Layout.alignment: Qt.AlignCenter
                             horizontalAlignment: Text.AlignHCenter
                             visible: required_confirmation_count.visible
@@ -370,7 +367,7 @@ MultipageModal
                         DefaultSlider
                         {
                             id: required_confirmation_count
-                            height: 24
+                            height: 22
                             Layout.alignment: Qt.AlignCenter
                             visible: enable_custom_config.checked && (!config_section.is_dpow_configurable || !enable_dpow_confs.checked)
                             readonly property int default_confirmation_count: 3
@@ -387,8 +384,8 @@ MultipageModal
                     FloatingBackground
                     {
                         Layout.alignment: Qt.AlignCenter
-                        width: dpow_off_warning.implicitWidth + 30
-                        height: dpow_off_warning.implicitHeight + 10
+                        width: dpow_off_warning.implicitWidth + 24
+                        height: dpow_off_warning.implicitHeight + 6
                         color: Style.colorRed2
                         visible: enable_custom_config.checked && (config_section.is_dpow_configurable && !enable_dpow_confs.checked)
 
@@ -412,6 +409,7 @@ MultipageModal
                 id: warnings_text
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignHCenter
+                spacing: 1
 
                 DexLabel
                 {
