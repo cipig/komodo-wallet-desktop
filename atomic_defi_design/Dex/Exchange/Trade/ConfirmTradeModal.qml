@@ -91,30 +91,34 @@ MultipageModal
             readonly property var default_config: API.app.trading_pg.get_raw_kdf_coin_cfg(rel_ticker)
             readonly property bool is_dpow_configurable: config_section.default_config.requires_notarization || false
 
-            // Fees Area
+            // --- FIXED COMPONENT BOUNDARY: Hardcoded static box container ---
+            // Reserving exactly 220px of static height breaks the layout sizing loop.
+            // Any unused text lines simply remain blank empty space, fully preventing
+            // the UI from shifting rows or dumping recursive layout warnings to the console logs.
             DefaultRectangle {
                 Layout.alignment: Qt.AlignCenter
-                Layout.preferredHeight: 170
                 Layout.preferredWidth: parent.width - 20
+                Layout.preferredHeight: 220
                 color: DexTheme.contentColorTop
                 visible: !buy_sell_rpc_busy
 
+                // Vertical centering alignment column context
                 ColumnLayout {
-                    anchors.fill: parent
-                    anchors.margins: 10
-                    spacing: 6
+                    anchors.centerIn: parent
+                    width: parent.width - 24
+                    spacing: 4
 
-                    // Loading
+                    // 1. Loading Panel (Vertically centered)
                     ColumnLayout {
                         Layout.fillWidth: true
-                        Layout.alignment: Qt.AlignHCenter
+                        Layout.alignment: Qt.AlignCenter
                         visible: !fees_detail.visible && !fees_error.visible
 
                         DefaultBusyIndicator {
-                            Layout.preferredHeight: 100
-                            Layout.preferredWidth: 100
+                            Layout.preferredHeight: 50
+                            Layout.preferredWidth: 50
                             Layout.alignment: Qt.AlignHCenter
-                            scale: 0.8
+                            scale: 0.7
                         }
 
                         DexLabel {
@@ -123,58 +127,63 @@ MultipageModal
                         }
                     }
 
-                    // Error
+                    // 2. Error State Panel (Vertically centered)
                     ColumnLayout {
                         id: fees_error
                         Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignCenter
                         visible: root.fees.hasOwnProperty("error")
 
                         DexLabel {
                             Layout.fillWidth: true
-                            text_value: root.fees.hasOwnProperty("error")
-                                        ? root.fees["error"].split("] ").slice(-1)
-                                        : ""
-                            Layout.bottomMargin: 8
+                            color: Dex.CurrentTheme.warningColor
+                            horizontalAlignment: DexLabel.AlignHCenter
+                            text_value: root.fees.hasOwnProperty("error") ? root.fees["error"].split("] ").slice(-1) : ""
                         }
                     }
 
-                    // Details
+                    // 3. Consolidated Details Panel (Centered inside our static height area)
                     ColumnLayout {
                         id: fees_detail
                         Layout.fillWidth: true
-                        spacing: 6
+                        Layout.alignment: Qt.AlignCenter
+                        spacing: 2
                         visible: root.fees.hasOwnProperty("base_transaction_fees_ticker")
                                  && !API.app.trading_pg.preimage_rpc_busy
                                  && !root.fees.hasOwnProperty("error")
 
+                        // Itemized Fee Lines (0 to 4 lines)
                         Repeater {
-                            model: root.fees.hasOwnProperty("base_transaction_fees_ticker")
-                                   ? General.getFeesDetail(root.fees)
-                                   : []
-
+                            model: root.fees.hasOwnProperty("base_transaction_fees_ticker") ? General.getFeesDetail(root.fees) : []
                             delegate: DexLabel {
-                                wrapMode: Text.NoWrap
+                                Layout.alignment: Qt.AlignHCenter
                                 font.pixelSize: Style.textSizeSmall1
                                 text: General.getFeesDetailText(modelData.label, modelData.fee, modelData.ticker)
                             }
                         }
 
-                        Repeater {
+                        // Static separator line
+                        Rectangle {
                             Layout.alignment: Qt.AlignHCenter
-                            model: root.fees.hasOwnProperty("base_transaction_fees_ticker")
-                                   && !API.app.trading_pg.preimage_rpc_busy
-                                   ? root.fees.total_fees
-                                   : []
+                            Layout.preferredWidth: parent.width * 0.9
+                            height: 1
+                            color: Dex.CurrentTheme.foregroundColor3
+                            opacity: 0.2
+                            visible: summary_repeater.count > 0
+                        }
 
+                        // Aggregated Summary Lines (0 to 2 lines)
+                        Repeater {
+                            id: summary_repeater
+                            model: root.fees.hasOwnProperty("base_transaction_fees_ticker") && !API.app.trading_pg.preimage_rpc_busy ? root.fees.total_fees : []
                             delegate: DexLabel {
-                                wrapMode: Text.NoWrap
-                                text: General.getFeesDetailText(
-                                        qsTr("<b>Total %1 fees:</b>").arg(modelData.coin),
-                                        modelData.required_balance,
-                                        modelData.coin)
+                                Layout.alignment: Qt.AlignHCenter
+                                font.pixelSize: Style.textSizeSmall1
+                                text: General.getFeesDetailText(qsTr("<b>Total %1 fees:</b>").arg(modelData.coin), modelData.required_balance, modelData.coin)
                             }
                         }
 
+                        // Dynamic validation errors block
                         DexLabel {
                             id: errors
                             visible: text_value !== ""
@@ -183,11 +192,7 @@ MultipageModal
                             horizontalAlignment: DexLabel.AlignHCenter
                             font: DexTypo.caption
                             color: Dex.CurrentTheme.warningColor
-                            text_value: General.getTradingError(
-                                            last_trading_error,
-                                            curr_fee_info,
-                                            base_ticker,
-                                            rel_ticker, left_ticker, right_ticker)
+                            text_value: General.getTradingError(last_trading_error, curr_fee_info, base_ticker, rel_ticker, left_ticker, right_ticker)
                         }
                     }
                 }
