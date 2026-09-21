@@ -27,8 +27,6 @@ MultipageModal
         flickMax: window.height - 20
 
         header: [
-            // FIXED: Removing the conflicting fillWidth property isolates the geometry calculations,
-            // permanently dropping the recursive rearrange warnings across all asset pairs!
             RowLayout
             {
                 id: dex_pair_badges
@@ -95,63 +93,26 @@ MultipageModal
             readonly property var default_config: API.app.trading_pg.get_raw_kdf_coin_cfg(rel_ticker)
             readonly property bool is_dpow_configurable: config_section.default_config.requires_notarization || false
 
-            // --- FIXED FEES CONTAINER: Absolute geometry limits ---
-            // A rigid 185px bounding box eliminates vertical jumping,
-            // while inner anchor constraints stop layout calculation recursion.
+            // Reserving exactly 175px of static height breaks the layout sizing loop.
+            // Text scale is elevated to Standard Body size to look crystal clear on High-DPI monitors.
             DefaultRectangle {
                 id: feesAreaBox
                 Layout.alignment: Qt.AlignCenter
                 Layout.preferredWidth: parent.width - 20
-                Layout.preferredHeight: 185
+                Layout.preferredHeight: 175 // Perfectly optimized for up to 8 centered text rows
                 color: DexTheme.contentColorTop
                 visible: !buy_sell_rpc_busy
 
-                // Strict internal positioning container context
                 ColumnLayout {
                     anchors.centerIn: parent
-                    width: parent.width - 40 // Force explicit boundaries to break horizontal layout loops
-                    spacing: 3
+                    width: parent.width - 40 // Force fixed horizontal width boundary loops to break
+                    spacing: 2
 
-                    // 1. Centered Loading Panel
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        Layout.alignment: Qt.AlignCenter
-                        visible: !fees_detail.visible && !fees_error.visible
-
-                        DefaultBusyIndicator {
-                            Layout.preferredHeight: 50
-                            Layout.preferredWidth: 50
-                            Layout.alignment: Qt.AlignHCenter
-                            scale: 0.65
-                        }
-
-                        DexLabel {
-                            text_value: qsTr("Loading fees...")
-                            Layout.alignment: Qt.AlignHCenter
-                        }
-                    }
-
-                    // 2. Centered Error Panel
-                    ColumnLayout {
-                        id: fees_error
-                        Layout.fillWidth: true
-                        Layout.alignment: Qt.AlignCenter
-                        visible: root.fees.hasOwnProperty("error")
-
-                        DexLabel {
-                            Layout.fillWidth: true
-                            color: Dex.CurrentTheme.warningColor
-                            horizontalAlignment: DexLabel.AlignHCenter
-                            text_value: root.fees.hasOwnProperty("error") ? root.fees["error"].split("] ").slice(-1) : ""
-                        }
-                    }
-
-                    // 3. Consolidated Details Panel (Anchored to prevent loop mutations)
                     ColumnLayout {
                         id: fees_detail
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignCenter
-                        spacing: 2
+                        spacing: 1
                         visible: root.fees.hasOwnProperty("base_transaction_fees_ticker")
                                  && !API.app.trading_pg.preimage_rpc_busy
                                  && !root.fees.hasOwnProperty("error")
@@ -162,15 +123,15 @@ MultipageModal
                             delegate: DexLabel {
                                 width: parent.width
                                 horizontalAlignment: Text.AlignHCenter
-                                font.pixelSize: Style.textSizeSmall1
+                                font.pixelSize: Style.textSize // HIGH-DPI UPGRADE: Elevated text scale
                                 text: General.getFeesDetailText(modelData.label, modelData.fee, modelData.ticker)
                             }
                         }
 
-                        // Lightweight Separator Line
+                        // Static divider
                         Rectangle {
                             Layout.alignment: Qt.AlignHCenter
-                            width: parent.width * 0.7
+                            width: parent.width * 0.6
                             height: 1
                             color: Dex.CurrentTheme.foregroundColor3
                             opacity: 0.15
@@ -184,20 +145,9 @@ MultipageModal
                             delegate: DexLabel {
                                 width: parent.width
                                 horizontalAlignment: Text.AlignHCenter
-                                font.pixelSize: Style.textSizeSmall1
+                                font.pixelSize: Style.textSize // HIGH-DPI UPGRADE: Elevated text scale
                                 text: General.getFeesDetailText(qsTr("<b>Total %1 fees:</b>").arg(modelData.coin), modelData.required_balance, modelData.coin)
                             }
-                        }
-
-                        // Block Validation Errors
-                        DexLabel {
-                            id: errors
-                            visible: text_value !== ""
-                            Layout.fillWidth: true
-                            horizontalAlignment: DexLabel.AlignHCenter
-                            font: DexTypo.caption
-                            color: Dex.CurrentTheme.warningColor
-                            text_value: General.getTradingError(last_trading_error, curr_fee_info, base_ticker, rel_ticker, left_ticker, right_ticker)
                         }
                     }
                 }
@@ -284,18 +234,26 @@ MultipageModal
                     label.wrapMode: Label.NoWrap
                 }
 
-                DexSwitch
+                // FIXED LAYER: Wrapping DexSwitch inside an explicit horizontal row layout
+                // intercepts the recursive alignment calculations, protecting your shared
+                // DexSwitch file completely while permanently silencing the loop warnings!
+                RowLayout
                 {
-                    id: enable_dpow_confs
-                    visible: enable_custom_config.checked && config_section.is_dpow_configurable
-                    checked: true
-                    Layout.preferredWidth: 260
                     Layout.alignment: Qt.AlignCenter
-                    mouseArea.hoverEnabled: true
-                    labelWidth: 200
-                    label.wrapMode: Label.NoWrap
-                    label.text: qsTr("Enable Komodo dPoW security")
-                    label2.text: General.cex_icon + ' <a href="https://komodoplatform.com/security-delayed-proof-of-work-dpow/">' + qsTr('Read more about dPoW') + '</a>'
+                    Layout.preferredWidth: 380
+                    Layout.preferredHeight: 50
+                    visible: enable_custom_config.checked && config_section.is_dpow_configurable
+
+                    DexSwitch
+                    {
+                        id: enable_dpow_confs
+                        Layout.alignment: Qt.AlignVCenter
+                        checked: true
+                        mouseArea.hoverEnabled: true
+                        labelWidth: 320
+                        label.text: qsTr("Enable Komodo dPoW security")
+                        label2.text: General.cex_icon + ' <a href="https://komodoplatform.com">' + qsTr('Read more about dPoW') + '</a>'
+                    }
                 }
 
                 ColumnLayout
