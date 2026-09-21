@@ -15,19 +15,20 @@ MultipageModal
     id: root
     readonly property var fees: API.app.trading_pg.fees
     width: 720
+    height: Math.min(content_wrapper.implicitHeight + verticalPadding * 2 + 40, window.height - 20)
     horizontalPadding: 10
-    verticalPadding: 10
+    verticalPadding: 35
     closePolicy: Popup.NoAutoClose
 
     MultipageModalContent
     {
+        id: content_wrapper
         titleText: qsTr("")
         titleAlignment: Qt.AlignHCenter
         titleTopMargin: 0
         topMarginAfterTitle: 5
         flickMax: window.height - 20
 
-        // 1. HEADER FLOW
         header: [
             RowLayout
             {
@@ -73,7 +74,6 @@ MultipageModal
             }
         ]
 
-        // 2. MAIN BODY CONTENT LAYOUT FLOW
         ColumnLayout
         {
             id: config_section
@@ -102,6 +102,7 @@ MultipageModal
                 Layout.alignment: Qt.AlignCenter
                 Layout.preferredWidth: parent.width - 20
                 Layout.preferredHeight: 185
+                Layout.bottomMargin: 8
                 color: DexTheme.contentColorTop
                 visible: !buy_sell_rpc_busy
 
