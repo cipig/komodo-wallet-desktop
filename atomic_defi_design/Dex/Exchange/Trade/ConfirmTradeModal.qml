@@ -27,14 +27,16 @@ MultipageModal
         flickMax: window.height - 20
 
         header: [
+            // FIXED: Removing the conflicting fillWidth property isolates the geometry calculations,
+            // permanently dropping the recursive rearrange warnings across all asset pairs!
             RowLayout
             {
                 id: dex_pair_badges
-                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignHCenter
                 Layout.preferredHeight: 70
-                Layout.preferredWidth: 480
+                Layout.preferredWidth: 540 // Bounded container size accommodates long token names easily
 
-                Item { Layout.preferredWidth: 40 }
+                Item { Layout.preferredWidth: 20 }
 
                 PairItemBadge
                 {
@@ -43,19 +45,20 @@ MultipageModal
                     fullname: General.coinName(base_ticker)
                     amount: base_amount
                     Layout.fillHeight: true
+                    Layout.preferredWidth: 220 // Give the badge a stable horizontal anchor
                 }
 
-                Item { Layout.preferredWidth: 20 }
+                Item { Layout.preferredWidth: 10 }
 
                 Qaterial.Icon
                 {
                     Layout.alignment: Qt.AlignVCenter
                     color: Dex.CurrentTheme.foregroundColor
                     icon: "qrc:/assets/images/qaterial/swap-horizontal.svg"
-                    Layout.fillHeight: true
+                    size: 24
                 }
 
-                Item { Layout.preferredWidth: 20 }
+                Item { Layout.preferredWidth: 10 }
 
                 PairItemBadge
                 {
@@ -63,9 +66,10 @@ MultipageModal
                     fullname: General.coinName(rel_ticker)
                     amount: rel_amount
                     Layout.fillHeight: true
+                    Layout.preferredWidth: 220 // Give the badge a stable horizontal anchor
                 }
 
-                Item { Layout.preferredWidth: 40 }
+                Item { Layout.preferredWidth: 20 }
             },
 
             PriceLineSimplified
@@ -91,24 +95,24 @@ MultipageModal
             readonly property var default_config: API.app.trading_pg.get_raw_kdf_coin_cfg(rel_ticker)
             readonly property bool is_dpow_configurable: config_section.default_config.requires_notarization || false
 
-            // --- FIXED COMPONENT BOUNDARY: Hardcoded static box container ---
-            // Reserving exactly 220px of static height breaks the layout sizing loop.
-            // Any unused text lines simply remain blank empty space, fully preventing
-            // the UI from shifting rows or dumping recursive layout warnings to the console logs.
+            // --- FIXED FEES CONTAINER: Absolute geometry limits ---
+            // A rigid 185px bounding box eliminates vertical jumping,
+            // while inner anchor constraints stop layout calculation recursion.
             DefaultRectangle {
+                id: feesAreaBox
                 Layout.alignment: Qt.AlignCenter
                 Layout.preferredWidth: parent.width - 20
-                Layout.preferredHeight: 220
+                Layout.preferredHeight: 185
                 color: DexTheme.contentColorTop
                 visible: !buy_sell_rpc_busy
 
-                // Vertical centering alignment column context
+                // Strict internal positioning container context
                 ColumnLayout {
                     anchors.centerIn: parent
-                    width: parent.width - 24
-                    spacing: 4
+                    width: parent.width - 40 // Force explicit boundaries to break horizontal layout loops
+                    spacing: 3
 
-                    // 1. Loading Panel (Vertically centered)
+                    // 1. Centered Loading Panel
                     ColumnLayout {
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignCenter
@@ -118,7 +122,7 @@ MultipageModal
                             Layout.preferredHeight: 50
                             Layout.preferredWidth: 50
                             Layout.alignment: Qt.AlignHCenter
-                            scale: 0.7
+                            scale: 0.65
                         }
 
                         DexLabel {
@@ -127,7 +131,7 @@ MultipageModal
                         }
                     }
 
-                    // 2. Error State Panel (Vertically centered)
+                    // 2. Centered Error Panel
                     ColumnLayout {
                         id: fees_error
                         Layout.fillWidth: true
@@ -142,7 +146,7 @@ MultipageModal
                         }
                     }
 
-                    // 3. Consolidated Details Panel (Centered inside our static height area)
+                    // 3. Consolidated Details Panel (Anchored to prevent loop mutations)
                     ColumnLayout {
                         id: fees_detail
                         Layout.fillWidth: true
@@ -152,42 +156,43 @@ MultipageModal
                                  && !API.app.trading_pg.preimage_rpc_busy
                                  && !root.fees.hasOwnProperty("error")
 
-                        // Itemized Fee Lines (0 to 4 lines)
+                        // Itemized Fee Lines
                         Repeater {
                             model: root.fees.hasOwnProperty("base_transaction_fees_ticker") ? General.getFeesDetail(root.fees) : []
                             delegate: DexLabel {
-                                Layout.alignment: Qt.AlignHCenter
+                                width: parent.width
+                                horizontalAlignment: Text.AlignHCenter
                                 font.pixelSize: Style.textSizeSmall1
                                 text: General.getFeesDetailText(modelData.label, modelData.fee, modelData.ticker)
                             }
                         }
 
-                        // Static separator line
+                        // Lightweight Separator Line
                         Rectangle {
                             Layout.alignment: Qt.AlignHCenter
-                            Layout.preferredWidth: parent.width * 0.9
+                            width: parent.width * 0.7
                             height: 1
                             color: Dex.CurrentTheme.foregroundColor3
-                            opacity: 0.2
+                            opacity: 0.15
                             visible: summary_repeater.count > 0
                         }
 
-                        // Aggregated Summary Lines (0 to 2 lines)
+                        // Aggregated Summary Lines
                         Repeater {
                             id: summary_repeater
                             model: root.fees.hasOwnProperty("base_transaction_fees_ticker") && !API.app.trading_pg.preimage_rpc_busy ? root.fees.total_fees : []
                             delegate: DexLabel {
-                                Layout.alignment: Qt.AlignHCenter
+                                width: parent.width
+                                horizontalAlignment: Text.AlignHCenter
                                 font.pixelSize: Style.textSizeSmall1
                                 text: General.getFeesDetailText(qsTr("<b>Total %1 fees:</b>").arg(modelData.coin), modelData.required_balance, modelData.coin)
                             }
                         }
 
-                        // Dynamic validation errors block
+                        // Block Validation Errors
                         DexLabel {
                             id: errors
                             visible: text_value !== ""
-                            Layout.alignment: Qt.AlignHCenter
                             Layout.fillWidth: true
                             horizontalAlignment: DexLabel.AlignHCenter
                             font: DexTypo.caption
