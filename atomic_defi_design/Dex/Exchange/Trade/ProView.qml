@@ -10,7 +10,6 @@ import "../../Wallet"
 import App 1.0
 import "OrderBook/" as OrderBook
 import "BestOrder/" as BestOrder
-import "Orders/" as OrdersView
 import "../../Screens"
 import Dex.Themes 1.0 as Dex
 import "../ProView"
