@@ -579,12 +579,11 @@ namespace atomic_dex
 
             if (requires_filter_invalidation)
             {
-                // Use a single-shot timer to delay the filter invalidation by 10ms.
-                // This lets the current QML rendering cycle complete smoothly,
-                // eliminating the QQmlChangeSet warning entirely without blocking the thread.
-                QTimer::singleShot(10, this->m_model_proxy, [this]() {
-                    this->m_model_proxy->refresh_filter();
-                });
+                QMetaObject::invokeMethod(this->m_model_proxy, [this]() {
+                    QTimer::singleShot(10, this->m_model_proxy, [this]() {
+                        this->m_model_proxy->refresh_filter();
+                    });
+                }, Qt::QueuedConnection);
             }
         }
 

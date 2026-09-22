@@ -15,9 +15,12 @@ MultipageModal
     id: root
     readonly property var fees: API.app.trading_pg.fees
     width: 720
-    height: Math.min(content_wrapper.implicitHeight + verticalPadding * 2 + 40, window.height - 20)
     horizontalPadding: 10
     verticalPadding: 35
+    bottomPadding: 15
+
+    height: buy_sell_rpc_busy ? 400 : Math.min(content_wrapper.implicitHeight + verticalPadding + bottomPadding + 30, window.height - 20)
+
     closePolicy: Popup.NoAutoClose
 
     MultipageModalContent
@@ -29,6 +32,7 @@ MultipageModal
         topMarginAfterTitle: 5
         flickMax: window.height - 20
 
+        // 1. HEADER FLOW
         header: [
             RowLayout
             {
@@ -74,6 +78,7 @@ MultipageModal
             }
         ]
 
+        // 2. MAIN BODY CONTENT LAYOUT FLOW
         ColumnLayout
         {
             id: config_section
@@ -83,6 +88,7 @@ MultipageModal
             Layout.rightMargin: 4
             Layout.topMargin: 2
             spacing: 2
+            visible: !buy_sell_rpc_busy
 
             readonly property var default_config: API.app.trading_pg.get_raw_kdf_coin_cfg(rel_ticker)
             readonly property bool is_dpow_configurable: config_section.default_config.requires_notarization || false
@@ -100,11 +106,11 @@ MultipageModal
             DefaultRectangle {
                 id: feesAreaBox
                 Layout.alignment: Qt.AlignCenter
-                Layout.preferredWidth: parent.width - 20
+
+                Layout.preferredWidth: parent.width - 120
                 Layout.preferredHeight: 185
                 Layout.bottomMargin: 8
                 color: DexTheme.contentColorTop
-                visible: !buy_sell_rpc_busy
 
                 ColumnLayout {
                     anchors.centerIn: parent
@@ -235,6 +241,7 @@ MultipageModal
                         font: DexTypo.caption
                     }
 
+
                     Item { width: 3 }
                 }
             }
@@ -246,7 +253,6 @@ MultipageModal
                 Layout.alignment: Qt.AlignCenter
                 Layout.preferredWidth: parent.width - 10
                 spacing: 2
-                visible: !buy_sell_rpc_busy
 
                 DefaultCheckBox
                 {
@@ -341,7 +347,6 @@ MultipageModal
                 Layout.alignment: Qt.AlignCenter
                 Layout.preferredWidth: parent.width - 10
                 Layout.preferredHeight: 70
-                visible: !buy_sell_rpc_busy
 
                 ColumnLayout
                 {
@@ -429,19 +434,21 @@ MultipageModal
                     color: Dex.CurrentTheme.foregroundColor2
                 }
             }
+        }
 
-            Item
+        // Dedicated independent view container channel for our loading spinner pass
+        Item
+        {
+            Layout.alignment: Qt.AlignCenter
+            visible: buy_sell_rpc_busy
+            height: 280
+            width: 640
+
+            DefaultBusyIndicator
             {
-                visible: buy_sell_rpc_busy
-                height: config_section.height
-                width: config_section.width
-
-                DefaultBusyIndicator
-                {
-                    id: rpcBusyIndicator
-                    anchors.fill: parent
-                    anchors.centerIn: parent
-                }
+                id: rpcBusyIndicator
+                anchors.centerIn: parent
+                scale: 1.2
             }
         }
 

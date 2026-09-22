@@ -14,7 +14,6 @@
  *                                                                            *
  ******************************************************************************/
 
-//! Project Headers
 #include "atomicdex/managers/notification.manager.hpp"
 #include "atomicdex/utilities/global.utilities.hpp"
 
