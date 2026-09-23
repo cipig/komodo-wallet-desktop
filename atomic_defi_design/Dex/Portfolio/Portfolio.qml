@@ -41,71 +41,63 @@ Item {
         }
     }
 
-    DefaultFlickable {
-        id: flick
+    ColumnLayout {
+        id: _columnLayout
         anchors.fill: parent
         anchors.topMargin: 16
-        contentHeight: _column.height
-        scrollbar_visible: false
-        boundsBehavior: Flickable.StopAtBounds
+        spacing: 16
 
-        ColumnLayout {
-            id: _columnLayout
-            anchors.fill: parent
-            spacing: 16
+        Item {
+            Layout.preferredWidth: parent.width - 80
+            Layout.alignment: Qt.AlignHCenter
+            Layout.preferredHeight: 40
 
             Item {
-                Layout.preferredWidth: parent.width - 80
-                Layout.alignment: Qt.AlignHCenter
-                Layout.preferredHeight: 40
+                anchors.fill: parent
+                anchors.topMargin: 5
 
-                Item {
+                RowLayout {
                     anchors.fill: parent
-                    anchors.topMargin: 5
 
-                    RowLayout {
-                        anchors.fill: parent
+                    SearchField
+                    {
+                        id: coinSearchField
+                        Layout.alignment: Qt.AlignVCenter
+                        Layout.preferredWidth: 200
+                        Layout.preferredHeight: 40
+                        textField.placeholderText: qsTr("Search asset")
+                        forceFocus: true
+                        textField.font.pixelSize: Constants.Style.textSizeSmall3
+                        textField.onTextChanged: portfolio_coins.setFilterFixedString(textField.text)
+                        Component.onDestruction: portfolio_coins.setFilterFixedString("")
+                    }
 
-                        SearchField
-                        {
-                            id: coinSearchField
-                            Layout.alignment: Qt.AlignVCenter
-                            Layout.preferredWidth: 200
-                            Layout.preferredHeight: 40
-                            textField.placeholderText: qsTr("Search asset")
-                            forceFocus: true
-                            textField.font.pixelSize: Constants.Style.textSizeSmall3
-                            textField.onTextChanged: portfolio_coins.setFilterFixedString(textField.text)
-                            Component.onDestruction: portfolio_coins.setFilterFixedString("")
-                        }
+                    Item {
+                        Layout.fillWidth: true
+                    }
 
-                        Item {
-                            Layout.fillWidth: true
-                        }
-
-                        DefaultCheckBox
-                        {
-                            id: hide_zero_balance_checkbox
-                            spacing: 2
-                            label.wrapMode: Label.NoWrap
-                            label.font.pixelSize: 14
-                            text: qsTr("Show only coins with balance") + " <b>%1</b>".arg(qsTr("(%1/%2)").arg(coinsList.count).arg(portfolio_mdl.length))
-                            textColor: Dex.CurrentTheme.foregroundColor2
-                            checked: portfolio_coins.with_balance
-                            onCheckedChanged: portfolio_coins.with_balance = checked
-                            Component.onDestruction: portfolio_coins.with_balance = false
-                        }
+                    DefaultCheckBox
+                    {
+                        id: hide_zero_balance_checkbox
+                        spacing: 2
+                        label.wrapMode: Label.NoWrap
+                        label.font.pixelSize: 14
+                        text: qsTr("Show only coins with balance") + " <b>%1</b>".arg(qsTr("(%1/%2)").arg(coinsList.count).arg(portfolio_mdl.length))
+                        textColor: Dex.CurrentTheme.foregroundColor2
+                        checked: portfolio_coins.with_balance
+                        onCheckedChanged: portfolio_coins.with_balance = checked
+                        Component.onDestruction: portfolio_coins.with_balance = false
                     }
                 }
             }
+        }
 
-            AssetsList
-            {
-                id: coinsList
-                Layout.preferredWidth: parent.width - 80
-                Layout.fillHeight: true
-                Layout.alignment: Qt.AlignHCenter
-            }
+        AssetsList
+        {
+            id: coinsList
+            Layout.preferredWidth: parent.width - 80
+            Layout.fillHeight: true
+            Layout.alignment: Qt.AlignHCenter
         }
     }
 }
