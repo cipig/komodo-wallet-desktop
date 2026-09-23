@@ -98,7 +98,9 @@ MultipageModal
                 id: price_line
                 Layout.topMargin: 2
                 Layout.bottomMargin: 4
-                Layout.preferredWidth: 640
+                Layout.leftMargin: 40
+                Layout.rightMargin: 40
+                Layout.fillWidth: true
                 Layout.alignment: Qt.AlignHCenter
             }
 

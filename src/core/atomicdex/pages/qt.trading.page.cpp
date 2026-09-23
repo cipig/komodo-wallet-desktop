@@ -1649,14 +1649,22 @@ namespace atomic_dex
     trading_page::generate_fees_error(QVariantMap fees) const
     {
         TradingError last_trading_error = TradingError::None;
-        const auto&  kdf                = m_system_manager.get_system<kdf_service>();
 
         if (fees.contains("error_fees"))
         {
             auto&& cur_obj = fees.value("error_fees").toJsonObject();
-            if (!kdf.do_i_have_enough_funds(cur_obj["coin"].toString().toStdString(), safe_float(cur_obj["required_balance"].toString().toStdString())))
+
+            if (cur_obj.contains("coin") && !cur_obj["coin"].isNull() &&
+                cur_obj.contains("required_balance") && !cur_obj["required_balance"].isNull())
             {
-                last_trading_error = TradingError::TotalFeesNotEnoughFunds;
+                const auto& kdf = m_system_manager.get_system<kdf_service>();
+                std::string coin_ticker = cur_obj["coin"].toString().toStdString();
+                std::string balance_req = cur_obj["required_balance"].toString().toStdString();
+
+                if (!kdf.do_i_have_enough_funds(coin_ticker, safe_float(balance_req)))
+                {
+                    last_trading_error = TradingError::TotalFeesNotEnoughFunds;
+                }
             }
         }
         return last_trading_error;
