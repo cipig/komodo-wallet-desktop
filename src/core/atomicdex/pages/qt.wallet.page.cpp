@@ -1045,6 +1045,7 @@ namespace atomic_dex
     wallet_page::on_ticker_balance_updated(const ticker_balance_updated&)
     {
         refresh_ticker_infos();
+        check_send_availability();
     }
 
     void
