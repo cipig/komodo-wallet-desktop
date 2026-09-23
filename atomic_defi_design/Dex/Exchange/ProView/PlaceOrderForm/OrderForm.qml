@@ -320,7 +320,7 @@ ColumnLayout
     {
         id: dynamicContentCenter
         Layout.fillWidth: true
-        Layout.preferredHeight: childrenRect.height
+        Layout.fillHeight: false
         Layout.alignment: Qt.AlignVCenter
         spacing: 4
 
