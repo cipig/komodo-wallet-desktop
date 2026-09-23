@@ -439,8 +439,9 @@ MultipageModal
         Item
         {
             Layout.alignment: Qt.AlignCenter
+            Layout.fillWidth: true
+            Layout.fillHeight: true
             visible: buy_sell_rpc_busy
-            anchors.centerIn: parent
             height: 280
             width: 640
 
