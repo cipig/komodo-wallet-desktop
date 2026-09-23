@@ -452,8 +452,11 @@ MultipageModal
             }
         }
 
-        footer: buy_sell_rpc_busy ? [] : [
-            Item { Layout.preferredWidth: 100 },
+        footer: [
+            Item {
+                Layout.preferredWidth: 100
+                visible: !buy_sell_rpc_busy
+            },
 
             CancelButton
             {
@@ -462,13 +465,17 @@ MultipageModal
                 leftPadding: 45
                 rightPadding: 45
                 radius: 18
+                visible: !buy_sell_rpc_busy
                 onClicked: {
                     root.close()
                     API.app.trading_pg.reset_fees()
                 }
             },
 
-            Item { Layout.fillWidth: true },
+            Item {
+                Layout.fillWidth: true
+                visible: !buy_sell_rpc_busy
+            },
 
             DexAppOutlineButton
             {
@@ -477,6 +484,7 @@ MultipageModal
                 leftPadding: 45
                 rightPadding: 45
                 radius: 18
+                visible: !buy_sell_rpc_busy
                 enabled: General.is_swap_safe(allow_bad_trade)
                 onClicked:
                 {
@@ -491,7 +499,10 @@ MultipageModal
                 }
             },
 
-            Item { Layout.preferredWidth: 100 }
+            Item {
+                Layout.preferredWidth: 100
+                visible: !buy_sell_rpc_busy
+            }
         ]
     }
 }
