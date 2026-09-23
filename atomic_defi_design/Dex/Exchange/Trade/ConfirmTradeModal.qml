@@ -18,7 +18,8 @@ MultipageModal
     horizontalPadding: 10
     verticalPadding: 35
     bottomPadding: 15
-    height: buy_sell_rpc_busy ? 400 : Math.min(config_section.implicitHeight + 240, window.height - 20)
+    height: 750
+
     closePolicy: Popup.NoAutoClose
 
     MultipageModalContent
@@ -30,7 +31,6 @@ MultipageModal
         topMarginAfterTitle: 5
         flickMax: window.height - 20
 
-        // 1. HEADER FLOW
         header: [
             RowLayout
             {
@@ -38,6 +38,7 @@ MultipageModal
                 Layout.alignment: Qt.AlignHCenter
                 Layout.preferredHeight: 65
                 Layout.preferredWidth: 540
+                visible: !buy_sell_rpc_busy
 
                 Item { Layout.preferredWidth: 20 }
 
@@ -76,7 +77,6 @@ MultipageModal
             }
         ]
 
-        // 2. MAIN BODY CONTENT LAYOUT FLOW
         ColumnLayout
         {
             id: config_section
@@ -240,7 +240,6 @@ MultipageModal
                         text: qsTr("Trade price is more than 50% different to CEX! Confirm?")
                         font: DexTypo.caption
                     }
-
 
                     Item { width: 3 }
                 }
@@ -441,6 +440,7 @@ MultipageModal
         {
             Layout.alignment: Qt.AlignCenter
             visible: buy_sell_rpc_busy
+            anchors.centerIn: parent
             height: 280
             width: 640
 
@@ -452,8 +452,7 @@ MultipageModal
             }
         }
 
-        footer:
-        [
+        footer: buy_sell_rpc_busy ? [] : [
             Item { Layout.preferredWidth: 100 },
 
             CancelButton
