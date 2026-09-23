@@ -739,8 +739,14 @@ MultipageModal
                 horizontalAlignment: DexLabel.AlignHCenter
                 Layout.alignment: Qt.AlignHCenter
                 wrapMode: Label.Wrap
-                text_value: qsTr("Custom Fee can't be higher than the amount") + "\n"
-                          + qsTr("You have %1", "AMT TICKER").arg(General.formatCrypto("", API.app.get_balance_info_qstr(General.getFeesTicker(current_ticker_infos)), General.getFeesTicker(current_ticker_infos)))
+                text_value: {
+                    let feeTicker = General.getFeesTicker(current_ticker_infos);
+                    if (feeTicker && feeTicker !== "") {
+                        return qsTr("Custom Fee can't be higher than the amount") + "\n"
+                             + qsTr("You have %1", "AMT TICKER").arg(General.formatCrypto("", API.app.get_balance_info_qstr(feeTicker), feeTicker));
+                    }
+                    return "";
+                }
             }
         }
 

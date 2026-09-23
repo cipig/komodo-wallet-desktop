@@ -49,18 +49,15 @@ Item {
         scrollbar_visible: false
         boundsBehavior: Flickable.StopAtBounds
 
-        Column {
-            id: _column
-            topPadding: 0
-            width: parent.width
+        ColumnLayout {
+            id: _columnLayout
+            anchors.fill: parent
             spacing: 16
 
-            // Filters (search and balance)
             Item {
-                width: parent.parent.width - 80
-                anchors.horizontalCenter: parent.horizontalCenter
-                height: 30
-                visible: true
+                Layout.preferredWidth: parent.width - 80
+                Layout.alignment: Qt.AlignHCenter
+                Layout.preferredHeight: 40
 
                 Item {
                     anchors.fill: parent
@@ -105,9 +102,9 @@ Item {
             AssetsList
             {
                 id: coinsList
-                width: parent.parent.width - 80
-                Layout.preferredHeight: parent.height - 40
-                anchors.horizontalCenter: parent.horizontalCenter
+                Layout.preferredWidth: parent.width - 80
+                Layout.fillHeight: true
+                Layout.alignment: Qt.AlignHCenter
             }
         }
     }

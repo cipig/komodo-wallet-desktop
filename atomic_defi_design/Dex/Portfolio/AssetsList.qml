@@ -9,7 +9,8 @@ import Dex.Themes 1.0 as Dex
 Dex.DefaultListView
 {
     id: list
-    interactive: false
+    interactive: true
+    clip: true
     scrollbar_visible: false
     model: null
 
@@ -26,7 +27,7 @@ Dex.DefaultListView
 
     Timer {
         id: delayModel
-        interval: 200 // Gives a short delay for heavy bulk row allocations to settle
+        interval: 200
         repeat: false
         running: true
         onTriggered: {
