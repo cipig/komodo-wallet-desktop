@@ -18,9 +18,7 @@ MultipageModal
     horizontalPadding: 10
     verticalPadding: 35
     bottomPadding: 15
-
-    height: buy_sell_rpc_busy ? 400 : Math.min(content_wrapper.implicitHeight + verticalPadding + bottomPadding + 30, window.height - 20)
-
+    height: buy_sell_rpc_busy ? 400 : Math.min(config_section.implicitHeight + 240, window.height - 20)
     closePolicy: Popup.NoAutoClose
 
     MultipageModalContent

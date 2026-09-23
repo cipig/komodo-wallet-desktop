@@ -82,22 +82,19 @@ DefaultRectangle
     Component
     {
         id: dashboard
-
-        Dashboard
-        {}
+        Dashboard {}
     }
 
     Component
     {
         id: dialogManager
-        DexDialogManager
-        {}
+        DexDialogManager {}
     }
 
     Component
     {
         id: popupManager
-        PopupManager { }
+        PopupManager {}
     }
 
     Loader
@@ -114,8 +111,7 @@ DefaultRectangle
     ModalLoader
     {
         id: error_log_modal
-        sourceComponent: LogModal
-        {}
+        sourceComponent: LogModal {}
     }
 
     function showError(title, content)
@@ -232,6 +228,7 @@ DefaultRectangle
             background: Qaterial.ClipRRect
             {
                 radius: 18
+
                 DefaultRectangle
                 {
                     anchors.fill: parent
@@ -281,6 +278,7 @@ DefaultRectangle
                 {
                     Layout.fillHeight: true
                     width: 60
+
                     Qaterial.Icon
                     {
                         icon: alertPopup.icon
@@ -309,6 +307,7 @@ DefaultRectangle
                 {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+
                     Column
                     {
                         id: col

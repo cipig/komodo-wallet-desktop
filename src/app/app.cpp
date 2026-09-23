@@ -277,7 +277,10 @@ namespace atomic_dex
         functor_remove(std::move(theme_path));
         // Uncomment if you want to reset fiat/language/theme
         // functor_remove(std::move(ini_file_path));
-        // atomic_dex::application::restart();
+
+        QTimer::singleShot(50, qApp, []() {
+            atomic_dex::application::restart();
+        });
     }
 
     void application::launch()
