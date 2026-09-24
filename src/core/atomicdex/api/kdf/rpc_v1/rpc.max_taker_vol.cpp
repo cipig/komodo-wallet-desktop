@@ -14,10 +14,7 @@
  *                                                                            *
  ******************************************************************************/
 
-//! Deps
 #include <nlohmann/json.hpp>
-
-//! Project Headers
 #include "atomicdex/api/kdf/generics.hpp"
 #include "atomicdex/api/kdf/rpc_v1/rpc.max_taker_vol.hpp"
 #include "atomicdex/utilities/global.utilities.hpp"
@@ -30,6 +27,7 @@ namespace atomic_dex::kdf
     to_json(nlohmann::json& j, const max_taker_vol_request& cfg)
     {
         j["coin"] = cfg.coin;
+
         if (cfg.trade_with.has_value())
         {
             j["trade_with"] = cfg.trade_with.value();
@@ -54,6 +52,7 @@ namespace atomic_dex::kdf
     from_json(const nlohmann::json& j, max_taker_vol_answer& answer)
     {
         extract_rpc_json_answer<max_taker_vol_answer_success>(j, answer);
+
         if (answer.error.has_value()) ///< we need a default fallback in this case fixed on upstream already, need to update
         {
             SPDLOG_WARN("Max taker volume need a default value, fallback with 0 as value, this is probably because you have an empty balance or not enough "

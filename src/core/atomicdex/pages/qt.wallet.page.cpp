@@ -38,11 +38,13 @@ namespace atomic_dex
 namespace atomic_dex
 {
     void
-    wallet_page::check_send_availability()
+    wallet_page::check_send_availability([[maybe_unused]] utils::caller_location location)
     {
-        auto& kdf = m_system_manager.get_system<kdf_service>();
+        SPDLOG_DEBUG("wallet_page::check_send_availability called by: {} ({}:{})", location.function_name(), location.file_name(), location.line());
 
+        auto& kdf                  = m_system_manager.get_system<kdf_service>();
         std::string current_ticker = kdf.get_current_ticker();
+
         if (current_ticker.empty())
         {
             m_send_available                   = false;
