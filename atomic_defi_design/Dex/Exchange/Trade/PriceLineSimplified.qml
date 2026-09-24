@@ -94,15 +94,17 @@ ColumnLayout
         }
     }
 
-    // Price Comparison
-    ColumnLayout
+    Item
     {
+        id: priceComparisonContainer
         visible: price_entered && !invalid_cex_price
+        Layout.fillWidth: true
+        Layout.preferredHeight: visible ? 40 : 0
         Layout.alignment: Qt.AlignHCenter
 
         RowLayout
         {
-            Layout.fillWidth: true
+            anchors.fill: parent
             Layout.preferredHeight: 30
 
             GradientRectangle
@@ -141,7 +143,7 @@ ColumnLayout
                     text_value: (parseFloat(cexPriceDiff) > 0 ? qsTr("Expensive") : qsTr("Expedient")) + ":&nbsp;&nbsp;&nbsp;&nbsp;" + qsTr("%1 compared to CEX", "PRICE_DIFF%").arg("<b>" + General.formatPercent(General.limitDigits(cexPriceDiff)) + "</b>")
                     font.pixelSize: fontSizeBigger
                 }
-        
+
                 DexLabel
                 {
                     text_value: General.formatPercent(-lineScale)

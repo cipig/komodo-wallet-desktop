@@ -26,7 +26,6 @@ namespace atomic_dex
     {
         this->dispatcher_.sink<tx_fetch_finished>().connect<&wallet_page::on_tx_fetch_finished>(*this);
         this->dispatcher_.sink<ticker_balance_updated>().connect<&wallet_page::on_ticker_balance_updated>(*this);
-        this->dispatcher_.sink<process_swaps_and_orders_finished>().connect<&wallet_page::check_send_availability>(*this);
     }
 
     void
@@ -1046,6 +1045,7 @@ namespace atomic_dex
     wallet_page::on_ticker_balance_updated(const ticker_balance_updated&)
     {
         refresh_ticker_infos();
+        this->check_send_availability();
     }
 
     void
