@@ -162,17 +162,17 @@ Item
     readonly property bool buy_sell_rpc_busy: API.app.trading_pg.buy_sell_rpc_busy
     readonly property var buy_sell_last_rpc_data: API.app.trading_pg.buy_sell_last_rpc_data
 
-    Column
+    ColumnLayout
     {
         anchors.fill: parent
-        spacing: 8
         anchors.margins: 5
+        spacing: 8
 
         ProView
         {
             id: proView
-            width: parent.width
-            height: parent.height - 10
+            Layout.fillWidth: true
+            Layout.fillHeight: true
             visible: API.app.trading_pg.current_trading_mode == TradingMode.Pro
             enabled: visible
         }
