@@ -799,6 +799,7 @@ namespace atomic_dex
     orders_model::recover_fund(QString uuid)
     {
         this->set_recover_fund_busy(true);
+
         auto&                                   kdf_system = m_system_manager.get_system<kdf_service>();
         nlohmann::json                          batch      = nlohmann::json::array();
         nlohmann::json                          json_data  = kdf::template_request("recover_funds_of_swap");
@@ -806,8 +807,6 @@ namespace atomic_dex
         kdf::recover_funds_of_swap_request req{.swap_uuid = uuid.toStdString()};
         kdf::to_json(json_data, req);
         batch.push_back(json_data);
-        // json_data["userpass"] = "*****";
-        // SPDLOG_DEBUG("recover_funds_of_swap request: {}", json_data.dump(-1));
 
         auto answer_functor = [this](t_http_response resp)
         {
@@ -820,14 +819,17 @@ namespace atomic_dex
             {
                 auto answers        = nlohmann::json::parse(body);
                 auto recover_answer = kdf::rpc_process_answer_batch<t_recover_funds_of_swap_answer>(answers[0], "recover_funds_of_swap");
+
                 if (recover_answer.result.has_value())
                 {
-                    auto answer       = recover_answer.result.value();
-                    j_out["is_valid"] = true;
-                    j_out["coin"]     = answer.coin;
-                    j_out["action"]   = answer.action;
-                    j_out["tx_hash"]  = answer.tx_hash;
-                    j_out["tx_hex"]   = answer.tx_hex;
+                    auto answer                    = recover_answer.result.value();
+                    j_out["is_valid"]              = true;
+                    nlohmann::json success_payload = nlohmann::json::object();
+                    success_payload["action"]      = answer.action;
+                    success_payload["coin"]        = answer.coin;
+                    success_payload["tx_hash"]     = answer.tx_hash;
+                    success_payload["tx_hex"]      = answer.tx_hex;
+                    j_out["result"]                = success_payload;
                 }
                 else if (recover_answer.error.has_value())
                 {
@@ -850,6 +852,7 @@ namespace atomic_dex
                 j_out["is_valid"] = false;
                 j_out["error"]    = body;
             }
+
             this->set_recover_fund_data(nlohmann_json_object_to_qt_json_object(j_out));
             this->set_recover_fund_busy(false);
         };

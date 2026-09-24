@@ -25,14 +25,15 @@ namespace
     adjust_vol(atomic_dex::trading_page& trading_pg, atomic_dex::qt_orderbook_wrapper& wrapper)
     {
         t_float_50 price_f = safe_float(trading_pg.get_price().toStdString());
+
         if (price_f > 0)
         {
             t_float_50 base_min_f             = safe_float(wrapper.get_base_min_taker_vol().toStdString());
             t_float_50 base_min_by_rel        = safe_float(wrapper.get_rel_min_taker_vol().toStdString()) / price_f;
             t_float_50 base_min_vol_threshold = boost::multiprecision::max(base_min_by_rel, base_min_f);
             base_min_vol_threshold += t_float_50("1e-8");
-            t_float_50 cur_min_volume_f = safe_float(trading_pg.get_min_trade_vol().toStdString());
-            QString    cur_taker_vol    = QString::fromStdString(atomic_dex::utils::format_float(base_min_vol_threshold));
+            t_float_50 cur_min_volume_f       = safe_float(trading_pg.get_min_trade_vol().toStdString());
+            QString    cur_taker_vol          = QString::fromStdString(atomic_dex::utils::format_float(base_min_vol_threshold));
 
             // If cur_min_volume in the UI < base_min_vol_threshold override
             if (cur_min_volume_f < base_min_vol_threshold)
@@ -120,7 +121,6 @@ namespace atomic_dex
 
         if (m_selected_best_order->has_value())
         {
-            SPDLOG_INFO("selected best orders have a value - set preferred order");
             m_system_manager.get_system<trading_page>().set_preferred_order(m_selected_best_order->value());
             m_selected_best_order = std::nullopt;
         }
@@ -207,10 +207,10 @@ namespace atomic_dex
     void
     qt_orderbook_wrapper::select_best_order(const QString& order_uuid)
     {
-        SPDLOG_INFO("select_best_order: {}", order_uuid.toStdString());
         QVariantMap out;
         const bool  is_buy = m_system_manager.get_system<trading_page>().get_market_mode() == MarketMode::Buy;
         const auto  res    = m_best_orders->match(m_best_orders->index(0, 0), orderbook_model::UUIDRole, order_uuid, 1, Qt::MatchFlag::MatchExactly);
+
         if (!res.empty())
         {
             const QModelIndex& idx       = res.at(0);
@@ -230,8 +230,8 @@ namespace atomic_dex
             auto& trading_pg             = m_system_manager.get_system<trading_page>();
 
             m_selected_best_order = out;
-
             auto right_coin = trading_pg.get_market_pairs_mdl()->get_right_selected_coin();
+
             if (right_coin == out.value("coin").toString())
             {
                 SPDLOG_INFO("Selected order is from the same pair, overriding preferred_order");

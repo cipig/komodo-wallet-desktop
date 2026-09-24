@@ -82,6 +82,7 @@ MultipageModal
             id: config_section
             Layout.alignment: Qt.AlignCenter
             Layout.fillWidth: true
+            Layout.fillHeight: true
             Layout.leftMargin: 4
             Layout.rightMargin: 4
             Layout.topMargin: 2
@@ -407,6 +408,12 @@ MultipageModal
                         }
                     }
                 }
+            }
+
+            Item
+            {
+                Layout.fillHeight: true
+                Layout.fillWidth: true
             }
 
             ColumnLayout

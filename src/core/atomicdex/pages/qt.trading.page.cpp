@@ -319,6 +319,7 @@ namespace atomic_dex
         auto answer_functor = [this](const t_http_response& resp)
         {
             std::string body = (resp.extract_string(true).get());
+
             if (resp.status_code() == http_status_codes::ok)
             {
                 if (body.find("error") == std::string::npos)
@@ -342,6 +343,7 @@ namespace atomic_dex
                 auto error_json = QJsonObject({{"error_code", resp.status_code()}, {"error_message", QString::fromStdString(body)}});
                 this->set_buy_sell_last_rpc_data(error_json);
             }
+
             this->set_buy_sell_rpc_busy(false);
             this->clear_forms("place_buy_order");
         };
@@ -1195,10 +1197,12 @@ namespace atomic_dex
     void trading_page::set_preferred_order(const QVariantMap& price_object)
     {
         auto preferred_order = nlohmann::json::parse(QString(QJsonDocument(QJsonObject::fromVariantMap(price_object)).toJson()).toStdString());
+
         if (preferred_order == m_preferred_order)
         {
             return;
         }
+
         m_preferred_order = std::move(preferred_order);
         emit preferredOrderChanged();
 
@@ -1617,6 +1621,7 @@ namespace atomic_dex
         {
             return "0";
         }
+
         const bool is_buy     = m_market_mode == MarketMode::Buy;
         t_float_50 price      = safe_float(m_price.toStdString());
         t_float_50 cex_price  = safe_float(m_cex_price.toStdString());
@@ -1735,6 +1740,7 @@ namespace atomic_dex
             emit preImageRpcStatusChanged();
         }
     }
+
     void
     trading_page::reset_fees()
     {
