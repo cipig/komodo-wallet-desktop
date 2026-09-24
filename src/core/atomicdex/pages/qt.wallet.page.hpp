@@ -69,7 +69,7 @@ namespace atomic_dex
         [[nodiscard]] bool                is_current_ticker_fees_coin_enabled();
         [[nodiscard]] bool                is_page_open() const;
         void                              set_page_open(bool value);
-        void                              check_send_availability(utils::caller_location location = utils::caller_location::current());
+        void                              check_send_availability();
                                           // When called, refreshes `m_send_availability_state` and `m_send_available` respective values. `m_send_available` is
                                           // equal to false when you cannot send the selected coin, thus `m_send_availability_state` will contain the reason of
                                           // why it's not possible.
