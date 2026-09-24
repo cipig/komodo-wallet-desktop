@@ -555,7 +555,7 @@ namespace atomic_dex
             if (base == existing_order.coin) {
                 existing_order.cached_price_diff = "0";
             } else {
-                t_float_50 cex_price = safe_float(price_service.get_cex_rates(base, existing_order.coin));
+                t_float_50 cex_price = safe_float(price_service.get_cex_rates(base, existing_order.coin)); // HOTSPOT 0.2%
                 if (cex_price > 0) {
                     t_float_50 price_diff = t_float_50(100) * (t_float_50(1) - safe_float(existing_order.price) / cex_price) * (!is_buy ? t_float_50(1) : t_float_50(-1));
                     existing_order.cached_price_diff = utils::format_float(price_diff);
@@ -665,7 +665,7 @@ namespace atomic_dex
             if (m_system_mgr.get_system<trading_page>().get_market_mode() == MarketMode::Sell) {
                 this->m_model_proxy->sort(0, Qt::DescendingOrder);
             } else {
-                this->m_model_proxy->sort(0, Qt::AscendingOrder);
+                this->m_model_proxy->sort(0, Qt::AscendingOrder); // HOTSPOT 0.3%
             }
         }
     }

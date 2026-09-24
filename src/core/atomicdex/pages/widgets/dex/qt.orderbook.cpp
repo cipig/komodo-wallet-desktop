@@ -90,8 +90,8 @@ namespace atomic_dex
     void
     qt_orderbook_wrapper::refresh_orderbook_model_data(const kdf::orderbook_result_rpc& answer)
     {
-        this->m_asks->refresh_orderbook_model_data(answer.asks);
-        this->m_bids->refresh_orderbook_model_data(answer.bids);
+        this->m_asks->refresh_orderbook_model_data(answer.asks); // HOTSPOT 0.2%
+        this->m_bids->refresh_orderbook_model_data(answer.bids); // HOTSPOT 0.2%
         const auto data = this->m_system_manager.get_system<orderbook_scanner_service>().get_bestorders_data();
 
         if (data.empty())
@@ -104,7 +104,7 @@ namespace atomic_dex
         }
         else
         {
-            m_best_orders->refresh_orderbook_model_data(data); // HOTSPOT 0.3%
+            m_best_orders->refresh_orderbook_model_data(data); // HOTSPOT 0.9%
         }
         this->set_both_taker_vol();
     }

@@ -316,19 +316,18 @@ ColumnLayout
         Layout.fillWidth: true
     }
 
-    ColumnLayout
+    Column
     {
         id: dynamicContentCenter
-        Layout.fillWidth: true
-        Layout.fillHeight: false
-        Layout.alignment: Qt.AlignVCenter
+        width: parent.width
+        anchors.horizontalCenter: parent.horizontalCenter
         spacing: 4
 
         Dex.Text
         {
             id: dexErrors
-            Layout.fillWidth: true
-            Layout.preferredHeight: text_value !== "" ? 40 : 0
+            width: parent.width
+            height: text_value !== "" ? 40 : 0
             visible: text_value !== ""
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
@@ -344,15 +343,14 @@ ColumnLayout
 
         Item
         {
-            Layout.preferredHeight: 4
-            Layout.fillWidth: true
+            height: 4
+            width: parent.width
             visible: dexErrors.visible
         }
 
         TotalView
         {
-            Layout.fillWidth: true
-            Layout.alignment: Qt.AlignHCenter
+            width: parent.width
         }
     }
 

@@ -440,7 +440,7 @@ namespace atomic_dex
         {
             if (value.currently_enabled)
             {
-                destination.emplace_back(value); // HOTSPOT 0.3%
+                destination.emplace_back(value); // HOTSPOT 0.4%
             }
         }
 

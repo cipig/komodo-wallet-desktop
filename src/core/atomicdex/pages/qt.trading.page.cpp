@@ -588,7 +588,7 @@ namespace atomic_dex
                 if (!ec)
                 {
                     auto* wrapper = get_orderbook_wrapper();
-                    m_models_actions[orderbook_need_a_reset] ? wrapper->reset_orderbook(result) : wrapper->refresh_orderbook_model_data(result); // HOTSPOT 0.8%
+                    m_models_actions[orderbook_need_a_reset] ? wrapper->reset_orderbook(result) : wrapper->refresh_orderbook_model_data(result); // HOTSPOT 1.7%
 
                     if (m_models_actions[orderbook_need_a_reset] && this->m_current_trading_mode == TradingModeGadget::Pro)
                     {

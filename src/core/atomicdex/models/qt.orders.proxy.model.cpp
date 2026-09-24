@@ -106,7 +106,7 @@ namespace atomic_dex
         {
             this->m_is_history = is_history;
             emit isHistoryChanged();
-            this->invalidate(); // HOTSPOT 0.7%
+            this->invalidate(); // HOTSPOT 0.2%
         }
     }
 

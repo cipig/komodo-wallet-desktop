@@ -4,6 +4,7 @@
 #include <QJsonObject>
 #include <QSettings>
 #include <QrCode.hpp>
+#include <QTimer>
 #include "atomicdex/api/faucet/faucet.hpp"
 #include "atomicdex/api/kdf/rpc_v1/rpc.convertaddress.hpp"
 #include "atomicdex/api/kdf/rpc_v1/rpc.electrum.hpp"
@@ -1045,7 +1046,9 @@ namespace atomic_dex
     wallet_page::on_ticker_balance_updated(const ticker_balance_updated&)
     {
         refresh_ticker_infos();
-        check_send_availability();
+        QTimer::singleShot(10, this, [this]() {
+            this->check_send_availability();
+        });
     }
 
     void
