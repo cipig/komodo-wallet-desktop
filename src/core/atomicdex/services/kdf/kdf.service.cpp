@@ -29,7 +29,6 @@
 #include <QSaveFile>
 #include <QProcess>
 #include <QSettings>
-
 #include "atomicdex/api/kdf/utxo_merge_params.hpp"
 #include "atomicdex/api/kdf/rpc_v1/rpc.electrum.hpp"
 #include "atomicdex/api/kdf/rpc_v1/rpc.min_trading_vol.hpp"
@@ -2148,7 +2147,11 @@ namespace atomic_dex
 
         auto answer_functor = [this, limit, filter_infos](t_http_response resp)
         {
-            auto       answers        = kdf::basic_batch_answer(resp);
+            static std::mutex s_order_fetch_mutex;
+            std::unique_lock<std::mutex> lock(s_order_fetch_mutex);
+
+            std::string body = (resp.extract_string(true).get());
+            auto       answers        = nlohmann::json::parse(body);
             const auto orders_answers = kdf::rpc_process_answer_batch<t_my_orders_answer>(answers[0], "my_orders");
             const auto swap_answer    = kdf::rpc_process_answer_batch<t_my_recent_swaps_answer>(answers[1], "my_recent_swaps");
             const auto active_swaps_answer = kdf::rpc_process_answer_batch<t_active_swaps_answer>(answers[2], "active_swaps");

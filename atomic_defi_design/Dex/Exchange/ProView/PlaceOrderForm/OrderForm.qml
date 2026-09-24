@@ -316,41 +316,47 @@ ColumnLayout
         Layout.fillWidth: true
     }
 
-    Column
+    Item
     {
-        id: dynamicContentCenter
-        width: parent.width
-        anchors.horizontalCenter: parent.horizontalCenter
-        spacing: 4
+        id: dynamicContentCenterWrapper
+        Layout.fillWidth: true
+        Layout.preferredHeight: dynamicContentCenter.implicitHeight
 
-        Dex.Text
+        Column
         {
-            id: dexErrors
-            width: parent.width
-            height: text_value !== "" ? 40 : 0
-            visible: text_value !== ""
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            font.pixelSize: Style.textSizeSmall4
-            color: Dex.CurrentTheme.warningColor
-            text_value: General.getTradingError(
-                            last_trading_error,
-                            curr_fee_info,
-                            base_ticker,
-                            rel_ticker, left_ticker, right_ticker)
-            elide: Text.ElideRight
-        }
+            id: dynamicContentCenter
+            anchors.fill: parent
+            spacing: 4
 
-        Item
-        {
-            height: 4
-            width: parent.width
-            visible: dexErrors.visible
-        }
+            Dex.Text
+            {
+                id: dexErrors
+                width: parent.width
+                height: text_value !== "" ? 40 : 0
+                visible: text_value !== ""
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                font.pixelSize: Style.textSizeSmall4
+                color: Dex.CurrentTheme.warningColor
+                text_value: General.getTradingError(
+                                last_trading_error,
+                                curr_fee_info,
+                                base_ticker,
+                                rel_ticker, left_ticker, right_ticker)
+                elide: Text.ElideRight
+            }
 
-        TotalView
-        {
-            width: parent.width
+            Item
+            {
+                height: 4
+                width: parent.width
+                visible: dexErrors.visible
+            }
+
+            TotalView
+            {
+                width: parent.width
+            }
         }
     }
 
