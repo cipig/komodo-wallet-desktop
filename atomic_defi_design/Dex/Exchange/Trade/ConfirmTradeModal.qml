@@ -95,7 +95,7 @@ MultipageModal
             PriceLineSimplified
             {
                 id: price_line
-                Layout.topMargin: 2
+                Layout.topMargin: 25
                 Layout.bottomMargin: 4
                 Layout.leftMargin: 40
                 Layout.rightMargin: 40
@@ -107,7 +107,6 @@ MultipageModal
             DefaultRectangle {
                 id: feesAreaBox
                 Layout.alignment: Qt.AlignCenter
-
                 Layout.preferredWidth: parent.width - 120
                 Layout.preferredHeight: 185
                 Layout.bottomMargin: 8

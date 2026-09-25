@@ -4,7 +4,6 @@
 #include <QJsonObject>
 #include <QSettings>
 #include <QrCode.hpp>
-#include <QTimer>
 #include "atomicdex/api/faucet/faucet.hpp"
 #include "atomicdex/api/kdf/rpc_v1/rpc.convertaddress.hpp"
 #include "atomicdex/api/kdf/rpc_v1/rpc.electrum.hpp"
@@ -581,11 +580,13 @@ namespace atomic_dex
                 const auto& current_fiat        = settings_system.get_current_fiat().toStdString();
                 auto        answers             = kdf::basic_batch_answer(resp);
 
-                if (answers[0].contains("result"))
+                nlohmann::json root_node = answers.is_array() ? answers[0] : answers;
+
+                if (root_node.contains("result"))
                 {
-                    if (answers[0]["result"].contains("task_id"))
+                    if (root_node["result"].contains("task_id"))
                     {
-                        auto task_id = answers[0].at("result").at("task_id").get<std::int8_t>();
+                        auto task_id = root_node.at("result").at("task_id").get<std::int8_t>();
                         {
                             SPDLOG_DEBUG("Task ID: {}", task_id);
                             using namespace std::chrono_literals;
@@ -606,7 +607,9 @@ namespace atomic_dex
                                 auto                        z_answers   = kdf::basic_batch_answer(z_resp);
 
                                 z_error = z_answers;
-                                z_status = QString::fromStdString(z_answers[0].at("result").at("status").get<std::string>());
+
+                                nlohmann::json loop_node = z_answers.is_array() ? z_answers[0] : z_answers;
+                                z_status = QString::fromStdString(loop_node.at("result").at("status").get<std::string>());
 
                                 SPDLOG_DEBUG("[{}/{}] Waiting for {} withdraw status [{}]...", z_nb_try, loop_limit, ticker, z_status.toUtf8().constData());
 
@@ -625,26 +628,25 @@ namespace atomic_dex
                             } while (z_nb_try < loop_limit);
 
                             try {
-                                if (z_error[0].at("result").at("details").contains("error"))
+                                nlohmann::json final_err_node = z_error.is_array() ? z_error[0] : z_error;
+
+                                if (final_err_node.at("result").at("details").contains("error"))
                                 {
                                     SPDLOG_DEBUG("Error zhtlc withdraw_status {}: {} ", ticker, z_status.toUtf8().constData());
-                                    z_status   = QString::fromStdString(z_error[0].at("result").at("details").at("error").get<std::string>());
+                                    z_status   = QString::fromStdString(final_err_node.at("result").at("details").at("error").get<std::string>());
                                     set_withdraw_status(z_status);
                                 }
                                 else if (z_nb_try == loop_limit)
                                 {
-                                    // TODO: Handle this case.
-                                    // There could be no error message if scanning takes too long.
-                                    // Either we force disable here, or schedule to check on it later
                                     SPDLOG_DEBUG("Exited zhtlc withdraw loop after 120 tries");
-                                    SPDLOG_DEBUG("Bad answer for [{}] zhtlc withdraw_status: {}", ticker, z_error[0].dump(4));
+                                    SPDLOG_DEBUG("Bad answer for [{}] zhtlc withdraw_status: {}", ticker, final_err_node.dump(4));
                                     set_withdraw_status("Timed out");
                                 }
                                 else
                                 {
-                                    auto           withdraw_answer      = kdf::rpc_process_answer_batch<t_withdraw_status_answer>(z_error[0], "task::withdraw::status");
+                                    auto           withdraw_answer      = kdf::rpc_process_answer_batch<t_withdraw_status_answer>(final_err_node, "task::withdraw::status");
                                     nlohmann::json j_out                = nlohmann::json::object();
-                                    j_out["withdraw_answer"]            = z_error[0]["result"]["details"];
+                                    j_out["withdraw_answer"]            = final_err_node["result"]["details"];
                                     j_out.at("withdraw_answer")["date"] = withdraw_answer.result.value().timestamp_as_date;
 
                                     // Add total amount in fiat currency.
@@ -666,9 +668,6 @@ namespace atomic_dex
                                     {
                                         j_out["withdraw_answer"]["fee_details"]["amount"] = j_out["withdraw_answer"]["fee_details"]["miner_fee"];
                                     }
-                                    // Sia's TxFeeDetails names this field "total_amount", not "amount"
-                                    // (KDF Reloaded CRD ch.20 R-W4 -- corpus-confirmed dictated wire name,
-                                    // not a naming inconsistency to fix on the KDF side).
                                     if (j_out.at("withdraw_answer").at("fee_details").contains("total_amount") && !j_out.at("withdraw_answer").at("fee_details").contains("amount"))
                                     {
                                         j_out["withdraw_answer"]["fee_details"]["amount"] = j_out["withdraw_answer"]["fee_details"]["total_amount"];
