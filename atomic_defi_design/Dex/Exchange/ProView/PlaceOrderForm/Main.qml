@@ -72,7 +72,7 @@ ColumnLayout
     Timer
     {
         id: check_trade_preimage
-        interval: 1000;
+        interval: 1300;
         running: false;
         repeat: true;
         triggeredOnStart: true;
@@ -94,7 +94,7 @@ ColumnLayout
                 show_waiting_for_trade_preimage = false
                 stop()
             }
-            else if (loop_count > 30)
+            else if (loop_count > 25)
             {
                 loop_count = 0
                 show_waiting_for_trade_preimage = false

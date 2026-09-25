@@ -18,7 +18,7 @@ ColumnLayout
     readonly property string cexPriceDiff: API.app.trading_pg.cex_price_diff
     readonly property string l_ticker: General.coinWithoutSuffix(left_ticker)
     readonly property string r_ticker: General.coinWithoutSuffix(right_ticker)
-    readonly property bool invalid_cex_price: API.app.trading_pg.invalid_cex_price
+    readonly property bool has_valid_cex_feed: cex_price !== "" && cex_price !== "0" && cex_price !== "0.00"
     readonly property bool price_entered: !General.isZero(non_null_price)
     readonly property int fontSize: Style.textSizeSmall1
     readonly property int fontSizeBigger: Style.textSizeSmall2
@@ -36,7 +36,7 @@ ColumnLayout
             DexLabel
             {
                 Layout.fillWidth: true
-                horizontalAlignment: invalid_cex_price ? Text.AlignHCenter : Text.AlignLeft
+                horizontalAlignment: !has_valid_cex_feed ? Text.AlignHCenter : Text.AlignLeft
                 text_value: qsTr("Exchange rate") + (preferred_order.price !== undefined ? (" (" + qsTr("Selected") + ")") : "")
                 font.pixelSize: fontSize
             }
@@ -45,7 +45,7 @@ ColumnLayout
             DexLabel
             {
                 Layout.fillWidth: true
-                horizontalAlignment: invalid_cex_price ? Text.AlignHCenter : Text.AlignLeft
+                horizontalAlignment: !has_valid_cex_feed ? Text.AlignHCenter : Text.AlignLeft
                 text_value: General.formatCrypto("", "1", r_ticker) + " = " + General.formatCrypto("", price_reversed, l_ticker)
                 font.pixelSize: fontSize
             }
@@ -55,7 +55,7 @@ ColumnLayout
             {
                 visible: price != 1
                 Layout.fillWidth: true
-                horizontalAlignment: invalid_cex_price ? Text.AlignHCenter : Text.AlignLeft
+                horizontalAlignment: !has_valid_cex_feed ? Text.AlignHCenter : Text.AlignLeft
                 text_value: General.formatCrypto("", price, r_ticker) + " = " + General.formatCrypto("", "1", l_ticker)
                 font.pixelSize: fontSize
             }
@@ -63,7 +63,7 @@ ColumnLayout
 
         ColumnLayout
         {
-            visible: !invalid_cex_price
+            visible: has_valid_cex_feed
             Layout.fillWidth: true
 
             DexLabel
@@ -94,10 +94,11 @@ ColumnLayout
         }
     }
 
+    // Price Comparison Slider
     Item
     {
         id: priceComparisonContainer
-        visible: price_entered && !invalid_cex_price
+        visible: price_entered && has_valid_cex_feed
         Layout.fillWidth: true
         Layout.preferredHeight: visible ? 40 : 0
         Layout.alignment: Qt.AlignHCenter
