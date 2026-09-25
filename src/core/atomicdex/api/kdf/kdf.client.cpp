@@ -290,8 +290,6 @@ namespace atomic_dex::kdf
     {
         try
         {
-            atomic_dex::http::client::get_interactive_scheduler().clear();
-            atomic_dex::http::client::get_background_scheduler().clear();
             generate_client().close();
         }
         catch (...) {}

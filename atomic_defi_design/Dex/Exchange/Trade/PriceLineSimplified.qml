@@ -19,11 +19,18 @@ ColumnLayout
     readonly property string cexPriceDiff: API.app.trading_pg.cex_price_diff
     readonly property string l_ticker: General.coinWithoutSuffix(left_ticker)
     readonly property string r_ticker: General.coinWithoutSuffix(right_ticker)
-    readonly property bool has_valid_cex_feed: cex_price !== "" && cex_price !== "0" && cex_price !== "0.00" && cexPriceDiff !== "" && cexPriceDiff.indexOf("NaN") === -1
     readonly property bool price_entered: !General.isZero(non_null_price)
     readonly property int fontSize: Style.textSizeSmall1
     readonly property int fontSizeBigger: Style.textSizeSmall2
     readonly property int lineScale: General.getComparisonScale(cexPriceDiff)
+    readonly property bool has_valid_cex_feed: cex_price !== "" &&
+                                               cex_price !== "0" &&
+                                               cex_price !== "0.00" &&
+                                               cexPriceDiff !== "" &&
+                                               cexPriceDiff !== "0" &&
+                                               cexPriceDiff !== "0.00" &&
+                                               cexPriceDiff.indexOf("NaN") === -1
+
 
     // EXCHANGE RATES TEXT BOXES ROW
     RowLayout
