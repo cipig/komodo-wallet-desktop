@@ -82,7 +82,7 @@ MultipageModal
             id: config_section
             Layout.alignment: Qt.AlignCenter
             Layout.fillWidth: true
-            Layout.fillHeight: true
+            Layout.fillHeight: false
             Layout.leftMargin: 4
             Layout.rightMargin: 4
             Layout.topMargin: 2

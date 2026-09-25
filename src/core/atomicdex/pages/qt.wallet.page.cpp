@@ -526,9 +526,9 @@ namespace atomic_dex
     wallet_page::refresh_ticker_infos()
     {
         emit tickerInfosChanged();
-        QTimer::singleShot(50, this, [this]() {
+        QMetaObject::invokeMethod(this, [this]() {
             this->check_send_availability();
-        });
+        }, Qt::QueuedConnection);
     }
 
     void
