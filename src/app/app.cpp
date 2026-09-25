@@ -709,11 +709,6 @@ namespace atomic_dex
         this->system_manager_.mark_system<kdf_service>();
         this->process_one_frame();
         m_event_actions[events_action::about_to_exit_app] = true;
-        auto& kdf = get_kdf();
-        if (kdf.is_kdf_running())
-        {
-            kdf.get_kdf_client().abort_all_tasks();
-        }
     }
 
     void

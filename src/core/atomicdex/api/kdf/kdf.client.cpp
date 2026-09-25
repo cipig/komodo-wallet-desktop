@@ -226,6 +226,11 @@ namespace atomic_dex::kdf
             .request(http_request, prio)
             .then(scheduler, [on_rpc_processed, request](const t_http_response& resp)
             {
+                if (atomic_dex::kdf::is_kdf_running() == false)
+                {
+                    return;
+                }
+
                 try
                 {
                     auto rpc = process_rpc_answer<Rpc>(resp);
@@ -284,15 +289,6 @@ namespace atomic_dex::kdf
     {
         return process_rpc<t_recover_funds_of_swap_request, t_recover_funds_of_swap_answer>(
             std::forward<t_recover_funds_of_swap_request>(request), "recover_funds_of_swap");
-    }
-
-    void kdf_client::abort_all_tasks()
-    {
-        try
-        {
-            generate_client().close();
-        }
-        catch (...) {}
     }
 } // namespace atomic_dex
 

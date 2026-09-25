@@ -39,8 +39,6 @@ namespace atomic_dex::kdf
         template <typename TRequest, typename TAnswer>
         TAnswer process_rpc(TRequest&& request, std::string rpc_command, bool is_v2 = false);
 
-        void abort_all_tasks();
-
         template <typename RpcReturnType>
         RpcReturnType rpc_process_answer(const t_http_response& resp, const std::string& rpc_command);
 
