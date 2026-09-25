@@ -94,7 +94,7 @@ ColumnLayout
         }
     }
 
-    // Price Comparison Slider
+    // Price Comparison Slider Section
     Item
     {
         id: priceComparisonContainer
@@ -105,7 +105,7 @@ ColumnLayout
 
         RowLayout
         {
-            anchors.fill: parent
+            Layout.fillWidth: true
             Layout.preferredHeight: 30
 
             GradientRectangle
