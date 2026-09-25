@@ -26,7 +26,6 @@ namespace atomic_dex
         QObject(parent), system(registry), m_system_manager(system_manager), m_transactions_mdl(new transactions_model(system_manager, this))
     {
         this->dispatcher_.sink<tx_fetch_finished>().connect<&wallet_page::on_tx_fetch_finished>(*this);
-        this->dispatcher_.sink<ticker_balance_updated>().connect<&wallet_page::on_ticker_balance_updated>(*this);
     }
 
     void
@@ -527,6 +526,9 @@ namespace atomic_dex
     wallet_page::refresh_ticker_infos()
     {
         emit tickerInfosChanged();
+        QTimer::singleShot(50, this, [this]() {
+            this->check_send_availability();
+        });
     }
 
     void
@@ -1040,15 +1042,6 @@ namespace atomic_dex
     wallet_page::get_transactions_mdl() const
     {
         return m_transactions_mdl;
-    }
-
-    void
-    wallet_page::on_ticker_balance_updated(const ticker_balance_updated&)
-    {
-        refresh_ticker_infos();
-        QTimer::singleShot(50, this, [this]() {
-            this->check_send_availability();
-        });
     }
 
     void

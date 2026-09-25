@@ -23,7 +23,6 @@ namespace atomic_dex
 
         void refresh_ticker_infos();
         void on_tx_fetch_finished(const tx_fetch_finished&);
-        void on_ticker_balance_updated(const ticker_balance_updated&);
 
         // Getters/Setters
         [[nodiscard]] transactions_model* get_transactions_mdl() const;
