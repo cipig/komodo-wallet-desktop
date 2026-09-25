@@ -226,7 +226,7 @@ namespace atomic_dex::kdf
             .request(http_request, prio)
             .then(scheduler, [on_rpc_processed, request](const t_http_response& resp)
             {
-                if (atomic_dex::kdf::is_kdf_running() == false)
+                if (atomic_dex::kdf::get_rpc_password().empty())
                 {
                     return;
                 }
