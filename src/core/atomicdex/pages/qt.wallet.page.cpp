@@ -581,120 +581,147 @@ namespace atomic_dex
                 auto        answers             = kdf::basic_batch_answer(resp);
 
                 nlohmann::json root_node = answers.is_array() ? answers[0] : answers;
+                std::int8_t task_id = -1;
 
-                if (root_node.contains("result"))
+                if (root_node.contains("result") && root_node["result"].contains("task_id")) {
+                    task_id = root_node.at("result").at("task_id").get<std::int8_t>();
+                } else if (root_node.contains("task_id")) {
+                    task_id = root_node.at("task_id").get<std::int8_t>();
+                }
+
+                if (task_id != -1)
                 {
-                    if (root_node["result"].contains("task_id"))
-                    {
-                        auto task_id = root_node.at("result").at("task_id").get<std::int8_t>();
-                        {
-                            SPDLOG_DEBUG("Task ID: {}", task_id);
-                            using namespace std::chrono_literals;
-                            auto&              kdf_system = m_system_manager.get_system<kdf_service>();
-                            static std::size_t z_nb_try      = 1;
-                            static std::size_t loop_limit    = 500;
-                            nlohmann::json     z_error       = nlohmann::json::array();
-                            nlohmann::json     z_batch_array = nlohmann::json::array();
-                            QString            z_status;
-                            t_withdraw_status_request z_request{.task_id = task_id};
+                    SPDLOG_DEBUG("Task ID: {}", task_id);
+                    using namespace std::chrono_literals;
+                    auto&              kdf_system = m_system_manager.get_system<kdf_service>();
+                    static std::size_t z_nb_try      = 1;
+                    static std::size_t loop_limit    = 500;
+                    nlohmann::json     z_error       = nlohmann::json::array();
+                    nlohmann::json     z_batch_array = nlohmann::json::array();
+                    QString            z_status;
+                    t_withdraw_status_request z_request{.task_id = task_id};
 
-                            nlohmann::json j = kdf::template_request("task::withdraw::status", true);
-                            kdf::to_json(j, z_request);
-                            z_batch_array.push_back(j);
+                    nlohmann::json j = kdf::template_request("task::withdraw::status", true);
+                    kdf::to_json(j, z_request);
+                    z_batch_array.push_back(j);
 
-                            do {
-                                t_http_response             z_resp      = kdf_system.get_kdf_client().async_rpc_batch_standalone(std::move(z_batch_array)).get();
-                                auto                        z_answers   = kdf::basic_batch_answer(z_resp);
+                    do {
+                        t_http_response             z_resp      = kdf_system.get_kdf_client().async_rpc_batch_standalone(std::move(z_batch_array)).get();
+                        auto                        z_answers   = kdf::basic_batch_answer(z_resp);
 
-                                z_error = z_answers;
+                        z_error = z_answers;
 
-                                nlohmann::json loop_node = z_answers.is_array() ? z_answers[0] : z_answers;
-                                z_status = QString::fromStdString(loop_node.at("result").at("status").get<std::string>());
+                        nlohmann::json loop_node = z_answers.is_array() ? z_answers[0] : z_answers;
 
-                                SPDLOG_DEBUG("[{}/{}] Waiting for {} withdraw status [{}]...", z_nb_try, loop_limit, ticker, z_status.toUtf8().constData());
-
-                                if (z_status == "Ok")
-                                {
-                                    break;
-                                }
-                                else
-                                {
-                                    set_withdraw_status("Generating transaction");
-                                }
-
-                                std::this_thread::sleep_for(3s);
-                                z_nb_try += 1;
-
-                            } while (z_nb_try < loop_limit);
-
-                            try {
-                                nlohmann::json final_err_node = z_error.is_array() ? z_error[0] : z_error;
-
-                                if (final_err_node.at("result").at("details").contains("error"))
-                                {
-                                    SPDLOG_DEBUG("Error zhtlc withdraw_status {}: {} ", ticker, z_status.toUtf8().constData());
-                                    z_status   = QString::fromStdString(final_err_node.at("result").at("details").at("error").get<std::string>());
-                                    set_withdraw_status(z_status);
-                                }
-                                else if (z_nb_try == loop_limit)
-                                {
-                                    SPDLOG_DEBUG("Exited zhtlc withdraw loop after 120 tries");
-                                    SPDLOG_DEBUG("Bad answer for [{}] zhtlc withdraw_status: {}", ticker, final_err_node.dump(4));
-                                    set_withdraw_status("Timed out");
-                                }
-                                else
-                                {
-                                    auto           withdraw_answer      = kdf::rpc_process_answer_batch<t_withdraw_status_answer>(final_err_node, "task::withdraw::status");
-                                    nlohmann::json j_out                = nlohmann::json::object();
-                                    j_out["withdraw_answer"]            = final_err_node["result"]["details"];
-                                    j_out.at("withdraw_answer")["date"] = withdraw_answer.result.value().timestamp_as_date;
-
-                                    // Add total amount in fiat currency.
-                                    if (coin_info.coinpaprika_id == "test-coin")
-                                    {
-                                        j_out["withdraw_answer"]["total_amount_fiat"] = "0";
-                                    }
-                                    else
-                                    {
-                                        j_out["withdraw_answer"]["total_amount_fiat"] = global_price_system.get_price_as_currency_from_amount(current_fiat, ticker, amount_std);
-                                    }
-
-                                    // Add fees amount.
-                                    if (j_out.at("withdraw_answer").at("fee_details").contains("total_fee") && !j_out.at("withdraw_answer").at("fee_details").contains("amount"))
-                                    {
-                                        j_out["withdraw_answer"]["fee_details"]["amount"] = j_out["withdraw_answer"]["fee_details"]["total_fee"];
-                                    }
-                                    if (j_out.at("withdraw_answer").at("fee_details").contains("miner_fee") && !j_out.at("withdraw_answer").at("fee_details").contains("amount"))
-                                    {
-                                        j_out["withdraw_answer"]["fee_details"]["amount"] = j_out["withdraw_answer"]["fee_details"]["miner_fee"];
-                                    }
-                                    if (j_out.at("withdraw_answer").at("fee_details").contains("total_amount") && !j_out.at("withdraw_answer").at("fee_details").contains("amount"))
-                                    {
-                                        j_out["withdraw_answer"]["fee_details"]["amount"] = j_out["withdraw_answer"]["fee_details"]["total_amount"];
-                                    }
-
-                                    // Add fees amount in fiat currency.
-                                    auto fee = j_out["withdraw_answer"]["fee_details"]["amount"].get<std::string>();
-                                    if (coin_info.coinpaprika_id == "test-coin")
-                                    {
-                                        j_out["withdraw_answer"]["fee_details"]["amount_fiat"] = "0";
-                                    }
-                                    else
-                                    {
-                                        j_out["withdraw_answer"]["fee_details"]["amount_fiat"] =
-                                            global_price_system.get_price_as_currency_from_amount(current_fiat, coin_info.fees_ticker, fee);
-                                    }
-                                    this->set_rpc_send_data(nlohmann_json_object_to_qt_json_object(j_out));
-                                    set_withdraw_status("Complete");
-                                }
-                                z_nb_try = 0;
-                            }
-                            catch (const std::exception& error)
-                            {
-                                SPDLOG_ERROR("exception caught in zhtlc withdraw_status: {}", error.what());
-                                set_withdraw_status(QString::fromStdString(error.what()));
-                            }
+                        // FIXED: Safely check for flat status parameters or nested results
+                        if (loop_node.contains("result") && loop_node["result"].contains("status")) {
+                            z_status = QString::fromStdString(loop_node.at("result").at("status").get<std::string>());
+                        } else if (loop_node.contains("status")) {
+                            z_status = QString::fromStdString(loop_node.at("status").get<std::string>());
+                        } else {
+                            z_status = "Unknown";
                         }
+
+                        SPDLOG_DEBUG("[{}/{}] Waiting for {} withdraw status [{}]...", z_nb_try, loop_limit, ticker, z_status.toUtf8().constData());
+
+                        if (z_status == "Ok")
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            set_withdraw_status("Generating transaction");
+                        }
+
+                        std::this_thread::sleep_for(3s);
+                        z_nb_try += 1;
+
+                    } while (z_nb_try < loop_limit);
+
+                    try {
+                        nlohmann::json final_err_node = z_error.is_array() ? z_error[0] : z_error;
+                        nlohmann::json details_node = nlohmann::json::object();
+
+                        if (final_err_node.contains("result")) {
+                            if (final_err_node["result"].contains("details")) {
+                                details_node = final_err_node["result"]["details"];
+                            }
+                            if (final_err_node["result"].contains("error")) {
+                                details_node = final_err_node["result"];
+                            }
+                        } else {
+                            details_node = final_err_node;
+                        }
+
+                        if (details_node.contains("error"))
+                        {
+                            SPDLOG_DEBUG("Error zhtlc withdraw_status {}: {} ", ticker, z_status.toUtf8().constData());
+                            z_status   = QString::fromStdString(details_node.at("error").get<std::string>());
+                            set_withdraw_status(z_status);
+                        }
+                        else if (z_nb_try == loop_limit)
+                        {
+                            SPDLOG_DEBUG("Exited zhtlc withdraw loop after 120 tries");
+                            SPDLOG_DEBUG("Bad answer for [{}] zhtlc withdraw_status: {}", ticker, final_err_node.dump(4));
+                            set_withdraw_status("Timed out");
+                        }
+                        else
+                        {
+                            auto           withdraw_answer      = kdf::rpc_process_answer_batch<t_withdraw_status_answer>(final_err_node, "task::withdraw::status");
+                            nlohmann::json j_out                = nlohmann::json::object();
+
+                            if (final_err_node.contains("result") && final_err_node["result"].contains("details")) {
+                                j_out["withdraw_answer"] = final_err_node["result"]["details"];
+                            } else {
+                                j_out["withdraw_answer"] = final_err_node;
+                            }
+
+                            j_out.at("withdraw_answer")["date"] = withdraw_answer.result.has_value() ? withdraw_answer.result.value().timestamp_as_date : "";
+
+                            // Add total amount in fiat currency.
+                            if (coin_info.coinpaprika_id == "test-coin")
+                            {
+                                j_out["withdraw_answer"]["total_amount_fiat"] = "0";
+                            }
+                            else
+                            {
+                                j_out["withdraw_answer"]["total_amount_fiat"] = global_price_system.get_price_as_currency_from_amount(current_fiat, ticker, amount_std);
+                            }
+
+                            // Add fees amount.
+                            if (j_out.at("withdraw_answer").at("fee_details").contains("total_fee") && !j_out.at("withdraw_answer").at("fee_details").contains("amount"))
+                            {
+                                j_out["withdraw_answer"]["fee_details"]["amount"] = j_out["withdraw_answer"]["fee_details"]["total_fee"];
+                            }
+                            if (j_out.at("withdraw_answer").at("fee_details").contains("miner_fee") && !j_out.at("withdraw_answer").at("fee_details").contains("amount"))
+                            {
+                                j_out["withdraw_answer"]["fee_details"]["amount"] = j_out["withdraw_answer"]["fee_details"]["miner_fee"];
+                            }
+                            if (j_out.at("withdraw_answer").at("fee_details").contains("total_amount") && !j_out.at("withdraw_answer").at("fee_details").contains("amount"))
+                            {
+                                j_out["withdraw_answer"]["fee_details"]["amount"] = j_out["withdraw_answer"]["fee_details"]["total_amount"];
+                            }
+
+                            // Add fees amount in fiat currency.
+                            auto fee = j_out["withdraw_answer"]["fee_details"]["amount"].get<std::string>();
+                            if (coin_info.coinpaprika_id == "test-coin")
+                            {
+                                j_out["withdraw_answer"]["fee_details"]["amount_fiat"] = "0";
+                            }
+                            else
+                            {
+                                j_out["withdraw_answer"]["fee_details"]["amount_fiat"] =
+                                    global_price_system.get_price_as_currency_from_amount(current_fiat, coin_info.fees_ticker, fee);
+                            }
+                            this->set_rpc_send_data(nlohmann_json_object_to_qt_json_object(j_out));
+                            set_withdraw_status("Complete");
+                        }
+                        z_nb_try = 0;
+                    }
+                    catch (const std::exception& error)
+                    {
+                        SPDLOG_ERROR("exception caught in zhtlc withdraw_status: {}", error.what());
+                        set_withdraw_status(QString::fromStdString(error.what()));
                     }
                 }
                 else

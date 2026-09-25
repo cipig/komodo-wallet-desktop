@@ -95,7 +95,7 @@ MultipageModal
             PriceLineSimplified
             {
                 id: price_line
-                Layout.topMargin: 25
+                Layout.topMargin: 20
                 Layout.bottomMargin: 4
                 Layout.leftMargin: 40
                 Layout.rightMargin: 40
