@@ -17,7 +17,7 @@ MultipageModal
     width: 720
     horizontalPadding: 10
     verticalPadding: 35
-    bottomPadding: 15
+    bottomPadding: 35
     height: 750
 
     closePolicy: Popup.NoAutoClose

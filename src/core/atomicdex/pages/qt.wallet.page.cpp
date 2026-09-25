@@ -580,7 +580,7 @@ namespace atomic_dex
                 const auto& current_fiat        = settings_system.get_current_fiat().toStdString();
                 auto        answers             = kdf::basic_batch_answer(resp);
 
-                nlohmann::json root_node = answers.is_array() ? answers[0] : answers;
+                nlohmann::json root_node = (answers.is_array() && !answers.empty()) ? answers[0] : answers;
                 std::int8_t task_id = -1;
 
                 if (root_node.contains("result") && root_node["result"].contains("task_id")) {
@@ -611,9 +611,8 @@ namespace atomic_dex
 
                         z_error = z_answers;
 
-                        nlohmann::json loop_node = z_answers.is_array() ? z_answers[0] : z_answers;
+                        nlohmann::json loop_node = (z_answers.is_array() && !z_answers.empty()) ? z_answers[0] : z_answers;
 
-                        // FIXED: Safely check for flat status parameters or nested results
                         if (loop_node.contains("result") && loop_node["result"].contains("status")) {
                             z_status = QString::fromStdString(loop_node.at("result").at("status").get<std::string>());
                         } else if (loop_node.contains("status")) {
@@ -633,20 +632,25 @@ namespace atomic_dex
                             set_withdraw_status("Generating transaction");
                         }
 
+                        // Re-pack the status check parameters for the next iteration tick pass
+                        z_batch_array = nlohmann::json::array();
+                        nlohmann::json j_next = kdf::template_request("task::withdraw::status", true);
+                        kdf::to_json(j_next, z_request);
+                        z_batch_array.push_back(j_next);
+
                         std::this_thread::sleep_for(3s);
                         z_nb_try += 1;
 
                     } while (z_nb_try < loop_limit);
 
                     try {
-                        nlohmann::json final_err_node = z_error.is_array() ? z_error[0] : z_error;
+                        nlohmann::json final_err_node = (z_error.is_array() && !z_error.empty()) ? z_error[0] : z_error;
                         nlohmann::json details_node = nlohmann::json::object();
 
                         if (final_err_node.contains("result")) {
                             if (final_err_node["result"].contains("details")) {
                                 details_node = final_err_node["result"]["details"];
-                            }
-                            if (final_err_node["result"].contains("error")) {
+                            } else {
                                 details_node = final_err_node["result"];
                             }
                         } else {

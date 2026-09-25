@@ -285,6 +285,17 @@ namespace atomic_dex::kdf
         return process_rpc<t_recover_funds_of_swap_request, t_recover_funds_of_swap_answer>(
             std::forward<t_recover_funds_of_swap_request>(request), "recover_funds_of_swap");
     }
+
+    void kdf_client::abort_all_tasks()
+    {
+        try
+        {
+            atomic_dex::http::client::get_interactive_scheduler().clear();
+            atomic_dex::http::client::get_background_scheduler().clear();
+            generate_client().close();
+        }
+        catch (...) {}
+    }
 } // namespace atomic_dex
 
 template atomic_dex::kdf::tx_history_answer   atomic_dex::kdf::kdf_client::rpc_process_answer(const t_http_response& resp, const std::string& rpc_command);
