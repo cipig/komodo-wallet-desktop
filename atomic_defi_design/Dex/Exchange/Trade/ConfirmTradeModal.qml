@@ -92,15 +92,20 @@ MultipageModal
             readonly property var default_config: API.app.trading_pg.get_raw_kdf_coin_cfg(rel_ticker)
             readonly property bool is_dpow_configurable: config_section.default_config.requires_notarization || false
 
+            Item { Layout.preferredHeight: 25; Layout.fillWidth: true }
+
             PriceLineSimplified
             {
                 id: price_line
-                Layout.topMargin: 20
-                Layout.bottomMargin: 4
                 Layout.leftMargin: 40
                 Layout.rightMargin: 40
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignHCenter
+            }
+
+            Item {
+                Layout.preferredHeight: price_line.has_valid_cex_feed ? 12 : 52
+                Layout.fillWidth: true
             }
 
             // Consolidated self-contained Fees container block

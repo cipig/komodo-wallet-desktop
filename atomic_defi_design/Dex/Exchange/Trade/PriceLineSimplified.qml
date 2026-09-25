@@ -10,7 +10,7 @@ ColumnLayout
 {
     id: price_line_root
     Layout.fillWidth: true
-    spacing: 4
+    spacing: 0
 
     readonly property string price: non_null_price
     readonly property string price_reversed: API.app.trading_pg.price_reversed
@@ -19,36 +19,31 @@ ColumnLayout
     readonly property string cexPriceDiff: API.app.trading_pg.cex_price_diff
     readonly property string l_ticker: General.coinWithoutSuffix(left_ticker)
     readonly property string r_ticker: General.coinWithoutSuffix(right_ticker)
+    readonly property bool has_valid_cex_feed: cex_price !== "" && cex_price !== "0" && cex_price !== "0.00" && cexPriceDiff !== "" && cexPriceDiff !== "0" && cexPriceDiff !== "0.00" && cexPriceDiff.indexOf("NaN") === -1
     readonly property bool price_entered: !General.isZero(non_null_price)
     readonly property int fontSize: Style.textSizeSmall1
     readonly property int fontSizeBigger: Style.textSizeSmall2
     readonly property int lineScale: General.getComparisonScale(cexPriceDiff)
-    readonly property bool has_valid_cex_feed: cex_price !== "" &&
-                                               cex_price !== "0" &&
-                                               cex_price !== "0.00" &&
-                                               cexPriceDiff !== "" &&
-                                               cexPriceDiff !== "0" &&
-                                               cexPriceDiff !== "0.00" &&
-                                               cexPriceDiff.indexOf("NaN") === -1
 
-
-    // EXCHANGE RATES TEXT BOXES ROW
-    RowLayout
+    // EXCHANGE RATES TEXT BOXES ROW (Using a flat Item shell prevents recursive loops)
+    Item
     {
         Layout.fillWidth: true
-        Layout.alignment: Qt.AlignHCenter
-        spacing: 0
+        Layout.preferredHeight: 65
 
-        // Left Side: Local Exchange Rates
-        ColumnLayout
+        // Left Side: Local Rates
+        Column
         {
+            anchors.left: parent.left
+            anchors.leftMargin: has_valid_cex_feed ? 0 : parent.width * 0.22
+            anchors.verticalCenter: parent.verticalCenter
+            width: has_valid_cex_feed ? parent.width * 0.5 : parent.width * 0.56
+            spacing: 2
             visible: price_entered
-            Layout.fillWidth: true
-            spacing: 1
 
             DexLabel
             {
-                Layout.fillWidth: true
+                width: parent.width
                 horizontalAlignment: !has_valid_cex_feed ? Text.AlignHCenter : Text.AlignLeft
                 text_value: qsTr("Exchange rate") + (preferred_order.price !== undefined ? (" (" + qsTr("Selected") + ")") : "")
                 font.pixelSize: fontSize
@@ -56,7 +51,7 @@ ColumnLayout
 
             DexLabel
             {
-                Layout.fillWidth: true
+                width: parent.width
                 horizontalAlignment: !has_valid_cex_feed ? Text.AlignHCenter : Text.AlignLeft
                 text_value: General.formatCrypto("", "1", r_ticker) + " = " + General.formatCrypto("", price_reversed, l_ticker)
                 font.pixelSize: fontSize
@@ -65,7 +60,7 @@ ColumnLayout
             DexLabel
             {
                 visible: price != 1
-                Layout.fillWidth: true
+                width: parent.width
                 horizontalAlignment: !has_valid_cex_feed ? Text.AlignHCenter : Text.AlignLeft
                 text_value: General.formatCrypto("", price, r_ticker) + " = " + General.formatCrypto("", "1", l_ticker)
                 font.pixelSize: fontSize
@@ -73,15 +68,17 @@ ColumnLayout
         }
 
         // Right Side: Global CEX Rates
-        ColumnLayout
+        Column
         {
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            width: parent.width * 0.5
+            spacing: 2
             visible: has_valid_cex_feed
-            Layout.fillWidth: true
-            spacing: 1
 
             DexLabel
             {
-                Layout.fillWidth: true
+                width: parent.width
                 horizontalAlignment: Text.AlignRight
                 text_value: qsTr("CEXchange rate")
                 font.pixelSize: fontSize
@@ -89,7 +86,7 @@ ColumnLayout
 
             DexLabel
             {
-                Layout.fillWidth: true
+                width: parent.width
                 horizontalAlignment: Text.AlignRight
                 text_value: General.formatCrypto("", "1", r_ticker) + " = " + General.formatCrypto("", cex_price_reversed, l_ticker)
                 font.pixelSize: fontSize
@@ -97,7 +94,7 @@ ColumnLayout
 
             DexLabel
             {
-                Layout.fillWidth: true
+                width: parent.width
                 horizontalAlignment: Text.AlignRight
                 text_value: General.formatCrypto("", cex_price, r_ticker) + " = " + General.formatCrypto("", "1", l_ticker)
                 font.pixelSize: fontSize
@@ -105,16 +102,13 @@ ColumnLayout
         }
     }
 
-    // CEX COMPARISON SLIDER BAR (Brought closer to the exchange rate text)
+    // CEX COMPARISON SLIDER BAR Row
     RowLayout
     {
         id: priceComparisonContainer
         visible: price_entered && has_valid_cex_feed
         Layout.fillWidth: true
-        Layout.leftMargin: 4
-        Layout.rightMargin: 4
-        Layout.topMargin: 6
-        Layout.bottomMargin: 12
+        Layout.topMargin: 8
         Layout.preferredHeight: 30
 
         GradientRectangle
