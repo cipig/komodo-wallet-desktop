@@ -210,6 +210,7 @@ MultipageModal
                             font: DexTypo.caption
                             color: Dex.CurrentTheme.warningColor
                             text_value: General.getTradingError(last_trading_error, curr_fee_info, base_ticker, rel_ticker, left_ticker, right_ticker)
+                            wrapMode: Text.WordWrap
                         }
                     }
                 }
