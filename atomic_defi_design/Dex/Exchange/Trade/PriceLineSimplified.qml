@@ -25,19 +25,18 @@ ColumnLayout
     readonly property int fontSizeBigger: Style.textSizeSmall2
     readonly property int lineScale: General.getComparisonScale(cexPriceDiff)
 
-    // EXCHANGE RATES TEXT BOXES ROW (Using a flat Item shell prevents recursive loops)
-    Item
+    // EXCHANGE RATES TEXT BOXES ROW
+    RowLayout
     {
         Layout.fillWidth: true
         Layout.preferredHeight: 65
+        spacing: 0
 
         // Left Side: Local Rates
         Column
         {
-            anchors.left: parent.left
-            anchors.leftMargin: has_valid_cex_feed ? 0 : parent.width * 0.22
-            anchors.verticalCenter: parent.verticalCenter
-            width: has_valid_cex_feed ? parent.width * 0.5 : parent.width * 0.56
+            Layout.fillWidth: true
+            Layout.preferredWidth: price_line_root.has_valid_cex_feed ? 50 : 100
             spacing: 2
             visible: price_entered
 
@@ -70,9 +69,8 @@ ColumnLayout
         // Right Side: Global CEX Rates
         Column
         {
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            width: parent.width * 0.5
+            Layout.fillWidth: true
+            Layout.preferredWidth: 50
             spacing: 2
             visible: has_valid_cex_feed
 
