@@ -10,8 +10,7 @@ DEX_NEW_LIB(core INTERFACE
             unofficial-btc::bitcoin komodo-date::date fmt::fmt Async++
             Boost::random komodo-sodium::sodium
         INTERFACE_DEFS
-            $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG> $<$<PLATFORM_ID:Windows>:HAS_REMOTE_API>
-            $<$<PLATFORM_ID:Windows>:AUTO_DOWNLOAD>
+            $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>
             $<$<PLATFORM_ID:Windows>:NOMINMAX>
             $<$<PLATFORM_ID:Windows>:SPDLOG_WCHAR_TO_UTF8_SUPPORT>
             # Async++ decides whether to compile its exception handling from

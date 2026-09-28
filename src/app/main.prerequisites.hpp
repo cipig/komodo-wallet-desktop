@@ -200,6 +200,10 @@ init_timezone_db()
     try
     {
         using namespace std::string_literals;
+        //! The bundled tzdata is the only source: date is built without its
+        //! remote API (vcpkg.json), so it never tries to download a newer
+        //! release at runtime -- which, into a read-only install folder, failed
+        //! on every date formatted and stalled the thread pool.
         auto install_db_tz_path = std::make_unique<std::filesystem::path>(ag::core::assets_real_path() / "tools" / "timezone" / "tzdata");
         date::set_install(install_db_tz_path->string());
         SPDLOG_INFO("Timezone db successfully initialized");

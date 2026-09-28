@@ -375,6 +375,10 @@ namespace atomic_dex
     kdf_service::~kdf_service()
     {
         SPDLOG_INFO("destroying kdf service...");
+        //! No new async work may enter from here on. Work already running is
+        //! waited for below, after KDF is stopped: its pending requests then
+        //! fail fast instead of running into their timeouts.
+        m_async_gate->close();
         dispatcher_.sink<gui_enter_trading>().disconnect<&kdf_service::on_gui_enter_trading>(*this);
         dispatcher_.sink<gui_leave_trading>().disconnect<&kdf_service::on_gui_leave_trading>(*this);
         dispatcher_.sink<gui_enter_wallet>().disconnect<&kdf_service::on_gui_enter_wallet>(*this);
@@ -426,6 +430,10 @@ namespace atomic_dex
             }*/
 #endif
         }
+
+        m_async_gate->wait_idle(
+            std::chrono::seconds(5), [](std::size_t running) { SPDLOG_INFO("waiting for {} kdf service background tasks to finish", running); });
+        SPDLOG_INFO("kdf service background tasks finished");
 
         if (m_kdf_init_thread.joinable())
         {
@@ -774,7 +782,12 @@ namespace atomic_dex
         }
 
         m_kdf_client.async_rpc_batch_standalone(std::move(batch_array), t_http_priority::background)
-            .then([this, batch = batch_array, callback](async::task<t_http_response> previous_task) mutable {
+            .then([this, gate = m_async_gate, batch = batch_array, callback](async::task<t_http_response> previous_task) mutable {
+                const auto pass = gate->enter();
+                if (!pass)
+                {
+                    return; //! the service is being destroyed
+                }
                 try
                 {
                     callback(previous_task.get());
@@ -793,8 +806,13 @@ namespace atomic_dex
 
     void kdf_service::enable_erc20_coins(const t_coins& coins, const std::string parent_ticker)
     {
-        auto callback = [this, coins]<typename RpcRequest>(RpcRequest rpc)
+        auto callback = [this, gate = m_async_gate, coins]<typename RpcRequest>(RpcRequest rpc)
         {
+            const auto pass = gate->enter();
+            if (!pass)
+            {
+                return; //! the service is being destroyed
+            }
             if (rpc.error)
             {
                 SPDLOG_ERROR("{} {}: ", rpc.request.ticker, rpc.error->error_type);
@@ -943,8 +961,13 @@ namespace atomic_dex
 
     void kdf_service::enable_tendermint_coins(const t_coins& coins, const std::string parent_ticker)
     {
-        auto callback = [this]<typename RpcRequest>(RpcRequest rpc)
+        auto callback = [this, gate = m_async_gate]<typename RpcRequest>(RpcRequest rpc)
         {
+            const auto pass = gate->enter();
+            if (!pass)
+            {
+                return; //! the service is being destroyed
+            }
             if (rpc.error)
             {
                 if (rpc.error->error_type.find("PlatformIsAlreadyActivated") != std::string::npos
@@ -1231,8 +1254,13 @@ namespace atomic_dex
 
         return m_kdf_client.async_rpc_batch_standalone(std::move(batch_array), t_http_priority::background)
             .then(
-                [this, tokens_to_fetch = tokens_to_fetch, tracked_request = std::move(tracked_request)](async::task<t_http_response> previous_task)
+                [this, gate = m_async_gate, tokens_to_fetch = tokens_to_fetch, tracked_request = std::move(tracked_request)](async::task<t_http_response> previous_task)
                 {
+                    const auto pass = gate->enter();
+                    if (!pass)
+                    {
+                        return; //! the service is being destroyed
+                    }
                     try
                     {
                         auto answers = kdf::basic_batch_answer(previous_task.get());
@@ -1448,8 +1476,13 @@ namespace atomic_dex
         {
             m_kdf_client.async_rpc_batch_standalone(std::move(batch), t_http_priority::background)
                 .then(
-                    [this, coin_info, tickers, batch](async::task<t_http_response> previous_task) mutable
+                    [this, gate = m_async_gate, coin_info, tickers, batch](async::task<t_http_response> previous_task) mutable
                     {
+                        const auto pass = gate->enter();
+                        if (!pass)
+                        {
+                            return; //! the service is being destroyed
+                        }
                         try
                         {
                             auto answers           = kdf::basic_batch_answer(previous_task.get());
@@ -1494,6 +1527,14 @@ namespace atomic_dex
                                                 std::string    event      = "none";
 
                                                 do {
+                                                    //! This loop can poll for hours; leave it when the
+                                                    //! service is being destroyed so the destructor,
+                                                    //! which waits for it, does not hang logout or exit.
+                                                    if (gate->closed())
+                                                    {
+                                                        SPDLOG_INFO("stopped waiting for {} activation: service is shutting down", tickers[idx]);
+                                                        return;
+                                                    }
                                                     nlohmann::json z_batch_array = nlohmann::json::array();
 
                                                     if (coin_info.is_zhtlc_family)
@@ -1777,8 +1818,13 @@ namespace atomic_dex
 
     void kdf_service::prepare_orderbook(bool is_a_reset)
     {
-        auto callback = [this, is_a_reset]<typename RpcRequest>(RpcRequest rpc)
+        auto callback = [this, gate = m_async_gate, is_a_reset]<typename RpcRequest>(RpcRequest rpc)
         {
+            const auto pass = gate->enter();
+            if (!pass)
+            {
+                return; //! the service is being destroyed
+            }
             nlohmann::json batch = nlohmann::json::array();
             if (rpc.error)
             {
@@ -1875,7 +1921,12 @@ namespace atomic_dex
         };
 
         m_kdf_client.async_rpc_batch_standalone(std::move(batch))
-            .then([this, batch, answer_functor](async::task<t_http_response> previous_task) {
+            .then([this, gate = m_async_gate, batch, answer_functor](async::task<t_http_response> previous_task) {
+                const auto pass = gate->enter();
+                if (!pass)
+                {
+                    return; //! the service is being destroyed
+                }
                 try
                 {
                     answer_functor(previous_task.get());
@@ -1932,7 +1983,12 @@ namespace atomic_dex
         };
 
         return m_kdf_client.async_rpc_batch_standalone(std::move(batch_array), t_http_priority::background)
-            .then([answer_functor](t_http_response resp) {
+            .then([gate = m_async_gate, answer_functor](t_http_response resp) {
+                const auto pass = gate->enter();
+                if (!pass)
+                {
+                    return; //! the service is being destroyed
+                }
                 answer_functor(resp);
             });
     }
@@ -1944,7 +2000,12 @@ namespace atomic_dex
         auto& scheduler = atomic_dex::http::client::get_background_scheduler();
 
         // Spawns exactly ONE scheduling task block
-        async::spawn(scheduler, [this, enabled_coins = std::move(enabled_coins)]() {
+        async::spawn(scheduler, [this, gate = m_async_gate, enabled_coins = std::move(enabled_coins)]() {
+            const auto pass = gate->enter();
+            if (!pass)
+            {
+                return; //! the service is being destroyed
+            }
             std::vector<async::task<void>> network_tasks;
             network_tasks.reserve(enabled_coins.size());
 
@@ -2183,8 +2244,19 @@ namespace atomic_dex
 
         auto answer_functor = [this, limit, filter_infos](t_http_response resp)
         {
+            //! This refresh fires every 7 s and its answer is handled on the
+            //! shared thread pool. If the previous answer is still being
+            //! processed, drop this one instead of waiting: a waiting handler
+            //! holds a pool thread, and once handling took longer than 7 s they
+            //! piled up until the pool had no thread left for anything else --
+            //! coin activation answers included, which were then never handled.
             static std::mutex s_order_fetch_mutex;
-            std::unique_lock<std::mutex> lock(s_order_fetch_mutex);
+            std::unique_lock<std::mutex> lock(s_order_fetch_mutex, std::try_to_lock);
+            if (!lock.owns_lock())
+            {
+                SPDLOG_WARN("previous orders and swaps refresh still in progress, skipping this one");
+                return;
+            }
 
             std::string body = (resp.extract_string(true).get());
             auto       answers        = nlohmann::json::parse(body);
@@ -2274,7 +2346,12 @@ namespace atomic_dex
         };
 
         m_kdf_client.async_rpc_batch_standalone(std::move(batch), t_http_priority::interactive)
-            .then([this, batch, answer_functor](async::task<t_http_response> previous_task) {
+            .then([this, gate = m_async_gate, batch, answer_functor](async::task<t_http_response> previous_task) {
+                const auto pass = gate->enter();
+                if (!pass)
+                {
+                    return; //! the service is being destroyed
+                }
                 try
                 {
                     answer_functor(previous_task.get());
@@ -2381,8 +2458,13 @@ namespace atomic_dex
         auto& scheduler = atomic_dex::http::client::get_interactive_scheduler();
 
         kdf::async_process_rpc_get(kdf::g_etherscan_proxy_http_client, "tx_history", url)
-            .then(scheduler, [this, ticker](async::task<t_http_response> previous_task)
+            .then(scheduler, [this, gate = m_async_gate, ticker](async::task<t_http_response> previous_task)
                 {
+                    const auto pass = gate->enter();
+                    if (!pass)
+                    {
+                        return; //! the service is being destroyed
+                    }
                     try
                     {
                         t_http_response resp = previous_task.get();
