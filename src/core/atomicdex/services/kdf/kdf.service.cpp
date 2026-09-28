@@ -47,6 +47,7 @@
 #include "atomicdex/services/kdf/kdf.service.hpp"
 #include "atomicdex/utilities/qt.utilities.hpp"
 #include "atomicdex/utilities/kill.hpp"
+#include "atomicdex/utilities/crash.handler.hpp"
 
 namespace ag = antara::gaming;
 
@@ -1979,13 +1980,18 @@ namespace atomic_dex
         kdf_instance.setProgram(std_path_to_qstring((tools_path / atomic_dex::g_dex_api)));
         kdf_instance.setWorkingDirectory(std_path_to_qstring(tools_path));
         kdf_instance.setProcessEnvironment(env);
-        bool started = kdf_instance.startDetached();
+        qint64 kdf_pid = 0;
+        bool started = kdf_instance.startDetached(&kdf_pid);
 
         if (!started)
         {
             SPDLOG_ERROR("Couldn't start kdf");
             std::exit(EXIT_FAILURE);
         }
+        SPDLOG_INFO("kdf started, pid {}", kdf_pid);
+        //! A wallet crash must not leave KDF running (it holds the RPC port the
+        //! next launch needs) nor its config file, which holds the passphrase.
+        crash::set_kdf(kdf_pid, kdf_cfg_path);
 
         m_kdf_init_thread = std::thread(
             [this, kdf_cfg_path]()
@@ -2002,6 +2008,7 @@ namespace atomic_dex
                         SPDLOG_ERROR("KDF not started correctly");
                         //! TODO: emit kdf_failed_initialization
                         std::filesystem::remove(kdf_cfg_path);
+                        crash::clear_kdf_cfg();
                         return;
                     }
                     std::this_thread::sleep_for(1s);
@@ -2009,6 +2016,7 @@ namespace atomic_dex
 
                 // m_kdf_client.connect_client();
                 std::filesystem::remove(kdf_cfg_path);
+                crash::clear_kdf_cfg();
                 SPDLOG_INFO("kdf is initialized");
                 dispatcher_.trigger<kdf_initialized>();
                 enable_default_coins();
