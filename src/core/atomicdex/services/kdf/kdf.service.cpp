@@ -390,13 +390,23 @@ namespace atomic_dex
             nlohmann::json batch        = nlohmann::json::array();
             batch.push_back(stop_request);
             SPDLOG_INFO("processing kdf stop batch request");
-            t_http_response resp = m_kdf_client.async_rpc_batch_standalone(std::move(batch)).get();
-            SPDLOG_INFO("kdf stop batch answer received");
-            auto answers = kdf::basic_batch_answer(resp);
-            if (answers[0].contains("result"))
+            //! A destructor must not throw (it would terminate the process), and
+            //! this request fails whenever KDF is already gone. Fall through to
+            //! stopping the process instead.
+            try
             {
-                kdf_stopped = answers[0].at("result").get<std::string>() == "success";
-                SPDLOG_INFO("kdf successfully stopped with rpc stop");
+                t_http_response resp = m_kdf_client.async_rpc_batch_standalone(std::move(batch)).get();
+                SPDLOG_INFO("kdf stop batch answer received");
+                auto answers = kdf::basic_batch_answer(resp);
+                if (answers.is_array() && !answers.empty() && answers[0].contains("result") && answers[0].at("result").is_string())
+                {
+                    kdf_stopped = answers[0].at("result").get<std::string>() == "success";
+                    SPDLOG_INFO("kdf successfully stopped with rpc stop");
+                }
+            }
+            catch (const std::exception& error)
+            {
+                SPDLOG_ERROR("kdf stop request failed: {}", error.what());
             }
         }
         m_kdf_running = false;

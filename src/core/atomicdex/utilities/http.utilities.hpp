@@ -8,6 +8,13 @@
 #include <unordered_map>
 #include <async++.h>
 
+//! Every request task below reports failure by throwing. Without Async++'s
+//! exception support that throw calls std::terminate on the pool thread.
+//! See the __EXCEPTIONS definition in src/CMakeLists.txt.
+#if defined(LIBASYNC_NO_EXCEPTIONS)
+#    error "Async++ was configured without exception support; a failed task would terminate the process"
+#endif
+
 namespace atomic_dex::http
 {
     template <typename StringLike>

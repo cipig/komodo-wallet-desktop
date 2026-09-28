@@ -376,6 +376,82 @@ namespace
     USHORT              g_frame_count{0};
     bool                g_full_dump{false};
 
+    //! The C++ exception most recently thrown on each thread, recorded by a
+    //! vectored handler. The MSVC runtime keeps std::set_terminate per thread,
+    //! so an exception escaping a thread we did not create (a thread-pool
+    //! worker, say) reaches abort() without our terminate handler; this is how
+    //! the report still names it.
+    struct thrown_exception
+    {
+        const void*    object{nullptr};
+        const void*    throw_info{nullptr};
+        std::uintptr_t image_base{0};
+    };
+    thread_local thrown_exception t_last_thrown{};
+    thrown_exception              g_in_flight{};
+    std::uintptr_t                g_raise_exception{0};
+
+    constexpr DWORD g_cxx_exception_code = 0xE06D7363;
+
+    bool
+    is_cxx_throw(const EXCEPTION_RECORD* record)
+    {
+        return record->ExceptionCode == g_cxx_exception_code && record->NumberParameters >= 4 &&
+               (record->ExceptionInformation[0] & ~ULONG_PTR{3}) == 0x19930520 && record->ExceptionInformation[1] != 0 &&
+               record->ExceptionInformation[2] != 0;
+    }
+
+    thrown_exception
+    thrown_from(const EXCEPTION_RECORD* record)
+    {
+        return {
+            reinterpret_cast<const void*>(record->ExceptionInformation[1]), reinterpret_cast<const void*>(record->ExceptionInformation[2]),
+            static_cast<std::uintptr_t>(record->ExceptionInformation[3])};
+    }
+
+    LONG WINAPI
+    record_cxx_exception(EXCEPTION_POINTERS* info)
+    {
+        if (is_cxx_throw(info->ExceptionRecord)) { t_last_thrown = thrown_from(info->ExceptionRecord); }
+        return EXCEPTION_CONTINUE_SEARCH;
+    }
+
+    //! Names the exception being thrown when the process went down, and its
+    //! what() when it is a std::exception. Reads the compiler's throw metadata
+    //! (x64 layout: RVAs relative to the throwing module).
+    void
+    put_in_flight_exception(report_file& out)
+    {
+#    if defined(_M_X64) || defined(_M_AMD64) || defined(_M_ARM64)
+        const thrown_exception thrown = g_in_flight;
+        if (thrown.object == nullptr) { return; }
+        const auto at = [&](std::int32_t rva) { return reinterpret_cast<const unsigned char*>(thrown.image_base + static_cast<std::uint32_t>(rva)); };
+        //! ThrowInfo: attributes, pmfnUnwind, pForwardCompat, pCatchableTypeArray
+        const auto* throw_info = static_cast<const std::int32_t*>(thrown.throw_info);
+        const auto* types      = reinterpret_cast<const std::int32_t*>(at(throw_info[3]));
+        const std::exception* as_std = nullptr;
+        out.put("exception in flight: ");
+        for (std::int32_t i = 0; i < types[0] && i < 16; ++i)
+        {
+            //! CatchableType: properties, pType, PMD{mdisp, pdisp, vdisp}, ...;
+            //! TypeDescriptor: pVFTable, spare, decorated name.
+            const auto* catchable = reinterpret_cast<const std::int32_t*>(at(types[1 + i]));
+            const char* name      = reinterpret_cast<const char*>(at(catchable[1]) + 2 * sizeof(void*));
+            out.put(i == 0 ? "" : " : ").put(name);
+            if (std::strcmp(name, ".?AVexception@std@@") == 0 && catchable[3] == -1)
+            {
+                as_std = reinterpret_cast<const std::exception*>(static_cast<const char*>(thrown.object) + catchable[2]);
+            }
+        }
+        out.put("\n");
+        //! what() is virtual and runs arbitrary code: everything above is on disk first.
+        out.flush();
+        if (as_std != nullptr) { out.put("what(): ").put(as_std->what()).put("\n"); }
+#    else
+        (void)out;
+#    endif
+    }
+
     const char*
     exception_name(DWORD code)
     {
@@ -498,6 +574,7 @@ namespace
         if (file == INVALID_HANDLE_VALUE)
         {
             out.put("minidump: cannot create file, error ").put_dec(GetLastError()).put("\n");
+            put_in_flight_exception(out);
             return;
         }
         MINIDUMP_EXCEPTION_INFORMATION info{};
@@ -517,6 +594,7 @@ namespace
             out.put("minidump failed, error ").put_hex(GetLastError()).put("\n");
         }
         CloseHandle(file);
+        put_in_flight_exception(out);
     }
 
     DWORD WINAPI
@@ -560,6 +638,7 @@ namespace
         }
         g_exception = exception;
         g_crash_tid = GetCurrentThreadId();
+        if (is_cxx_throw(exception->ExceptionRecord)) { g_in_flight = thrown_from(exception->ExceptionRecord); }
         report_crash();
         //! Let Windows Error Reporting see it too (Event Viewer, LocalDumps).
         return EXCEPTION_CONTINUE_SEARCH;
@@ -572,6 +651,17 @@ namespace
         g_reason      = "SIGABRT (abort)";
         g_crash_tid   = GetCurrentThreadId();
         g_frame_count = RtlCaptureStackBackTrace(1, static_cast<DWORD>(std::size(g_frames)), g_frames, nullptr);
+        //! abort() reached from inside RaiseException means a C++ exception was
+        //! still being dispatched: std::terminate. Name it in the report.
+        for (USHORT i = 0; g_raise_exception != 0 && i < g_frame_count; ++i)
+        {
+            const auto frame = reinterpret_cast<std::uintptr_t>(g_frames[i]);
+            if (frame >= g_raise_exception && frame < g_raise_exception + 0x200)
+            {
+                g_in_flight = t_last_thrown;
+                break;
+            }
+        }
         report_crash();
         //! Returning lets abort() finish ending the process.
     }
@@ -670,6 +760,12 @@ namespace atomic_dex::crash
         //! Leave the main thread enough stack to run the filter after an overflow.
         ULONG guarantee = 64 * 1024;
         SetThreadStackGuarantee(&guarantee);
+
+        if (HMODULE kernelbase = GetModuleHandleW(L"kernelbase.dll"); kernelbase != nullptr)
+        {
+            g_raise_exception = reinterpret_cast<std::uintptr_t>(GetProcAddress(kernelbase, "RaiseException"));
+        }
+        AddVectoredExceptionHandler(0, &record_cxx_exception);
 
         SetUnhandledExceptionFilter(&unhandled_exception_filter);
         std::signal(SIGABRT, &abort_handler);

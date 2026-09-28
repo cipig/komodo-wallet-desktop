@@ -268,8 +268,30 @@ namespace atomic_dex::kdf
         t_http_request rpc_request(http_method::POST);
         rpc_request.headers().set_content_type(("application/json"));
         rpc_request.set_body(json_data.dump());
-        auto resp = generate_client().request(rpc_request).get();
-        return rpc_process_answer<TAnswer>(resp, rpc_command);
+        //! The request task throws when KDF cannot be reached. The callers are
+        //! synchronous and run on the Qt main thread (disable coin, recover
+        //! funds), where an escaping exception terminates the process -- so a
+        //! transport failure becomes an ordinary failed answer instead.
+        try
+        {
+            auto resp = generate_client().request(rpc_request).get();
+            return rpc_process_answer<TAnswer>(resp, rpc_command);
+        }
+        catch (const std::exception& error)
+        {
+            SPDLOG_ERROR("exception in kdf_client::process_rpc for rpc_command {}: {} | Request payload: {}", rpc_command, error.what(), json_copy.dump());
+            TAnswer answer;
+            answer.rpc_result_code = -1;
+            answer.raw_result      = error.what();
+            if constexpr (doom::meta::is_detected_v<have_error_field, TAnswer>)
+            {
+                if constexpr (std::is_same_v<std::optional<std::string>, decltype(answer.error)>)
+                {
+                    answer.error = error.what();
+                }
+            }
+            return answer;
+        }
     }
 
     t_enable_z_coin_cancel_answer
