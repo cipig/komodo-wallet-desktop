@@ -1072,6 +1072,12 @@ namespace atomic_dex
     void kdf_service::process_balance_answer(const kdf::enable_erc20_rpc& rpc)
     {
         const auto& answer = rpc.result.value();
+        //! begin() of an empty map is not dereferenceable.
+        if (answer.balances.empty())
+        {
+            SPDLOG_WARN("activation answer for {} carries no balance", rpc.request.ticker);
+            return;
+        }
         kdf::balance_answer balance_answer;
 
         balance_answer.address  = answer.balances.begin()->first;
@@ -1086,6 +1092,12 @@ namespace atomic_dex
     void kdf_service::process_balance_answer(const kdf::enable_eth_with_tokens_rpc& rpc)
     {
         const auto& answer = rpc.result.value();
+        //! begin() of an empty map is not dereferenceable.
+        if (answer.eth_addresses_infos.empty())
+        {
+            SPDLOG_WARN("activation answer for {} carries no platform address", rpc.request.ticker);
+        }
+        else
         {
             kdf::balance_answer balance_answer;
             balance_answer.coin = rpc.request.ticker;
@@ -1129,6 +1141,12 @@ namespace atomic_dex
     void kdf_service::process_balance_answer(const kdf::enable_tendermint_token_rpc& rpc)
     {
         const auto& answer = rpc.result.value();
+        //! begin() of an empty map is not dereferenceable.
+        if (answer.balances.empty())
+        {
+            SPDLOG_WARN("activation answer for {} carries no balance", answer.platform_coin);
+            return;
+        }
         kdf::balance_answer balance_answer;
         balance_answer.address  = answer.balances.begin()->first;
         balance_answer.balance  = answer.balances.begin()->second.spendable;
