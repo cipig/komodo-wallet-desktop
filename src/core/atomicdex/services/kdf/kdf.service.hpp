@@ -43,6 +43,7 @@
 #include "atomicdex/data/dex/orders.and.swaps.data.hpp"
 #include "atomicdex/data/wallet/tx.data.hpp"
 #include "atomicdex/events/events.hpp"
+#include "atomicdex/utilities/async.gate.hpp"
 #include "atomicdex/utilities/global.utilities.hpp"
 
 namespace atomic_dex
@@ -98,6 +99,11 @@ namespace atomic_dex
        std::atomic_bool m_orderbook_thread_active{false};
        std::atomic_bool m_wallet_page_active{false};
        std::thread      m_kdf_init_thread;
+
+       //! Async work capturing `this` enters this gate first; the destructor
+       //! closes it and waits, so no continuation runs on a destroyed service
+       //! (it is destroyed on logout too, not only on exit).
+       std::shared_ptr<async_gate> m_async_gate{std::make_shared<async_gate>()};
 
        //! Current wallet name
        std::string m_current_wallet_name;

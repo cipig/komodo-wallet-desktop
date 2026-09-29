@@ -10,10 +10,15 @@ DEX_NEW_LIB(core INTERFACE
             unofficial-btc::bitcoin komodo-date::date fmt::fmt Async++
             Boost::random komodo-sodium::sodium
         INTERFACE_DEFS
-            $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG> $<$<PLATFORM_ID:Windows>:HAS_REMOTE_API>
-            $<$<PLATFORM_ID:Windows>:AUTO_DOWNLOAD>
+            $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>
             $<$<PLATFORM_ID:Windows>:NOMINMAX>
             $<$<PLATFORM_ID:Windows>:SPDLOG_WCHAR_TO_UTF8_SUPPORT>
+            # Async++ decides whether to compile its exception handling from
+            # __EXCEPTIONS when the compiler is clang, and clang never defines it
+            # for MSVC targets (only _CPPUNWIND), even with exceptions enabled.
+            # Without this, every exception thrown inside a task -- a failed HTTP
+            # request included -- calls std::terminate instead of reaching .get().
+            $<$<AND:$<PLATFORM_ID:Windows>,$<CXX_COMPILER_ID:Clang>>:__EXCEPTIONS=1>
             DEX_API="${DEX_API}" DEX_RPC="${DEX_RPC}" DEX_RPCPORT="${DEX_RPCPORT}" DEX_NAME="${DEX_DISPLAY_NAME}" DEX_WEBSITE_URL="${DEX_WEBSITE}"
             DEX_SUPPORT_URL="${DEX_SUPPORT_PAGE}" DEX_DISCORD_URL="${DEX_DISCORD}" DEX_TWITTER_URL="${DEX_TWITTER}"
             DEX_PRIMARY_COIN="${DEX_PRIMARY_COIN}" DEX_SECOND_PRIMARY_COIN="${DEX_SECOND_PRIMARY_COIN}" #DEX_COMMON_DATA_FOLDER="${DEX_COMMON_DATA_FOLDER}"

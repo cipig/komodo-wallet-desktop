@@ -44,6 +44,29 @@ namespace atomic_dex::utils
 
     double determine_balance_factor(bool with_pin_cfg);
 
+    //! The local time zone, resolved once. current_zone() loads the whole
+    //! timezone database on first use and retries that load on every call
+    //! for as long as it keeps failing -- which made every formatted date
+    //! (thousands per minute on the orders/swaps refresh) repeat the failed
+    //! load. nullptr when it cannot be determined: dates are then in UTC.
+    inline const date::time_zone*
+    local_time_zone()
+    {
+        static const date::time_zone* const zone = []() -> const date::time_zone*
+        {
+            try
+            {
+                return date::current_zone();
+            }
+            catch (const std::exception& error)
+            {
+                SPDLOG_ERROR("cannot determine the local time zone, dates are shown in UTC: {}", error.what());
+                return nullptr;
+            }
+        }();
+        return zone;
+    }
+
     template <typename TimeFormat = std::chrono::milliseconds>
     inline std::string
     to_human_date(std::size_t timestamp, std::string format)
@@ -52,16 +75,18 @@ namespace atomic_dex::utils
 
         const sys_time<TimeFormat> tp{TimeFormat{timestamp}};
 
-        try
+        if (const auto* zone = local_time_zone(); zone != nullptr)
         {
-            const auto tp_zoned = date::make_zoned(current_zone(), tp);
-            return date::format(std::move(format), tp_zoned);
+            try
+            {
+                return date::format(format, date::make_zoned(zone, tp));
+            }
+            catch (const std::exception& error)
+            {
+                SPDLOG_ERROR("exception in to_human_date: {}", error.what());
+            }
         }
-        catch (const std::exception& error)
-        {
-            SPDLOG_ERROR("exception in to_human_date: {}", error.what());
-            return date::format(std::move(format), tp);
-        }
+        return date::format(std::move(format), tp);
     }
 
     ENTT_API std::filesystem::path get_atomic_dex_data_folder();

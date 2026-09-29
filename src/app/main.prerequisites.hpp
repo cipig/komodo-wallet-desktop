@@ -36,6 +36,7 @@
 #include "app.hpp"
 #include "atomicdex/constants/dex.constants.hpp"
 #include "atomicdex/models/qt.portfolio.model.hpp"
+#include "atomicdex/utilities/crash.handler.hpp"
 #include "atomicdex/utilities/kill.hpp"
 #include "atomicdex/utilities/qt.utilities.hpp"
 #include "atomicdex/filesystem.qml.hpp"
@@ -67,14 +68,18 @@ qt_message_handler(QtMsgType type, [[maybe_unused]] const QMessageLogContext& co
         break;
     case QtFatalMsg:
         SPDLOG_ERROR("{}", localMsg.constData());
+        atomic_dex::crash::note(std::string("qFatal: ") + localMsg.constData());
         abort();
     }
 }
 
+//! SIGTERM only: an orderly stop request, so a normal exit is fine here.
+//! Crashes (SIGSEGV, SIGABRT, ...) are handled by atomic_dex::crash, which
+//! must not log, spawn a shell or run exit-time destructors.
 static void
 signal_handler(int signal)
 {
-    SPDLOG_ERROR("sigabort received, cleaning kdf");
+    SPDLOG_ERROR("SIGTERM received, cleaning kdf");
     atomic_dex::kill_executable(atomic_dex::g_dex_api);
     std::exit(signal);
 }
@@ -82,9 +87,7 @@ signal_handler(int signal)
 static void
 connect_signals_handler()
 {
-    SPDLOG_INFO("connecting signal SIGABRT to the signal handler");
-    std::signal(SIGABRT, &signal_handler);
-    std::signal(SIGSEGV, &signal_handler);
+    SPDLOG_INFO("connecting signal SIGTERM to the signal handler");
     std::signal(SIGTERM, &signal_handler);
 }
 
@@ -140,7 +143,10 @@ static void init_logging()
     spdlog::register_logger(logger);
     spdlog::set_default_logger(logger);
     spdlog::set_level(spdlog::level::trace);
-    spdlog::flush_on(spdlog::level::err);
+    //! Records are written by a worker thread; flushing after each one keeps
+    //! the file within a few records of the process instead of up to 7 s behind,
+    //! so a crash leaves the lines that led up to it on disk.
+    spdlog::flush_on(spdlog::level::trace);
     spdlog::flush_every(std::chrono::seconds(7));
     spdlog::set_pattern("[%T] [%^%l%$] [%s:%#] [%t]: %v");
 }
@@ -194,6 +200,10 @@ init_timezone_db()
     try
     {
         using namespace std::string_literals;
+        //! The bundled tzdata is the only source: date is built without its
+        //! remote API (vcpkg.json), so it never tries to download a newer
+        //! release at runtime -- which, into a read-only install folder, failed
+        //! on every date formatted and stalled the thread pool.
         auto install_db_tz_path = std::make_unique<std::filesystem::path>(ag::core::assets_real_path() / "tools" / "timezone" / "tzdata");
         date::set_install(install_db_tz_path->string());
         SPDLOG_INFO("Timezone db successfully initialized");
@@ -336,6 +346,8 @@ run_app(int argc, char** argv)
 
     init_logging();
     SPDLOG_INFO("{} version: {}", DEX_NAME, atomic_dex::get_version_display_string());
+    atomic_dex::crash::install(
+        std::filesystem::path(atomic_dex::utils::get_atomic_dex_current_log_file()).replace_extension(), atomic_dex::get_version_display_string());
     connect_signals_handler();
     init_timezone_db();
     init_wally();
@@ -362,6 +374,7 @@ run_app(int argc, char** argv)
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
     QtWebEngine::initialize();
     std::shared_ptr<QApplication> app = std::make_shared<QApplication>(argc, argv);
+    atomic_dex::crash::reinstall();
 
     app->setWindowIcon(QIcon(":/assets/images/logo/dex-logo.png"));
     app->setOrganizationName("KomodoPlatform");
@@ -450,6 +463,7 @@ run_app(int argc, char** argv)
 
     engine.load(url);
     SPDLOG_INFO("qml engine successfully loaded");
+    atomic_dex::crash::reinstall();
 
 #ifdef __APPLE__
     QWindowList windows = QGuiApplication::allWindows();

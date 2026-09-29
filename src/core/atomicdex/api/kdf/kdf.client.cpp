@@ -70,47 +70,66 @@ namespace
     Rpc process_rpc_answer(const t_http_response& answer)
     {
         std::string body = (answer.extract_string(true).get());
-        nlohmann::json json_answer;
         Rpc rpc;
+        rpc.raw_result = body;
 
-        if (!body.empty() && nlohmann::json::accept(body))
+        //! Every answer leaves here with exactly one of result / error set.
+        //! Callers branch on `if (rpc.error) ... else rpc.result->...`, so an
+        //! answer with neither is read as success and dereferences an empty
+        //! optional -- which is what crashed the wallet when KDF reported a
+        //! platform activation failure the error parser could not read.
+        const auto fail = [&rpc, &answer](std::string reason)
         {
-            try
-            {
-                json_answer = nlohmann::json::parse(body);
-            }
-            catch (const nlohmann::json::parse_error& error)
-            {
-                SPDLOG_ERROR("exception in process_rpc_answer parsing: {}", error.what());
-                return rpc;
-            }
-        }
-        else
-        {
-            SPDLOG_DEBUG("process_rpc_answer: Plaintext or empty payload skipped structural processing (Status {})", answer.status_code());
-            rpc.raw_result = body;
+            SPDLOG_ERROR("unusable KDF answer (HTTP {}): {} | body: {}", answer.status_code(), reason, rpc.raw_result);
+            rpc.result.reset();
+            typename Rpc::expected_error_type error;
+            error.error      = std::move(reason);
+            error.error_type = "UnusableAnswer";
+            rpc.error        = std::move(error);
             return rpc;
+        };
+
+        nlohmann::json json_answer;
+        if (body.empty() || !nlohmann::json::accept(body))
+        {
+            return fail("empty or non-JSON answer");
+        }
+        try
+        {
+            json_answer = nlohmann::json::parse(body);
+        }
+        catch (const nlohmann::json::parse_error& error)
+        {
+            return fail(std::string("cannot parse answer: ") + error.what());
         }
 
-        if (Rpc::is_v2)
+        try
         {
-            if (answer.status_code() == 200 && json_answer.contains("result"))
+            if constexpr (Rpc::is_v2)
             {
-                rpc.result = json_answer.at("result").get<typename Rpc::expected_result_type>();
-                rpc.raw_result = json_answer.at("result").dump();
+                if (answer.status_code() == 200 && json_answer.contains("result"))
+                {
+                    rpc.result     = json_answer.at("result").get<typename Rpc::expected_result_type>();
+                    rpc.raw_result = json_answer.at("result").dump();
+                }
+                else if (json_answer.contains("error"))
+                {
+                    rpc.error      = json_answer.get<typename Rpc::expected_error_type>();
+                    rpc.raw_result = json_answer.dump();
+                }
+                else
+                {
+                    return fail("answer has neither result nor error");
+                }
             }
             else
             {
-                // Gracefully fallback instead of throwing out_of_range
-                if (answer.status_code() not_eq 200) {
-                    try { rpc.error = json_answer.get<typename Rpc::expected_error_type>(); } catch (...) {}
-                }
-                rpc.raw_result = json_answer.dump();
+                rpc.result = json_answer.get<typename Rpc::expected_result_type>();
             }
         }
-        else
+        catch (const std::exception& error)
         {
-            try { rpc.result = json_answer.get<typename Rpc::expected_result_type>(); } catch (...) {}
+            return fail(std::string("cannot read answer: ") + error.what());
         }
         return rpc;
     }
@@ -268,8 +287,30 @@ namespace atomic_dex::kdf
         t_http_request rpc_request(http_method::POST);
         rpc_request.headers().set_content_type(("application/json"));
         rpc_request.set_body(json_data.dump());
-        auto resp = generate_client().request(rpc_request).get();
-        return rpc_process_answer<TAnswer>(resp, rpc_command);
+        //! The request task throws when KDF cannot be reached. The callers are
+        //! synchronous and run on the Qt main thread (disable coin, recover
+        //! funds), where an escaping exception terminates the process -- so a
+        //! transport failure becomes an ordinary failed answer instead.
+        try
+        {
+            auto resp = generate_client().request(rpc_request).get();
+            return rpc_process_answer<TAnswer>(resp, rpc_command);
+        }
+        catch (const std::exception& error)
+        {
+            SPDLOG_ERROR("exception in kdf_client::process_rpc for rpc_command {}: {} | Request payload: {}", rpc_command, error.what(), json_copy.dump());
+            TAnswer answer;
+            answer.rpc_result_code = -1;
+            answer.raw_result      = error.what();
+            if constexpr (doom::meta::is_detected_v<have_error_field, TAnswer>)
+            {
+                if constexpr (std::is_same_v<std::optional<std::string>, decltype(answer.error)>)
+                {
+                    answer.error = error.what();
+                }
+            }
+            return answer;
+        }
     }
 
     t_enable_z_coin_cancel_answer
