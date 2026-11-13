@@ -14,6 +14,7 @@
  *                                                                            *
  ******************************************************************************/
 
+#include <chrono>
 #include <algorithm>
 #include <QTimer>
 #include "atomicdex/api/kdf/rpc_v1/rpc.recover_funds_of_swap.hpp"
@@ -436,7 +437,7 @@ namespace atomic_dex
             {
                 const QString& base_coin = data(idx, OrdersRoles::BaseCoinRole).toString();
                 const QString& rel_coin  = data(idx, OrdersRoles::RelCoinRole).toString();
-                m_dispatcher.trigger(
+                m_dispatcher.enqueue(
                     swap_status_notification{.uuid = contents.order_id,
                                              .prev_status = prev_value.toString(),
                                              .new_status = contents.order_status,
@@ -502,7 +503,7 @@ namespace atomic_dex
                 // Trigger notification instantly on discovery for new uncompleted tracking loops
                 if (cur.order_status == "matching" || cur.order_status == "ongoing" || cur.order_status == "matched")
                 {
-                    m_dispatcher.trigger(
+                    m_dispatcher.enqueue(
                         swap_status_notification{.uuid = cur.order_id,
                                                  .prev_status = "None",
                                                  .new_status = cur.order_status,
@@ -544,7 +545,7 @@ namespace atomic_dex
                     {
                         if (it->order_status != cur.order_status)
                         {
-                            m_dispatcher.trigger(
+                            m_dispatcher.enqueue(
                                 swap_status_notification{.uuid = cur.order_id,
                                                          .prev_status = it->order_status,
                                                          .new_status = cur.order_status,
@@ -857,7 +858,12 @@ namespace atomic_dex
             this->set_recover_fund_busy(false);
         };
 
-        kdf_system.get_kdf_client().async_rpc_batch_standalone(std::move(batch)).then(
+        kdf_system.get_kdf_client()
+            .async_rpc_batch_standalone(
+                std::move(batch),
+                t_http_priority::interactive,
+                std::chrono::minutes(10))
+            .then(
             [this, answer_functor](async::task<t_http_response> previous_task)
             {
                 try
